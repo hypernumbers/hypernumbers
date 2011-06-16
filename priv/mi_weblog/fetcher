@@ -21,7 +21,7 @@ main([Target, NStr, PostlogDir]) ->
     io:format("Node ~p is connected? ~p~n", [TNode, lists:member(TNode, Nodes)]),
     StartDate = relative_date(N),
     EndDate = relative_date(N-1),
-    _Ret = rpc:cast(TNode, mochilog, stream_log, 
+    _Ret = rpc:cast(TNode, mochilog, stream_log,
                 [PostlogDir, StartDate, EndDate, self()]),
     io:format("Return from rpc:cast is ~p~n", [_Ret]),
     start_loop(Target ++ StartDate);
@@ -32,7 +32,7 @@ main(_) ->
 start_loop(FileName) ->
     receive
         {_, log_start} ->
-            {ok, FD} = file:open([?OUTDIR, FileName], 
+            {ok, FD} = file:open([?OUTDIR, FileName],
                                  [write, delayed_write, raw]),
             Ret = server_loop(FileName, FD),
             Msg = io_lib:format("Fetcher succeeded for ~p~n", [FileName]),
@@ -76,23 +76,23 @@ server_loop(FileName, FD) ->
     end.
 
 init() ->
-    os:cmd(?EPMD), 
+    os:cmd(?EPMD),
     Host = net_adm:localhost(),
     Name = list_to_atom("mi_fetcher@" ++ Host),
     {ok, _} = net_kernel:start([Name, longnames]),
     true = auth:set_cookie(?COOKIE).
-    
+
 % filename(Str) ->
 %     {H, M, S} = erlang:time(),
-%     lists:flatten([Str, 
+%     lists:flatten([Str,
 %                    " (",
 %                    io_lib:format("~2.10.0b_~2.10.0b_~2.10.0b", [H,M,S]),
 %                    ")"]).
-    
+
 relative_date(Offset) ->
     {Date, _} = calendar:now_to_local_time(erlang:now()),
     Day = calendar:date_to_gregorian_days(Date),
     format_date(calendar:gregorian_days_to_date(Day - Offset)).
-    
+
 format_date({Y, M, D}) ->
     lists:flatten(io_lib:format("~b-~b-~b", [D, M, Y])).

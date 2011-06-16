@@ -15,19 +15,19 @@ init_per_suite(Config) ->
         true  -> {skip, "Skipping"};
         false -> InitSite = fun(S) ->
                                     reset_perms(S, Test),
-                                    hn_db_api:wait_for_dirty(S)
+                                    new_db_api:wait_for_dirty(S)
                             end,
                  [InitSite(S) || S <- sites()],
                  inets:start(httpc, [{profile, systest}]),
                  testsys:restore(Target, Test, systest),
-                 [hn_db_api:wait_for_dirty(S) || S <- sites()], 
+                 [new_db_api:wait_for_dirty(S) || S <- sites()],
                  actions(),
-                 [hn_db_api:wait_for_dirty(S) || S <- sites()], 
+                 [new_db_api:wait_for_dirty(S) || S <- sites()],
                  Config
     end.
 
 skipped() ->
-    ["hn_create", "hn_structural"].
+    [].
 
 reset_perms(Site, Test) ->
     View = "spreadsheet",
@@ -41,9 +41,9 @@ init_per_testcase(_TestCase, Config) -> Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
 get_val(Ref) ->
-    case hn_db_api:read_attribute(Ref#refX{site=~p},"__rawvalue") of
-        [{_Ref, Val}] -> Val; 
-        _Else        -> "" 
+    case new_db_api:read_attribute(Ref#refX{site=~p},"__rawvalue") of
+        [{_Ref, Val}] -> Val;
+        _Else        -> ""
     end.
 
 all() ->

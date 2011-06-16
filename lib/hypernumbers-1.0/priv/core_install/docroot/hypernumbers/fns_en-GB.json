@@ -7,8 +7,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dget.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -19,8 +35,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/daverage.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -31,8 +63,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dsum.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -43,8 +91,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dmin.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -55,8 +119,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dcounta.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -67,8 +147,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dvar.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -79,8 +175,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dproduct.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -91,8 +203,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dvarp.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -100,11 +228,27 @@
         "category": "Database",
         "desc": "Calculates the standard deviation for a field in a sample from a database.",
         "experimental": false,
-        "includable": true,
+       "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dstdevp.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -115,8 +259,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dstdev.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -127,8 +287,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dmax.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -139,8 +315,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dcount.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -152,15 +344,16 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/weekday.html",
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string representation of a date or a serial number",
                 "type": "finite"
             },
             {
                 "name": "Return Type",
-                "desc": "If Return Type = 1 Sunday is 1 and Saturday is 7, if Return Type = 2 Monday is 1 and Sunday is 7, if Return Type = 3, Monday = 0 and Sunday = 6",
+                "desc": "Determines which day if first day of the week",
                 "type": "optional"
             }
         ]
@@ -174,10 +367,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/second.html",
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -191,10 +385,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/minute.html",
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -202,13 +397,29 @@
     {
         "fn": "date",
         "category": "Date And Time",
-        "desc": "Returns the internal software serial number of a date.&nbsp;",
+        "desc": "Returns a date specified by year, month and day",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/date.html",
         "args": [
+            {
+                "name": "year",
+                "desc": "Number representing the year",
+                "type": "finite"
+            },
+            {
+                "name": "month",
+                "desc": "Number representing the month",
+                "type": "finite"
+            },
+            {
+                "name": "day",
+                "desc": "Number representing the day",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -219,7 +430,8 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/today.html",
         "args": [
         ]
     },
@@ -232,10 +444,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/month.html",
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string Representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -248,8 +461,14 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/day.html",
         "args": [
+            {
+                "name": "Date",
+                "desc": "String or number that represents a date",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -261,6 +480,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/now.html",
         "args": [
         ]
     },
@@ -273,10 +493,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/hour.html",
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string Representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -290,10 +511,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/year.html",
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string Representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -306,8 +528,112 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/time.html",
         "args": [
+            {
+                "name": "Hour",
+                "desc": "An integer",
+                "type": "finite"
+            },
+            {
+                "name": "Minute",
+                "desc": "An integer",
+                "type": "finite"
+            },
+            {
+                "name": "Second",
+                "desc": "An integer",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "datevalue",
+        "category": "Date And Time",
+        "desc": "Converts a string into a date",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/datevalue.html",
+        "args": [
+            {
+                "name": "String",
+                "desc": "A text representation of a date and time",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "timevalue",
+        "category": "Date And Time",
+        "desc": "Converts a string into a time in decimal seconds",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/timevalue.html",
+        "args": [
+            {
+                "name": "String",
+                "desc": "A text representation of a date and time.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "days360",
+        "category": "Date And Time",
+        "desc": "Calculates the difference between 2 days based on a 360 day year.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/days360.html",
+        "args": [
+            {
+                "name": "First Date",
+                "desc": "A date.",
+                "type": "finite"
+            },
+            {
+                "name": "Second Date",
+                "desc": "A date.",
+                "type": "finite"
+            },
+            {
+                "name": "Type",
+                "desc": "0 or 1.",
+                "type": "optional"
+            }
+        ]
+
+    },
+    {
+        "fn": "gestep",
+        "category": "Engineering",
+        "desc": "Returns 1 if a number is greater than or equal to a step number, or 0 otherwise.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/engineering/gestep.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+            },
+            {
+                "name": "Stepnumber",
+                "desc": "The step number - 0 by default.",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -319,7 +645,28 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/syd.html",
         "args": [
+            {
+                "name": "Original Cost",
+                "desc": "A number in currency units.",
+                "type": "finite"
+            },
+            {
+                "name": "Salvage Value",
+                "desc": "A number in currency units.",
+                "type": "finite"
+            },
+            {
+                "name": "Lifetime",
+                "desc": "An integer no of years.",
+                "type": "finite"
+            },
+            {
+                "name": "Year",
+                "desc": "The (integer) year for which the depreciation is calculated.",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -331,7 +678,33 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/pv.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "Defines the interest rate per period.",
+                "type": "finite"
+            },
+            {
+                "name": "No Of Periods",
+                "desc": "The total number of periods.",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The regular payment per period.",
+                "type": "finite"
+            },
+            {
+                "name": "Future Value",
+                "desc": "The future value after the last payment.",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "Due date for payments.",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -343,7 +716,43 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/rate.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "The fixed interest rate per period.",
+                "type": "finite"
+            },
+            {
+                "name": "Number Of Periods",
+                "desc": "The total number of periods.",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The payment each period.",
+                "type": "finite"
+            },
+            {
+                "name": "Present Value",
+                "desc": "The lump sum payment at the start of the term.",
+                "type": "finite"
+            },
+            {
+                "name": "Future Value",
+                "desc": "The expected final cash balance.",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "When in the period the payments are made.",
+                "type": "optional"
+            },
+            {
+                "name": "Guess",
+                "desc": "The initial guess of the interest rate.",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -355,7 +764,28 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/nper.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "The (fixed) interest rate per period.",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The payment per period.",
+                "type": "finite"
+            },
+            {
+                "name": "Future Value",
+                "desc": "The cash balance at the end.",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "When payments are made.",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -367,7 +797,33 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/ddb.html",
         "args": [
+            {
+                "name": "Cost",
+                "desc": "The initial cost of an asset.",
+                "type": "finite"
+            },
+            {
+                "name": "Salvage",
+                "desc": "The value of the asset at life end.",
+                "type": "finite"
+            },
+            {
+                "name": "Life",
+                "desc": "No of periods (years, months) asset is used",
+                "type": "finite"
+            },
+            {
+                "name": "Period",
+                "desc": "The period for which the value is to be calculated",
+                "type": "finite"
+            },
+            {
+                "name": "Factor",
+                "desc": "Deprecaation factor",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -379,7 +835,23 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/sln.html",
         "args": [
+            {
+                "name": "Original Cost",
+                "desc": "The initial cost of the asset.",
+                "type": "finite"
+            },
+            {
+                "name": "Salvage Value",
+                "desc": "The value of the asset after depreciation",
+                "type": "finite"
+            },
+            {
+                "name": "Lifetime",
+                "desc": "The number of periods over which the asset is being depreciated.",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -391,7 +863,33 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/pmt.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "The periodic interest rate.",
+                "type": "finite"
+            },
+            {
+                "name": "Number Of Periods",
+                "desc": "The number of periods for annuity payments",
+                "type": "finite"
+            },
+            {
+                "name": "Present Value",
+                "desc": "The present value (cash value) of the payment sequence.",
+                "type": "finite"
+            },
+            {
+                "name": "Future Value",
+                "desc": "The desired future value of the payments.",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "The due date for the periodic payments",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -403,7 +901,18 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/npv.html",
         "args": [
+           {
+                "name": "Discount Rate",
+                "desc": "The discount rate expressed as a decimal point",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The payment in currency units",
+                "type": "infinite"
+            }
         ]
     },
     {
@@ -415,223 +924,74 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/fv.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "The interest rate per period",
+                "type": "finite"
+            },
+            {
+                "name": "Number Of Periods",
+                "desc": "The number of periods.",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The paymnet each period",
+                "type": "finite"
+            },
+            {
+                "name": "Present Value",
+                "desc": "The lump sum at the start of the term",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "When payments are made.",
+                "type": "optional"
+            }
         ]
     },
     {
         "fn": "irr",
         "category": "Financial",
-        "desc": "returns tyhe internal rate of return for a series of cash flows.",
+        "desc": "Returns the internal rate of return for a series of cash flows.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/irr.html",
         "args": [
+            {
+                "name": "Values",
+                "desc": "An array or range of values.",
+                "type": "finite"
+            },
+            {
+                "name": "Guess",
+                "desc": "A percentage.",
+                "type": "optional"
+            }
         ]
     },
     {
-        "fn": "textarea",
-        "category": "HN Forms",
-        "desc": "Create a textarea",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "include",
-        "category": "HN Layout",
-        "desc": "Includes the range as rendered html",
-        "experimental": false,
-        "includable": false,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "select",
-        "category": "HN Forms",
-        "desc": "Create a drop down select box",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "input",
-        "category": "HN Forms",
-        "desc": "Create a single line text input",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "twitter.button",
-        "category": "HN Web",
-        "desc": "Embed a twitter \"follow me\" button onto your page - name is your username is optional and a number from 0-5 which changes the style of the button",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "radio",
-        "category": "HN Forms",
-        "desc": "Create a set of radio buttons",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "button",
-        "category": "HN Forms",
-        "desc": "Create a button with its value set to text",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "google.map",
-        "category": "HN Web",
-        "desc": "Embed a google map that centers at Latitude, Longitude, the zoom level is a number between 1 and 20. (the map will preview as an image inside the spreadsheet)",
-        "experimental": true,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "iserror",
+        "fn": "error.type",
         "category": "Information",
-        "desc": "Checks whether a cell value is an error and returns TRUE or FALSE",
+        "desc": "Converts an error into an integer",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/error_type.html",
         "args": [
-        ]
-    },
-    {
-        "fn": "istext",
-        "category": "Information",
-        "desc": "Checks whether a cell value is text and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "n",
-        "category": "Information",
-        "desc": "Converts non-number values to numbers",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "isnontext",
-        "category": "Information",
-        "desc": "Checks whether a value is not text and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "isna",
-        "category": "Information",
-        "desc": "Checks whether a value is #N/A and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "iserr",
-        "category": "Information",
-        "desc": "Checks whether a cell value is an error and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "na",
-        "category": "Information",
-        "desc": "Returns (value not available) #N/A",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "isnumber",
-        "category": "Information",
-        "desc": "Checks whether a cell value is a number and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "islogical",
-        "category": "Information",
-        "desc": "Checks whether a cell has a logical value of (TRUE or FALSE) and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
+            {
+                "name": "Error",
+                "desc": "An error value",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -642,27 +1002,191 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/isblank.html",
         "args": [
+            {
+                "name": "Cell Reference",
+                "desc": "A reference to a cell.",
+                "type": "finite"
+            }
         ]
     },
     {
-        "fn": "not",
-        "category": "Logical",
-        "desc": "Changes logical value e.g. From FALSE to TRUE",
+        "fn": "iserror",
+        "category": "Information",
+        "desc": "Checks whether a cell value is an error and returns TRUE or FALSE",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/iserror.html",
         "args": [
             {
-                "name": "Boolean",
-                "desc": "A boolean value or expression",
+                "name": "Value",
+                "desc": "The value that is to be tested.",
                 "type": "finite"
             }
         ]
     },
+    {
+        "fn": "iserr",
+        "category": "Information",
+        "desc": "Checks whether a cell value is an error and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/iserr.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "islogical",
+        "category": "Information",
+        "desc": "Checks whether a cell has a logical value of (TRUE or FALSE) and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/islogical.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "isna",
+        "category": "Information",
+        "desc": "Checks whether a value is #N/A and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/isna.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "isnontext",
+        "category": "Information",
+        "desc": "Checks whether a value is not text and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/isnontext.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "isnumber",
+        "category": "Information",
+        "desc": "Checks whether a cell value is a number and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/isnumber.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "istext",
+        "category": "Information",
+        "desc": "Checks whether a cell value is text and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/istext.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "n",
+        "category": "Information",
+        "desc": "Converts non-number values to numbers",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/n.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "na",
+        "category": "Information",
+        "desc": "returns the error value #NA!",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/na.html",
+        "args": [
+        ]
+    },
+    {
+        "fn": "type",
+        "category": "Information",
+        "desc": "Returns the type of a value",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/type.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The specific value whose type is being sought.",
+                "type": "finite"
+            }
+        ]
+     },
     {
         "fn": "and",
         "category": "Logical",
@@ -672,35 +1196,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "args": [
-            {
-                "name": "Boolean",
-                "desc": "A boolean value or expression",
-                "type": "infinite"
-            }
-        ]
-    },
-    {
-        "fn": "true",
-        "category": "Logical",
-        "desc": "Returns the logical value of TRUE.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "args": [
-        ]
-    },
-    {
-        "fn": "or",
-        "category": "Logical",
-        "desc": "Returns TRUE if any of the logic arguments supplied evaluate to TRUE. Otherwise FALSE.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/and.html",
         "args": [
             {
                 "name": "Boolean",
@@ -718,6 +1214,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/false.html",
         "args": [
         ]
     },
@@ -730,6 +1227,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/if.html",
         "args": [
             {
                 "name": "Boolean",
@@ -744,6 +1242,249 @@
             {
                 "name": "Boolean",
                 "desc": "The value to return if the condition is false",
+                "type": "optional"
+            }
+        ]
+    },
+    {
+        "fn": "not",
+        "category": "Logical",
+        "desc": "Changes logical value e.g. From FALSE to TRUE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/not.html",
+        "args": [
+            {
+                "name": "Boolean",
+                "desc": "A boolean value or expression",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "or",
+        "category": "Logical",
+        "desc": "Returns TRUE if any of the logic arguments supplied evaluate to TRUE. Otherwise FALSE.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/or.html",
+        "args": [
+            {
+                "name": "Boolean",
+                "desc": "A boolean value or expression",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "true",
+        "category": "Logical",
+        "desc": "Returns the logical value of TRUE.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/true.html",
+        "args": [
+        ]
+    },
+     {
+        "fn": "choose",
+        "category": "Lookup And Reference",
+        "desc": "Uses an index number to select from a list of values.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/choose.html",
+        "args": [
+             {
+                "name": "Index",
+                "desc": "The index of the parameter to return.",
+                "type": "finite"
+             },
+             {
+                "name": "Value",
+                "desc": "A value.",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "column",
+        "category": "Lookup And Reference",
+        "desc": "Returns the column number of a cell reference",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/column.html",
+        "args": [
+             {
+                "name": "Reference",
+                "desc": "A cell reference",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "columns",
+        "category": "Lookup And Reference",
+        "desc": "Returns the number of columns in an array/range.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/columns.html",
+        "args": [
+             {
+                "name": "Reference",
+                "desc": "A cell or range reference",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "hlookup",
+        "category": "Lookup And Reference",
+        "desc": "Searches for a value in the top row of an array and returns the value in the row specified to get the value from.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/hlookup.html",
+        "args": [
+             {
+                "name": "Search Criterion",
+                "desc": "The value searched for.",
+                "type": "finite"
+             },
+             {
+                "name": "Array",
+                "desc": "The range reference.",
+                "type": "finite"
+             },
+             {
+                "name": "Index",
+                "desc": "The index of the return row.",
+                "type": "finite"
+             },
+             {
+                "name": "Sort Order",
+                "desc": "Boolean",
+                "type": "optional"
+            }
+        ]
+    },
+    {
+        "fn": "index",
+        "category": "Lookup And Reference",
+        "desc": "Returns the number of rows in an array/range.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/index.html",
+        "args": [
+             {
+                "name": "Reference",
+                "desc": "A range reference.",
+                "type": "finite"
+             },
+             {
+                "name": "Row",
+                "desc": "The row index of the reference range.",
+                "type": "optional"
+             },
+             {
+                "name": "Column",
+                "desc": "The column index of the reference range.",
+                "type": "optional"
+             },
+             {
+                "name": "Range",
+                "desc": "The index of the subrange (for multiple ranges).",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "indirect",
+        "category": "Lookup And Reference",
+        "desc": "Uses a text string to reference a cell or range of cells.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/indirect.html",
+        "args": [
+             {
+                "name": "Reference Text",
+                "desc": "A string.",
+                "type": "finite"
+             },
+             {
+                "name": "Reference Type",
+                "desc": "A boolean.",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "match",
+        "category": "Lookup And Reference",
+        "desc": "Returns the relative position of an itm in an array that matches a specified value in a specified order.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/match.html",
+        "args": [
+             {
+                "name": "Search Criterion",
+                "desc": "The value to be searched for.",
+                "type": "finite"
+             },
+             {
+                "name": "Lookup Array",
+                "desc": "The 1-D reference to be searched.",
+                "type": "finite"
+             },
+             {
+                "name": "Type",
+                "desc": "Type of match.",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "row",
+        "category": "Lookup And Reference",
+        "desc": "Returns the row number of a cell reference",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/row.html",
+        "args": [
+             {
+                "name": "Reference",
+                "desc": "A cell reference",
                 "type": "finite"
             }
         ]
@@ -757,31 +1498,13 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/rows.html",
         "args": [
-        ]
-    },
-    {
-        "fn": "match",
-        "category": "Lookup And Reference",
-        "desc": "Returns the relative position of an itm in an array that matches a specified value in a specified order",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "hlookup",
-        "category": "Lookup And Reference",
-        "desc": "Searches for a value in the top row of an array and returns the value in the row specified to get the value from.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
+             {
+                "name": "Reference",
+                "desc": "A cell or range reference",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -793,257 +1516,27 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/vlookup.html",
         "args": [
-        ]
-    },
-    {
-        "fn": "index",
-        "category": "Lookup And Reference",
-        "desc": "Returns a value from within an array at the position specified by a row and column number.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "choose",
-        "category": "Lookup And Reference",
-        "desc": "Uses an index number to select from a list of values.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "columns",
-        "category": "Lookup And Reference",
-        "desc": "Ruturns the number of columns in an array/range.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "sin",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the sine of an angle expressed as radians.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "args": [
-            {
-                "name": "Angle",
-                "desc": "An angle (in radians)",
+             {
+                "name": "Search Criterion",
+                "desc": "The value searched for.",
                 "type": "finite"
-            }
-        ]
-    },
-    {
-        "fn": "power",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the result of a number raised by a specified power.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "mod",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the remainder of a number divided by another number.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "acos",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the arccosine of a number between -1 and 1. The arccosine is the angle whose cosine is the number. The angle is given in radians from 0 to pi. ",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "args": [
-            {
-                "name": "Angle",
-                "desc": "An angle (in radians)",
+             },
+             {
+                "name": "Array",
+                "desc": "The range reference.",
                 "type": "finite"
-            }
-        ]
-    },
-    {
-        "fn": "ln",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the natural (base e) logarithm of a number.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "degrees",
-        "category": "Maths And Trigonometry",
-        "desc": "Converts radians to degrees.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "args": [
-            {
-                "name": "Angle",
-                "desc": "An angle (in radians)",
+             },
+             {
+                "name": "Index",
+                "desc": "The index of the return row.",
                 "type": "finite"
-            }
-        ]
-    },
-    {
-        "fn": "sum",
-        "category": "Maths And Trigonometry",
-        "desc": "calculates the sum of all the numbers specified.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "atan",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the arctangent of a number. The arctangent is the angle whose tangent is the number. The angle is given in radians from -pi/2 to pi/2. ",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "args": [
-            {
-                "name": "Angle",
-                "desc": "An angle (in radians)",
-                "type": "finite"
-            }
-        ]
-    },
-    {
-        "fn": "radians",
-        "category": "Maths And Trigonometry",
-        "desc": "Converts degrees to radians.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "args": [
-            {
-                "name": "Angle",
-                "desc": "An angle (in degrees)",
-                "type": "finite"
-            }
-        ]
-    },
-    {
-        "fn": "pi",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the constant PI.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "args": [
-        ]
-    },
-    {
-        "fn": "log",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the logarithm of a number for any specified base.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "exp",
-        "category": "Maths And Trigonometry",
-        "desc": "Exponetial of a number is e (=2.71828182845905) raised to the power of the input number. ",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "tan",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the tangent of an angle - entered as radians.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "args": [
-            {
-                "name": "Angle",
-                "desc": "An angle (in radians)",
-                "type": "finite"
-            }
-        ]
-    },
-    {
-        "fn": "sumif",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the sum of numbers in a range of cells that satisfy a specified criteria. For example =SUMIF(a1:a4, \\\">2\\\") will sum up the values in a1:a4 only where the cell is >2. The cells to be summed can be from a different range.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "atan2",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns the arctangent or angle between the x-axis and a line extending from the origin to some (x,y) coordinates. The angle is given in radians from -pi to pi. ",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "args": [
-            {
-                "name": "Angle",
-                "desc": "An angle (in radians)",
-                "type": "finite"
+             },
+             {
+                "name": "Sort Order",
+                "desc": "Boolean",
+                "type": "optional"
             }
         ]
     },
@@ -1056,31 +1549,144 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/abs.html",
         "args": [
+             {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+             }
         ]
     },
     {
-        "fn": "log10",
+        "fn": "acos",
         "category": "Maths And Trigonometry",
-        "desc": "Returns the logarithm to base 10 of a number.",
+        "desc": "Returns the inverse trigonometic cosine of a number (in radians).",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/acos.html",
         "args": [
+            {
+                "name": "Number",
+                "desc": "A number",
+                "type": "finite"
+            }
         ]
     },
     {
-        "fn": "fact",
+        "fn": "acosh",
         "category": "Maths And Trigonometry",
-        "desc": "Returns factorial of a number. E.g. Fact(4)=4*3*2*1=24.",
+        "desc": "Returns the inverse hyperbolic cosine of a number (in radians).",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/acosh.html",
         "args": [
+            {
+                "name": "Number",
+                "desc": "A numbers",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "asin",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the inverse trigonometric sine of a number (in radians).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/asin.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "asinh",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the inverse hyperbolic sine of a number (in radians).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/asin.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "atan",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the trigonometic inverse tangent of a number (in radians).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/atan.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "atan2",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the inverse trigonometric tangent of the specified x and y coordinates (in radians).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/atan2.html",
+        "args": [
+            {
+                "name": "Number X",
+                "desc": "A number representing the X co-ordinate.",
+                "type": "finite"
+            },
+            {
+                "name": "Number Y",
+                "desc": "A number representing the Y co-ordinate.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "atanh",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the inverse hyperbolic tangent of a number (in radians).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/atanh.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -1092,6 +1698,520 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/cos.html",
+        "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "cosh",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the hyperbolic cosine of an angle - supplied as radians.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/cosh.html",
+        "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "ceiling",
+        "category": "Maths And Trigonometry",
+        "desc": "Rounds a number up to the nearest multiple of significance.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/ceiling.html",
+        "args": [
+            {
+                 "name": "Number",
+                 "desc": "The number to be rounded up.",
+                 "type": "finite"
+            },
+            {
+                "name": "Significance",
+                "desc": "The number whose multiple is to be rounded up to.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "combin",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the number of possible combinations of a set of elements from a larger group of elements without repetition.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/combin.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "The number of items in the full set.",
+                "type": "finite"
+            },
+            {
+                "name": "Number To Choose",
+                "desc": "The number of items to choose from the set.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "degrees",
+        "category": "Maths And Trigonometry",
+        "desc": "Converts radians to degrees.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/degrees.html",
+        "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "even",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns number up to the nearest even integer. ",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/even.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "The number to rounded.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "exp",
+        "category": "Maths And Trigonometry",
+        "desc": "Exponential of a number is e (=2.71828182845905) raised to the power of the input number. ",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/exp.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "The number whose exponent is required.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "fact",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns factorial of a number. E.g. Fact(4)=4*3*2*1=24.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/fact.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "The number whose factorial is required.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "floor",
+        "category": "Maths And Trigonometry",
+        "desc": "Rounds a number down to the nearest multiple of significance.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/floor.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "The number to be rounded up.",
+                "type": "finite"
+             },
+             {
+                "name": "Significance",
+                "desc": "The number whose multiple is to be rounded up to.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "int",
+        "category": "Maths And Trigonometry",
+        "desc": "Rounds a number down to the nearest integer value.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/int.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "The number to be rounded down.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "ln",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the natural (base e) logarithm of a number.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/ln.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "The number whose natural log is sought.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "log",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the logarithm of a number for any specified base.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/log.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "The number whose log is sought.",
+                "type": "finite"
+             },
+             {
+                "name": "Number",
+                 "desc": "The base of the logarithm.",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "log10",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the logarithm to base 10 of a number.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/log.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "The number whose base 10 log is sought.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "mod",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the remainder of a number divided by another number.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/log.html",
+        "args": [
+            {
+                "name": "Dividend",
+                "desc": "A number.",
+                "type": "finite"
+            },
+            {
+                "name": "Divisor",
+                "desc": "A number.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "median",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the median of a set of numbers.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/median.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "A number or reference to a number or numbers.",
+                "type": "infinite"
+             }
+        ]
+    },
+    {
+        "fn": "odd",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns a positive number rounded up to the nearest odd integer and a negative number rounded down.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/odd.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "pi",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the constant PI.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/pi.html",
+        "args": [
+        ]
+    },
+    {
+        "fn": "power",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the result of a number raised by a specified power.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/power.html",
+        "args": [
+             {
+                "name": "Base",
+                "desc": "A number.",
+                "type": "finite"
+             },
+             {
+                "name": "Exponent",
+                "desc": "A number.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "product",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the product of multiplying numbers e.g. =PRODUCT(1, 2, 3) is the same as =1x2x3.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/product.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "A number or a reference to a range of numbers.",
+                "type": "infinite"
+             }
+        ]
+    },
+    {
+        "fn": "radians",
+        "category": "Maths And Trigonometry",
+        "desc": "Converts degrees to radians.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/radians.html",
+        "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in degrees)",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "roman",
+        "category": "Maths And Trigonometry",
+        "desc": "Converts an arabic number into a roman one.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/roman.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+             },
+             {
+                "name": "Mode",
+                "desc": "An integer between 0 and 4.",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "round",
+        "category": "Maths And Trigonometry",
+        "desc": "Rounds a number to the specified round-off unit.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/round.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+             },
+             {
+                "name": "Count",
+                "desc": "The number of decimal places.",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "rounddown",
+        "category": "Maths And Trigonometry",
+        "desc": "Rounds a number down towards zero the appropriate degree.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/rounddown.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+             },
+             {
+                "name": "Count",
+                "desc": "The number of decimal places.",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "roundup",
+        "category": "Maths And Trigonometry",
+        "desc": "Rounds a number up away from zero to the appropriate degree.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/roundup.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "finite"
+             },
+             {
+                "name": "Count",
+                "desc": "The number of decimal places.",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "sign",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the sign of a number",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sign.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "The number whose sign is required.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "sin",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the trigonometric sine of an angle expressed as radians.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sin.html",
+        "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "sinh",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the hyperbolic sine of an angle expressed as radians.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sinh.html",
         "args": [
             {
                 "name": "Angle",
@@ -1109,18 +2229,140 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sqrt.html",
         "args": [
+             {
+                "name": "Number",
+                "desc": "A postive number.",
+                "type": "finite"
+             }
         ]
     },
     {
-        "fn": "asin",
+        "fn": "sumif",
         "category": "Maths And Trigonometry",
-        "desc": "Returns the arcsine of a number between -1 and 1. The arcsine is the angle whose sine is the number. The angle is given in radians from -pi/2 to pi/2. ",
+        "desc": "Returns the sum of numbers in a range of cells that satisfy a specified criteria. For example =SUMIF(a1:a4, \\\">2\\\") will sum up the values in a1:a4 only where the cell is >2. The cells to be summed can be from a different range.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumif.html",
+        "args": [
+             {
+                "name": "Range",
+                "desc": "The range to be tested.",
+                "type": "finite"
+             },
+             {
+                "name": "Criterion",
+                "desc": "The criterion upon which the items are to be included.",
+                "type": "finite"
+             },
+             {
+                "name": "Sum Range",
+                "desc": "The range from which the sum is be taken.",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "sumsq",
+        "category": "Maths And Trigonometry",
+        "desc": "calculates the sum of the squares of all the numbers specified.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumsq.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "A number or range of numbers.",
+                "type": "infinite"
+             }
+        ]
+    },
+    {
+        "fn": "sumx2my2",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the sum of the differences between corresponding squared elements of two matrices.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumx2my2.html",
+        "args": [
+             {
+                "name": "Arrary1",
+                "desc": "An array.",
+                "type": "finite"
+             },
+             {
+                "name": "Arrary2",
+                "desc": "An array.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "sumx2py2",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the sum of the squares of all elements of two matrices.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumx2py2.html",
+        "args": [
+             {
+                "name": "Arrary1",
+                "desc": "An array.",
+                "type": "finite"
+             },
+             {
+                "name": "Arrary2",
+                "desc": "An array.",
+                "type": "finite"
+             }
+        ]
+    },
+     {
+        "fn": "sumxmy2",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the sum of the squared differences between corresponding elements of two matrices.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumxmy2.html",
+        "args": [
+             {
+                "name": "Arrary1",
+                "desc": "An array.",
+                "type": "finite"
+             },
+             {
+                "name": "Arrary2",
+                "desc": "An array.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "tan",
+        "category": "Maths And Trigonometry",
+        "desc": "Returns the trigonometic tangent of an angle - entered as radians.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/tan.html",
         "args": [
             {
                 "name": "Angle",
@@ -1130,80 +2372,39 @@
         ]
     },
     {
-        "fn": "product",
+        "fn": "tanh",
         "category": "Maths And Trigonometry",
-        "desc": "Returns the product of multiplying numbers e.g. =PRODUCT(1, 2, 3) is the same as =1x2x3.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "odd",
-        "category": "Maths And Trigonometry",
-        "desc": "Returns a number rounded up to the nearest odd integer.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "min",
-        "category": "Statistical",
-        "desc": "Returns the smallest value in a range of values.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "countblank",
-        "category": "Statistical",
-        "desc": "Counts the number of empty cells.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "average",
-        "category": "Statistical",
-        "desc": "Returns the average of a range of numbers",
+        "desc": "Returns the hyperbolic tangent of an angle - entered as radians.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/tanh.html",
         "args": [
             {
-                "name": "Variable",
-                "desc": "Variables can refer to anything, but only numbers will be counted",
-                "type": "infinite"
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
             }
         ]
     },
     {
-        "fn": "countif",
-        "category": "Statistical",
-        "desc": "Counts the number of cells in a range that meet a given condition.",
+        "fn": "sum",
+        "category": "Maths And Trigonometry",
+        "desc": "calculates the sum of all the numbers specified.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sum.html",
         "args": [
+             {
+                "name": "Number",
+                "desc": "A number or range of numbers.",
+                "type": "infinite"
+             }
         ]
     },
     {
@@ -1215,6 +2416,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Number",
@@ -1232,6 +2434,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1244,30 +2447,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "max",
-        "category": "Statistical",
-        "desc": "Returns the largest value in a range of values.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "counta",
-        "category": "Statistical",
-        "desc": "Counts the number of cells that are not empty.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1280,6 +2460,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1292,6 +2473,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1304,6 +2486,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1316,6 +2499,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1328,6 +2512,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1340,6 +2525,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1352,6 +2538,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1364,6 +2551,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1376,6 +2564,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1388,6 +2577,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1400,6 +2590,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1412,6 +2603,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1424,6 +2616,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1436,6 +2629,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1448,6 +2642,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1460,6 +2655,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1472,54 +2668,409 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "args": [
-        ]
-    },
-    {
-        "fn": "int",
-        "category": "Truncation",
-        "desc": "Rounds a number down to the nearest integer value.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
     {
         "fn": "trunc",
-        "category": "Truncation",
+        "category": "Maths And Trigonometry",
         "desc": "Truncates a number to a specified number of decimal places.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/trunc.html",
         "args": [
+            {
+                "name": "Number",
+                "desc": "The number to be truncated.",
+                "type": "finite"
+            },
+            {
+                "name": "Count",
+                "desc": "The number of decimal places to truncate it to.",
+                "type": "finite"
+            }
         ]
     },
     {
-        "fn": "round",
-        "category": "Truncation",
-        "desc": "Rounds a number to the specified round-off unit.",
+        "fn": "avedev",
+        "category": "Statistical",
+        "desc": "Returns the average of the absolute deviations of values from their mean.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/avedev.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number or a range of numbers.",
+                "type": "infinite"
+             }
+        ]
+    },
+    {
+        "fn": "average",
+        "category": "Statistical",
+        "desc": "Returns the average of a range of numbers.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/average.html",
+        "args": [
+            {
+                "name": "Variable",
+                "desc": "Variables can refer to anything, but only numbers will be counted",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "averagea",
+        "category": "Statistical",
+        "desc": "Returns the average of a range of numbers (including text).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/averagea.html",
+        "args": [
+            {
+                "name": "Variable",
+                "desc": "Variables can refer to anything, but only numbers will be counted",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "counta",
+        "category": "Statistical",
+        "desc": "Counts the number of cells that are not empty.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/counta.html",
         "args": [
+            {
+                "name": "Variable",
+                "desc": "Variables can refer to anything, but only numbers will be counted",
+                "type": "infinite"
+            }
         ]
     },
     {
-        "fn": "even",
-        "category": "Truncation",
-        "desc": "Returns number up to the nearest even integer. ",
+        "fn": "countblank",
+        "category": "Statistical",
+        "desc": "Counts the number of empty cells.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/countblank.html",
+        "args": [
+            {
+                "name": "Range",
+                "desc": "The range with blanks in it.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "countif",
+        "category": "Statistical",
+        "desc": "Counts the number of cells in a range that meet a given condition.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/countif.html",
+        "args": [
+            {
+                "name": "Range",
+                "desc": "The range to be counted.",
+                "type": "finite"
+            },
+            {
+                "name": "Criterion",
+                "desc": "The criterion used in the count.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "expondist",
+        "category": "Statistical",
+        "desc": "Calculates values for an exponential distribution.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/expondist.html",
+        "args": [
+                 {
+                 "name": "Value",
+                 "desc": "A not-negative number.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "Lambda",
+                 "desc": "The lambda value of the distribution.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "Mode",
+                 "desc": "A boolean",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "large",
+        "category": "Statistical",
+        "desc": "Returns the nth largest value in a list of numbers.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/large.html",
+        "args": [
+                 {
+                 "name": "Numbers",
+                 "desc": "A list, range or array of numbers.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "N",
+                 "desc": "The Nth largest to be selected.",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "max",
+        "category": "Statistical",
+        "desc": "Returns the largest value in a range of values.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/max.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "maxa",
+        "category": "Statistical",
+        "desc": "Returns the largest value in a range of values (which can include text).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/maxa.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "min",
+        "category": "Statistical",
+        "desc": "Returns the smallest value in a range of values.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/min.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "mina",
+        "category": "Statistical",
+        "desc": "Returns the smallest value in a range of values (which can include text).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/mina.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "mode",
+        "category": "Statistical",
+        "desc": "Returns the most common value in a set of numbers.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/mode.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number or range of numbers.",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "skew",
+        "category": "Returns a measure of how skewed a distribution is.",
+        "desc": "",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/skew.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number or a range of numbers",
+                 "type": "infinite"
+                 }
+        ]
+    },
+
+
+
+    {
+        "fn": "textarea",
+        "category": "HN Forms",
+        "desc": "Create a textarea",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "include",
+        "category": "HN Layout",
+        "desc": "Includes the range as rendered html",
+        "experimental": false,
+        "includable": false,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "select",
+        "category": "HN Forms",
+        "desc": "Create a drop down select box",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "input",
+        "category": "HN Forms",
+        "desc": "Create a single line text input",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "twitter.button",
+        "category": "HN Web",
+        "desc": "Embed a twitter \"follow me\" button onto your page - name is your username is optional and a number from 0-5 which changes the style of the button",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "radio",
+        "category": "HN Forms",
+        "desc": "Create a set of radio buttons",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "button",
+        "category": "HN Forms",
+        "desc": "Create a button with its value set to text",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "google.map",
+        "category": "HN Web",
+        "desc": "Embed a google map that centers at Latitude, Longitude, the zoom level is a number between 1 and 20. (the map will preview as an image inside the spreadsheet)",
+        "experimental": true,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1534,6 +3085,7 @@
         "resize_rows_default": 4,
         "resize_cols_default": 8,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "No. of Series",

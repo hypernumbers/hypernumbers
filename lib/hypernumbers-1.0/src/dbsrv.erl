@@ -69,9 +69,9 @@ is_busy(Site) ->
 %% supervisor_bridge callbacks
 %%====================================================================
 %%--------------------------------------------------------------------
-%% Funcion: init(Args) -> {ok,  Pid, State} |
-%%                        ignore            |
-%%                        {error, Reason}
+%% Function: init(Args) -> {ok,  Pid, State} |
+%%                         ignore            |
+%%                         {error, Reason}
 %% Description:Creates a supervisor_bridge process, linked to the calling
 %% process, which calls Module:init/1 to start the subsystem. To ensure a
 %% synchronized start-up procedure, this function does not return until
@@ -79,7 +79,8 @@ is_busy(Site) ->
 %%--------------------------------------------------------------------
 init([Site]) ->
     QTbl = new_db_wu:trans(Site, dirty_queue),
-    Pid = spawn_opt(fun() -> dbsrv_init(Site, QTbl) end, [{fullsweep_after, 0}]),
+    Pid = spawn_opt(fun() -> dbsrv_init(Site, QTbl) end,
+                    [{fullsweep_after, 0}]),
     true = link(Pid),
     register(hn_util:site_to_atom(Site, "_dbsrv"), Pid),
     {ok, Pid, #state{table = QTbl, pid = Pid}}.
@@ -168,14 +169,16 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 -spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()].
 build_workplan(Site, Dirty, Graph) ->
     RTbl = new_db_wu:trans(Site, relation),
+    Report = mnesia_mon:get_stamp("build_workplan"),
     Trans = fun() ->
+                    mnesia_mon:report(Report),
                     update_recalc_graph(Dirty, RTbl, Graph),
                     [digraph:add_edge(Graph, P, D)
                      || D <- Dirty,
                         P <- check_interference(D, RTbl, Graph)],
                     ok
             end,
-    ok = mnesia:activity(transaction, Trans),
+    ok = mnesia_mon:log_act(transaction, Trans, Report),
     case digraph_utils:topsort(Graph) of
         false -> eliminate_circ_ref(Site, Dirty, Graph);
         Work -> Work
@@ -240,22 +243,23 @@ execute_plan([C | T], Site, Graph) ->
         false ->
             execute_plan(T, Site, Graph);
         _ ->
-            NewChildren = new_db_api:handle_dirty_cell(Site, C, nil),
+            _NewChildren = new_db_api:handle_dirty_cell(Site, C, nil),
             digraph:del_vertex(Graph, C),
-            NewPlan = build_workplan(Site, NewChildren, Graph),
-            execute_plan(NewPlan, Site, Graph)
+            execute_plan(T, Site, Graph)
     end.
 
 %% Clears out process work from the dirty_queue table.
 -spec clear_dirty_queue(term(), atom()) -> ok.
 clear_dirty_queue(Since, QTbl) ->
+    Report = mnesia_mon:get_stamp("clear_dirty_queue"),
     M = ets:fun2ms(fun(#dirty_queue{id = T}) when T =< Since -> T end),
     F = fun() ->
+                mnesia_mon:report(Report),
                 Keys = mnesia:select(QTbl, M, write),
                 [mnesia:delete(QTbl, K, write) || K <- Keys],
                 ok
         end,
-    mnesia:activity(transaction, F).
+    mnesia_mon:log_act(transaction, F, Report).
 
 -spec new_graph() -> digraph().
 new_graph() -> digraph:new([private]).

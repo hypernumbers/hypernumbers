@@ -837,7 +837,8 @@ m2(Site, [S | T1], [{zseg, Z, _} | T2], Htap) ->
 % the zinf server has no context to execute at this stage!
 zeval_from_zinf(Site, Path, Toks) ->
     % zeval evaluates an expression in a cell context - but that cell
-    % cannot actually exists - so use {0,0} which is the cell 1 up and 1 right of A1
+    % cannot actually exists - so use {0,0} which is the cell 1 up and 1
+    % right of A1
     zeval2(Site, Path, Toks, 0, 0).
 
 zeval(Site, Path, Toks) ->

@@ -15,10 +15,47 @@
          top5/0,
          show_registered/1,
          log/2,
-         limiter/1
+         log_term/2,
+         clear_log/1,
+         limiter/1,
+         sample_fprof/1,
+         sample_fprof/0,
+         consult_term_log/1
          ]).
 
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
+
+clear_log(Log) ->
+    Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
+    ok = file:delete(Dir ++ Log).
+
+consult_term_log(Log) ->
+    Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
+    {ok, Terms} = file:consult(Dir ++ Log),
+    Terms.
+
+sample_fprof() -> sample_fprof(10).
+
+sample_fprof(N) when is_integer(N) andalso N > 0 ->
+    Dir = "/media/logging/",
+    Now = dh_date:format("y_M_d_h_i_s"),
+    Log = Dir ++ "fprof_" ++ Now ++ ".log",
+    Analysis = Dir ++ "fprof_analysis" ++ Now ++ ".log",
+    sample_(Log, N),
+    Analysis = Dir ++ "fprof_analysis" ++ Now ++ ".log",
+    fprof:profile([{file, Log}]),
+    fprof:analyse([{dest, Analysis}]),
+    ok.
+
+sample_(_Log, 0) -> ok;
+sample_(Log, N) when is_integer(N) andalso N > 0 ->
+    io:format("Taking fprof sample no ~p~n", [N]),
+    fprof:trace([start, {file, Log}, {procs, all}]),
+    timer:sleep(50),
+    fprof:trace(stop),
+    Rand = crypto:rand_uniform(0, 10000),
+    timer:sleep(Rand),
+    sample_(Log, N - 1).
 
 dump_queues(Site) -> dump_queues(Site, ?qs).
 
@@ -84,7 +121,8 @@ show_r([H | T], Site, Type) ->
 
 process_dump() ->
     Procs = processes(),
-    Info = [{X, process_info(X, [heap_size, message_queue_len, current_function])}
+    Info = [{X, process_info(X, [heap_size, message_queue_len,
+                                 current_function])}
             || X <- Procs],
     io:format("Info is ~p~n", [Info]),
     ok.
@@ -108,28 +146,38 @@ sort(List) ->
     {Red5, _}  = lists:split(5, lists:reverse(lists:keysort(5, List))),
     [{longest, Len5}, {heapiest, Heap5}, {most_reductions, Red5}].
 
+log_term(Term, File) ->
+    Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
+    _Return=filelib:ensure_dir(Dir ++ File),
+    case file:open(Dir ++ File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~w.~n", [Term]),
+            file:close(Id);
+        _ ->
+            error
+    end.
+
 log(String, File) ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
     _Return=filelib:ensure_dir(Dir ++ File),
-    Date = dh_date:format("d-M-y h:m:s"),
+    Date = dh_date:format("d-M-y h:i:s"),
 
     case file:open(Dir ++ File, [append]) of
-	{ok, Id} ->
-	    io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
-	    file:close(Id);
-	_ ->
-	    error
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
+            file:close(Id);
+        _ ->
+            error
     end.
 
 limiter(Site) ->
     Srv = hn_util:site_to_atom(Site, "_dbsrv"),
     Pid = whereis(Srv),
+    DQ = hn_util:site_to_atom(Site, "&dirty_queue"),
     {message_queue_len, Len} = process_info(Pid, message_queue_len),
-    Locks = length(mnesia:system_info(held_locks)),
-    DirtyQueue = mnesia:table_info('dla-piper.hypernumbers.com&80&dirty_queue', size),
+    DirtyQueue = mnesia:table_info(DQ, size),
     if
         Len > 100
-            orelse Locks > 100
             orelse DirtyQueue > 1000  -> timer:sleep(100),
                                          limiter(Site);
         true -> ok

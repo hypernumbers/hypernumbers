@@ -19,7 +19,8 @@
          page_written/2,
          page_deleted/2,
          get_pages/1,
-         does_page_exist/2
+         does_page_exist/2,
+         dump/1
         ]).
 
 %% gen_server callbacks
@@ -52,6 +53,12 @@ does_page_exist(Site, Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
     PID = global:whereis_name(Id),
     gen_server:call(PID, {does_page_exist, Path}).
+
+dump(Site) ->
+    Id = hn_util:site_to_atom(Site, "_pages"),
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, dump).
+
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -113,7 +120,10 @@ handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
                       get_pages ->
                           {Pages, Pages};
                       {does_page_exist, P} ->
-                          {lists:member(P, Pages), Pages}
+                          {lists:member(P, Pages), Pages};
+                      dump ->
+                          io:format("Pages is ~p~n", [Pages]),
+                          {ok, Pages}
                   end,
     {reply, Rep, State#state{pages = NewP}}.
 

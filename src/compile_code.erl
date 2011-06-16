@@ -1,9 +1,9 @@
 -module(compile_code).
 
 -export([
-         start/0, 
+         start/0,
          quick/0,
-         build_new_release/0
+         make_release_boot_scripts/0
         ]).
 
 %% Debuggin
@@ -27,7 +27,8 @@
         ["/lib/sgte/",
          "/lib/hypernumbers-1.0/",
          "/lib/formula_engine-1.0/",
-         "/lib/read_excel-1.0/"
+         "/lib/read_excel-1.0/",
+         "/lib/sysmon-1.0/"
         ]).
 
 %% location of the jslint.js file relative to root
@@ -99,7 +100,7 @@ build_standard() ->
     Inc_list = [{i, Dir ++ "lib/gettext/include"},
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
-                {i, Dir ++ "lib/hypernumbers-1.0/src"},
+                {i, Dir ++ "lib/sysmon-1.0/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
 
     % List of {ErlangFile, OutputDirectory} tuples.
@@ -122,8 +123,8 @@ add_libs_to_path() ->
       || X <- filelib:wildcard(Dir++"/lib/*") ],
     ok.
 
-build_new_release() ->
-    add_libs_to_path(), 
+make_release_boot_scripts() ->
+    add_libs_to_path(),
     build_release().
 
 build_release() ->
@@ -238,8 +239,8 @@ make_rel_file(App, Version, Deps) ->
 
 get_rel_file() ->
     Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, public_key,
-            gettext, sgte, read_excel, starling, formula_engine, mochiweb,
-            hypernumbers],
+            gettext, sgte, read_excel, sysmon, starling, formula_engine,
+            mochiweb, hypernumbers],
     Rel  = make_rel_file("hypernumbers", "1.0", Apps),
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
     ok   = systools:make_script("hypernumbers",

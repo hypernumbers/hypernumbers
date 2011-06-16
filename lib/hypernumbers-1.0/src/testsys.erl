@@ -42,8 +42,8 @@ restore(Path, Fixture, Profile) ->
 
 generate() ->
     Files      = filelib:wildcard(?FIXTURE_DIR++"*.json"),
-    {ok, TplS} = file:read_file(?SYSTEST_DIR++"test_SUITE.tpl"),
-    Template   = binary_to_list(TplS),
+    {ok, Tpls} = file:read_file(?SYSTEST_DIR++"test_SUITE.tpl"),
+    Template   = binary_to_list(Tpls),
     [ gen_test(Template,X) || X <- Files ],
     ok.
 

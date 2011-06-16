@@ -1,6 +1,6 @@
 %%% @author    Gordon Guthrie <
 %%% @copyright (C) 2011, Hypernumbers Ltd
-%%% @doc       new db api (old hn_db_api poured in ang rewritten)
+%%% @doc       new db api (old hn_db_api poured in and rewritten)
 %%%
 %%% @end
 %%% Created :  5 Apr 2011 by gordon@hypernumbers
@@ -37,6 +37,7 @@
          read_ref/2, read_ref/3, read_ref_field/3,
          read_relations/2,
          mark_these_dirty/2,
+         mark_these_idxs_dirty/3,
          mark_dirty_for_incl/2,
          idx_to_xrefX/2,
          get_cell_for_muin/2,
@@ -84,7 +85,7 @@ get_logs(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
                 false -> make_blank(RefX, false);
                 _     -> mnesia:read(Table, XRefX#xrefX.idx, read)
             end,
-    Logs2 = mnesia:index_read(Table, hn_util:list_to_path(P), path),
+    Logs2 = mnesia:index_read(Table, hn_util:list_to_path(P), #logging.path),
     Logs3 = get_page_logs(Logs2),
     lists:merge(Logs1, Logs3).
 
@@ -309,7 +310,7 @@ refXs2(RefX) -> refX_to_xrefX_create(RefX).
 refX_to_xrefX(#refX{site = S, path = P, obj = O}) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    case mnesia:index_read(Table, term_to_binary(RevIdx), revidx) of
+    case mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx) of
         [I] -> #xrefX{idx = I#local_obj.idx, site = S, path = P, obj = O};
         _   -> false
     end.
@@ -366,6 +367,15 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                  {clean, process_attrs(NewAs, XRefX, AReq, Attrs2)}
          end,
     apply_to_attrs(XRefX, Op, write, AReq).
+
+-spec mark_these_idxs_dirty(list(), atom(),auth_srv:auth_spec()) -> ok.
+mark_these_idxs_dirty([], _Site, _) -> ok;
+mark_these_idxs_dirty(Idxs, Site, AReq) ->
+    case Idxs of
+        [] -> ok;
+        _  -> Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
+              mnesia:write(trans(Site, dirty_queue), Entry, write)
+    end.
 
 -spec mark_these_dirty([#xrefX{}], auth_srv:auth_spec()) -> ok.
 mark_these_dirty([], _) -> ok;
@@ -767,7 +777,7 @@ get_incs([H | T], Js, Js_R, CSS) ->
 
 read_incs(#xrefX{site = S, path = P}) ->
     Table = trans(S, include),
-    mnesia:index_read(Table, P, path).
+    mnesia:index_read(Table, P, #include.path).
 
 split_local_remote(List) -> split_local_remote1(List, {[], []}).
 
@@ -910,10 +920,11 @@ del_a1([H | T], L, Acc)             ->
 %%      not be used for any other purpose
 %% takes a  #refX{} and not an xrefX{} because it is spat out of the compiler
 %% and I don't know what the idx is, or if it exists yet
-get_cell_for_muin(#refX{site = S, path = P, obj = {cell, {XX, YY}}} = RefX, Type) ->
+get_cell_for_muin(#refX{site = S, path = P, obj = {cell, {XX, YY}}} = RefX,
+                  Type) ->
     Attrs = case refX_to_xrefX(RefX) of
                 false -> orddict:new();
-                XRefX -> case read_ref(XRefX, inside) of
+                XRefX -> case read_ref(XRefX, inside, write) of
                              [{XRefX, A}] -> A;
                              []           -> orddict:new()
                          end
@@ -979,7 +990,7 @@ extract_field([{XRefX, Attrs}|T], Field, Acc) ->
 read_objs(#refX{site = S, path = P, obj = {cell, _} = O}, inside) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    mnesia:index_read(Table, term_to_binary(RevIdx), revidx);
+    mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx);
 % if it a refX then we already know the idx so just return it
 read_objs(#xrefX{idx = I, path = P, obj = {cell, _} = O}, _Any) ->
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
@@ -989,12 +1000,12 @@ read_objs(#xrefX{site = S, path = P, obj = {page, "/"}}, inside) ->
     read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside);
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside) ->
     Table = trans(S, local_obj),
-    mnesia:index_read(Table, term_to_binary(P), path);
+    mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
 read_objs(#xrefX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
     read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside);
 read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
     Table = trans(S, local_obj),
-    Page = mnesia:index_read(Table, term_to_binary(P), path),
+    Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Fun = fun(#local_obj{obj = {cell, {MX, _MY}}}) ->
                   if
                       X1  =< MX, MX  =< X2 -> true;
@@ -1007,7 +1018,7 @@ read_objs(#xrefX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
     read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside);
 read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
     Table = trans(S, local_obj),
-    Page = mnesia:index_read(Table, term_to_binary(P), path),
+    Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Fun = fun(#local_obj{obj = {cell, {_MX, MY}}}) ->
                   if
                       Y1  =< MY, MY  =< Y2 -> true;
@@ -1021,7 +1032,7 @@ read_objs(#xrefX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) -
     read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside);
 read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
     Table = trans(S, local_obj),
-    Page = mnesia:index_read(Table, term_to_binary(P), path),
+    Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Fun = fun(#local_obj{obj = {cell, {MX, MY}}}) ->
                   if
                       X1  =< MX, MX  =< X2,
@@ -1036,7 +1047,7 @@ read_objs(#xrefX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect);
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     Table = trans(S, local_obj),
-    mnesia:index_read(Table, term_to_binary(P), path);
+    mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
 read_objs(#xrefX{site = S, path = P, obj = O}, intersect) ->
     read_objs(#refX{site = S, path = P, obj = O}, intersect);
 read_objs(#refX{site = Site} = Ref, intersect) ->
@@ -1047,7 +1058,7 @@ read_objs(#xrefX{site = S, path = P, obj = O}, direct) ->
 read_objs(#refX{site = S, path = P, obj = O}, direct) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    mnesia:index_read(Table, term_to_binary(RevIdx), revidx).
+    mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx).
 
 %% Note that this is most useful when given cells, or ranges.
 objs_intersect_ref(#refX{path = P, obj = {page, "/"}}) ->
@@ -1157,13 +1168,13 @@ expunge_refs(S, Refs) ->
     ObjT = trans(S, local_obj),
     [begin
          mnesia:delete(ItemT, Idx, write),
-         mnesia:delete_object(ObjT, LO, write),
+         mnesia:delete(ObjT, Idx, write),
          case O of
              {cell, _} -> unattach_form(Ref);
              _         -> ok
          end
      end || Ref <- Refs,
-            #local_obj{idx = Idx, obj = O} = LO <- read_objs(Ref, direct)],
+            #local_obj{idx = Idx, obj = O} <- read_objs(Ref, direct)],
     ok.
 
 -spec mark_dirty_for_incl([#xrefX{}], auth_srv:auth_spec()) -> ok.
@@ -1234,9 +1245,9 @@ shift_cells(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
             % Rewrite the local_obj entries by applying the shift offset.
             ObjTable = trans(Site, local_obj),
             [begin
-                 mnesia:delete_object(ObjTable, LO, write),
+                 mnesia:delete(ObjTable, Idx, write),
                  mnesia:write(ObjTable, shift_obj(LO, XOff, YOff), write)
-             end || LO <- ObjsList],
+             end || #local_obj{idx = Idx} = LO <- ObjsList],
             DirtyChildren
     end.
 
