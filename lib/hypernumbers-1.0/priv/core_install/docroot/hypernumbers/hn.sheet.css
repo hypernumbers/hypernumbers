@@ -1168,14 +1168,28 @@ a.toolbar-item {
     margin : 0px 0px 10px 0px;
 }
 
-.warn {
- color: red;
+.hn_documentation {
+                    color           : darkorange;
+                    font-weight     : bold;
+                    font-size       : 70%;
+                    text-decoration : none;
+                   }
+
+.hn_wiz_emphasis {
+                   font-size       : 80%;
+                   font-weight     : bold;
+                   color           : #200;
+ }
+
+.hn_warn {
+           font-weight : bold;
+           color       : red;
 }
-.warn:before {
- content: ' (';
+.hn_warn:before {
+                  content: ' (';
 }
-.warn:after {
- content: ')';
+.hn_warn:after {
+                 content: ')';
 }
 
 #selectedfun h4, #wizselectedfun h4 {
