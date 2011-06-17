@@ -3383,6 +3383,105 @@
             }
         ]
     },
+    {
+        "fn": "countz",
+        "category": "HN Database",
+        "desc": "Counts the values in a z-query.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/countz.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query",
+                "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "debugz",
+        "category": "HN Database",
+        "desc": "Helps debugging z-queries.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/debugz.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query.",
+                "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "link.box.WxH",
+        "category": "HN Database",
+        "desc": "Displays the results of a z-query as a link box.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/link.box.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query.",
+                "type": "finite"
+             },
+             {
+                "name": "Link Type",
+                "desc": "A number between 1 and 2.",
+                "type": "optional"
+             },
+             {
+                "name": "Headline",
+                "desc": "A text headline for the box.",
+                "type": "optional"
+             },
+             {
+                "name": "Footer",
+                "desc": "A text footer for the box.",
+                "type": "optional"
+             },
+             {
+                "name": "Box Type",
+                "desc": "A number between 0 and 3 (or 99)",
+                "type": "optional"
+             },
+             {
+                "name": "Alert Type",
+                "desc": "A number between 0 and 3.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "sumz",
+        "category": "HN Database",
+        "desc": "Sums the results of a z query",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/sumz.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query.",
+                "type": "finite"
+            }
+         ]
+    },
+
+
 
 
 
