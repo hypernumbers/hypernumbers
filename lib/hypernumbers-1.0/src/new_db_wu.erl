@@ -43,6 +43,7 @@
          get_cell_for_muin/2,
          delete_cells/3,
          shift_cells/5,
+         shift_rows_and_columns/4,
          clear_cells/2, clear_cells/3,
          copy_cell/5
         ]).
@@ -1206,15 +1207,49 @@ log_move(#refX{site = S, path = P, obj = {Type, _} = O}, Action, Disp, Uid)
     ok;
 log_move(_, _, _, _) -> ok.
 
+shift_rows_and_columns(#refX{site = S, path = P, obj = {column, {X1, X2}}},
+                       Type, horizontal, _Ar) ->
+    Table = trans(S, local_obj),
+    Objs = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
+    Offset = get_offset(Type, X1, X2),
+    Objs2 = shift_cols(Objs, X2, Offset, []),
+    [mnesia:write(Table, Rec, write) || Rec <- Objs2],
+    ok;
+shift_rows_and_columns(#refX{site = S, path = P, obj = {row, {Y1, Y2}}},
+                       Type, vertical, _Ar) ->
+    Table = trans(S, local_obj),
+    Objs = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
+    Offset = get_offset(Type, Y1, Y2),
+    Objs2 = shift_rows(Objs, Y2, Offset, []),
+    [mnesia:write(Table, Rec, write) || Rec <- Objs2],
+    ok.
+
+get_offset(delete, N1, N2) -> N1 - N2 - 1;
+get_offset(insert, N1, N2) -> N2 - N1 + 1.
+
+shift_rows([], _, _, Acc) -> Acc;
+shift_rows([#local_obj{obj = {row, {MY1, MY2}}} = H | T], Y2, Offset, Acc)
+  when MY1 > Y2 ->
+    NewRow = H#local_obj{obj = {row, {MY1 + Offset, MY2 + Offset}}},
+    shift_rows(T, Y2, Offset, [NewRow | Acc]);
+shift_rows([_H | T], Y2, Offset, Acc) ->
+    shift_rows(T, Y2, Offset, Acc).
+
+shift_cols([], _, _, Acc) -> Acc;
+shift_cols([#local_obj{obj = {column, {MX1, MX2}}} = H | T], X2, Offset, Acc)
+  when MX1 > X2 ->
+    NewRow = H#local_obj{obj = {column, {MX1 + Offset, MX2 + Offset}}},
+    shift_cols(T, X2, Offset, [NewRow | Acc]);
+shift_cols([_H | T], X2, Offset, Acc) ->
+    shift_cols(T, X2, Offset, Acc).
+
 shift_cells(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
   when (Type ==  insert orelse Type ==  delete) andalso
        (Disp ==  vertical orelse Disp ==  horizontal) ->
     {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
     RefXSel = shift_pattern(From, Disp),
-
     % mark the refs dirty for zinfs to force recalc
     [ok = mark_dirty_for_zinf(X) || X <- expand_ref(From)],
-
     case read_objs(RefXSel, inside) of
         [] -> [];
         ObjsList ->
