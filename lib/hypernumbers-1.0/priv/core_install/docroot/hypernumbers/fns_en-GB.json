@@ -406,17 +406,17 @@
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/date.html",
         "args": [
             {
-                "name": "year",
+                "name": "Year",
                 "desc": "Number representing the year",
                 "type": "finite"
             },
             {
-                "name": "month",
+                "name": "Month",
                 "desc": "Number representing the month",
                 "type": "finite"
             },
             {
-                "name": "day",
+                "name": "Day",
                 "desc": "Number representing the day",
                 "type": "finite"
             }
@@ -621,7 +621,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/engineering/gestep.html",
         "args": [
             {
@@ -644,7 +644,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/syd.html",
         "args": [
             {
@@ -677,7 +677,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/pv.html",
         "args": [
             {
@@ -715,7 +715,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/rate.html",
         "args": [
             {
@@ -763,7 +763,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/nper.html",
         "args": [
             {
@@ -796,7 +796,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/ddb.html",
         "args": [
             {
@@ -834,7 +834,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/sln.html",
         "args": [
             {
@@ -862,7 +862,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/pmt.html",
         "args": [
             {
@@ -900,7 +900,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/npv.html",
         "args": [
            {
@@ -923,7 +923,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/fv.html",
         "args": [
             {
@@ -1226,7 +1226,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/if.html",
         "args": [
             {
@@ -1303,7 +1303,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/choose.html",
         "args": [
              {
@@ -1326,7 +1326,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/column.html",
         "args": [
              {
@@ -1344,7 +1344,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/columns.html",
         "args": [
              {
@@ -1362,7 +1362,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/hlookup.html",
         "args": [
              {
@@ -1395,7 +1395,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/index.html",
         "args": [
              {
@@ -1428,7 +1428,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/indirect.html",
         "args": [
              {
@@ -1451,7 +1451,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/match.html",
         "args": [
              {
@@ -1479,7 +1479,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/row.html",
         "args": [
              {
@@ -1497,7 +1497,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/rows.html",
         "args": [
              {
@@ -1515,7 +1515,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/vlookup.html",
         "args": [
              {
@@ -1548,7 +1548,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/abs.html",
         "args": [
              {
@@ -1733,7 +1733,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/ceiling.html",
         "args": [
             {
@@ -1756,7 +1756,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/combin.html",
         "args": [
             {
@@ -1797,7 +1797,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/even.html",
         "args": [
              {
@@ -1815,7 +1815,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/exp.html",
         "args": [
              {
@@ -1833,7 +1833,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/fact.html",
         "args": [
              {
@@ -1851,7 +1851,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/floor.html",
         "args": [
              {
@@ -1874,7 +1874,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/int.html",
         "args": [
              {
@@ -1892,7 +1892,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/ln.html",
         "args": [
              {
@@ -1910,7 +1910,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/log.html",
         "args": [
              {
@@ -1933,7 +1933,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/log.html",
         "args": [
              {
@@ -1951,7 +1951,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/log.html",
         "args": [
             {
@@ -1974,7 +1974,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/median.html",
         "args": [
              {
@@ -1992,7 +1992,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/odd.html",
         "args": [
              {
@@ -2023,7 +2023,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/power.html",
         "args": [
              {
@@ -2046,7 +2046,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/product.html",
         "args": [
              {
@@ -2082,7 +2082,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/roman.html",
         "args": [
              {
@@ -2105,7 +2105,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/round.html",
         "args": [
              {
@@ -2128,7 +2128,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/rounddown.html",
         "args": [
              {
@@ -2151,7 +2151,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/roundup.html",
         "args": [
              {
@@ -2174,7 +2174,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sign.html",
         "args": [
              {
@@ -2228,7 +2228,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sqrt.html",
         "args": [
              {
@@ -2246,7 +2246,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumif.html",
         "args": [
              {
@@ -2274,7 +2274,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumsq.html",
         "args": [
              {
@@ -2292,7 +2292,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumx2my2.html",
         "args": [
              {
@@ -2315,7 +2315,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumx2py2.html",
         "args": [
              {
@@ -2338,7 +2338,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sumxmy2.html",
         "args": [
              {
@@ -2397,7 +2397,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/trunc.html",
         "args": [
             {
@@ -2420,7 +2420,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sum.html",
         "args": [
              {
@@ -2438,7 +2438,7 @@
         "includable": true,
         "inexcel": false,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/avedev.html",
         "args": [
             {
@@ -2492,7 +2492,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/counta.html",
         "args": [
             {
@@ -2510,7 +2510,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/countblank.html",
         "args": [
             {
@@ -2528,7 +2528,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/countif.html",
         "args": [
             {
@@ -2551,7 +2551,7 @@
         "includable": true,
         "inexcel": false,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/expondist.html",
         "args": [
                  {
@@ -2579,7 +2579,7 @@
         "includable": true,
         "inexcel": false,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/large.html",
         "args": [
                  {
@@ -2602,7 +2602,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/max.html",
         "args": [
                  {
@@ -2620,7 +2620,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/maxa.html",
         "args": [
                  {
@@ -2638,7 +2638,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/min.html",
         "args": [
                  {
@@ -2656,7 +2656,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/mina.html",
         "args": [
                  {
@@ -2674,7 +2674,7 @@
         "includable": true,
         "inexcel": false,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/mode.html",
         "args": [
                  {
@@ -2692,7 +2692,7 @@
         "includable": true,
         "inexcel": false,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/skew.html",
         "args": [
                  {
@@ -2710,11 +2710,11 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/small.html",
         "args": [
                  {
-                 "name": "numberslist",
+                 "name": "Numberslist",
                  "desc": "A reference to a list or range of numbers.",
                  "type": "finite"
                  },
@@ -2733,7 +2733,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/standardise.html",
         "args": [
                  {
@@ -2761,7 +2761,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/stdev.html",
         "args": [
             {
@@ -2779,7 +2779,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/stdeva.html",
         "args": [
             {
@@ -2797,7 +2797,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/stdevp.html",
         "args": [
             {
@@ -2815,7 +2815,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/stdevpa.html",
         "args": [
             {
@@ -2833,16 +2833,16 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/steyx.html",
         "args": [
                  {
-                 "name": "y values",
+                 "name": "Y Values",
                  "desc": "A range of values.",
                  "type": "finite"
                  },
                  {
-                 "name": "x values",
+                 "name": "X Values",
                  "desc": "A range of values.",
                  "type": "finite"
                  }
@@ -2856,16 +2856,16 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/trimmean.html",
         "args": [
                  {
-                 "name": "number list",
+                 "name": "Number List",
                  "desc": "A range of numbers.",
                  "type": "finite"
                  },
                  {
-                 "name": "fraction",
+                 "name": "Fraction",
                  "desc": "A number between 0 and 1.",
                  "type": "finite"
                  }
@@ -2879,11 +2879,11 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/var.html",
         "args": [
                  {
-                 "name": "number",
+                 "name": "Number",
                  "desc": "A number.",
                  "type": "infinite"
                  }
@@ -2897,11 +2897,11 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/vara.html",
         "args": [
                  {
-                 "name": "number",
+                 "name": "Number",
                  "desc": "A number.",
                  "type": "infinite"
                  }
@@ -2915,11 +2915,11 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/varp.html",
         "args": [
                  {
-                 "name": "number",
+                 "name": "Number",
                  "desc": "A number.",
                  "type": "infinite"
                  }
@@ -2933,11 +2933,11 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/varpa.html",
         "args": [
                  {
-                 "name": "number",
+                 "name": "Number",
                  "desc": "A number.",
                  "type": "infinite"
                  }
@@ -2969,7 +2969,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/.html",
         "args": [
                  {
@@ -2980,6 +2980,19 @@
         ]
     },
     {
+        "fn": "exact",
+        "category": "Text",
+        "desc": "Compares two text strings and returns TRUE if they are an exact match or FALSE otherwise.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
         "fn": "find",
         "category": "Text",
         "desc": "Returns the position of a character in a string.",
@@ -2987,7 +3000,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/find.html",
         "args": [
                  {
@@ -3015,7 +3028,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/fixed.html",
         "args": [
             {
@@ -3043,7 +3056,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/left.html",
         "args": [
             {
@@ -3066,7 +3079,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/len.html",
         "args": [
                  {
@@ -3084,7 +3097,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/lower.html",
         "args": [
                  {
@@ -3102,7 +3115,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/mid.html",
         "args": [
             {
@@ -3122,6 +3135,255 @@
             }
         ]
     },
+    {
+        "fn": "proper",
+        "category": "Text",
+        "desc": "Capitalises the first letter in a text string.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/proper.html",
+        "args": [
+            {
+                 "name": "Text",
+                 "desc": "The text to be capitalised.",
+                 "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "replace",
+        "category": "Text",
+        "desc": "Replaces part of a text string with the specified characters.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/replace.html",
+        "args": [
+            {
+                 "name": "Text",
+                 "desc": "The text of which a part will be replaced.",
+                 "type": "finite"
+            },
+            {
+                 "name": "Position",
+                 "desc": "An integer.",
+                 "type": "finite"
+            },
+            {
+                 "name": "Length",
+                 "desc": "An integer.",
+                 "type": "finite"
+            },
+            {
+                 "name": "New Text",
+                 "desc": "The text to be inserted.",
+                 "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "rept",
+        "category": "Text",
+        "desc": "Repeat text a specified number of times.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/rept.html",
+         "args": [
+             {
+                "name": "Text",
+                "desc": "The text to be repeated.",
+                "type": "finite"
+            },
+            {
+                "name": "Number",
+                "desc": "The number of repetitions.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "right",
+        "category": "Text",
+        "desc": "Returns the rightmost non-missing characters from a text string given the number of characters required.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/right.html",
+        "args": [
+             {
+                "name": "Text",
+                "desc": "The text of which the right part is to be determined.",
+                "type": "finite"
+            },
+            {
+                "name": "Number",
+                "desc": "The number of rightmost characters.",
+                "type": "optional"
+            }
+        ]
+    },
+    {
+        "fn": "search",
+        "category": "Text",
+        "desc": "Returns the position of a text segment within a character string.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/search.html",
+         "args": [
+             {
+                "name": "Find Text",
+                "desc": "The text to be searched for.",
+                "type": "finite"
+            },
+            {
+                "name": "Text",
+                "desc": "The text to be searched in.",
+                "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "substitute",
+        "category": "Text",
+        "desc": "Substitutes new for old text in a text string.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/substitute.html",
+        "args": [
+             {
+                "name": "Text",
+                "desc": "The text to be searched.",
+                "type": "finite"
+            },
+            {
+                "name": "Search Text",
+                "desc": "The text to be substitued for.",
+                "type": "finite"
+            },
+            {
+                "name": "New Text",
+                "desc": "The text to be substituted in.",
+                "type": "finite"
+            },
+            {
+                "name": "Occurences",
+                "desc": "The integer no of replacements to be made.",
+                "type": "optional"
+            }
+        ]
+    },
+    {
+        "fn": "trim",
+        "category": "Text",
+        "desc": "Removes spaces from text except for single spacing between words.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+             {
+                "name": "Text",
+                "desc": "The text to be trimmed.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "t",
+        "category": "Text",
+        "desc": "Returns the value of the referenced cell.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/t.html",
+        "args": [
+             {
+                "name": "Text",
+                 "desc": "Text or a reference to possible text.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "text",
+        "category": "Text",
+        "desc": "Converts a number into text according to a given format.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/text.html",
+         "args": [
+             {
+                 "name": "Number",
+                 "desc": "The number to be converted",
+                 "type": "finite"
+             },
+             {
+                 "name": "Format",
+                 "desc": "The format that is to be applied.",
+                 "type": "finite"
+             }
+         ]
+    },
+    {
+        "fn": "upper",
+        "category": "Text",
+        "desc": "Converts text to uppercase.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/upper.html",
+        "args": [
+             {
+                 "name": "Text",
+                 "desc": "The text to be uppercased.",
+                 "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "value",
+        "category": "Text",
+        "desc": "Converts a text string that represents a number to a number.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/value.html",
+        "args": [
+             {
+                 "name": "Text",
+                 "desc": "The text to be converted to a number.",
+                 "type": "finite"
+            }
+        ]
+    },
+
 
 
 
@@ -3235,7 +3497,7 @@
         "fn": "piechart",
         "category": "HN Graphs",
         "desc": "Creates a piechart.",
-        "experimental": false,
+        "experimental": true,
         "includable": true,
         "inexcel": false,
         "resize": "range",
@@ -3259,136 +3521,6 @@
                 "desc": "Title of the piechart",
                 "optional": true
             }
-        ]
-    },
-    {
-        "fn": "proper",
-        "category": "Text",
-        "desc": "Capitalises the first letter in a text string.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "upper",
-        "category": "Text",
-        "desc": "Converts text to uppercase.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "substitute",
-        "category": "Text",
-        "desc": "Substitutes new for old text in a text string.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "exact",
-        "category": "Text",
-        "desc": "Compares two text strings and returns TRUE if they are an exact match or FALSE otherwise.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "replace",
-        "category": "Text",
-        "desc": "Replaces part of a text string with the specified characters.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "value",
-        "category": "Text",
-        "desc": "Converts a text string that represents a number to a number.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "t",
-        "category": "Text",
-        "desc": "Returns the value of the referenced cell.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "rept",
-        "category": "Text",
-        "desc": "Repeat text a specified number of times.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "trim",
-        "category": "Text",
-        "desc": "Removes spaces from text except for single spacing between words.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "right",
-        "category": "Text",
-        "desc": "Returns the rightmost non-missing characters from a text string given the number of characters required.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
         ]
     }
 ]
