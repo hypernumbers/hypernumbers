@@ -2,7 +2,7 @@
     {
         "fn": "dget",
         "category": "Database",
-        "desc": "Extracts a single record from a list or database than meets the criteria.",
+        "desc": "Extracts a single record from a list or database that meets the criteria.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
@@ -2390,289 +2390,6 @@
         ]
     },
     {
-        "fn": "sum",
-        "category": "Maths And Trigonometry",
-        "desc": "calculates the sum of all the numbers specified.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sum.html",
-        "args": [
-             {
-                "name": "Number",
-                "desc": "A number or range of numbers.",
-                "type": "infinite"
-             }
-        ]
-    },
-    {
-        "fn": "count",
-        "category": "Statistical",
-        "desc": "Counts the number of cells with numbers.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-            {
-                "name": "Number",
-                "desc": "Can be a number or range of numbers",
-                "type": "infinite"
-            }
-        ]
-    },
-    {
-        "fn": "var",
-        "category": "Statistical",
-        "desc": "Calculates the variance of a sample of numbers around the mean. Uses n-1 as the divisor.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "stdevp",
-        "category": "Statistical",
-        "desc": "Calculates the standard deviation or dispersion measure of a set of values around the mean. Uses n as the divisor.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "varp",
-        "category": "Statistical",
-        "desc": "Calculates the variance of a sample of numbers around the mean. Uses n as the divisor.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "stdev",
-        "category": "Statistical",
-        "desc": "Calculates the standard deviation or dispersion measure of a set of values around the mean. Uses n-1 as the divisor.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "proper",
-        "category": "Text",
-        "desc": "Capitalises the first letter in a text string.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "upper",
-        "category": "Text",
-        "desc": "Converts text to uppercase.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "len",
-        "category": "Text",
-        "desc": "Returns the length (number of characters) in a string.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "substitute",
-        "category": "Text",
-        "desc": "Substitutes new for old text in a text string.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "exact",
-        "category": "Text",
-        "desc": "Compares two text strings and returns TRUE if they are an exact match or FALSE otherwise.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "replace",
-        "category": "Text",
-        "desc": "Replaces part of a text string with the specified characters.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "value",
-        "category": "Text",
-        "desc": "Converts a text string that represents a number to a number.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "lower",
-        "category": "Text",
-        "desc": "Converts all characters in a string to lower case.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "t",
-        "category": "Text",
-        "desc": "Returns the value of the referenced cell.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "find",
-        "category": "Text",
-        "desc": "Returns the position of a character in a string.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "rept",
-        "category": "Text",
-        "desc": "Repeat text a specified number of times.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "mid",
-        "category": "Text",
-        "desc": "Extracts a substring from a larger string.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "trim",
-        "category": "Text",
-        "desc": "Removes spaces from text except for single spacing between words.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "left",
-        "category": "Text",
-        "desc": "Extracts the left most characters in a string specified by num_chars. The default is the leftmost character if num_chars is omitted.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "right",
-        "category": "Text",
-        "desc": "Returns the rightmost non-missing characters from a text string given the number of characters required.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
         "fn": "trunc",
         "category": "Maths And Trigonometry",
         "desc": "Truncates a number to a specified number of decimal places.",
@@ -2693,6 +2410,24 @@
                 "desc": "The number of decimal places to truncate it to.",
                 "type": "finite"
             }
+        ]
+    },
+    {
+        "fn": "sum",
+        "category": "Maths And Trigonometry",
+        "desc": "calculates the sum of all the numbers specified.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/maths-and-trigonometry/sum.html",
+        "args": [
+             {
+                "name": "Number",
+                "desc": "A number or range of numbers.",
+                "type": "infinite"
+             }
         ]
     },
     {
@@ -2951,8 +2686,8 @@
     },
     {
         "fn": "skew",
-        "category": "Returns a measure of how skewed a distribution is.",
-        "desc": "",
+        "category": "Statistical",
+        "desc": "Returns a measure of how skewed a distribution is.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
@@ -2962,11 +2697,433 @@
         "args": [
                  {
                  "name": "Number",
-                 "desc": "A number or a range of numbers",
+                 "desc": "A number or a range of numbers.",
                  "type": "infinite"
                  }
         ]
     },
+    {
+        "fn": "small",
+        "category": "Statistical",
+        "desc": "Returns the nth smallest value in a list of numbers.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/small.html",
+        "args": [
+                 {
+                 "name": "numberslist",
+                 "desc": "A reference to a list or range of numbers.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "n",
+                 "desc": "An integer.",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "standardize",
+        "category": "Statistical",
+        "desc": "Converts a value in a normal distribution to its equivalent in a standard normal distribution.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/standardise.html",
+        "args": [
+                 {
+                 "name": "n",
+                 "desc": "A number.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "μ",
+                 "desc": "The known mean.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "σ",
+                 "desc": "The known standard deviation.",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "stdev",
+        "category": "Statistical",
+        "desc": "Calculates the standard deviation or dispersion measure of a set of values around the mean. Uses n-1 as the divisor.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/stdev.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "stdeva",
+        "category": "Statistical",
+        "desc": "Calculates the standard deviation or dispersion measure of a set of values around the mean. Uses n-1 as the divisor.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/stdeva.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "stdevp",
+        "category": "Statistical",
+        "desc": "Calculates the standard deviation or dispersion measure of a set of values around the mean. Uses n-1 as the divisor.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/stdevp.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "stdevpa",
+        "category": "Statistical",
+        "desc": "Calculates the standard deviation or dispersion measure of a set of values around the mean. Uses n-1 as the divisor.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/stdevpa.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number.",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "steyx",
+        "category": "Statistical",
+        "desc": "Fits a straight line to data using linear regression and returns the standard error of y values.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/steyx.html",
+        "args": [
+                 {
+                 "name": "y values",
+                 "desc": "A range of values.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "x values",
+                 "desc": "A range of values.",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "trimmean",
+        "category": "Statistical",
+        "desc": "Returns the mean of a set of numbers, ignoring a proportion of high and low values.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/trimmean.html",
+        "args": [
+                 {
+                 "name": "number list",
+                 "desc": "A range of numbers.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "fraction",
+                 "desc": "A number between 0 and 1.",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "var",
+        "category": "Statistical",
+        "desc": "Calculates the variance of a sample of numbers around the mean. Uses n-1 as the divisor.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/var.html",
+        "args": [
+                 {
+                 "name": "number",
+                 "desc": "A number.",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "vara",
+        "category": "Statistical",
+        "desc": "Calculates the variance of a sample of numbers around the mean. Uses n-1 as the divisor.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/vara.html",
+        "args": [
+                 {
+                 "name": "number",
+                 "desc": "A number.",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "varp",
+        "category": "Statistical",
+        "desc": "Calculates the variance of a sample of numbers around the mean. Uses n-1 as the divisor.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/varp.html",
+        "args": [
+                 {
+                 "name": "number",
+                 "desc": "A number.",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "varpa",
+        "category": "Statistical",
+        "desc": "Calculates the variance of a sample of numbers around the mean. Uses n-1 as the divisor.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/varpa.html",
+        "args": [
+                 {
+                 "name": "number",
+                 "desc": "A number.",
+                 "type": "infinite"
+                 }
+        ]
+    },
+   {
+        "fn": "count",
+        "category": "Statistical",
+        "desc": "Counts the number of cells with numbers.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "Can be a number or range of numbers",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "concatenate",
+        "category": "Text",
+        "desc": "Combines several text strings into one string.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/.html",
+        "args": [
+                 {
+                 "name": "Text",
+                 "desc": "Some text or a reference to a cell containing text.",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "find",
+        "category": "Text",
+        "desc": "Returns the position of a character in a string.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/find.html",
+        "args": [
+                 {
+                 "name": "Find Text",
+                 "desc": "Text to be found.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "Text",
+                 "desc": "Text to search in.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "Start Position",
+                 "desc": "A number.",
+                 "type": "optional"
+                 }
+        ]
+    },
+    {
+        "fn": "fixed",
+        "category": "Text",
+        "desc": "Returns a number as text with a specified number of decimal places and optional thousands separators.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/fixed.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A numbers",
+                "type": "finite"
+            },
+            {
+                "name": "Decimals",
+                "desc": "The number of decimal places required.",
+                "type": "finite"
+            },
+            {
+                "name": "NoThousandsSperators",
+                "desc": "A boolean",
+                "type": "optional"
+            }
+        ]
+    },
+    {
+        "fn": "left",
+        "category": "Text",
+        "desc": "Extracts the left most characters in a string specified by num_chars. The default is the leftmost character if num_chars is omitted.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/left.html",
+        "args": [
+            {
+                "name": "Text",
+                "desc": "Text or a reference to some text.",
+                "type": "finite"
+            },
+            {
+                "name": "Number",
+                "desc": "An integer",
+                "type": "optional"
+            }
+        ]
+    },
+    {
+        "fn": "len",
+        "category": "Text",
+        "desc": "Returns the length (number of characters) in a string.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/len.html",
+        "args": [
+                 {
+                 "name": "Text",
+                 "desc": "Some text or a reference to some text.",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "lower",
+        "category": "Text",
+        "desc": "Converts all characters in a string to lower case.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/lower.html",
+        "args": [
+                 {
+                 "name": "Text",
+                 "desc": "Some text or a reference to some text.",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "mid",
+        "category": "Text",
+        "desc": "Extracts a substring from a larger string.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/text/mid.html",
+        "args": [
+            {
+                 "name": "Text",
+                 "desc": "Text or reference to text.",
+                 "type": "finite"
+            },
+            {
+                 "name": "Start",
+                 "desc": "An Integer",
+                 "type": "finite"
+            },
+            {
+                 "name": "Numbers",
+                 "desc": "An integer.",
+                 "type": "finite"
+            }
+        ]
+    },
+
+
 
 
 
@@ -3102,6 +3259,136 @@
                 "desc": "Title of the piechart",
                 "optional": true
             }
+        ]
+    },
+    {
+        "fn": "proper",
+        "category": "Text",
+        "desc": "Capitalises the first letter in a text string.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "upper",
+        "category": "Text",
+        "desc": "Converts text to uppercase.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "substitute",
+        "category": "Text",
+        "desc": "Substitutes new for old text in a text string.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "exact",
+        "category": "Text",
+        "desc": "Compares two text strings and returns TRUE if they are an exact match or FALSE otherwise.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "replace",
+        "category": "Text",
+        "desc": "Replaces part of a text string with the specified characters.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "value",
+        "category": "Text",
+        "desc": "Converts a text string that represents a number to a number.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "t",
+        "category": "Text",
+        "desc": "Returns the value of the referenced cell.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "rept",
+        "category": "Text",
+        "desc": "Repeat text a specified number of times.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "trim",
+        "category": "Text",
+        "desc": "Removes spaces from text except for single spacing between words.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "right",
+        "category": "Text",
+        "desc": "Returns the rightmost non-missing characters from a text string given the number of characters required.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
         ]
     }
 ]
