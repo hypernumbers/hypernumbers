@@ -1181,6 +1181,11 @@ a.toolbar-item {
                    color           : #200;
  }
 
+[readonly] {
+             background-color: #eee;
+             width: 30px;
+             }
+
 .hn_warn {
            font-weight : bold;
            color       : red;
