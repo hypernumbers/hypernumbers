@@ -99,16 +99,18 @@
 % for hypernumbers it is:
 % * shortname = hypernumbers
 % * id = 123132
-'disqus.comments'([ShortName, Id]) ->
+'disqus.comments'([ShortName]) ->
+    io:format("ShortName is ~p~n", [ShortName]),
     [ShortName2]= typechecks:std_strs([ShortName]),
-    [Id2] = typechecks:std_ints([Id]),
+    Id = hnfuns_web:page([]),
     Page = hnfuns_web:site([]) ++ hnfuns_web:page([]),
+    io:format("ShortName2 is ~p Id is ~p Page is ~p~n", [ShortName2, Id, Page]),
     HTML = "<div id='disqus_thread'></div>"
         ++ "<a href='http://disqus.com' class='dsq-brlink'>"
         ++ "blog comments powered by <span class='logo-disqus'>Disqus</span></a>",
     Reload = "var disqus_shortname = '" ++ ShortName2 ++ "';"
         ++ "//var disqus_developer = 1;"
-        ++ "var disqus_identifier = '" ++ integer_to_list(Id2) ++ "';"
+        ++ "var disqus_identifier = '" ++ Id ++ "';"
         ++ "var disqus_url = '" ++ Page ++ "';"
         ++ "(function() {"
         ++ "    var dsq = document.createElement('script');"
