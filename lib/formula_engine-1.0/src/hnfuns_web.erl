@@ -159,8 +159,10 @@ html([Html]) ->
 %    lists:flatten("<style type='text/css'>body{background:url("
 %                  ++ Url ++ ") " ++ Rest ++ "};</style>").
 
-link_(Src, Text) ->
-    lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>").
+link_(Src, Text, 0) ->
+    lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>");
+link_(Src, Text, _N) ->
+    lists:flatten("<a href='" ++ Src ++ "' target='_blank'>" ++ Text ++ "</a>").
 
 img_(Src, Alt) ->
     lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt ++ "'/>").
@@ -203,9 +205,16 @@ page([N]) ->
                                     hn_util:list_to_path(Sub2)
     end.
 
+link([Src, Text, Type]) ->
+    [NSrc, NText] = muin_collect:col([Src, Text],
+                                     [eval_funs, fetch, {cast, str}],
+                                     [return_errors]),
+    [NewType] = typechecks:std_ints([Type]),
+    link_(NSrc, NText, NewType);
 link([Src, Text]) ->
-    muin_collect:col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
-        fun([NSrc, NText]) -> link_(NSrc, NText) end).
+    muin_collect:col([Src, Text], [eval_funs, fetch, {cast, str}],
+                     [return_errors],
+                     fun([NSrc, NText]) -> link_(NSrc, NText, 0) end).
 
 img([Src, Alt]) ->
     muin_collect:col([Src, Alt], [eval_funs, fetch, {cast, str}],
