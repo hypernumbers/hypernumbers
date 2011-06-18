@@ -182,7 +182,7 @@ google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
                      "0" -> google_buy_n2(M, C, ItemName, ItemDesc,
                                           Price, Quantity, "white");
                      "1" -> google_buy_n2(M, C, ItemName, ItemDesc,
-                                          Price, Quantity, "colored");
+                                          Price, Quantity, "trans");
                      _ -> ?ERRVAL_VAL
                  end
     end.
@@ -212,7 +212,7 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
         false -> ?ERRVAL_VAL;
         true  -> case Bg1  of
                      "0"  -> google_buy_l2(M, C, Type, "white", Rest);
-                     "1"  -> google_buy_l2(M, C, Type, "colored", Rest);
+                     "1"  -> google_buy_l2(M, C, Type, "trans", Rest);
                      _  -> ?ERRVAL_VAL
                  end
     end.
@@ -244,7 +244,7 @@ get_google_bits(1, Cur, [Name, Desc, Price, Quant | T], Acc1, Acc2, C) ->
     {Sel, Input} = get_google_bits2(Cur, Name, Desc, Price, Quant, C),
     get_google_bits(1, Cur, T, [Sel | Acc1], [Input, Acc2], C + 1);
 get_google_bits(_, _, _, _, _, _) ->
-    exit("fuck up!").
+    exit("invalid type of Google Buy Now button").
 
 get_google_bits2(Cur, Name, Desc, Price, Quantity, C) ->
     N = muin_col_DEPR:collect_string(Name, ?default_str_rules),
