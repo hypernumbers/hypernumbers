@@ -4020,6 +4020,275 @@
             }
          ]
     },
+    {
+        "fn": "img",
+        "category": "HN Layout",
+        "desc": "Displays an image.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/layout-and-display/img.html",
+         "args": [
+             {
+                 "name": "URL",
+                 "desc": "The URL of the image you wish to dispaly.",
+                 "type": "finite"
+             },
+             {
+                 "name": "Alt Text",
+                 "desc": "The alt text",
+                 "type": "optional"
+             }
+         ]
+    },
+    {
+        "fn": "include",
+        "category": "HN Layout",
+        "desc": "Includes cells and formatting from another page.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/layout-and-display/include.html",
+         "args": [
+             {
+                "name": "Range",
+                "desc": "The range of cells to include.",
+                "type": "finite"
+             }
+         ]
+    },
+    {
+        "fn": "lorem.headline",
+        "category": "HN Layout",
+        "desc": "Generates fake headlines for layouts.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/layout-and-display/lorem.headline.html",
+         "args": [
+             {
+                "name": "Headline Length",
+                "desc": "An integer between 4 and 22.",
+                "type": "finite"
+             }
+         ]
+    },
+    {
+        "fn": "lorem.ipsum",
+        "category": "HN Layout",
+        "desc": "Generates lorem ipsum text for layouts",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/layout-and-display/lorem.ipsum.html",
+         "args": [
+             {
+                "name": "Text Length",
+                "desc": "An integer.",
+                "type": "finite"
+             }
+         ]
+    },
+    {
+        "fn": "table",
+        "category": "HN Layout",
+        "desc": "Embeds a range of cells from another page as a sortable table.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/layout-and-display/table.html",
+         "args": [
+             {
+                "name": "Range",
+                "desc": "Reference to a range of cells.",
+                "type": "finite"
+             },
+             {
+                "name": "Sort Column",
+                "desc": "An integer.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "vertical.line",
+        "category": "HN Layout",
+        "desc": "Creates a vertical line.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "column",
+        "resize_rows_default": 10,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/layout-and-display/vertical.line.html",
+         "args": [
+             {
+                "name": "Width",
+                "desc": "A positive number.",
+                "type": "optional"
+             },
+             {
+                "name": "Type",
+                "desc": "An integer between 0 and 6.",
+                "type": "optional"
+             },
+             {
+                "name": "Colour",
+                "desc": "A string describing a hexadecimal colour.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "crumb.trail",
+        "category": "HN Navigation",
+        "desc": "Displays a crumb trail for the current page.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/crumb-trail.html",
+         "args": [
+         ]
+    },
+    {
+        "fn": "html.menu",
+        "category": "HN Navigation",
+        "desc": "Creates an HTML menu.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "row",
+        "resize_rows_default": 8,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/html-menu.html",
+         "args": [
+             {
+                "name": "Item",
+                "desc": "A menu item.",
+                "type": "infinite"
+            }
+         ]
+    },
+    {
+        "fn": "html.submenu",
+        "category": "HN Navigation",
+        "desc": "Creates sub menus for use in HTML menu.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/html-submenu.html",
+         "args": [
+             {
+                "name": "Name",
+                "desc": "A menu item.",
+                "type": "finite"
+             },
+             {
+                "name": "Item",
+                "desc": "A menu item.",
+                "type": "infinite"
+            }
+         ]
+    },
+    {
+        "fn": "link",
+        "category": "HN Navigation",
+        "desc": "Make a link to a webpage",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/link.html",
+         "args": [
+             {
+                "name": "Name",
+                "desc": "A menu item.",
+                "type": "finite"
+             },
+             {
+                "name": "Item",
+                "desc": "A menu item.",
+                "type": "finite"
+             },
+             {
+                "name": "Option",
+                "desc": "0 or 1.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "page",
+        "category": "HN Navigation",
+        "desc": "Returns the path of the current page.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/page.html",
+         "args": [
+             {
+                "name": "N",
+                "desc": "An integer.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "pageurl",
+        "category": "HN Navigation",
+        "desc": "Returns the URL of the current page.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/pageurl.html",
+         "args": [
+         ]
+    },
+    {
+        "fn": "segment",
+        "category": "HN Navigation",
+        "desc": "Returns the segment of the current page.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/segment.html",
+         "args": [
+         ]
+    },
+    {
+        "fn": "site",
+        "category": "HN Navigation",
+        "desc": "Returns the site that the current page is on.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/site.html",
+         "args": [
+         ]
+    },
 
 
 
