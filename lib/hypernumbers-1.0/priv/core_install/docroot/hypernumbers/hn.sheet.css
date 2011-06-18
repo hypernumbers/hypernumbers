@@ -1173,7 +1173,9 @@ a.toolbar-item {
                     font-weight     : bold;
                     font-size       : 70%;
                     text-decoration : none;
-                   }
+                    line-height     : 14px;
+                    vertical-align  : top;
+                  }
 
 .hn_wiz_emphasis {
                    font-size       : 80%;
