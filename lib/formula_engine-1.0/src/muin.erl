@@ -9,7 +9,7 @@
 -include("hypernumbers.hrl").
 -include("muin_proc_dict.hrl").
 
--define(notincfns, [include, tick, snapshot]).
+-define(notincfns, [include, tick, snapshot, input, textarea, button, radio, select, 'create.button', 'map.rows.button', 'map.sheet.button']).
 
 -define(genint, $g,$e,$n,$e,$r,$i,$c,$.,$i,$n,$t,$e,$g,$r,$a,$t,$i,$o,$n,$.).
 -define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
