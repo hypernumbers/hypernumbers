@@ -23,6 +23,7 @@
 -include_lib("stdlib/include/ms_transform.hrl").
 
 -export([
+         has_forms/1,
          read_incs/1,
          xrefX_to_rti/3,
          trans/2,
@@ -78,7 +79,19 @@
 %%%
 %%% API Functions
 %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%r
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+has_forms(#refX{} = RefX) ->
+    XRefs = expand_ref(RefX),
+    check2(XRefs).
+
+check2([]) -> false;
+check2([#xrefX{site = S, idx = Idx} | T]) ->
+    Table = trans(S, form),
+    case mnesia:read(Table, Idx, read) of
+        []   -> check2(T);
+        [_R] -> true
+    end.
+
 get_logs(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
     XRefX = refX_to_xrefX(RefX),
     Table = trans(S, logging),
@@ -235,9 +248,9 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
     [apply_to_attrs(X, Op(X), Action, Uid) || X <- XRefs],
     % now mark the refs dirty for zinfs
     [ok = mark_dirty_for_zinf(X) || X <- XRefs],
+    % now mark dirty for includes
+    [ok = new_db_wu:mark_dirty_for_incl([X], nil) || X <- XRefs],
     ok.
-
-%%% FIX UP TO HERE
 
 %% @doc takes a reference to a
 %% <ul>

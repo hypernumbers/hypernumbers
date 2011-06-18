@@ -162,6 +162,9 @@ html([Html]) ->
 link_(Src, Text) ->
     lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>").
 
+img_(Src, Alt) ->
+    lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt ++ "'/>").
+
 img_(Src) ->
     lists:flatten("<img src='" ++ Src ++ "' />").
 
@@ -204,9 +207,13 @@ link([Src, Text]) ->
     muin_collect:col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
         fun([NSrc, NText]) -> link_(NSrc, NText) end).
 
+img([Src, Alt]) ->
+    muin_collect:col([Src, Alt], [eval_funs, fetch, {cast, str}],
+                     [return_errors], fun([NSrc, NAlt]) ->
+                                              img_(NSrc, NAlt) end);
 img([Src]) ->
     muin_collect:col([Src], [eval_funs, fetch, {cast, str}], [return_errors],
-        fun([NSrc]) -> img_(NSrc) end).
+                     fun([NSrc]) -> img_(NSrc) end).
 
 
 %'twitter.search'([])          -> 'twitter.search'(["hello"]);
@@ -261,11 +268,17 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             Path = muin_util:walk_path(muin:context_setting(path), RelPath),
             Obj = {range, {X1, Y1, X2, Y2}},
             Ref = #refX{site = Site, path = Path, obj = Obj},
-            {{Html, Width, Height}, _Addons} = hn_render:content(Ref),
-            W2 = trunc(Width/80),
-            H2 = trunc(Height/22),
-            HTML = lists:flatten(hn_render:wrap_region(Html, Width, Height)),
-            {include, {"Included Cells", W2, H2}, HTML}
+            % throw an error if we are trying to bring controls through
+            case new_db_wu:has_forms(Ref) of
+                false ->  Content = hn_render:content(Ref),
+                          {{Html, Width, Height}, _Addons} = Content,
+                          W2 = trunc(Width/80),
+                          H2 = trunc(Height/22),
+                          HTML = hn_render:wrap_region(Html, Width, Height),
+                          HTML2 = lists:flatten(HTML),
+                          {include, {"Included Cells", W2, H2}, HTML2};
+                true  -> ?ERRVAL_CANTINC
+            end
     end.
 
 has_circref({range, List}) -> has_c1(List).
