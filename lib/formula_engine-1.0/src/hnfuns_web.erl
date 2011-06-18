@@ -15,6 +15,7 @@
          pageurl/1,
          segment/1,
          site/1,
+         siteurl/1,
          'crumb.trail'/1,
          'lorem.ipsum'/1,
          'lorem.headline'/1
@@ -176,8 +177,13 @@ img_(Src) ->
 %% site just returns the site url
 site([]) ->
     Site = get(site),
+    [_Proto, [$/, $/ | Domain], _Port] = string:tokens(Site, ":"),
+    Domain.
+
+siteurl([]) ->
+    Site = get(site),
     [Proto, Domain, _Port] = string:tokens(Site, ":"),
-    Proto ++ Domain.
+    Proto ++ ":" ++ Domain.
 
 segment([]) ->
     case get(path) of
