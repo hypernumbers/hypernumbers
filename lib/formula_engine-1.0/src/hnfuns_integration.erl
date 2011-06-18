@@ -16,7 +16,7 @@
          'facebook.comments'/1,
          'disqus.comments'/1,
          'twitter.button'/1,
-         'google.buynowlist'/1,
+         %'google.buynowlist'/1, not compatible with the wizard
          'google.buynow'/1,
          'twitter.tweet'/1,
          'facebook.likebox'/1,
@@ -341,7 +341,8 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
 % try this
 % http://od-eon.com/blogs/stefan/asynchronous-loading-twitter-widgets/
 'twitter.profile'([UserName]) ->
-    ID = "hn_id_" ++ muin_util:create_name(),
+    ID = "hn_id_" ++ string:join(get(path), "_")
+        ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
     U = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     Js = "http://widgets.twimg.com/j/2/widget.js",
     Js_reload = "new TWTR.Widget({"
@@ -350,11 +351,11 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "type: 'profile',"
         ++ "rpp: 4,"
         ++ "interval: 6000,"
-        ++ "width: 213,"
-        ++ "height: 304,"
+        ++ "width: 240,"
+        ++ "height: 294,"
         ++ "theme: {"
-        ++ "shell: {background: '#333333', color: '#ffffff'},"
-        ++ "tweets: {background: '#000000', color: '#ffffff', links: '#4aed05'}"
+        ++ "shell: {background: '#444', color: '#eee'},"
+        ++ "tweets: {background: '#ddd', color: '#666', links: '#6666ff'}"
         ++ "},"
         ++ "features: {scrollbar: false, loop: false, "
         ++ "live: false, hashtags: true,"
@@ -362,7 +363,7 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "}).render().setUser('" ++ U ++ "').start();",
     HTML = "<div id='" ++ ID ++ "'></div>",
     Incs = #incs{js = [Js], js_reload = [Js_reload]},
-    {preview, {"Twitter profile for " ++ U, 4, 14, Incs}, HTML}.
+    {preview, {"Twitter profile for " ++ U, 3, 14, Incs}, HTML}.
 
 'twitter.list'([]) ->
     "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
