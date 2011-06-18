@@ -351,8 +351,8 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "type: 'profile',"
         ++ "rpp: 4,"
         ++ "interval: 6000,"
-        ++ "width: 240,"
-        ++ "height: 294,"
+        ++ "width: 235,"
+        ++ "height: 398,"
         ++ "theme: {"
         ++ "shell: {background: '#444', color: '#eee'},"
         ++ "tweets: {background: '#ddd', color: '#666', links: '#6666ff'}"
@@ -363,7 +363,7 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "}).render().setUser('" ++ U ++ "').start();",
     HTML = "<div id='" ++ ID ++ "'></div>",
     Incs = #incs{js = [Js], js_reload = [Js_reload]},
-    {preview, {"Twitter profile for " ++ U, 3, 14, Incs}, HTML}.
+    {preview, {"Twitter profile for " ++ U, 3, 20, Incs}, HTML}.
 
 'twitter.list'([]) ->
     "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
