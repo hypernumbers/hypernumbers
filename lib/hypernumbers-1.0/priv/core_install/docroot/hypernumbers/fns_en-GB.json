@@ -3389,14 +3389,14 @@
         "desc": "Counts the values in a z-query.",
         "experimental": false,
         "includable": true,
-        "inexcel": true,
+        "inexcel": false,
         "resize": false,
         "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/countz.html",
          "args": [
              {
                 "name": "Z Query",
-                "desc": "A Z Query",
+                "desc": "A Z Query.",
                 "type": "finite"
             }
          ]
@@ -3407,7 +3407,7 @@
         "desc": "Helps debugging z-queries.",
         "experimental": false,
         "includable": true,
-        "inexcel": true,
+        "inexcel": false,
         "resize": false,
         "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/debugz.html",
@@ -3420,13 +3420,13 @@
          ]
     },
     {
-        "fn": "link.box.WxH",
+        "fn": "link.box",
         "category": "HN Database",
         "desc": "Displays the results of a z-query as a link box.",
         "experimental": false,
         "includable": true,
-        "inexcel": true,
-        "resize": false,
+        "inexcel": false,
+        "resize": "range",
         "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/link.box.html",
          "args": [
@@ -3452,7 +3452,7 @@
              },
              {
                 "name": "Box Type",
-                "desc": "A number between 0 and 3 (or 99)",
+                "desc": "A number between 0 and 3 (or 99).",
                 "type": "optional"
              },
              {
@@ -3465,10 +3465,10 @@
     {
         "fn": "sumz",
         "category": "HN Database",
-        "desc": "Sums the results of a z query",
+        "desc": "Sums the results of a z query.",
         "experimental": false,
         "includable": true,
-        "inexcel": true,
+        "inexcel": false,
         "resize": false,
         "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/sumz.html",
@@ -3478,6 +3478,370 @@
                 "desc": "A Z Query.",
                 "type": "finite"
             }
+         ]
+    },
+    {
+        "fn": "dategraph",
+        "category": "HN Graphs",
+        "desc": "Creates a line graph with dates on the X Axis.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 4,
+        "resize_cols_default": 8,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/dategraph.html",
+         "args": [
+             {
+                "name": "X Range",
+                "desc": "A range of dates.",
+                "type": "finite"
+             },
+             {
+                 "name": "No of Series",
+                 "desc": "A positive integer.",
+                 "type": "variable",
+                 "attr":
+                 {
+                     "name": "Y Range",
+                     "desc": "A range of values.",
+                     "type": "infinite"
+                 }
+             },
+             {
+                "name": "Title",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "X-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Y-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Series Names",
+                "desc": "A text string.",
+                "type": "optional"
+             }
+         ]
+    },
+    {
+        "fn": "equigraph",
+        "category": "HN Graphs",
+        "desc": "Creates a line graph with an equispaced X Axis.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 4,
+        "resize_cols_default": 8,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/equigraph.html",
+         "args": [
+             {
+                "name": "X Range",
+                "desc": "A range of X-axis values.",
+                "type": "finite"
+             },
+             {
+                 "name": "No of Series",
+                 "desc": "A positive integer.",
+                 "type": "variable",
+                 "attr":
+                 {
+                     "name": "Y Range",
+                     "desc": "A range of values.",
+                     "type": "infinite"
+                 }
+             },
+             {
+                "name": "Title",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "X-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Y-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Series Names",
+                "desc": "A text string.",
+                "type": "optional"
+             }
+         ]
+    },
+    {
+        "fn": "histogram",
+        "category": "HN Graphs",
+        "desc": "Creates a histogram.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 4,
+        "resize_cols_default": 8,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/histogram.html",
+         "args": [
+             {
+                "name": "Type",
+                "desc": "An integer from 0 to 3.",
+                "type": "finite"
+             },
+             {
+                "name": "X Range",
+                "desc": "A range of X-axis values.",
+                "type": "finite"
+             },
+             {
+                 "name": "No of Series",
+                 "desc": "A positive integer.",
+                 "type": "variable",
+                 "attr":
+                 {
+                     "name": "Y Range",
+                     "desc": "A range of values.",
+                     "type": "infinite"
+                 }
+             },
+             {
+                "name": "Title",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "X-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Y-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Series Names",
+                "desc": "A text string.",
+                "type": "optional"
+             }
+         ]
+    },
+    {
+        "fn": "linegraph",
+        "category": "HN Graphs",
+        "desc": "Creates a line graph with a numerical X axis.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 4,
+        "resize_cols_default": 8,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/linegraph.html",
+         "args": [
+             {
+                "name": "X Range",
+                "desc": "A range of values.",
+                "type": "finite"
+             },
+             {
+                 "name": "No of Series",
+                 "desc": "A positive integer.",
+                 "type": "variable",
+                 "attr":
+                 {
+                     "name": "Y Range",
+                     "desc": "A range of values.",
+                     "type": "infinite"
+                 }
+             },
+             {
+                "name": "Title",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "X-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Y-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Series Names",
+                "desc": "A text string.",
+                "type": "optional"
+             }
+         ]
+    },
+    {
+        "fn": "piechart",
+        "category": "HN Graphs",
+        "desc": "Creates a piechart.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 3,
+        "resize_cols_default": 6,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/piechart.html",
+         "args": [
+             {
+                "name": "No Of Ranges",
+                "desc": "An integer.",
+                "type": "finite"
+             },
+             {
+                "name": "Range",
+                "desc": "The range of data and values to display.",
+                "type": "finite"
+             },
+             {
+                "name": "Title",
+                "desc": "Some text.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "sparkline",
+        "category": "HN Graphs",
+        "desc": "Creates a sparkline.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 1,
+        "resize_cols_default": 1,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/sparkline.html",
+         "args": [
+             {
+                 "name": "No of Ys",
+                 "desc": "A positive integer.",
+                 "type": "variable",
+                 "attr":
+                 {
+                     "name": "Y Ranges",
+                     "desc": "The range of values.",
+                     "type": "infinite"
+                 }
+             }
+         ]
+    },
+    {
+        "fn": "speedo",
+        "category": "HN Graphs",
+        "desc": "Creates a speedometer-type graph.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 4,
+        "resize_cols_default": 8,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/speedo.html",
+         "args": [
+             {
+                "name": "Value",
+                "desc": "A number.",
+                "type": "finite"
+             },
+             {
+                 "name": "Value Label",
+                 "desc": "Some text.",
+                 "type": "finite"
+             },
+             {
+                "name": "Threshholds",
+                "desc": "A range of 4 numerical values.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "status.bar",
+        "category": "HN Graphs",
+        "desc": "Provides a status bar.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/status-bar.html",
+         "args": [
+             {
+                "name": "Values",
+                "desc": "A number between 0 and 5 inclusive.",
+                "type": "finite"
+             },
+             {
+                "name": "Style",
+                "desc": "An integer between 1 and 6.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "xy",
+        "category": "HN Graphs",
+        "desc": "Creates a line graph with different sets of X axes points.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 4,
+        "resize_cols_default": 8,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/xy.html",
+         "args": [
+             {
+                 "name": "No of XY ranges",
+                 "desc": "A positive integer.",
+                 "type": "variable",
+                 "attr":
+                 {
+                     "name": "XY Range",
+                     "desc": "A range of X and Y values.",
+                     "type": "infinite"
+                 }
+             },
+             {
+                "name": "Title",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "X-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Y-Axis Label",
+                "desc": "A text string.",
+                "type": "optional"
+             },
+             {
+                "name": "Series Names",
+                "desc": "A text string.",
+                "type": "optional"
+             }
          ]
     },
 
@@ -3591,35 +3955,6 @@
         "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
-    },
-    {
-        "fn": "piechart",
-        "category": "HN Graphs",
-        "desc": "Creates a piechart.",
-        "experimental": true,
-        "includable": true,
-        "inexcel": false,
-        "resize": "range",
-        "resize_rows_default": 4,
-        "resize_cols_default": 8,
-        "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-            {
-                "name": "No. of Series",
-                "desc": "The number of data series there are",
-                "type": "variable",
-                "attr": {
-                    "name": "Data series",
-                    "desc": "Must be 2 wide or 2 high",
-                    "type": "infinite"
-                }
-            },
-            {
-                "name": "Title",
-                "desc": "Title of the piechart",
-                "optional": true
-            }
-        ]
     }
+
 ]
