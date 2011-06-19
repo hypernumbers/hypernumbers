@@ -23,14 +23,14 @@
          'facebook.like'/1,
          'twitter.profile'/1,
          'google.map'/1
+         %'twitter.list'/1
         ]).
 
 %% not working functions
--export([
-         'twitter.list'/1,
-         'youtube.channel'/1
-         %'twitter.search'/1,
-        ]).
+%-export([
+%         'youtube.channel'/1
+%         'twitter.search'/1,
+%        ]).
 
 -include("spriki.hrl").
 -include("typechecks.hrl").
@@ -335,26 +335,23 @@ tw_b1(4, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++
 tw_b1(5, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/t_mini-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
 tw_b1(_, _, _) -> ?ERRVAL_VAL.
 
-% still not working
-% try this
-% http://od-eon.com/blogs/stefan/asynchronous-loading-twitter-widgets/
 'twitter.profile'([UserName]) ->
-    ID = "hn_id_" ++ string:join(get(path), "_")
+    ID = "hn_twitter_profile_" ++ string:join(get(path), "_")
         ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
     U = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     Js = "http://widgets.twimg.com/j/2/widget.js",
     Js_reload = "new TWTR.Widget({"
-        ++ "id: '" ++ ID ++ "'," % we have added this
-        ++ "version: 2,"
-        ++ "type: 'profile',"
-        ++ "rpp: 4,"
-        ++ "interval: 6000,"
-        ++ "width: 235,"
-        ++ "height: 398,"
+        ++ "id: '" ++ ID ++ "', " % we have added this
+        ++ "version: 2, "
+        ++ "type: 'profile', "
+        ++ "rpp: 4, "
+        ++ "interval: 6000, "
+        ++ "width: 235, "
+        ++ "height: 398, "
         ++ "theme: {"
         ++ "shell: {background: '#444', color: '#eee'},"
-        ++ "tweets: {background: '#ddd', color: '#666', links: '#6666ff'}"
-        ++ "},"
+        ++ "tweets: {background: '#ddd', color: '#666', links: '#4444ff'}"
+        ++ "}, "
         ++ "features: {scrollbar: false, loop: false, "
         ++ "live: false, hashtags: true,"
         ++ "timestamp: true, avatars: false, behavior: 'all'}"
@@ -363,24 +360,34 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
     Incs = #incs{js = [Js], js_reload = [Js_reload]},
     {preview, {"Twitter profile for " ++ U, 3, 20, Incs}, HTML}.
 
-'twitter.list'([]) ->
-    "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
-        ++ "<script>"
-        ++ "new TWTR.Widget({"
-        ++ "version: 2,"
-        ++ "type: 'list',"
-        ++ "rpp: 30,"
-        ++ "interval: 6000,"
-        ++ "title: 'Everything we do at',"
-        ++ "subject: 'the twoffice',"
-        ++ "width: 250,"
-        ++ "height: 300,"
+'twitter.list'([User, ListId]) ->
+    'twitter.list'([User, ListId, User]);
+'twitter.list'([User, ListId, Title]) ->
+    'twitter.list'([User, ListId, Title, ListId]);
+'twitter.list'([User, ListId, Title, SubTitle]) ->
+    [U2, L2, T2, SubT2] = typechecks:std_strs([User, ListId, Title, SubTitle]),
+    ID = "hn_twitter_list_" ++ string:join(get(path), "_")
+        ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
+    Js = "http://widgets.twimg.com/j/2/widget.js",
+    Js_reload = "new TWTR.Widget({"
+        ++ "version: 2, "
+        ++ "id: '" ++ ID ++ "', " % we have added this
+        ++ "type: 'list', "
+        ++ "rpp: 30, "
+        ++ "interval: 6000, "
+        ++ "title: '" ++ T2 ++ "', "
+        ++ "subject: '" ++ SubT2 ++ "', "
+        ++ "width: 235, "
+        ++ "height: 340, "
         ++ "theme: {"
-        ++ "shell: {background: '#ff96e7', color: '#ffffff'},"
-        ++ "tweets: {background: '#ffffff', color: '#444444', links: '#b740c2'}"
-        ++ "},"
+        ++ "shell: {background: '#444', color: '#eee'},"
+        ++ "tweets: {background: '#ddd', color: '#666', links: '#4444ff'}"
+        ++ "}, "
         ++ "features: {scrollbar: true, loop: false, live: true, "
         ++ "hashtags: true, timestamp: true, avatars: true, behavior: 'all'}"
-        ++ "}).render().setList('twitter', 'more-twitter-accounts').start();"
-        ++ "</script>".
+        ++ "}).render().setList('" ++ U2 ++"', '" ++ L2 ++ "').start();",
+    HTML = "<div id='" ++ ID ++ "'></div>",
+    Incs = #incs{js = [Js], js_reload = [Js_reload]},
+    {preview, {"Twitter List", 3, 23, Incs}, HTML}.
+
 
