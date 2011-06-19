@@ -4291,7 +4291,7 @@
     },
     {
         "fn": "disqus.comments",
-        "category": "HN Social Media",
+        "category": "HN Social/Web",
         "desc": "Inserts a Disqus comments box.",
         "experimental": false,
         "includable": true,
@@ -4300,7 +4300,7 @@
         "resize_rows_default": 4,
         "resize_cols_default": 8,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media/disqus-comments.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/disqus-comments.html",
          "args": [
              {
                 "name": "Disqus Short Name",
@@ -4311,14 +4311,14 @@
     },
     {
         "fn": "facebook.comments",
-        "category": "HN Social Media",
+        "category": "HN Social/Web",
         "desc": "Inserts a Facebook comments box.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media/facebook-comments.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/facebook-comments.html",
          "args": [
              {
                 "name": "Facebook ID",
@@ -4329,14 +4329,14 @@
     },
     {
         "fn": "facebook.likebox",
-        "category": "HN Social Media",
+        "category": "HN Social/Web",
         "desc": "Displays a box of all the people who like a particular page on Facebook.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media/facebook-likebox.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/facebook-likebox.html",
          "args": [
              {
                 "name": "Facebook Page ID",
@@ -4347,14 +4347,14 @@
     },
     {
         "fn": "facebook.like",
-        "category": "HN Social Media",
+        "category": "HN Social/Web",
         "desc": "Puts a Facebook like box on the page.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media/facebook-like.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/facebook-like.html",
          "args": [
              {
                 "name": "Page URL",
@@ -4374,15 +4374,50 @@
          ]
     },
     {
+        "fn": "generic.integration",
+        "category": "HN Social/Web",
+        "desc": "A special fn to make it easy for software developers to integrate Hypernumbers with social media.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 4,
+        "resize_cols_default": 8,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/generic-integration.html",
+         "args": [
+             {
+                "name": "HTML",
+                "desc": "An integer.",
+                "type": "finite"
+             },
+             {
+                 "name": "Javascript File",
+                 "desc": "The URL of the Javascript file",
+                 "type": "optional"
+             },
+             {
+                "name": "Javascript Reload",
+                "desc": "A javascript snippet as text.",
+                "type": "optional"
+             },
+             {
+                "name": "CSS File",
+                "desc": "The URL of the CSS file.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
         "fn": "google.buynow",
-        "category": "HN Social Media",
+        "category": "HN Social/Web",
         "desc": "Puts a Google Buy Now button on a page.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media/google-buynow.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/google-buynow.html",
          "args": [
              {
                  "name": "Merchant ID",
@@ -4422,55 +4457,219 @@
          ]
     },
     {
-        "fn": "generic.integration",
-        "category": "HN Social Media",
-        "desc": "A special fn to make it easy for software developers to integrate Hypernumbers with social media.",
+        "fn": "google.map",
+        "category": "HN Social/Web",
+        "desc": "Embed a google map that centers at Latitude, Longitude, the zoom level is a number between 1 and 20. (the map will preview as an image inside the spreadsheet)",
         "experimental": false,
         "includable": true,
         "inexcel": false,
-        "resize": "range",
-        "resize_rows_default": 4,
-        "resize_cols_default": 8,
+        "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media/generic-integration.html",
-         "args": [
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/google-map.html",
+        "args": [
              {
-                "name": "HTML",
-                "desc": "An integer.",
+                "name": "Longditude",
+                "desc": "A number between -180 and +180.",
                 "type": "finite"
              },
              {
-                 "name": "Javascript File",
-                 "desc": "The URL of the Javascript file",
-                 "type": "optional"
+                 "name": "Latitude",
+                 "desc": "A number between -90 and +90.",
+                 "type": "finite"
              },
              {
-                "name": "Javascript Reload",
-                "desc": "A javascript snippet as text.",
+                "name": "Zoom",
+                "desc": "A number between 1 and 20.",
+                "type": "optional"
+             }
+        ]
+    },
+    {
+        "fn": "twitter.button",
+        "category": "HN Social/Web",
+        "desc": "Embed a twitter \"follow me\" button onto your page.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/twitter-button.html",
+        "args": [
+             {
+                "name": "Twitter ID",
+                "desc": "Some text.",
+                "type": "finite"
+             },
+             {
+                "name": "Type",
+                "desc": "Integer from 0 to 5.",
                 "type": "optional"
              },
              {
-                "name": "CSS File",
-                "desc": "The URL of the CSS file.",
+                "name": "Colour",
+                "desc": "Integer fron 0 to 5.",
                 "type": "optional"
             }
-         ]
+        ]
     },
     {
         "fn": "twitter.profile",
-        "category": "HN Social Media",
+        "category": "HN Social/Web",
         "desc": "Display a profile of a Twitter user.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media/twitter-profile.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/twitter-profile.html",
          "args": [
              {
                 "name": "Twitter ID",
                 "desc": "Some text.",
                 "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "twitter.tweet",
+        "category": "HN Social/Web",
+        "desc": "Create a link that takes the user to their Twitter account prepopulated with a suggested tweet.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/social-media-and-web-integration/twitter-tweet.html",
+         "args": [
+             {
+                "name": "Message",
+                "desc": "Some text.",
+                "type": "finite"
+             },
+             {
+                "name": "Link",
+                "desc": "Some text or an image to put in the link.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "snapshot",
+        "category": "HN Special",
+        "desc": "Evaluates an expression 1 and never updates when the underlying cells referred to change.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/special/snapshot.html",
+         "args": [
+             {
+                "name": "Message",
+                "desc": "Some text.",
+                "type": "finite"
+             },
+             {
+                 "name": "Expression",
+                 "desc": "An spreadsheet expression.",
+                 "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "tick",
+        "category": "HN Special",
+        "desc": "A date function that ticks.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/special/tick.html",
+         "args": [
+             {
+                "name": "Option 1",
+                "desc": "An integer between 0 and 3.",
+                "type": "optional"
+             },
+             {
+                 "name": "Option 2",
+                 "desc": "An integer.",
+                 "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "create.button",
+        "category": "HN Templates",
+        "desc": "Puts a button on a page which creates pages from templates.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/templates/create-button.html",
+         "args": [
+             {
+                "name": "Button Title",
+                "desc": "Some text.",
+                "type": "finite"
+             },
+             {
+                 "name": "Expression",
+                 "desc": "An that describes the page to create",
+                 "type": "infinite"
+            }
+         ]
+    },
+    {
+        "fn": "map.rows.button",
+        "category": "HN Templates",
+        "desc": "Puts a button on a page which uploads a spreadsheet and maps it to a series of hypernumbers page specified in the spreadsheet.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/templates/map-rows-button.html",
+         "args": [
+             {
+                "name": "Button Title",
+                "desc": "Some text.",
+                "type": "finite"
+             },
+             {
+                 "name": "Map",
+                 "desc": "The name of the map to use.",
+                 "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "map.sheet.button",
+        "category": "HN Templates",
+        "desc": "Puts a button on a page which uploads a spreadsheet and maps it to a hypernumbers page you specify.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/templates/map-sheet-button.html",
+         "args": [
+             {
+                "name": "Button Title",
+                "desc": "Some text.",
+                "type": "finite"
+             },
+             {
+                 "name": "Page",
+                 "desc": "The page to load the data to.",
+                 "type": "finite"
+             },
+             {
+                 "name": "Map",
+                 "desc": "The name of the map to use.",
+                 "type": "finite"
             }
          ]
     },
@@ -4537,19 +4736,6 @@
         ]
     },
     {
-        "fn": "twitter.button",
-        "category": "HN Web",
-        "desc": "Embed a twitter \"follow me\" button onto your page - name is your username is optional and a number from 0-5 which changes the style of the button",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
         "fn": "radio",
         "category": "HN Forms",
         "desc": "Create a set of radio buttons",
@@ -4567,19 +4753,6 @@
         "category": "HN Forms",
         "desc": "Create a button with its value set to text",
         "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "google.map",
-        "category": "HN Web",
-        "desc": "Embed a google map that centers at Latitude, Longitude, the zoom level is a number between 1 and 20. (the map will preview as an image inside the spreadsheet)",
-        "experimental": true,
         "includable": true,
         "inexcel": false,
         "resize": false,
