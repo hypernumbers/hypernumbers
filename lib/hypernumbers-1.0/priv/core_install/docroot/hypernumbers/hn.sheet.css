@@ -193,8 +193,9 @@ img.wizrep {
 }
 
 #wizfunlist {
-  width: 144px;
-  line-height: 16px; /* set this or problems in Chrome returning "normal" */
+              width       : 144px;
+              font-size   : 9pt;
+              line-height : 16px; /* set this or problems in Chrome returning "normal" */
 }
 
 #wizfunargs {
