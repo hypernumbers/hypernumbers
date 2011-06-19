@@ -72,8 +72,6 @@
 %% Exported functions
 %%
 
-'google.map'([])          -> 'google.map'([0]);
-'google.map'([Long])      -> 'google.map'([Long, 0]);
 'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
 'google.map'([Long, Lat, Zoom]) ->
     muin_collect:col([Long, Lat, Zoom], [eval_funs, fetch, {cast, num}],
@@ -91,7 +89,7 @@
         ++ "/?ie=UTF8&amp;ll=" ++ Lat2 ++ "," ++ Long2
         ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>",
     {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2,
-               8, 4, #incs{}}, HTML}.
+               8, 16, #incs{}}, HTML}.
 
 %'twitter.search_'(_Term, _Title) ->
 %    "Todo".
