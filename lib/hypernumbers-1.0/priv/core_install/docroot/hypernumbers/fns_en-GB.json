@@ -4673,93 +4673,114 @@
             }
          ]
     },
-
-
-
-
-
-
-
-
-
-
     {
-        "fn": "textarea",
+        "fn": "button",
         "category": "HN Forms",
-        "desc": "Create a textarea",
+        "desc": "Create a button for submitting a form.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/button.html",
         "args": [
-        ]
-    },
-    {
-        "fn": "include",
-        "category": "HN Layout",
-        "desc": "Includes the range as rendered html",
-        "experimental": false,
-        "includable": false,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "select",
-        "category": "HN Forms",
-        "desc": "Create a drop down select box",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
+             {
+                 "name": "Title",
+                 "desc": "Text to appear on the button.",
+                 "type": "optional"
+             },
+             {
+                 "name": "Response",
+                 "desc": "The text to appear in the message for the user.",
+                 "type": "optional"
+             },
+             {
+                 "name": "Page",
+                 "desc": "The page to put the responses on.",
+                 "type": "optional"
+            }
         ]
     },
     {
         "fn": "input",
         "category": "HN Forms",
-        "desc": "Create a single line text input",
+        "desc": "Create a single line text input for a form.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/input.html",
         "args": [
+             {
+                 "name": "Label",
+                 "desc": "Some text.",
+                 "type": "finite"
+            }
         ]
     },
     {
         "fn": "radio",
         "category": "HN Forms",
-        "desc": "Create a set of radio buttons",
+        "desc": "Create a set of radio buttons for a form.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/radio.html",
         "args": [
+            {
+                "name": "Label",
+                "desc": "Some text.",
+                "type": "finite"
+            },
+            {
+                "name": "Options",
+                "desc": "A reference to a list of items.",
+                "type": "finite"
+            }
         ]
     },
     {
-        "fn": "button",
+        "fn": "select",
         "category": "HN Forms",
-        "desc": "Create a button with its value set to text",
+        "desc": "Create a drop down select box for a form.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/select.html",
         "args": [
+            {
+                "name": "Label",
+                "desc": "Some text.",
+                "type": "finite"
+            },
+            {
+                "name": "Options",
+                "desc": "A reference to a list of items.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "textarea",
+        "category": "HN Forms",
+        "desc": "Create a textarea for a form.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/textarea.html",
+        "args": [
+            {
+                "name": "Label",
+                "desc": "Some text.",
+                "type": "finite"
+            }
         ]
     }
-
 ]
