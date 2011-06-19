@@ -4682,7 +4682,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/button.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/web-forms/button.html",
         "args": [
              {
                  "name": "Title",
@@ -4710,7 +4710,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/input.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/web-forms/input.html",
         "args": [
              {
                  "name": "Label",
@@ -4728,7 +4728,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/radio.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/web-forms/radio.html",
         "args": [
             {
                 "name": "Label",
@@ -4751,7 +4751,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/select.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/web-forms/select.html",
         "args": [
             {
                 "name": "Label",
@@ -4774,7 +4774,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/forms/textarea.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/web-forms/textarea.html",
         "args": [
             {
                 "name": "Label",
