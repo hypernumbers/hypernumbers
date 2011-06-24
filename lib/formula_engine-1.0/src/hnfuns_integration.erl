@@ -140,7 +140,7 @@ gen_i(W, H, HTML, Js, JsRel, CSS) ->
     [Id2] = typechecks:std_ints([Id]),
     Id3 = integer_to_list(Id2),
     HTML = "<div id='fb-root'></div><fb:comments href='"
-        ++ hnfuns_web:site([]) ++ "' num_posts='2' width='500'></fb:comments>",
+        ++ hnfuns_web:site([]) ++ "' num_posts='2' width='640'></fb:comments>",
     Js = ["http://connect.facebook.net/en_US/all.js#appId=" ++ Id3 ++ "&amp;"
         ++ "xfbml=1"],
     Reload = ["FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');"],
