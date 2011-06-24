@@ -268,32 +268,35 @@ get_sel(List) -> lists:flatten(["<select name=\"item_selection_1\">",
                                 lists:reverse(List),
                                 "</select>"]).
 
-'facebook.like'([]) ->
+'facebook.like'([ID]) ->
     URL = hnfuns_web:site([]) ++ hnfuns_web:page([]),
-    'facebook.like'([URL, 0]);
-'facebook.like'([URL]) ->
-    'facebook.like'([URL, 0]);
-'facebook.like'([URL, Layout]) ->
-    'facebook.like'([URL, Layout, 0]);
-'facebook.like'([URL, Layout, Faces]) ->
-    fb_like(URL, Layout, Faces).
+    'facebook.like'([ID, URL, 0]);
+'facebook.like'([ID, URL]) ->
+    'facebook.like'([ID, URL, 0]);
+'facebook.like'([ID, URL, Layout]) ->
+    'facebook.like'([ID, URL, Layout, 0]);
+'facebook.like'([ID, URL, Layout, Faces]) ->
+    fb_like(ID, URL, Layout, Faces).
 
-fb_like(URL, Layout, Faces) ->
+fb_like(ID, URL, Layout, Faces) ->
+    [I] = typechecks:std_ints([ID]),
     U = muin_col_DEPR:collect_string(URL, ?default_str_rules),
     L = muin_col_DEPR:collect_string(Layout, ?default_str_rules),
     F = muin_col_DEPR:collect_string(Faces, ?default_str_rules),
     HTML = case valid(L, F) of
                false -> ?ERRVAL_VAL;
                {L1, F1}  ->
-                   "<iframe src=\"http://www.facebook.com/plugins/like.php?href="
+                   "<iframe src='http://www.facebook.com/plugins/like.php?href="
+                       ++ "app_id=" ++ integer_to_list(I) ++ "&amp;"
                        ++ U
                        ++"&amp;layout="
                        ++ L1
                        ++"standard&amp;show_faces="
                        ++ F1
-                       ++ "&amp;width=152&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80\" scrolling=\"no\" frameborder=\"0\" style=\"border:none; overflow:hidden; height:80px;\" allowTransparency=\"true\"></iframe>"
+                       ++ "&amp;width=152&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80' scrolling='no' frameborder='0' style='border:none; overflow:hidden; height:80px;' allowTransparency='true'></iframe>"
            end,
-    {resize, {2, 3, #incs{}}, HTML}.
+    io:format("HTML is ~p~n", [HTML]),
+    {preview, {"Facebook Like Button", 2, 3, #incs{}}, HTML}.
 
 valid("0", "0") -> {"standard",     "true"};
 valid("1", "0") -> {"button_count", "true"};
@@ -304,11 +307,11 @@ valid(_, _) -> false.
 %% Hypernumbers Page Id is 336874434418
 'facebook.likebox'([PageId]) ->
     P = muin_col_DEPR:collect_string(PageId, ?default_str_rules),
-    HTML = "<iframe src=\"http://www.facebook.com/plugins/likebox.php?id="
+    HTML = "<iframe src='http://www.facebook.com/plugins/likebox.php?id="
         ++ P ++ "&amp;width=472&amp;connections=10&amp;stream=true&amp;"
-        ++ " header=true\" scrolling=\"no\" frameborder=\"0\" "
-        ++ " allowTransparency=\"true\" style=\"border:none; "
-        ++ "overflow:hidden; width:472px; height:606px\"></iframe>",
+        ++ " header=true' scrolling='no' frameborder='0' "
+        ++ " allowTransparency='true' style='border:none; "
+        ++ "overflow:hidden; width:472px; height:606px'></iframe>",
     {preview, {"Facebook Like of " ++ P, 6, 31, #incs{}}, HTML}.
 
 %% Hypernumbers Twitter UserName is hypernumbers
@@ -327,12 +330,12 @@ tw_b(N, 1, Str) -> tw_b1(N, "b", Str);
 tw_b(N, 2, Str) -> tw_b1(N, "c", Str);
 tw_b(_, _, _)   -> ?ERRVAL_VAL.
 
-tw_b1(0, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/follow_me-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
-tw_b1(1, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/follow_bird-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
-tw_b1(2, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/twitter-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
-tw_b1(3, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/t_logo-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
-tw_b1(4, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/t_small-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
-tw_b1(5, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/t_mini-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
+tw_b1(0, Colour, UserName) -> "<a href='http://www.twitter.com/" ++ UserName ++ "'><img src='http://twitter-badges.s3.amazonaws.com/follow_me-" ++ Colour ++ ".png' alt='Follow " ++ UserName ++ " on Twitter'/></a>";
+tw_b1(1, Colour, UserName) -> "<a href='http://www.twitter.com/" ++ UserName ++ "'><img src='http://twitter-badges.s3.amazonaws.com/follow_bird-" ++ Colour ++ ".png' alt='Follow " ++ UserName ++ " on Twitter'/></a>";
+tw_b1(2, Colour, UserName) -> "<a href='http://www.twitter.com/" ++ UserName ++ "'><img src='http://twitter-badges.s3.amazonaws.com/twitter-" ++ Colour ++ ".png' alt='Follow " ++ UserName ++ " on Twitter'/></a>";
+tw_b1(3, Colour, UserName) -> "<a href='http://www.twitter.com/" ++ UserName ++ "'><img src='http://twitter-badges.s3.amazonaws.com/t_logo-" ++ Colour ++ ".png' alt='Follow " ++ UserName ++ " on Twitter'/></a>";
+tw_b1(4, Colour, UserName) -> "<a href='http://www.twitter.com/" ++ UserName ++ "'><img src='http://twitter-badges.s3.amazonaws.com/t_small-" ++ Colour ++ ".png' alt='Follow " ++ UserName ++ " on Twitter'/></a>";
+tw_b1(5, Colour, UserName) -> "<a href='http://www.twitter.com/" ++ UserName ++ "'><img src='http://twitter-badges.s3.amazonaws.com/t_mini-" ++ Colour ++ ".png' alt='Follow " ++ UserName ++ " on Twitter'/></a>";
 tw_b1(_, _, _) -> ?ERRVAL_VAL.
 
 'twitter.profile'([UserName]) ->
