@@ -296,7 +296,7 @@ fb_like(ID, URL, Layout, Faces) ->
                        ++ "&amp;width=152&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80' scrolling='no' frameborder='0' style='border:none; overflow:hidden; height:80px;' allowTransparency='true'></iframe>"
            end,
     io:format("HTML is ~p~n", [HTML]),
-    {preview, {"Facebook Like Button", 2, 3, #incs{}}, HTML}.
+    {preview, {"Facebook Like Button", 2, 6, #incs{}}, HTML}.
 
 valid("0", "0") -> {"standard",     "true"};
 valid("1", "0") -> {"button_count", "true"};
