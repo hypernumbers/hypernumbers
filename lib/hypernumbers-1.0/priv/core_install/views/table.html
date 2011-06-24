@@ -3,12 +3,12 @@
   <head>
     <meta charset='utf-8' />
     <title>Hypernumbers - the team spreadsheet</title>
-    <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
-    <link rel="stylesheet" href="/hypernumbers/hn.style.css" />	
-    <link rel="stylesheet" href="/tblsorter/style.css" />	
+    <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />
+    <link rel="stylesheet" href="/hypernumbers/hn.style.css" />
+    <link rel="stylesheet" href="/tblsorter/style.css" />
   </head>
-  
-  <body>
+
+  <body data-view="table">
 
     <div id="overlay"></div>
     <div id="lightcover"></div>
@@ -18,7 +18,7 @@
       <small>(table view)</small>
       <span id="showhidecols">show/hide columns &amp; filters</span>
     </div>
-    
+
     <div id='table'></div>
 
     <!-- DIALOG BOXES -->
@@ -26,7 +26,7 @@
     <h2>Show/Hide Columns</h2>
     <a id="dialogclose">x</a>
     <div id="columnsconfig" class="scrollable"></div>
-    <div class="footer"><a class="resize">&#x21f2;</a></div>    
+    <div class="footer"><a class="resize">&#x21f2;</a></div>
     </div>
 
     <div id="lineview" class="dialog" style="display:none;">
@@ -49,11 +49,11 @@
 
 
   <div id='editspreadsheet' class='ctrlbox'>
-    
+
     <div id='powered'>
         <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
     </div>
-    
+
     <div id='editmenu' class='ctrlbox'>
         <div id='editloggedin'>
           <div id='uname'></div>
@@ -75,20 +75,20 @@
               <input type='password' id='pass' /></div>
             <div class='formrow'><input type='submit' id='submit' value='Log in' class='button' /><span id='forgotten_pwd'></span><br /></div>
             <div id='loginfeedback'></div>
-            
+
             or sign up at <a href='http://hypernumbers.com'>hypernumbers.com</a>
           </form>
         </div>
     </div>
-   
+
     <span id='hidden_input'></span>
-    
+
   </body>
 
   <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
-  <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
+  <script src='/hypernumbers/jquery.tablesorter.min.js'></script>
   <script src='/hypernumbers/jquery.tablesorter.jfilterselect.min.js'></script>
-  <script src='/hypernumbers/jquery.columnmanager.min.js'></script>  
+  <script src='/hypernumbers/jquery.columnmanager.min.js'></script>
 
   <script src='/hypernumbers/json2.min.js'></script>
   <script src='/hypernumbers/hn.js'></script>
