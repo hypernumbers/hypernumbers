@@ -20,6 +20,11 @@
          'link.box.'/1
          ]).
 
+-export([
+         'html.timmenu.'/1,
+         'html.timsubmenu'/1
+        ]).
+
 'link.box.'([H, W, Z]) ->
     'link.box.'([H, W, Z, 0]);
 'link.box.'([H, W, Z, Style]) ->
@@ -221,3 +226,43 @@ menu1([], Class, Acc) ->
 menu1([H | T], Cl, Acc) ->
     Line = "<li>"++H++"</li>",
     menu1(T, Cl, [Line | Acc]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% Practice menus                                                           %%%
+%%%                                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+'html.timmenu.'([Width, Style | Rest]) ->
+    [Width2, Style2] = typechecks:throw_std_ints([Width, Style]),
+    if Style2 >=1 andalso Style2 =< 3 ->
+            Strings = typechecks:throw_flat_strs(Rest),
+            Menu = menutim(Strings, "gen_list_" ++ integer_to_list(Style2), []),
+            CSS = ["/webcomponents/timmenu.css"],
+            JS = ["/webcomponents/timmenu.js"],
+            JSR = ["HN.timMenu.reload();"],
+            Incs = #incs{css = CSS, js = JS, js_reload = JSR},
+            io:format("Strings is ~p~nMenu is ~p~n", [Strings, Menu]),
+            {preview, {"Tim's Menu", Width2, 2, Incs}, Menu};
+       Style2 < 0 orelse Style2 > 3 ->
+            ?ERR_VAL
+    end.
+
+'html.timsubmenu'(List) ->
+    Rules = [eval_funs, fetch, flatten, {cast, str}],
+    Passes = [return_errors],
+    [Menu | Subs] = muin_collect:col(List, Rules, Passes),
+    SubMenu = "<a href='#'>" ++ Menu ++ "</a>"
+        ++ menutim(lists:reverse(Subs), "first_level", []),
+    {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
+
+
+menutim([], Class, Acc) ->
+    Klass = case Class of
+                []    -> "";
+                Other -> " class="++Other
+            end,
+    "<ul"++Klass++">"++lists:flatten(lists:reverse(Acc))++"</ul>";
+menutim([H | T], Cl, Acc) ->
+    Line = "<li>"++H++"</li>",
+    menutim(T, Cl, [Line | Acc]).
