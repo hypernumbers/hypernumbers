@@ -1,0 +1,70 @@
+* {padding: 0; margin: 0;}
+div.cheese { color: plum; border: 1px dashed aqua; text-align:center;}
+
+div.eggs { color: cyan; border: 1px dashed #999; text-align:center;  background-color: #444;}
+
+
+/*----------------------------------------------------------------*/
+
+/* List styles for list 1
+------------------------------*/
+
+ul.gen_list_1 { float: left; margin: 0; padding:0; -webkit-border-radius: 5px;
+-moz-border-radius: 5px; border-radius: 5px; height: auto; display: inline; box-shadow: 0 2px 2px #000;  background: url(/img/bg_blackboard.png) repeat scroll 0 0 #000; overflow: hidden;}
+
+ul.gen_list_1 li { display: inline; margin: 0; padding: 0; margin-left: 0 !important; float: left;}
+
+ul.gen_list_1 a:link, ul.gen_list_1 a:visited { display:block; padding: 6px 16px; text-decoration: none; color: #bcbcbc; text-shadow: 0 0.5px 0.1px #666666;}
+
+ul.gen_list_1 a:hover { color: #fff; background: url(/img/bg_blackboard-light.png) repeat scroll 0 0 #000;}
+
+/*
+,"http://www.soundslikedesign.co.uk/HyperNumbers/generic.js", "Genneric.reload()", "http://www.soundslikedesign.co.uk/HyperNumbers/generic.css")
+
+*/
+/* List styles for list 2
+------------------------------*/
+ul.gen_list_2 { float: left; margin: 0; padding: 8px 0;}
+ul.gen_list_2 li { display: inline; margin: 0; padding: 0; margin-left: 0 !important; float: left;}
+
+ul.gen_list_2 a:link, ul.gen_list_2 a:visited { border-top: 1px solid #787878; border-bottom: 1px solid #787878; padding: 6px 16px; text-decoration: none; color: #787878; }
+
+ul.gen_list_2 a:hover { color: #444; border-top: 1px dotted #999; border-bottom: 1px dotted #999; background-color: #eee}
+
+/* List styles for list 3
+------------------------------*/
+
+ul.gen_list_3 { float: left; margin: 0; padding: 8px 0; border: 1px solid #999; background: url("/img/bg_nav-about.png") repeat-x 0 0;}
+ul.gen_list_3 li { display: inline; margin: 0; padding: 0; margin-left: 0 !important; float: left;}
+
+ul.gen_list_3 a:link, ul.gen_list_3 a:visited { padding: 6px 16px; text-decoration: none; color: #fff; }
+
+ul.gen_list_3 a:hover { color: #444; border-top: 1px dotted #999; border-bottom: 1px dotted #999; background-color: #eee;}
+
+/* List styles for first level menu
+------------------------------------*/
+
+ul ul.first_level {
+    background: url(/img/bg_blackboard.png) repeat scroll 0 0 #000;
+    border-top: 1px solid #000000;
+    display: block;
+    float: left;
+    left: 8px;
+    margin-top: 1px;
+    position: absolute;
+	display:none;
+	 -webkit-border-radius: 5px;
+-moz-border-radius: 5px; border-radius: 5px;
+	overflow: hidden;
+	box-shadow: 0 2px 2px #000;
+	border: 1px solid #666;
+	border-top: none;
+  z-index: 1000000;
+}
+ul ul.first_level li { display: block; width:100%; border-top: 1px solid #333 }
+ul ul.first_level li a:link, ul ul.first_level li a:visited { overflow: hidden; }
+ul ul.first_level a:hover { color: #fff; background: url("/img/bg-topgrad2.png") repeat-x 0 -400px; }
+
+ul.gen_list_1 li:hover > .first_level { display: block}
+ul.gen_list_2 li:hover > .first_level { display: block}
+ul.gen_list_3 li:hover > .first_level { display: block}
