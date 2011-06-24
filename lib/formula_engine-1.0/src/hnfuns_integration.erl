@@ -286,9 +286,9 @@ fb_like(ID, URL, Layout, Faces) ->
     HTML = case valid(L, F) of
                false -> ?ERRVAL_VAL;
                {L1, F1}  ->
-                   "<iframe src='http://www.facebook.com/plugins/like.php?href="
+                   "<iframe src='http://www.facebook.com/plugins/like.php?"
                        ++ "app_id=" ++ integer_to_list(I) ++ "&amp;"
-                       ++ U
+                       ++ "href=" ++ U
                        ++"&amp;layout="
                        ++ L1
                        ++"standard&amp;show_faces="
