@@ -156,8 +156,11 @@ add_user2(User, Site, Args, Type) ->
                                    ok = auth_srv:add_view(Site, NPath, G, V);
                (Type == add )   -> ok % do nothing
             end,
-            case NE of
-                new      ->
+            case {NE, passport:is_valid_uid(UID)} of
+                {existing, true} ->
+                    Dets = [{invitee, I}, {path, P}, {msg, M}],
+                    emailer:send(invite_existing, E, I, Site, Dets);
+                {_, _} ->
                     Vanity = hn_util:extract_name_from_email(E),
                     HtP = ["_validate", Vanity],
                     Data = [{emailed, true},{redirect, P}],
@@ -165,10 +168,7 @@ add_user2(User, Site, Args, Type) ->
                                                   Data, "never"),
                     Dets = [{invitee, I}, {msg, M},
                             {hypertag, HT}],
-                    emailer:send(invite_new, E, I, Site, Dets);
-                existing ->
-                    Dets = [{invitee, I}, {path, P}, {msg, M}],
-                    emailer:send(invite_existing, E, I, Site, Dets)
+                    emailer:send(invite_new, E, I, Site, Dets)
             end,
             ok = remoting_reg:notify_refresh(Site, NPath)
     end.

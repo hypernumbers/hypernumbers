@@ -7,7 +7,6 @@
 -include_lib("kernel/include/file.hrl").
 -include("gettext.hrl").
 -include("hn_mochi.hrl").
--include("funs_en_gb.hrl").
 -include("spriki.hrl").
 -include("syslib.hrl").
 
@@ -457,10 +456,9 @@ iget(#refX{site=S, path=["_site"]}, page, _Qry, Env) ->
     Groups    = {"groups", {array, hn_groups:get_all_groups(S)}},
     Templates = {"templates", {array, hn_util:get_templates(S)}},
     Maps      = {"maps", {array, hn_util:get_maps(S)}},
-    Funs      = {"functions", ?FNS_EN_GB},
     Admin     = {"is_admin", hn_groups:is_member(Env#env.uid, S, ["admin"])},
     Lang      = {"lang", get_lang(Env#env.uid)},
-    Return    = {struct, [Groups, Funs, Templates, Maps, Admin, Lang]},
+    Return    = {struct, [Groups, Templates, Maps, Admin, Lang]},
     json(Env, Return);
 
 iget(#refX{path=["_pages"]} = Ref, page, _Qry, Env) ->

@@ -908,6 +908,7 @@ move_tr(RefX, Type, Disp, Ar) ->
     % if this is a delete - we need to actually delete the cells
     ok = new_db_wu:log_move(RefX, Type, Disp, Ar),
     ReWr = do_delete(Type, RefX, Disp, Ar),
+    ok = new_db_wu:shift_rows_and_columns(RefX, Type, Disp, Ar),
     MoreDirty = new_db_wu:shift_cells(RefX, Type, Disp, ReWr, Ar),
     ok = new_db_wu:mark_these_dirty(ReWr, Ar),
     ok = new_db_wu:mark_these_dirty(MoreDirty, Ar).

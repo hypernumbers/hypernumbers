@@ -9,9 +9,10 @@
 -include("hypernumbers.hrl").
 -include("muin_proc_dict.hrl").
 
--define(notincfns, [include, tick, snapshot]).
+-define(notincfns, [include, tick, snapshot, input, textarea, button, radio, select, 'create.button', 'map.rows.button', 'map.sheet.button']).
 
 -define(genint, $g,$e,$n,$e,$r,$i,$c,$.,$i,$n,$t,$e,$g,$r,$a,$t,$i,$o,$n,$.).
+-define(htmltimmenu, $h,$t,$m,$l,$.,$t,$i,$m,$m,$e,$n,$u,$.).
 -define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
 -define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
 -define(htmlplainbox, $h,$t,$m,$l,$.,$p,$l,$a,$i,$n,$b,$o,$x,$.).
@@ -261,6 +262,8 @@ transform([?horizontalline | R], Args) ->
     {list_to_atom([?horizontalline]), [R | Args]};
 transform([?verticalline | R], Args) ->
     {list_to_atom([?verticalline]), [R | Args]};
+transform([?htmltimmenu | R], Args) ->
+    {list_to_atom([?htmltimmenu]), [R | Args]};
 transform([?htmlmenu | R], Args) ->
     {list_to_atom([?htmlmenu]), [R | Args]};
 transform(List, Args) -> {list_to_atom(List), Args}.

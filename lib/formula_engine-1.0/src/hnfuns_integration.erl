@@ -16,21 +16,21 @@
          'facebook.comments'/1,
          'disqus.comments'/1,
          'twitter.button'/1,
-         'google.buynowlist'/1,
+         %'google.buynowlist'/1, not compatible with the wizard
          'google.buynow'/1,
          'twitter.tweet'/1,
          'facebook.likebox'/1,
          'facebook.like'/1,
          'twitter.profile'/1,
          'google.map'/1
+         %'twitter.list'/1
         ]).
 
 %% not working functions
--export([
-         'twitter.list'/1,
-         'youtube.channel'/1
-         %'twitter.search'/1,
-        ]).
+%-export([
+%         'youtube.channel'/1
+%         'twitter.search'/1,
+%        ]).
 
 -include("spriki.hrl").
 -include("typechecks.hrl").
@@ -72,8 +72,6 @@
 %% Exported functions
 %%
 
-'google.map'([])          -> 'google.map'([0]);
-'google.map'([Long])      -> 'google.map'([Long, 0]);
 'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
 'google.map'([Long, Lat, Zoom]) ->
     muin_collect:col([Long, Lat, Zoom], [eval_funs, fetch, {cast, num}],
@@ -91,7 +89,7 @@
         ++ "/?ie=UTF8&amp;ll=" ++ Lat2 ++ "," ++ Long2
         ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>",
     {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2,
-               8, 4, #incs{}}, HTML}.
+               8, 16, #incs{}}, HTML}.
 
 %'twitter.search_'(_Term, _Title) ->
 %    "Todo".
@@ -99,16 +97,18 @@
 % for hypernumbers it is:
 % * shortname = hypernumbers
 % * id = 123132
-'disqus.comments'([ShortName, Id]) ->
+'disqus.comments'([ShortName]) ->
+    io:format("ShortName is ~p~n", [ShortName]),
     [ShortName2]= typechecks:std_strs([ShortName]),
-    [Id2] = typechecks:std_ints([Id]),
+    Id = hnfuns_web:page([]),
     Page = hnfuns_web:site([]) ++ hnfuns_web:page([]),
+    io:format("ShortName2 is ~p Id is ~p Page is ~p~n", [ShortName2, Id, Page]),
     HTML = "<div id='disqus_thread'></div>"
         ++ "<a href='http://disqus.com' class='dsq-brlink'>"
         ++ "blog comments powered by <span class='logo-disqus'>Disqus</span></a>",
     Reload = "var disqus_shortname = '" ++ ShortName2 ++ "';"
         ++ "//var disqus_developer = 1;"
-        ++ "var disqus_identifier = '" ++ integer_to_list(Id2) ++ "';"
+        ++ "var disqus_identifier = '" ++ Id ++ "';"
         ++ "var disqus_url = '" ++ Page ++ "';"
         ++ "(function() {"
         ++ "    var dsq = document.createElement('script');"
@@ -140,7 +140,7 @@ gen_i(W, H, HTML, Js, JsRel, CSS) ->
     [Id2] = typechecks:std_ints([Id]),
     Id3 = integer_to_list(Id2),
     HTML = "<div id='fb-root'></div><fb:comments href='"
-        ++ hnfuns_web:site([]) ++ "' num_posts='2' width='500'></fb:comments>",
+        ++ hnfuns_web:site([]) ++ "' num_posts='2' width='640'></fb:comments>",
     Js = ["http://connect.facebook.net/en_US/all.js#appId=" ++ Id3 ++ "&amp;"
         ++ "xfbml=1"],
     Reload = ["FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');"],
@@ -180,7 +180,7 @@ google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
                      "0" -> google_buy_n2(M, C, ItemName, ItemDesc,
                                           Price, Quantity, "white");
                      "1" -> google_buy_n2(M, C, ItemName, ItemDesc,
-                                          Price, Quantity, "colored");
+                                          Price, Quantity, "trans");
                      _ -> ?ERRVAL_VAL
                  end
     end.
@@ -210,7 +210,7 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
         false -> ?ERRVAL_VAL;
         true  -> case Bg1  of
                      "0"  -> google_buy_l2(M, C, Type, "white", Rest);
-                     "1"  -> google_buy_l2(M, C, Type, "colored", Rest);
+                     "1"  -> google_buy_l2(M, C, Type, "trans", Rest);
                      _  -> ?ERRVAL_VAL
                  end
     end.
@@ -242,7 +242,7 @@ get_google_bits(1, Cur, [Name, Desc, Price, Quant | T], Acc1, Acc2, C) ->
     {Sel, Input} = get_google_bits2(Cur, Name, Desc, Price, Quant, C),
     get_google_bits(1, Cur, T, [Sel | Acc1], [Input, Acc2], C + 1);
 get_google_bits(_, _, _, _, _, _) ->
-    exit("fuck up!").
+    exit("invalid type of Google Buy Now button").
 
 get_google_bits2(Cur, Name, Desc, Price, Quantity, C) ->
     N = muin_col_DEPR:collect_string(Name, ?default_str_rules),
@@ -335,51 +335,59 @@ tw_b1(4, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++
 tw_b1(5, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/t_mini-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
 tw_b1(_, _, _) -> ?ERRVAL_VAL.
 
-% still not working
-% try this
-% http://od-eon.com/blogs/stefan/asynchronous-loading-twitter-widgets/
 'twitter.profile'([UserName]) ->
-    ID = "hn_id_" ++ muin_util:create_name(),
+    ID = "hn_twitter_profile_" ++ string:join(get(path), "_")
+        ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
     U = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     Js = "http://widgets.twimg.com/j/2/widget.js",
     Js_reload = "new TWTR.Widget({"
-        ++ "id: '" ++ ID ++ "'," % we have added this
-        ++ "version: 2,"
-        ++ "type: 'profile',"
-        ++ "rpp: 4,"
-        ++ "interval: 6000,"
-        ++ "width: 213,"
-        ++ "height: 304,"
+        ++ "id: '" ++ ID ++ "', " % we have added this
+        ++ "version: 2, "
+        ++ "type: 'profile', "
+        ++ "rpp: 4, "
+        ++ "interval: 6000, "
+        ++ "width: 235, "
+        ++ "height: 398, "
         ++ "theme: {"
-        ++ "shell: {background: '#333333', color: '#ffffff'},"
-        ++ "tweets: {background: '#000000', color: '#ffffff', links: '#4aed05'}"
-        ++ "},"
+        ++ "shell: {background: '#444', color: '#eee'},"
+        ++ "tweets: {background: '#ddd', color: '#666', links: '#4444ff'}"
+        ++ "}, "
         ++ "features: {scrollbar: false, loop: false, "
         ++ "live: false, hashtags: true,"
         ++ "timestamp: true, avatars: false, behavior: 'all'}"
         ++ "}).render().setUser('" ++ U ++ "').start();",
     HTML = "<div id='" ++ ID ++ "'></div>",
     Incs = #incs{js = [Js], js_reload = [Js_reload]},
-    {preview, {"Twitter profile for " ++ U, 4, 14, Incs}, HTML}.
+    {preview, {"Twitter profile for " ++ U, 3, 20, Incs}, HTML}.
 
-'twitter.list'([]) ->
-    "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
-        ++ "<script>"
-        ++ "new TWTR.Widget({"
-        ++ "version: 2,"
-        ++ "type: 'list',"
-        ++ "rpp: 30,"
-        ++ "interval: 6000,"
-        ++ "title: 'Everything we do at',"
-        ++ "subject: 'the twoffice',"
-        ++ "width: 250,"
-        ++ "height: 300,"
+'twitter.list'([User, ListId]) ->
+    'twitter.list'([User, ListId, User]);
+'twitter.list'([User, ListId, Title]) ->
+    'twitter.list'([User, ListId, Title, ListId]);
+'twitter.list'([User, ListId, Title, SubTitle]) ->
+    [U2, L2, T2, SubT2] = typechecks:std_strs([User, ListId, Title, SubTitle]),
+    ID = "hn_twitter_list_" ++ string:join(get(path), "_")
+        ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
+    Js = "http://widgets.twimg.com/j/2/widget.js",
+    Js_reload = "new TWTR.Widget({"
+        ++ "version: 2, "
+        ++ "id: '" ++ ID ++ "', " % we have added this
+        ++ "type: 'list', "
+        ++ "rpp: 30, "
+        ++ "interval: 6000, "
+        ++ "title: '" ++ T2 ++ "', "
+        ++ "subject: '" ++ SubT2 ++ "', "
+        ++ "width: 235, "
+        ++ "height: 340, "
         ++ "theme: {"
-        ++ "shell: {background: '#ff96e7', color: '#ffffff'},"
-        ++ "tweets: {background: '#ffffff', color: '#444444', links: '#b740c2'}"
-        ++ "},"
+        ++ "shell: {background: '#444', color: '#eee'},"
+        ++ "tweets: {background: '#ddd', color: '#666', links: '#4444ff'}"
+        ++ "}, "
         ++ "features: {scrollbar: true, loop: false, live: true, "
         ++ "hashtags: true, timestamp: true, avatars: true, behavior: 'all'}"
-        ++ "}).render().setList('twitter', 'more-twitter-accounts').start();"
-        ++ "</script>".
+        ++ "}).render().setList('" ++ U2 ++"', '" ++ L2 ++ "').start();",
+    HTML = "<div id='" ++ ID ++ "'></div>",
+    Incs = #incs{js = [Js], js_reload = [Js_reload]},
+    {preview, {"Twitter List", 3, 23, Incs}, HTML}.
+
 

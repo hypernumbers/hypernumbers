@@ -15,6 +15,7 @@
          pageurl/1,
          segment/1,
          site/1,
+         siteurl/1,
          'crumb.trail'/1,
          'lorem.ipsum'/1,
          'lorem.headline'/1
@@ -159,8 +160,13 @@ html([Html]) ->
 %    lists:flatten("<style type='text/css'>body{background:url("
 %                  ++ Url ++ ") " ++ Rest ++ "};</style>").
 
-link_(Src, Text) ->
-    lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>").
+link_(Src, Text, 0) ->
+    lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>");
+link_(Src, Text, _N) ->
+    lists:flatten("<a href='" ++ Src ++ "' target='_blank'>" ++ Text ++ "</a>").
+
+img_(Src, Alt) ->
+    lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt ++ "'/>").
 
 img_(Src) ->
     lists:flatten("<img src='" ++ Src ++ "' />").
@@ -171,8 +177,13 @@ img_(Src) ->
 %% site just returns the site url
 site([]) ->
     Site = get(site),
+    [_Proto, [$/, $/ | Domain], _Port] = string:tokens(Site, ":"),
+    Domain.
+
+siteurl([]) ->
+    Site = get(site),
     [Proto, Domain, _Port] = string:tokens(Site, ":"),
-    Proto ++ Domain.
+    Proto ++ ":" ++ Domain.
 
 segment([]) ->
     case get(path) of
@@ -200,13 +211,24 @@ page([N]) ->
                                     hn_util:list_to_path(Sub2)
     end.
 
+link([Src, Text, Type]) ->
+    [NSrc, NText] = muin_collect:col([Src, Text],
+                                     [eval_funs, fetch, {cast, str}],
+                                     [return_errors]),
+    [NewType] = typechecks:std_ints([Type]),
+    link_(NSrc, NText, NewType);
 link([Src, Text]) ->
-    muin_collect:col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
-        fun([NSrc, NText]) -> link_(NSrc, NText) end).
+    muin_collect:col([Src, Text], [eval_funs, fetch, {cast, str}],
+                     [return_errors],
+                     fun([NSrc, NText]) -> link_(NSrc, NText, 0) end).
 
+img([Src, Alt]) ->
+    muin_collect:col([Src, Alt], [eval_funs, fetch, {cast, str}],
+                     [return_errors], fun([NSrc, NAlt]) ->
+                                              img_(NSrc, NAlt) end);
 img([Src]) ->
     muin_collect:col([Src], [eval_funs, fetch, {cast, str}], [return_errors],
-        fun([NSrc]) -> img_(NSrc) end).
+                     fun([NSrc]) -> img_(NSrc) end).
 
 
 %'twitter.search'([])          -> 'twitter.search'(["hello"]);
@@ -261,11 +283,17 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             Path = muin_util:walk_path(muin:context_setting(path), RelPath),
             Obj = {range, {X1, Y1, X2, Y2}},
             Ref = #refX{site = Site, path = Path, obj = Obj},
-            {{Html, Width, Height}, _Addons} = hn_render:content(Ref),
-            W2 = trunc(Width/80),
-            H2 = trunc(Height/22),
-            HTML = lists:flatten(hn_render:wrap_region(Html, Width, Height)),
-            {include, {"Included Cells", W2, H2}, HTML}
+            % throw an error if we are trying to bring controls through
+            case new_db_wu:has_forms(Ref) of
+                false ->  Content = hn_render:content(Ref),
+                          {{Html, Width, Height}, _Addons} = Content,
+                          W2 = trunc(Width/80),
+                          H2 = trunc(Height/22),
+                          HTML = hn_render:wrap_region(Html, Width, Height),
+                          HTML2 = lists:flatten(HTML),
+                          {include, {"Included Cells", W2, H2}, HTML2};
+                true  -> ?ERRVAL_CANTINC
+            end
     end.
 
 has_circref({range, List}) -> has_c1(List).
