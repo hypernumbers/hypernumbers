@@ -145,7 +145,8 @@ gen_i(W, H, HTML, Js, JsRel, CSS) ->
         ++ "xfbml=1"],
     Reload = ["FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');"],
     Incs = #incs{js = Js, js_reload = Reload},
-    {resize, {8, 10, Incs},  HTML}.
+    io:format("HTML is ~p~n", [HTML]),
+    {preview, {"Facebook Comments", 8, 10, Incs},  HTML}.
 
 'twitter.tweet'([Message]) ->
     tweet2(Message, "Tweet This");
@@ -295,8 +296,7 @@ fb_like(ID, URL, Layout, Faces) ->
                        ++ F1
                        ++ "&amp;width=152&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80' scrolling='no' frameborder='0' style='border:none; overflow:hidden; height:80px;' allowTransparency='true'></iframe>"
            end,
-    io:format("HTML is ~p~n", [HTML]),
-    {preview, {"Facebook Like Button", 2, 6, #incs{}}, HTML}.
+    {preview, {"Facebook Like Button", 3, 8, #incs{}}, HTML}.
 
 valid("0", "0") -> {"standard",     "true"};
 valid("1", "0") -> {"button_count", "true"};
