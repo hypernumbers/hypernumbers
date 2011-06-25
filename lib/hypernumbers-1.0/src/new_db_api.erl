@@ -65,7 +65,8 @@
          url_DEBUG/1,
          url_DEBUG/2,
          idx_DEBUG/2,
-         idx_DEBUG/3
+         idx_DEBUG/3,
+         raw_idx_DEBUG/2
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1155,6 +1156,24 @@ dirty_for_zinf_DEBUG(Site) ->
                 new_db_wu:dirty_for_zinf_DEBUG(Site)
         end,
     mnesia:transaction(F).
+
+raw_idx_DEBUG(Site, Idx) ->
+    Fun = fun() ->
+                  XRefX = new_db_wu:idx_to_xrefX(Site, Idx),
+                  io:format("XRefX is ~p~n", [XRefX]),
+                  Tab1 = new_db_wu:trans(Site, local_obj),
+                  [R1] = mnesia:read(Tab1, Idx, read),
+                  io:format("local_obj: idx ~p~n type ~p~n path ~p~n "
+                            ++ "obj ~p~n revidx ~p~n",
+                            [R1#local_obj.idx, R1#local_obj.type,
+                            binary_to_term(R1#local_obj.path), R1#local_obj.obj,
+                            binary_to_term(R1#local_obj.revidx)]),
+                  Tab2 = new_db_wu:trans(Site, item),
+                  [R2] = mnesia:read(Tab2, Idx, read),
+                  io:format("item: idx ~p~n attrs ~p~n",
+                            [R2#item.idx, binary_to_term(R2#item.attrs)])
+          end,
+    mnesia:transaction(Fun).
 
 url_DEBUG(Url) -> url_DEBUG(Url, quiet).
 
