@@ -20,6 +20,7 @@
 
 -export([
          notify_site/1,
+         notify_pages/1,
          notify_change/4,
          notify_delete/3,
          notify_delete_attrs/4,
@@ -76,6 +77,13 @@ request_update(Site, Path, Time, Pid) ->
 %% @doc Nofity server of site details refresh
 notify_site(Site) ->
     Msg = {struct, [{"type", "site_refresh"}]},
+    Id = hn_util:site_to_atom(Site, "_remoting"),
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {msg, Site, ["/"], Msg}).
+
+%% @doc Nofity server that the pages have changed
+notify_pages(Site) ->
+    Msg = {struct, [{"type", "pages_refresh"}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
     PID = global:whereis_name(Id),
     gen_server:cast(PID, {msg, Site, ["/"], Msg}).
@@ -197,9 +205,10 @@ has_path(MsgPath, ClientPath) ->
 
 is_site({struct, List}) ->
     case lists:keysearch("type", 1, List) of
-        {value, {"type", "style"}}        -> true;
-        {value, {"type", "site_refresh"}} -> true;
-        _                                 -> false
+        {value, {"type", "style"}}         -> true;
+        {value, {"type", "site_refresh"}}  -> true;
+        {value, {"type", "pages_refresh"}} -> true;
+        _                                  -> false
     end.
 
 timestamp() ->
