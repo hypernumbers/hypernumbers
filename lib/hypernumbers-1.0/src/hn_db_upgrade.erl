@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         bug_fix_for_row_cols_2011_06_25/0,
          add_path_index_to_logs_2011_05_26/0,
          force_sparkline_recalc_2011_05_15/0,
          bug_fix_dirty_for_zinf_2011_05_14/0,
@@ -42,6 +43,33 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+bug_fix_for_row_cols_2011_06_25() ->
+    Sites = hn_setup:get_sites(),
+    F1 = fun(Site) ->
+                 F2 = fun({local_obj, Idx, Type, Path, Obj, RevB}) ->
+                              P = binary_to_term(Path),
+                              Rev2 = hn_util:list_to_path(P)
+                                  ++ hn_util:obj_to_ref(Obj),
+                              Revidx = binary_to_term(RevB),
+                              NewRevB = case Rev2 of
+                                            Revidx ->
+                                                RevB;
+                                            O     ->
+                                                io:format("Fixing ~p ~p ~p~n"
+                                                          ++ "old revidx ~p~n",
+                                                          [Site, P, Obj, O]),
+                                                term_to_binary(Rev2)
+                                        end,
+                              {local_obj, Idx, Type, Path, Obj, NewRevB}
+                      end,
+                 Tbl1 = new_db_wu:trans(Site, local_obj),
+                 Ret = mnesia:transform_table(Tbl1, F2, [idx, type, path,
+                                                   obj, revidx]),
+                 io:format("Ret is ~p~n", [Ret]),
+                 io:format("Table ~p transformed~n", [Tbl1])
+           end,
+    lists:foreach(F1, Sites).
 
 add_path_index_to_logs_2011_05_26() ->
     Sites = hn_setup:get_sites(),
