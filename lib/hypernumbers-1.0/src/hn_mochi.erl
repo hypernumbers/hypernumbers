@@ -1265,7 +1265,7 @@ accept_type(Env) ->
 pages_to_json(Dict) ->
     F = fun(X) -> pages_to_json(X, dict:fetch(X, Dict)) end,
     case is_dict(Dict) of
-        true  -> lists:map(F, dict:fetch_keys(Dict));
+        true  -> lists:sort(lists:map(F, dict:fetch_keys(Dict)));
         false -> Dict
     end.
 
