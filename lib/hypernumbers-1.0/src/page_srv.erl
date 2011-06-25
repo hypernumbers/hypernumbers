@@ -111,11 +111,13 @@ handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
                               true  -> {ok, Pages};
                               false -> P2 = [P | Pages],
                                        ok = new_db_api:write_kv(Site, ?pages, P2),
+                                       ok = remoting_reg:notify_pages(Site),
                                        {ok, P2}
                           end;
                       {page_deleted, P} ->
                           P2 = lists:delete(P, Pages),
                           ok = new_db_api:write_kv(Site, ?pages, P2),
+                          ok = remoting_reg:notify_pages(Site),
                           {ok, P2};
                       get_pages ->
                           {Pages, Pages};
