@@ -508,6 +508,10 @@ label {
     border-bottom: 1px solid #eee;
 }
 
+#addgroup {
+            width: 63px;
+            }
+
 #addgrouptext {
     font-size: 80%;
     color:     #666666;
@@ -523,7 +527,7 @@ label {
 #addgroupicon {
     background: url(/hypernumbers/sprite.png) -72px -1px;
     height:     9px;
-    width:      9px;
+    width:      5px;
     padding:    0px 5px;
 }
 
