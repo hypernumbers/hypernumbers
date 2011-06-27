@@ -542,12 +542,13 @@ label {
 
 #showadvperms, #showbasicgroups, #showadvusers {
    font-size:   80%;
+   font-weight: bold;
    color:       darkorange;
    float:       left;
    padding:     0px 2px 0px 2px;
-   border          : 1px solid #dddddd;
+   border       : 1px solid #dddddd;
    border-top   : 0px;
-   background      : #f9f9f9;
+   background   : #eeeeee;
     -moz-border-radius-bottomleft:2px;
     -moz-border-radius-bottomright:2px;
     -webkit-border-radius-bottomleft:2px;
