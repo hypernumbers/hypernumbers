@@ -88,7 +88,7 @@ mark_idx_dirty(Site, Idx) ->
     Report1 = mnesia_mon:get_stamp("mark_idx_dirty (1)"),
     Fun1 = fun() ->
                   mnesia_mon:report(Report1),
-                  new_db_wu:idx_to_xrefX(Site, Idx)
+                  XRefX = new_db_wu:idx_to_xrefX(Site, Idx)
            end,
     XRefX = mnesia_mon:log_act(transaction, Fun1, Report1),
     Report2 = mnesia_mon:get_stamp("mark_idx_dirty (2)"),
@@ -236,7 +236,10 @@ process_dirties_for_zinf(Site, Tree, CheckFun) ->
                   [ok = mnesia:delete(Tbl, Id, write)
                    || #dirty_for_zinf{id = Id} <- L]
           end,
-    mnesia_mon:log_act(transaction, Fun, Report),
+    % using a spoof RefX because it is not going to the front end
+    % (change that from a quiet report and watch it die!)
+    RefX = #refX{site = Site},
+    write_activity(RefX, Fun, "quiet", Report),
     ok.
 
 write_kv(Site, Key, Value) ->
