@@ -536,6 +536,10 @@ label {
    padding: 5px 0px 0px 0px;
 }
 
+#newgroup {
+            width: 180px
+            }
+
 #showadvperms, #showbasicgroups, #showadvusers {
    font-size:   80%;
    color:       darkorange;
