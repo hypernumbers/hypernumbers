@@ -88,7 +88,7 @@ mark_idx_dirty(Site, Idx) ->
     Report1 = mnesia_mon:get_stamp("mark_idx_dirty (1)"),
     Fun1 = fun() ->
                   mnesia_mon:report(Report1),
-                  XRefX = new_db_wu:idx_to_xrefX(Site, Idx)
+                  new_db_wu:idx_to_xrefX(Site, Idx)
            end,
     XRefX = mnesia_mon:log_act(transaction, Fun1, Report1),
     Report2 = mnesia_mon:get_stamp("mark_idx_dirty (2)"),
