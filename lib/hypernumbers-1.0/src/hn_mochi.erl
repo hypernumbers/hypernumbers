@@ -856,6 +856,12 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
         [{"input", {struct, [{"select", {array, Array}}]}}] ->
             NewAttr = [{"input", {"select", Array}}],
             ok = new_db_api:write_attributes([{Ref, NewAttr}], Uid, Uid);
+        [{"width", _}] ->
+            ok = expand_width(Ref, Attr, Uid, Uid);
+        [{"height", _}] ->
+            ok = expand_height(Ref, Attr, Uid, Uid);
+        [{"fixedHeight", _}] ->
+            ok = expand_height(Ref, Attr, Uid, Uid);
         _Else ->
             ok = new_db_api:write_attributes([{Ref, Attr}], Uid, Uid)
     end,
@@ -1748,6 +1754,22 @@ get_type(Data) -> get_t2(lists:sort(Data)).
 get_t2([])                                                -> file;
 get_t2([{"map", Map}, {"type", "row"}])                   -> {row, Map};
 get_t2([{"map", Map}, {"page", Page}, {"type", "sheet"}]) -> {sheet, Map, Page}.
+
+expand_height(#refX{obj = {row, {Y1, Y1}}} = Ref, Attr, PAr, VAr) ->
+    ok = new_db_api:write_attributes([{Ref, Attr}], PAr, VAr);
+expand_height(#refX{obj = {row, {Y1, Y2}}} = Ref, Attr, PAr, VAr) ->
+    NewRef = Ref#refX{obj = {row, {Y1, Y1}}},
+    ok = new_db_api:write_attributes([{NewRef, Attr}], PAr, VAr),
+    NewRef2 = Ref#refX{obj = {row, {Y1 + 1, Y2}}},
+    expand_height(NewRef2, Attr, PAr, VAr).
+
+expand_width(#refX{obj = {column, {X1, X1}}} = Ref, Attr, PAr, VAr) ->
+    ok = new_db_api:write_attributes([{Ref, Attr}], PAr, VAr);
+expand_width(#refX{obj = {column, {X1, X2}}} = Ref, Attr, PAr, VAr) ->
+    NewRef = Ref#refX{obj = {column, {X1, X1}}},
+    ok = new_db_api:write_attributes([{NewRef, Attr}], PAr, VAr),
+    NewRef2 = Ref#refX{obj = {column, {X1 + 1, X2}}},
+    expand_width(NewRef2, Attr, PAr, VAr).
 
 make_name(Name, Ext) ->
     Basename = filename:basename(Name, Ext),
