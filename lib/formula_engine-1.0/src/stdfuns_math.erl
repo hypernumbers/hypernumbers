@@ -153,8 +153,16 @@ is_num_or_date(X) ->
 '-'([#datetime{date=D1, time=T1}, #datetime{date=D2, time=T2}]) ->
     S1 = calendar:datetime_to_gregorian_seconds({D1, T1}),
     S2 = calendar:datetime_to_gregorian_seconds({D2, T2}),
-    {DiffDate, _} = calendar:gregorian_seconds_to_datetime(S1 - S2),
-    calendar:date_to_gregorian_days(DiffDate);
+    {DiffDate, Sign} =
+        if
+            (S1 > S2) ->
+                {DD, _} = calendar:gregorian_seconds_to_datetime(S1 - S2),
+                {DD, 1};
+            (S1 =< S2) ->
+                {DD, _} = calendar:gregorian_seconds_to_datetime(S2 - S1),
+                {DD, -1}
+        end,
+    Sign * calendar:date_to_gregorian_days(DiffDate);
 
 '-'([V1, V2]) ->
     case muin_collect:col([V1, V2],
