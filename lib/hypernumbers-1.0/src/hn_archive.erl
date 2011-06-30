@@ -16,7 +16,8 @@
 
 -export([export/1, export/2,
          import/1, import/2,
-         export_as_sitetype/2]).
+         export_as_sitetype/2,
+         dump_page/4]).
 
 -define(join, filename:join).
 
