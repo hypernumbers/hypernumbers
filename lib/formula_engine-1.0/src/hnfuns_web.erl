@@ -10,7 +10,8 @@
          %background/1,
          link/1,
          img/1,
-         html/1,
+         'html.'/1,
+         'iframe.'/1,
          page/1,
          pageurl/1,
          segment/1,
@@ -153,8 +154,20 @@ trail2([H | T] = L, Acc) ->
 
 %% Safe functions (after typecheck)
 %%
-html([Html]) ->
-    Html.
+'html.'([W, H, HTML]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    [HTML2] = typechecks:throw_std_strs([HTML]),
+    {preview, {"Raw HTML", Width, Height, #incs{}}, HTML2}.
+
+'iframe.'([W, H, URL]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    [URL2] = typechecks:throw_std_strs([URL]),
+    IFrame = "<iframe class='hn-wc-ht-" ++ integer_to_list(Height)
+        ++ " hn-wc-wd-" ++ integer_to_list(Width) ++ "' src='" ++
+        URL2 ++ "' frameborder='0'/>",
+    {preview, {"IFrame: " ++ URL2, Width, Height, #incs{}}, IFrame}.
 
 %background_(Url, Rest) ->
 %    lists:flatten("<style type='text/css'>body{background:url("

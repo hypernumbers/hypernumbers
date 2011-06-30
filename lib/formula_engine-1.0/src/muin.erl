@@ -14,6 +14,8 @@
 -define(genint, $g,$e,$n,$e,$r,$i,$c,$.,$i,$n,$t,$e,$g,$r,$a,$t,$i,$o,$n,$.).
 -define(htmltimmenu, $h,$t,$m,$l,$.,$t,$i,$m,$m,$e,$n,$u,$.).
 -define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
+-define(iframe, $i,$f,$r,$a,$m,$e,$.).
+-define(html, $h,$t,$m,$l,$.).
 -define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
 -define(htmlplainbox, $h,$t,$m,$l,$.,$p,$l,$a,$i,$n,$b,$o,$x,$.).
 -define(htmlalert, $h,$t,$m,$l,$.,$a,$l,$e,$r,$t,$.).
@@ -218,6 +220,9 @@ transform([?genint | R], Args) ->
 transform([?htmlheadline | R], Args) ->
     {W, H} = get_dims(R),
     {list_to_atom([?htmlheadline]), [W , H | Args]};
+transform([?iframe | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?iframe]), [W , H | Args]};
 transform([?htmlbox | R], Args) ->
     {W, H} = get_dims(R),
     {list_to_atom([?htmlbox]), [W , H | Args]};
@@ -255,7 +260,9 @@ transform([?piechart | R], Args) ->
     {W, H} = get_dims(R),
     {list_to_atom([?piechart]), [W , H | Args]};
 transform([?linkbox | R], Args) ->
+    io:format("Args is ~p~n", [Args]),
     {W, H} = get_dims(R),
+    io:format("W is ~p H is ~p~n", [W, H]),
     {list_to_atom([?linkbox]), [W , H | Args]};
 % single parameter stuff
 transform([?horizontalline | R], Args) ->
@@ -266,6 +273,11 @@ transform([?htmltimmenu | R], Args) ->
     {list_to_atom([?htmltimmenu]), [R | Args]};
 transform([?htmlmenu | R], Args) ->
     {list_to_atom([?htmlmenu]), [R | Args]};
+%% order matters to prevent premature matching!
+transform([?html | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?html]), [W , H | Args]};
+%% terminal clause
 transform(List, Args) -> {list_to_atom(List), Args}.
 
 get_dims(String) -> case string:tokens(String, "x") of
