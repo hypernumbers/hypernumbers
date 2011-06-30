@@ -1223,13 +1223,9 @@ log_move(_, _, _, _) -> ok.
 shift_rows_and_columns(#refX{site = S, path = P, obj = {column, {X1, X2}}},
                        Type, horizontal, _Ar) ->
     Table = trans(S, local_obj),
-    io:format("Table is ~p~n", [Table]),
     Objs = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
-    io:format("Objs is ~p~n", [Objs]),
     Offset = get_offset(Type, X1, X2),
-    io:format("Offset is ~p~n", [Offset]),
     Objs2 = shift_cols(Objs, X2, Offset, []),
-    io:format("Objs2 is ~p~n", [Objs2]),
     [mnesia:write(Table, Rec, write) || Rec <- Objs2],
     ok;
 shift_rows_and_columns(#refX{site = S, path = P, obj = {row, {Y1, Y2}}},
