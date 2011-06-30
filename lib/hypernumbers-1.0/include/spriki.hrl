@@ -69,6 +69,13 @@
           refs        = []
          }).
 
+-record(user_fns, {
+          name,
+          ast,
+          pagejson,
+          wizardjson
+         }).
+
 -record(local_obj,
         {
           idx,
