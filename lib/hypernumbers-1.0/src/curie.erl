@@ -16,31 +16,32 @@
 -compile(export_all).
 %~ -export([
          %~ build_fun/4,
-         %~ get_cells_ast/3
+         %~ get_cell_s_ast/3
         %~ ]).
 
+-define(join, filename:join).
 
 
 %%TODO
-	%~ fix get_pages_json
 	%~ start working on updating defined functions
 %%TODO
 
+%~ curie:create_user_fn("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", "b8", ["f5", "f6"], ["b5", "b6"], ["c5", "c6"]).
 create_user_fn(Site, Page, Name, Description, OutputValue, ListOfParameters, ListOfParameterNames, ListOfParameterDescriptions)	->
 	AST = build_fun(Site, Page, OutputValue, ListOfParameters),
-	JSON = get_page_s_json(Site, Page, OutputValue),
-	JSON_for_WIZARD = make_json_for_fn_wizard(Name, Description, ListOfParameterNames, ListOfParameterDescriptions),
-	io:format("----------------------~ncreate_user_fn~n----------------------~nAST is:~n~p~nJSON is:~n~p~nJSON_for_WIZARD is:~n~p~n----------------------~n", [AST, JSON, JSON_for_WIZARD]).
+	JSON = get_page_s_json(Site, Page),
+	JSON_for_WIZARD = make_json_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions),
+	io:format("----------------------~ncreate_user_fn~n----------------------~n~nAST is:~n~p~n~nJSON is:~n~p~n~nJSON_for_WIZARD is:~n~p~n~n----------------------~n", [AST, JSON, JSON_for_WIZARD]).
 
-%	make_json_for_fn_wizard("user.normalise", "normalised average", ["factor", "range"], ["normalisation factor", "range of cells to get average from"]).
-make_json_for_fn_wizard(Name, Description, ListOfParameterNames, ListOfParameterDescriptions)	->
-	Parameters = get_parameters(ListOfParameterNames, ListOfParameterDescriptions, []),
+%~ curie:make_json_for_fn_wizard("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", ["b5", "b6"], ["c5", "c6"]).
+make_json_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions)	->
+	Parameters = get_parameters(Site, Page, ListOfParameterNames, ListOfParameterDescriptions, []),
 	Entry = 
 			{struct,
 					[
-						{"fn",Name},
+						{"fn",get_cell_s_value(Name, Site, Page)},
 						{"category","User Defined"},
-						{"desc", Description},
+						{"desc", get_cell_s_value(Description, Site, Page)},
 						{"experimental",false},
 						{"includable",true},
 						{"inexcel",true},
@@ -52,50 +53,35 @@ make_json_for_fn_wizard(Name, Description, ListOfParameterNames, ListOfParameter
 			},
 	mochijson:encode(Entry).
 
-get_parameters([], [], Parameters)	-> 
+get_parameters(_Site, _Page, [], [], Parameters)	-> 
 	lists:reverse(Parameters);
 	
-get_parameters([H | T], [H2 | T2], Parameters)	-> 
-	Parameter = {struct, [{"name", H}, {"desc", H2}, {"type", "finite"}]},
-	get_parameters(T, T2, [Parameter | Parameters]).
+get_parameters(Site, Page, [H | T], [H2 | T2], Parameters)	-> 
+	Parameter = {struct, [{"name", get_cell_s_value(H, Site, Page)}, {"desc", get_cell_s_value(H2, Site, Page)}, {"type", "finite"}]},
+	get_parameters(Site, Page, T, T2, [Parameter | Parameters]).
 		
-
-%~ get_page_s_json("http://hypernumbers.dev:9000", ["page1"], "j10").
-get_page_s_json(Site, Page, Cell)	->
-	Ref = #refX{site = Site, path = Page, obj = hn_util:parse_ref(Cell)},
-	io:format("Ref is: ~p~n", [Ref]),
-	Encoder = mochijson:encoder([{input_encoding, utf8}]),
-	io:format("Encoder is: ~p~n", [Encoder]),
-	Encoded_Page = Encoder(hn_mochi:page_attributes(Ref#refX{path = Page}, #env{})),
-	io:format("Encoded_Page is: ~p~n", [Encoded_Page]),
-	EtfDest = Page,
-	io:format("EtfDest is: ~p~n", [EtfDest]),
 	
-	%~ dump_page(EtfDest, Encoder, Ref, Path)
-	Page_s_json = hn_archive:dump_page(EtfDest, Encoder, Ref, Encoded_Page),
-	io:format("Page's json is: ~p~n", [Page_s_json]),
-	Page_s_json.
+%~ curie:get_page_s_json("http://hypernumbers.dev:9000", ["page1"]).
+get_page_s_json(Site, Path) ->
+    Ref = hn_util:url_to_refX(Site),
+    Encoder = mochijson:encoder([{input_encoding, utf8}]),
+    Page = Encoder(hn_mochi:page_attributes(Ref#refX{path = Path}, #env{})),
+    io_lib:format("~s", [lists:flatten(Page)]).
 	
 	
-
-
-
 %%curie:build_fun("http://hypernumbers.dev:9000", ["function"], "b8", ["b1", "b2", "b3"]).
 build_fun(Site, Page, OutputValue, ListOfParameters) ->
 
-	My_AST = get_cells_ast(OutputValue, Site, Page),
+	My_AST = get_cell_s_ast(OutputValue, Site, Page),
 	case is_list(My_AST) of
 		false	-> 
-				io:format("~n---------Initial AST is~n~p~n~n", [My_AST]),
-			    io:format("~n---------Final AST is~n"),
-			    My_AST;
+				 My_AST;
 		true	->
 				case My_AST of
 					[]		-> {error, no_ast_in_final_result};
 					_My_AST	->
 						RetRef = #refX{site = Site, path = Page,
 									   obj = hn_util:parse_ref(OutputValue)},
-						io:format("~n---------Initial AST is~n~p~n~n", [_My_AST]),
 						%params in upper case, easier to compare
 						ParamListUpper = lists:map(fun string:to_upper/1, ListOfParameters),
 						%no cells from different workbooks are allowed
@@ -113,7 +99,6 @@ build_fun(Site, Page, OutputValue, ListOfParameters) ->
 	
 
 build_fun2(RetRef, AST, ListOfParameters, Site, Page) ->
-	io:format("~n---------Final AST is~n"),
 	walk(AST, RetRef, ListOfParameters, [], Site, Page).
 	
     
@@ -230,14 +215,14 @@ contains([_H | T], Element)	->
 %check if specified input list contains off page references
 check_input_off_reference([], _Site, _Page) -> valid;
 check_input_off_reference([H | T], Site, Page) ->
-    case check_off_page([get_cells_ast(H, Site, Page)], Page) of
+    case check_off_page([get_cell_s_ast(H, Site, Page)], Page) of
         invalid -> invalid;
         valid -> check_input_off_reference(T, Site, Page)
     end.
 
 
 %return cell's abstract syntax tree (not a tuple but just a list)
-get_cells_ast(H, Site, Page)	->
+get_cell_s_ast(H, Site, Page)	->
 	Cell = #refX{site = Site, path = Page,
                    obj = hn_util:parse_ref(H)},
     List = new_db_api:read_ref(Cell),
@@ -249,6 +234,24 @@ get_cells_ast(H, Site, Page)	->
 			case Tuple of 
 				false			-> [];
 				{"__ast", AST}	-> AST;
+				[]				-> []
+			end
+	end.
+
+
+%get_cell_s_value("a2", "http://hypernumbers.dev:9000", ["page1"]).
+get_cell_s_value(Cell, Site, Page)	->
+	Ref = #refX{site = Site, path = Page,
+                   obj = hn_util:parse_ref(Cell)},
+	List = new_db_api:read_ref(Ref),
+    case List of 
+		[]	-> [];
+		_List	->
+			[{_address, Properties}] = _List,
+			Tuple = lists:keyfind("value", 1, Properties),
+			case Tuple of 
+				false			-> [];
+				{"value", Value}	-> Value;
 				[]				-> []
 			end
 	end.
