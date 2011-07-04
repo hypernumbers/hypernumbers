@@ -415,8 +415,7 @@ authorize_admin(_Site, [{"admin", {_, [{"set_password", _}]}}], Uid) ->
 authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
   when (Request == "set_view")
        orelse (Request == "set_champion")
-       orelse (Request == "invite_user")
-       orelse (Request == "save_template")->
+       orelse (Request == "invite_user") ->
     case passport:uid_to_email(Uid) of
         {ok, "anonymous"} -> denied;
         _                 ->
