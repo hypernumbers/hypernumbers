@@ -21,9 +21,16 @@
          ]).
 
 -export([
-         'html.timmenu.'/1,
-         'html.timsubmenu'/1
-        ]).
+         'tim.alert.'/1,
+         'tim.box.'/1,
+         'tim.plainbox.'/1,
+         'tim.ruledbox.'/1,
+         'tim.headline.'/1,
+         'tim.horizontal.line.'/1,
+         'tim.vertical.line.'/1,
+         'tim.menu.'/1,
+         'tim.submenu'/1
+         ]).
 
 'link.box.'([H, W, Z]) ->
     'link.box.'([H, W, Z, 0]);
@@ -229,40 +236,139 @@ menu1([H | T], Cl, Acc) ->
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
-%%% Practice menus                                                           %%%
+%%% Propsed new components                                                   %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+'tim.plainbox.'([Width, Height | List]) ->
+    [W] = typechecks:throw_std_ints([Width]),
+    [H] = typechecks:throw_std_ints([Height]),
+    check_size(W, H),
+    Class = "hn_sld_plainbox",
+    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
+    Js_R = ["Generic.reload();"],
+    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
+    'tim.box.1'(Class, W, H, List, Incs).
 
-'html.timmenu.'([Width, Style | Rest]) ->
-    [Width2, Style2] = typechecks:throw_std_ints([Width, Style]),
-    if Style2 >=1 andalso Style2 =< 3 ->
-            Strings = typechecks:throw_flat_strs(Rest),
-            Menu = menutim(Strings, "gen_list_" ++ integer_to_list(Style2), []),
-            CSS = ["/webcomponents/timmenu.css"],
-            JS = ["/webcomponents/timmenu.js"],
-            JSR = ["HN.timMenu.reload();"],
-            Incs = #incs{css = CSS, js = JS, js_reload = JSR},
-            io:format("Strings is ~p~nMenu is ~p~n", [Strings, Menu]),
-            {preview, {"Tim's Menu", Width2, 2, Incs}, Menu};
-       Style2 < 0 orelse Style2 > 3 ->
-            ?ERR_VAL
-    end.
+'tim.ruledbox.'([Width, Height | List]) ->
+    [W] = typechecks:throw_std_ints([Width]),
+    [H] = typechecks:throw_std_ints([Height]),
+    check_size(W, H),
+    Class = "hn_sld_ruledbox",
+    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
+    Js_R = ["Generic.reload();"],
+    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
+    'tim.box.1'(Class, W, H, List, Incs).
 
-'html.timsubmenu'(List) ->
-    Rules = [eval_funs, fetch, flatten, {cast, str}],
-    Passes = [return_errors],
-    [Menu | Subs] = muin_collect:col(List, Rules, Passes),
-    SubMenu = "<a href='#'>" ++ Menu ++ "</a>"
-        ++ menutim(lists:reverse(Subs), "first_level", []),
-    {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
+'tim.box.'([Width, Height | List]) ->
+    [W] = typechecks:throw_std_ints([Width]),
+    [H] = typechecks:throw_std_ints([Height]),
+    check_size(W, H),
+    Class = "hn_sld_box",
+    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
+    Js_R = ["Generic.reload();"],
+    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
+    'tim.box.1'(Class, W, H, List, Incs).
 
-
-menutim([], Class, Acc) ->
-    Klass = case Class of
-                []    -> "";
-                Other -> " class="++Other
+'tim.alert.'([Width, Height, Style | List]) ->
+    [W] = typechecks:throw_std_ints([Width]),
+    [H] = typechecks:throw_std_ints([Height]),
+    [S] = typechecks:throw_std_ints([Style]),
+    check_size(W, H),
+    check_alerts(S),
+    Class = case S of
+                0 -> "hn_sld_box";
+                _ -> "hn_sld_alert hn_sld_level" ++ integer_to_list(Style)
             end,
-    "<ul"++Klass++">"++lists:flatten(lists:reverse(Acc))++"</ul>";
-menutim([H | T], Cl, Acc) ->
-    Line = "<li>"++H++"</li>",
-    menutim(T, Cl, [Line | Acc]).
+    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
+    Js_R = ["Generic.reload();"],
+    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
+    'tim.box.1'(Class, W, H, List, Incs).
+
+'tim.box.1'(Class, W, H, [Headline, Content, Footer], Incs) ->
+    [H1] = typechecks:throw_html_box_contents([Headline]),
+    [C1] = typechecks:throw_html_box_contents([Content]),
+    [F1] = typechecks:throw_html_box_contents([Footer]),
+    Box = "<div class='"  ++ Class ++ "'><h4>" ++ H1 ++ "</h1><p>"
+        ++ C1 ++ "</p><h6>" ++ F1 ++ "</h6></div>",
+    {resize, {W, H, Incs}, Box};
+
+'tim.box.1'(Class, W, H, [Headline, Content], Incs) ->
+    [H1] = typechecks:throw_html_box_contents([Headline]),
+    [C1] = typechecks:throw_html_box_contents([Content]),
+    Box = "<div class='" ++ Class ++ "'><h4>" ++ H1 ++ "</h1>" ++ "<p>"
+        ++ C1 ++ "</p></div>",
+    {resize, {W, H, Incs}, Box};
+
+'tim.box.1'(Class, W, H, [Headline], Incs) ->
+    [H1] = typechecks:throw_html_box_contents([Headline]),
+    Box = "<div class='" ++ Class ++ "'><p>" ++ H1 ++ "</p></div>",
+    {resize, {W, H, Incs}, Box}.
+
+check_alerts(N) when 0 =< N andalso N < 4 -> ok;
+check_alerts(_N)                         -> ?ERR_VAL.
+
+'tim.headline.'([W, H, Text]) ->
+    [W2] = typechecks:throw_std_ints([W]),
+    [H2] = typechecks:throw_std_ints([H]),
+    [T2] = typechecks:throw_std_strs([Text]),
+    check_size(W2, H2),
+    HTML = "<h3 class='hn_sld_headline'>" ++ T2 ++ "</h3>",
+    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
+    Js_R = ["Generic.reload();"],
+    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
+    {resize, {W2, H2, Incs}, HTML}.
+
+'tim.horizontal.line.'([W]) ->
+    [W2] = typechecks:throw_std_ints([W]),
+    HTML = "<hr class='hn_sld_hr' />",
+    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
+    Js_R = ["Generic.reload();"],
+    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
+    {resize, {W2, 1, Incs}, HTML}.
+
+'tim.vertical.line.'([H]) ->
+    [H2] = typechecks:throw_std_ints([H]),
+    HTML = "<div class='hn_sld_vertline'></div>",
+    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
+    Js_R = ["Generic.reload();"],
+    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
+    {resize, {1, H2, Incs}, HTML}.
+
+'tim.menu.'([W | Rest]) ->
+    [W2] = typechecks:throw_std_ints([W]),
+    Strings = typechecks:throw_html_box_contents(Rest),
+    Menu = 'tim.menu1'(Strings, "hn_sld_menu sld_menu1", []),
+    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
+    Js_R = ["Generic.reload();"],
+    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
+    {preview, {"Menu " ++ hd(Strings), W2, 2, Incs}, Menu}.
+
+'tim.submenu'(List) ->
+    [Header | Strings] = typechecks:throw_html_box_contents(List),
+    SubMenu = 'tim.submenu1'(Strings, Header, "first_level", []),
+    {preview, {"Sub Menu " ++ Header, 1, 1, #incs{}}, SubMenu}.
+
+'tim.menu1'([], Klass, Acc) ->
+    "<ul class='" ++ Klass ++ "'>" ++ lists:flatten(lists:reverse(Acc))
+++ "</ul>";
+'tim.menu1'([H | T], Klass, Acc) ->
+    Line = "<li>" ++ H ++ "</li>",
+    'tim.menu1'(T, Klass, [Line | Acc]).
+
+'tim.submenu1'([], Header, Klass, Acc) ->
+    "<li>" ++ Header ++ "<ul class='" ++ Klass ++ "'>"
+        ++ lists:flatten(lists:reverse(Acc))
+        ++ "</ul></li>";
+'tim.submenu1'([H | T], Header,Klass, Acc) ->
+    Line = "<li>" ++ H ++ "</li>",
+    'tim.submenu1'(T, Header, Klass, [Line | Acc]).
+
+
