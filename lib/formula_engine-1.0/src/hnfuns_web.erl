@@ -166,7 +166,7 @@ trail2([H | T] = L, Acc) ->
     [URL2] = typechecks:throw_std_strs([URL]),
     IFrame = "<iframe class='hn-wc-ht-" ++ integer_to_list(Height)
         ++ " hn-wc-wd-" ++ integer_to_list(Width) ++ "' src='" ++
-        URL2 ++ "' frameborder='0'/>",
+        URL2 ++ "' frameborder='0'></iframe>",
     {preview, {"IFrame: " ++ URL2, Width, Height, #incs{}}, IFrame}.
 
 %background_(Url, Rest) ->

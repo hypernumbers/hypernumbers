@@ -48,7 +48,7 @@ SubExpr -> slash            : tidy({url, []},        {page, "/"}).
 Segs -> Segs Seg : join('$1', '$2').
 Segs -> Seg Seg  : join('$1', '$2').
 
-Seg -> Path       : '$1'.
+Seg -> Path       : lowercase('$1').
 Seg -> slash zseg : zseg('$2').
 
 Fullstops -> fullstop          : '$1'.
@@ -115,6 +115,8 @@ t2([{_, Txt} | T], Acc) -> t2(T, [Txt | Acc]).
 
 zseg({_, Txt}) -> {zseg, "[" ++ Txt ++ "]"}.
 
+lowercase({seg, Seg}) -> {seg, string:to_lower(Seg)}.
+
 %% API
 
 make_refX("http://"++URL) ->
@@ -164,21 +166,21 @@ seg_test_() ->
                                             ],
                                         {page, "/"}}),
 
-     %% ?_assert(p_TEST("/Blah/bLah/") == {url, [
-     %%                                          "blah",
-     %%                                          "blah"
-     %%                                         ],
-     %%                                    {page, "/"}}),
+      ?_assert(p_TEST("/Blah/bLah/") == {url, [
+                                               "blah",
+                                               "blah"
+                                              ],
+                                         {page, "/"}}),
 
      ?_assert(p_TEST("/[blah]/") == {gurl, [
                                             "[blah]"
                                            ],
                                      {page, "/"}}),
 
-     %% ?_assert(p_TEST("/[bLAh]/") == {gurl, [
-     %%                                        "[bLAh]"
-     %%                                       ],
-     %%                                 {page, "/"}}),
+      ?_assert(p_TEST("/[bLAh]/") == {gurl, [
+                                             "[bLAh]"
+                                            ],
+                                      {page, "/"}}),
 
      ?_assert(p_TEST("/blah/[blah]/") == {gurl, [
                                                  "blah",
@@ -201,29 +203,29 @@ ref_test_() ->
                                                   "blah",
                                                   "blah"
                                                  ],
-                                           {column, {range, {2, zero,  3, inf}}}}),
+                                           {column, {2, 3}}}),
 
-     %% ?_assert(p_TEST("/Blah/bLah/$b:c") == {gurl, [
-     %%                                               "blah",
-     %%                                               "blah"
-     %%                                              ],
-     %%                                        {column, {range, {2, zero, 3, inf}}}}),
+      ?_assert(p_TEST("/Blah/bLah/$b:c") == {gurl, [
+                                                    "blah",
+                                                    "blah"
+                                                   ],
+                                             {column, {2, 3}}}),
 
      ?_assert(p_TEST("/[blah]/a1:B2") == {gurl, [
                                                  "[blah]"
                                                 ],
-                                          {range,{1, 1, 2, 2}}}),
+                                          {range, {1, 1, 2, 2}}}),
 
      ?_assert(p_TEST("/[bLAh]/2:3") == {gurl, [
                                                "[bLAh]"
                                               ],
-                                        {row, {range, {zero, 2, inf, 3}}}}),
+                                        {row, {2, 3}}}),
 
      ?_assert(p_TEST("/blah/[blah]/1:$1") == {gurl, [
                                                      "blah",
                                                      "[blah]"
                                                     ],
-                                              {row, {range, {zero, 1, inf, 1}}}})
+                                              {row, {1, 1}}})
     ].
 
 filename_test_() ->

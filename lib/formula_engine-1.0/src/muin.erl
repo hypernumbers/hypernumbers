@@ -11,8 +11,16 @@
 
 -define(notincfns, [include, tick, snapshot, input, textarea, button, radio, select, 'create.button', 'map.rows.button', 'map.sheet.button']).
 
+-define(timalert, $t,$i,$m,$.,$a,$l,$e,$r,$t,$.).
+-define(timbox, $t,$i,$m,$.,$b,$o,$x,$.).
+-define(timplainbox, $t,$i,$m,$.,$p,$l,$a,$i,$n,$b,$o,$x,$.).
+-define(timruledbox, $t,$i,$m,$.,$r,$u,$l,$e,$d,$b,$o,$x,$.).
+-define(timheadline, $t,$i,$m,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
+-define(timhorizontalline, $t,$i,$m,$.,$h,$o,$r,$i,$z,$o,$n,$t,$a,$l,$.,$l,$i,$n,$e,$.).
+-define(timverticalline, $t,$i,$m,$.,$v,$e,$r,$t,$i,$c,$a,$l,$.,$l,$i,$n,$e,$.).
+-define(timmenu, $t,$i,$m,$.,$m,$e,$n,$u,$.).
+
 -define(genint, $g,$e,$n,$e,$r,$i,$c,$.,$i,$n,$t,$e,$g,$r,$a,$t,$i,$o,$n,$.).
--define(htmltimmenu, $h,$t,$m,$l,$.,$t,$i,$m,$m,$e,$n,$u,$.).
 -define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
 -define(iframe, $i,$f,$r,$a,$m,$e,$.).
 -define(html, $h,$t,$m,$l,$.).
@@ -214,6 +222,21 @@ eval(Value) ->
 
 % I know it is fugly but you try and get it to work with guards and
 % it won't - so stick it up yes
+transform([?timalert | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?timalert]), [W, H | Args]};
+transform([?timbox | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?timbox]), [W, H | Args]};
+transform([?timplainbox | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?timplainbox]), [W, H | Args]};
+transform([?timruledbox | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?timruledbox]), [W, H | Args]};
+transform([?timheadline | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?timheadline]), [W, H | Args]};
 transform([?genint | R], Args) ->
     {W, H} = get_dims(R),
     {list_to_atom([?genint]), [W, H | Args]};
@@ -265,12 +288,16 @@ transform([?linkbox | R], Args) ->
     io:format("W is ~p H is ~p~n", [W, H]),
     {list_to_atom([?linkbox]), [W , H | Args]};
 % single parameter stuff
+transform([?timverticalline | R], Args) ->
+    {list_to_atom([?timverticalline]), [R | Args]};
+transform([?timhorizontalline | R], Args) ->
+    {list_to_atom([?timhorizontalline]), [R | Args]};
 transform([?horizontalline | R], Args) ->
     {list_to_atom([?horizontalline]), [R | Args]};
 transform([?verticalline | R], Args) ->
     {list_to_atom([?verticalline]), [R | Args]};
-transform([?htmltimmenu | R], Args) ->
-    {list_to_atom([?htmltimmenu]), [R | Args]};
+transform([?timmenu | R], Args) ->
+    {list_to_atom([?timmenu]), [R | Args]};
 transform([?htmlmenu | R], Args) ->
     {list_to_atom([?htmlmenu]), [R | Args]};
 %% order matters to prevent premature matching!

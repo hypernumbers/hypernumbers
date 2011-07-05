@@ -898,6 +898,7 @@ a.toolbar-item {
 #formbutton  { background-position: -183px -82px; }
 
 #inlineinput { background-position: -205px -104px; }
+#inlinedropdown { background-position: -228px -103px; }
 
 /* used in the tour */
 .inlineinput {

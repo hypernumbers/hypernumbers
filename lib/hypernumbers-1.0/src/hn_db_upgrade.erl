@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_user_fn_table_2011_06_30/0,
          bug_fix_for_row_cols_2011_06_25/0,
          add_path_index_to_logs_2011_05_26/0,
          force_sparkline_recalc_2011_05_15/0,
@@ -43,6 +44,15 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+add_user_fn_table_2011_06_30() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fields = record_info(fields, user_fns),
+                   make_table(Site, user_fns, Fields, disc_copies)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 bug_fix_for_row_cols_2011_06_25() ->
     Sites = hn_setup:get_sites(),

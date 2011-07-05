@@ -213,7 +213,7 @@ input[type=submit].hninput:hover {
 #cover, #cover2 {
     position   : fixed;
     background : #000;
-    opacity    : 0.7;
+    opacity    : 0.75;
     top        : 0px;
     left       : 0px;
     width      : 100%;
