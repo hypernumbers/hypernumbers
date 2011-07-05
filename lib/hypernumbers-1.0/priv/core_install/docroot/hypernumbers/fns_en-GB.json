@@ -4437,14 +4437,19 @@
                  "type": "optional"
              },
              {
-                "name": "Javascript Reload",
-                "desc": "A javascript snippet as text.",
-                "type": "optional"
+                 "name": "Javascript Reload",
+                 "desc": "A javascript snippet as text.",
+                 "type": "optional"
              },
              {
-                "name": "CSS File",
-                "desc": "The URL of the CSS file.",
-                "type": "optional"
+                 "name": "CSS File",
+                 "desc": "The URL of the CSS file.",
+                 "type": "optional"
+             },
+             {
+                 "name": "Show Preview",
+                 "desc": "TRUE or FALSE.",
+                 "type": "optional"
             }
          ]
     },

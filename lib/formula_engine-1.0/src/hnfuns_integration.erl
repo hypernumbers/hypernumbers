@@ -121,18 +121,24 @@
     {resize, {8, 15, Incs}, HTML}.
 
 'generic.integration.'([W, H, HTML]) ->
-    gen_i(W, H, HTML, [], [], []);
+    gen_i(W, H, HTML, [], [], [], false);
 'generic.integration.'([W, H, HTML, Js, JsRel])->
-    gen_i(W, H, HTML, Js, JsRel, []);
+    gen_i(W, H, HTML, Js, JsRel, [], false);
 'generic.integration.'([W, H, HTML, Js, JsRel, CSS]) ->
-    gen_i(W, H, HTML, Js, JsRel, CSS).
+    gen_i(W, H, HTML, Js, JsRel, CSS, false);
+'generic.integration.'([W, H, HTML, Js, JsRel, CSS, ShowPreview]) ->
+    [SP1] = typechecks:throw_std_bools([ShowPreview]),
+    gen_i(W, H, HTML, Js, JsRel, CSS, SP1).
 
-gen_i(W, H, HTML, Js, JsRel, CSS) ->
+gen_i(W, H, HTML, Js, JsRel, CSS, ShowPreview) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     [HTML2, Js2, JsRel2, CSS2] = typechecks:std_strs([HTML, Js, JsRel, CSS]),
     Incs = #incs{js = [Js2], js_reload = [JsRel2], css = [CSS2]},
-    {resize, {Width, Height, Incs}, HTML2}.
+    case ShowPreview of
+        false -> {resize, {Width, Height, Incs}, HTML2};
+        true  -> {preview, {"Generic Integration", Width, Height, Incs}, HTML2}
+    end.
 
 % for hypernumbers it is:
 % * id = 196044207084776
