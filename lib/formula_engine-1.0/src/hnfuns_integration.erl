@@ -98,11 +98,9 @@
 % * shortname = hypernumbers
 % * id = 123132
 'disqus.comments'([ShortName]) ->
-    io:format("ShortName is ~p~n", [ShortName]),
     [ShortName2]= typechecks:std_strs([ShortName]),
     Id = hnfuns_web:page([]),
     Page = hnfuns_web:site([]) ++ hnfuns_web:page([]),
-    io:format("ShortName2 is ~p Id is ~p Page is ~p~n", [ShortName2, Id, Page]),
     HTML = "<div id='disqus_thread'></div>"
         ++ "<a href='http://disqus.com' class='dsq-brlink'>"
         ++ "blog comments powered by <span class='logo-disqus'>Disqus</span></a>",
@@ -151,7 +149,6 @@ gen_i(W, H, HTML, Js, JsRel, CSS, ShowPreview) ->
         ++ "xfbml=1"],
     Reload = ["FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');"],
     Incs = #incs{js = Js, js_reload = Reload},
-    io:format("HTML is ~p~n", [HTML]),
     {preview, {"Facebook Comments", 8, 10, Incs},  HTML}.
 
 'twitter.tweet'([Message]) ->

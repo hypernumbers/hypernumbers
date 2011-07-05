@@ -283,9 +283,7 @@ transform([?piechart | R], Args) ->
     {W, H} = get_dims(R),
     {list_to_atom([?piechart]), [W , H | Args]};
 transform([?linkbox | R], Args) ->
-    io:format("Args is ~p~n", [Args]),
     {W, H} = get_dims(R),
-    io:format("W is ~p H is ~p~n", [W, H]),
     {list_to_atom([?linkbox]), [W , H | Args]};
 % single parameter stuff
 transform([?timverticalline | R], Args) ->

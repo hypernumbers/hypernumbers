@@ -151,14 +151,10 @@ binomdist([V1, V2, V3, V4]) ->
     muin_checks:ensure(Succprob =< 1, ?ERRVAL_NUM),
     binomdist1(Succn, Trials, trunc(Succprob * 100), Cumul).
 binomdist1(Ns, Nt, Ps, false) ->
-    io:format("In binomddist1 (false) Ns is ~p Nt is ~p Ps is ~p~n",
-              [Ns, Nt, Ps]),
     stdfuns_math:combin([Ps, Nt]) * math:pow(Ps, Ns) * math:pow((1 - Ps),
                                                                 (Nt - Ns));
 %% TODO: Rewrite to tail-recursive.
 binomdist1(Ns, Nt, Ps, true) ->
-    io:format("In binomddist1 (true) Ns is ~p Nt is ~p Ps is ~p~n",
-              [Ns, Nt, Ps]),
     binomdist1(Ns, Nt, Ps, false) + binomdist1(Ns - 1, Nt, Ps, true).
 
 chidist([V1, V2]) ->

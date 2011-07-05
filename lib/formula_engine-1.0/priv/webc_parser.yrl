@@ -112,7 +112,6 @@ c2(A, [{H} | T], C) ->
                _Other ->
                    exit("no such view")
            end,
-    io:format("NewC is ~p~n", [NewC]),
     c2(A, T, NewC).
 
 make_user({dollar, [$$]}, {plainpath, "user"}) -> {plainpath, "$user"};
@@ -527,7 +526,7 @@ stevies_test_() ->
 
      ?_assert(p_TEST("/[jingo, 12aA_-~]/") ==
               [
-               {segment, {namedpage,"jingo", "12aA_-~"},
+               {segment, {namedpage,"jingo", "12aa_-~"},
                 #destination{type = false}, [], [], [], []}
               ])
     ].

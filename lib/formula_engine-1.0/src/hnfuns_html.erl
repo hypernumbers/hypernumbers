@@ -279,7 +279,7 @@ menu1([H | T], Cl, Acc) ->
     check_size(W, H),
     check_alerts(S),
     Class = case S of
-                0 -> "hn_sld_box";
+                0 -> "hn_sld_alert";
                 _ -> "hn_sld_alert hn_sld_level" ++ integer_to_list(Style)
             end,
     Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
@@ -292,20 +292,26 @@ menu1([H | T], Cl, Acc) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
     [C1] = typechecks:throw_html_box_contents([Content]),
     [F1] = typechecks:throw_html_box_contents([Footer]),
-    Box = "<div class='"  ++ Class ++ "'><h4>" ++ H1 ++ "</h1><p>"
+    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W)
+        ++ " hn_box_height_" ++ integer_to_list(H),
+    Box = "<div class='"  ++ Class2 ++ "'><h4>" ++ H1 ++ "</h1><p>"
         ++ C1 ++ "</p><h6>" ++ F1 ++ "</h6></div>",
     {resize, {W, H, Incs}, Box};
 
 'tim.box.1'(Class, W, H, [Headline, Content], Incs) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
     [C1] = typechecks:throw_html_box_contents([Content]),
-    Box = "<div class='" ++ Class ++ "'><h4>" ++ H1 ++ "</h1>" ++ "<p>"
+    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W)
+        ++ " hn_box_height_" ++ integer_to_list(H),
+    Box = "<div class='" ++ Class2 ++ "'><h4>" ++ H1 ++ "</h1>" ++ "<p>"
         ++ C1 ++ "</p></div>",
     {resize, {W, H, Incs}, Box};
 
 'tim.box.1'(Class, W, H, [Headline], Incs) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
-    Box = "<div class='" ++ Class ++ "'><p>" ++ H1 ++ "</p></div>",
+    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W)
+        ++ " hn_box_height_" ++ integer_to_list(H),
+    Box = "<div class='" ++ Class2 ++ "'><p>" ++ H1 ++ "</p></div>",
     {resize, {W, H, Incs}, Box}.
 
 check_alerts(N) when 0 =< N andalso N < 4 -> ok;
@@ -316,7 +322,9 @@ check_alerts(_N)                         -> ?ERR_VAL.
     [H2] = typechecks:throw_std_ints([H]),
     [T2] = typechecks:throw_std_strs([Text]),
     check_size(W2, H2),
-    HTML = "<h3 class='hn_sld_headline'>" ++ T2 ++ "</h3>",
+    Class = "hn_sld_headline" ++ " hn_box_width_" ++ integer_to_list(W)
+        ++ " hn_box_height_" ++ integer_to_list(H),
+    HTML = "<h3 class='" ++ Class ++ "'>" ++ T2 ++ "</h3>",
     Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
     Js_R = ["Generic.reload();"],
     CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
