@@ -36,28 +36,23 @@
 %%%===================================================================
 page_written(Site, Path) when is_list(Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, {page_written, Path}).
+    gen_server:call({global, Id}, {page_written, Path}).
 
 page_deleted(Site, Path) when is_list(Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, {page_deleted, Path}).
+    gen_server:call({global, Id}, {page_deleted, Path}).
 
 get_pages(Site) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, get_pages).
+    gen_server:call({global, Id}, get_pages).
 
 does_page_exist(Site, Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, {does_page_exist, Path}).
+    gen_server:call({global, Id}, {does_page_exist, Path}).
 
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, dump).
+    gen_server:call({global, Id}, dump).
 
 
 %%--------------------------------------------------------------------
