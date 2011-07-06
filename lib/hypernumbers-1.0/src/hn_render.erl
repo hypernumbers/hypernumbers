@@ -208,8 +208,8 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
           end,
     Cell = tconv:to_b26(C) ++ integer_to_list(R),
     St = "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s"
-        ++" -moz-border-radius: 4px 4px 4px 4px;"
-        ++" -webkit-border-radius: 4px 4px 4px 4px;",
+        ++" -moz-border-radius: 2px 2px 2px 2px;"
+        ++" -webkit-border-radius: 2px 2px 2px 2px;",
 
     case Inp of
         "inline" ->
@@ -217,7 +217,7 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
                                   [X, Y, W - 4, H - 2, Css]),
             StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
                                     [W - 8, H - 4]),
-                "<div class='hn_padded' "++Style ++">"++
+                "<div "++Style ++">"++
                 "<div class='inline' " ++ StyleIn ++
                 " data-ref='"++Cell++"'>"++Val++
                 "</div></div>";
