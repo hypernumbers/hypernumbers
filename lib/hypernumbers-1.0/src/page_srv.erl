@@ -18,6 +18,7 @@
 -export([
          page_written/2,
          page_deleted/2,
+         get_flatpages/1,
          get_pages/1,
          does_page_exist/2,
          dump/1
@@ -34,10 +35,12 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
+page_written(_Site, []) -> ok;
 page_written(Site, Path) when is_list(Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
     gen_server:call({global, Id}, {page_written, Path}).
 
+page_deleted(_Site, []) -> ok;
 page_deleted(Site, Path) when is_list(Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
     gen_server:call({global, Id}, {page_deleted, Path}).
@@ -46,6 +49,11 @@ get_pages(Site) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
     gen_server:call({global, Id}, get_pages).
 
+get_flatpages(Site) ->
+    Id = hn_util:site_to_atom(Site, "_pages"),
+    gen_server:call({global, Id}, get_flatpages).
+
+does_page_exist(_Site, []) -> true;
 does_page_exist(Site, Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
     gen_server:call({global, Id}, {does_page_exist, Path}).
@@ -53,7 +61,6 @@ does_page_exist(Site, Path) ->
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
     gen_server:call({global, Id}, dump).
-
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -114,13 +121,16 @@ handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
                           ok = new_db_api:write_kv(Site, ?pages, P2),
                           ok = remoting_reg:notify_pages(Site),
                           {ok, P2};
-                      get_pages ->
+                      get_flatpages ->
                           % this is a bit shit
                           % the caller usually wants the pages as a json
                           % tree and this fn flatpacks it for the called
                           % to rebuild the tree :(
+                          % use get_pages if you can
                           {ok, FlatPages} = dh_tree:flatlist(Pages),
                           {FlatPages, Pages};
+                      get_pages ->
+                          {Pages, Pages};
                       {does_page_exist, P} ->
                           {dh_tree:is_member(P, Pages), Pages};
                       dump ->
