@@ -29,7 +29,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {site, pages = []}).
+-record(state, {site, pages = dh_tree:new()}).
 
 %%%===================================================================
 %%% API
@@ -102,24 +102,29 @@ init([Site]) ->
 handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
     {Rep, NewP} = case Request of
                       {page_written, P} ->
-                          case lists:member(P, Pages) of
+                          case dh_tree:is_member(P, Pages) of
                               true  -> {ok, Pages};
-                              false -> P2 = [P | Pages],
+                              false -> P2 = dh_tree:add(P, Pages),
                                        ok = new_db_api:write_kv(Site, ?pages, P2),
                                        ok = remoting_reg:notify_pages(Site),
                                        {ok, P2}
                           end;
                       {page_deleted, P} ->
-                          P2 = lists:delete(P, Pages),
+                          P2 = delete(P, Pages),
                           ok = new_db_api:write_kv(Site, ?pages, P2),
                           ok = remoting_reg:notify_pages(Site),
                           {ok, P2};
                       get_pages ->
-                          {Pages, Pages};
+                          % this is a bit shit
+                          % the caller usually wants the pages as a json
+                          % tree and this fn flatpacks it for the called
+                          % to rebuild the tree :(
+                          {ok, FlatPages} = dh_tree:flatlist(Pages),
+                          {FlatPages, Pages};
                       {does_page_exist, P} ->
-                          {lists:member(P, Pages), Pages};
+                          {dh_tree:is_member(P, Pages), Pages};
                       dump ->
-                          io:format("Pages is ~p~n", [Pages]),
+                          io:format("Pages is ~p~n", [dh_tree:flatlist(Pages)]),
                           {ok, Pages}
                   end,
     {reply, Rep, State#state{pages = NewP}}.
@@ -178,3 +183,6 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+delete(P, Pages) ->
+    io:format("in delete P is ~p Pages is~p~n", [P, Pages]),
+    Pages.
