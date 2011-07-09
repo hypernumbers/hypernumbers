@@ -258,12 +258,15 @@ read_kv(Site, Key) ->
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
-read_pages(RefX) when is_record(RefX, refX) -> page_srv:get_pages(RefX#refX.site).
+read_pages(RefX) when is_record(RefX, refX) ->
+    page_srv:get_flatpages(RefX#refX.site).
 
 %% @doc reads pages
 %% @todo fix up api
+%% we are doing tree -> flat -> tree here
+%% smellee! :(
 read_page_structure(#refX{site = Site}) ->
-    Pages = page_srv:get_pages(Site),
+    Pages = page_srv:get_flatpages(Site),
     filter_pages(Pages, dh_tree:new()).
 
 -spec read_intersect_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].

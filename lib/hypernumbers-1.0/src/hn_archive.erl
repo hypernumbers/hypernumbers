@@ -79,7 +79,7 @@ dump_etf(Site, SiteDest) ->
     Ref = hn_util:url_to_refX(Site),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     [ok = dump_page(EtfDest, Encoder, Ref, Path)
-     || Path <- page_srv:get_pages(Site)],
+     || Path <- page_srv:get_flatpages(Site)],
     ok.
 
 dump_page(EtfDest, Encoder, Ref, Path) ->
