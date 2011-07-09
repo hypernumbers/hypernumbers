@@ -15,6 +15,7 @@
          delete/2,
          flatlist/1,
          segments_below/2,
+         subtree/2,
          update/3,
          is_member/2
         ]).
@@ -30,6 +31,19 @@ create([],Dict) ->
     Dict;
 create([H|T],Dict) ->
     create(T,add(H,Dict)).
+
+-spec subtree(List::list(), Dict::any()) ->
+    Dict::any().
+subtree([H], Dict) ->
+    case dict:is_key(H, Dict) of
+        false -> dict:new();
+        true  -> dict:fetch(H, Dict)
+    end;
+subtree([H | T], Dict) ->
+    case dict:is_key(H, Dict) of
+        false -> dict:new();
+        true  -> subtree(T, dict:fetch(H, Dict))
+    end.
 
 -spec segments_below(List::list(), Dict::any()) ->
      List::list().
@@ -222,6 +236,30 @@ testB6([]) ->
     Segs = dh_tree:segments_below(["bleh"], NDict4),
     ?assertEqual(lists:sort(["blah", "blerph", "blatterh"]), lists:sort(Segs)).
 
+testC1([]) ->
+    Path1  = ["bleh", "blah", "bloh"],
+    Path1a = ["bleh", "blerph", "bloh"],
+    Path1b = ["bleh", "blatterh", "bloh"],
+    Path1c = ["bleh", "blatterh", "bluh"],
+    Path2  = ["blooh", "blerp", "blop"],
+    Dict = dh_tree:add(Path1, dh_tree:new()),
+    NDict2 = dh_tree:add(Path2, Dict),
+    NDict3 = dh_tree:add(Path1a, NDict2),
+    NDict4 = dh_tree:add(Path1b, NDict3),
+    NDict5 = dh_tree:add(Path1c, NDict4),
+    %% now create the subtree
+    Path1X  = ["blah", "bloh"],
+    Path1aX = ["blerph", "bloh"],
+    Path1bX = ["blatterh", "bloh"],
+    Path1cX = ["blatterh", "bluh"],
+    DictX = dh_tree:add(Path1X, dh_tree:new()),
+    NDictX1 = dh_tree:add(Path1aX, DictX),
+    NDictX2 = dh_tree:add(Path1bX, NDictX1),
+    Expected = dh_tree:add(Path1cX, NDictX2),
+    Subtree = dh_tree:subtree(["bleh"], NDict5),
+    ?assertEqual(Expected, Subtree).
+
+
 unit_test_() ->
     Setup   = fun()  -> ok end,
     Cleanup = fun(_) -> ok end,
@@ -241,9 +279,14 @@ unit_test_() ->
                fun testB5/1,
                fun testB6/1
               ],
-
+    SeriesC = [
+               fun testC1/1
+               ],
 
     {setup, Setup, Cleanup,
-     [{with, [], SeriesA},
-      {with, [], SeriesB}]
+     [
+      {with, [], SeriesA},
+      {with, [], SeriesB},
+      {with, [], SeriesC}
+     ]
     }.
