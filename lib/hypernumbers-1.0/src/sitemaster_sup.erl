@@ -5,7 +5,8 @@
 %% API
 -export([start_link/0,
          add_site/1,
-         delete_site/1]).
+         delete_site/1,
+         hotswap_site/2]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -33,6 +34,24 @@ add_site(Site) ->
 delete_site(Site) ->
     supervisor:terminate_child(?MODULE, Site),
     ok = supervisor:delete_child(?MODULE, Site).
+
+-spec hotswap_site(string(), atom()) -> ok.
+hotswap_site(Site, NewNode) ->
+    % this has to be done before we start the new nodes.
+    SupId = hn_util:site_to_atom(Site, "_sup"),
+    OldNode = node(global:whereis_name(SupId)),
+
+    % start the site on the new node.
+    ChildSpec = gen_child_spec(Site),
+    ok = case supervisor:start_child({NewNode, ?MODULE}, ChildSpec) of
+        {ok, _} -> ok;
+        {error, {already_started, _}} -> ok;
+        Else -> Else
+    end,
+
+    % stop the site on the old node.
+    ok = supervisor:terminate_child({OldNode, ?MODULE}, Site),
+    ok = supervisor:delete_child({OldNode, ?MODULE}, Site).
 
 %%====================================================================
 %% Supervisor callbacks
