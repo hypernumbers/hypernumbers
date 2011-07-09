@@ -47,15 +47,21 @@ subtree([H | T], Dict) ->
 
 -spec segments_below(List::list(), Dict::any()) ->
      List::list().
-segments_below([H], Dict) ->
+% the empty list is the root path
+segments_below([], Dict) ->
+    dict:fetch_keys(Dict);
+segments_below(List, Dict) ->
+    segments_below1(List, Dict).
+
+segments_below1([H], Dict) ->
     case dict:is_key(H, Dict) of
         false -> [];
         true  -> dict:fetch_keys(dict:fetch(H, Dict))
     end;
-segments_below([H | T], Dict) ->
+segments_below1([H | T], Dict) ->
     case dict:is_key(H, Dict) of
         false -> [];
-        true  -> segments_below(T, dict:fetch(H, Dict))
+        true  -> segments_below1(T, dict:fetch(H, Dict))
     end.
 
 -spec add(Key::list(string()),Dict::any()) -> any().
@@ -87,22 +93,34 @@ set([H|T], Val, Dict) ->
 -spec erase(Key::list(string()),Dict::any()) -> any().
 %% @doc erase a node from the tree
 %%      (including children)
-erase([H],Dict) ->
+% the empty list is the root path
+erase([], _Dict) ->
+    dict:new();
+erase(List, Dict) ->
+    erase1(List, Dict).
+
+erase1([H],Dict) ->
     dict:erase(H,Dict);
-erase([H|T],Dict) ->
-    dict:store(H,erase(T,dict:fetch(H,Dict)),Dict).
+erase1([H|T],Dict) ->
+    dict:store(H,erase1(T,dict:fetch(H,Dict)),Dict).
 
 -spec delete(Key::list(string()),Dict::any()) -> any().
 %% @doc delete a node from the tree
 %%      (does not include children)
-delete([H],Dict) ->
+% the empty paxth is the root
+delete([], _Dict) ->
+    dict:new();
+delete(List, Dict) ->
+    delete1(List, Dict).
+
+delete1([H],Dict) ->
     Empty = dict:new(),
     case dict:fetch(H, Dict) of
         Empty -> dict:erase(H,Dict);
         _     -> Dict % sub-trees exist -don't delete!
     end;
-delete([H|T],Dict) ->
-    dict:store(H,delete(T,dict:fetch(H,Dict)),Dict).
+delete1([H|T],Dict) ->
+    dict:store(H,delete1(T,dict:fetch(H,Dict)),Dict).
 
 update([H], Dict, F) ->
     NDict = case dict:is_key(H, Dict) of
@@ -141,11 +159,16 @@ flatlist(List,Acc,Dict) ->
     end.
 
 -spec is_member(List::list(), Dict::any()) -> true | false.
-is_member([H], Dict) -> dict:is_key(H, Dict);
-is_member([H | T], Dict) ->
+% the empty path is always a member
+is_member([], _Dict) -> true;
+is_member(List, Dict) ->
+    is_member1(List, Dict).
+
+is_member1([H], Dict) -> dict:is_key(H, Dict);
+is_member1([H | T], Dict) ->
     case dict:is_key(H, Dict) of
         false -> false;
-        true -> is_member(T, dict:fetch(H, Dict))
+        true -> is_member1(T, dict:fetch(H, Dict))
             end.
 
 %%%===================================================================
@@ -236,6 +259,7 @@ testB6([]) ->
     Segs = dh_tree:segments_below(["bleh"], NDict4),
     ?assertEqual(lists:sort(["blah", "blerph", "blatterh"]), lists:sort(Segs)).
 
+% test subpaths
 testC1([]) ->
     Path1  = ["bleh", "blah", "bloh"],
     Path1a = ["bleh", "blerph", "bloh"],
@@ -259,6 +283,50 @@ testC1([]) ->
     Subtree = dh_tree:subtree(["bleh"], NDict5),
     ?assertEqual(Expected, Subtree).
 
+% test actions on the empty path (ie [])
+testD1([]) ->
+    Dict = dh_tree:new(),
+    IsMember = dh_tree:is_member([], Dict),
+    ?assertEqual(true, IsMember).
+
+testD2([]) ->
+    Path = ["bleh", "blah", "bloh"],
+    NDict = dh_tree:add(Path, dh_tree:new()),
+    IsMember = dh_tree:is_member([], NDict),
+    ?assertEqual(true, IsMember).
+
+testD3([]) ->
+    Path = ["bleh", "blah", "bloh"],
+    Dict = dh_tree:add(Path, dh_tree:new()),
+    NDict = dh_tree:delete([], Dict),
+    Empty = dh_tree:new(),
+    ?assertEqual(Empty, NDict).
+
+testD4([]) ->
+    Path1  = ["bleh", "blah", "bloh"],
+    Path1a = ["bleh", "blerph", "bloh"],
+    Path1b = ["bleh", "blatterh", "bloh"],
+    Path2  = ["blooh", "blerp", "blop"],
+    Dict = dh_tree:add(Path1, dh_tree:new()),
+    NDict2 = dh_tree:add(Path2, Dict),
+    NDict3 = dh_tree:add(Path1a, NDict2),
+    NDict4 = dh_tree:add(Path1b, NDict3),
+    Segs = dh_tree:segments_below([], NDict4),
+    ?assertEqual(lists:sort(["bleh", "blooh"]), lists:sort(Segs)).
+
+testD5([]) ->
+    Path1  = ["bleh", "blah", "bloh"],
+    Path1a = ["bleh", "blerph", "bloh"],
+    Path1b = ["bleh", "blatterh", "bloh"],
+    Path1c = ["bleh", "blatterh", "bluh"],
+    Path2  = ["blooh", "blerp", "blop"],
+    Dict = dh_tree:add(Path1, dh_tree:new()),
+    NDict2 = dh_tree:add(Path2, Dict),
+    NDict3 = dh_tree:add(Path1a, NDict2),
+    NDict4 = dh_tree:add(Path1b, NDict3),
+    NDict5 = dh_tree:add(Path1c, NDict4),
+    Subtree = dh_tree:subtree([], NDict5),
+    ?assertEqual(NDict5, Subtree).
 
 unit_test_() ->
     Setup   = fun()  -> ok end,
@@ -279,14 +347,25 @@ unit_test_() ->
                fun testB5/1,
                fun testB6/1
               ],
+
     SeriesC = [
                fun testC1/1
                ],
+
+    SeriesD = [
+               fun testD1/1,
+               fun testD2/1,
+               fun testD3/1,
+               fun testD4/1,
+               fun testD5/1
+               ],
+
 
     {setup, Setup, Cleanup,
      [
       {with, [], SeriesA},
       {with, [], SeriesB},
-      {with, [], SeriesC}
+      {with, [], SeriesC},
+      {with, [], SeriesD}
      ]
     }.
