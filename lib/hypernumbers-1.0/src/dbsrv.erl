@@ -39,7 +39,7 @@
 -spec start_link(string()) -> {ok,pid()} | ignore | {error,any()}.
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_dbsrv_sup"),
-    supervisor_bridge:start_link({global, Id}, ?MODULE, [Site]).
+    supervisor_bridge:start_link({local, Id}, ?MODULE, [Site]).
 
 read_only_activity(Site, Activity) ->
     %% Fix for circular chain deadlock. eg. include() in a formula.
@@ -78,6 +78,8 @@ is_busy(Site) ->
 %% Module:init/1 has returned.
 %%--------------------------------------------------------------------
 init([Site]) ->
+    Id = hn_util:site_to_atom(Site, "_dbsrv_sup"),
+    global:re_register_name(Id, self()),
     QTbl = new_db_wu:trans(Site, dirty_queue),
     Pid = spawn_opt(fun() -> dbsrv_init(Site, QTbl) end,
                     [{fullsweep_after, 0}]),

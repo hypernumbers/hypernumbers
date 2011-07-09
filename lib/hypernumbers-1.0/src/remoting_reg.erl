@@ -37,9 +37,11 @@
 
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:start_link({global, Id}, ?MODULE, [], []).
+    gen_server:start_link({local, Id}, ?MODULE, [Site], []).
 
-init([]) ->
+init([Site]) ->
+    Id = hn_util:site_to_atom(Site, "_remoting"),
+    global:re_register_name(Id, self()),
     {ok, {[], []}}.
 
 %%

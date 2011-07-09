@@ -91,7 +91,7 @@ dump(Site) ->
 %%--------------------------------------------------------------------
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    gen_server:start_link({global, Id}, ?MODULE, [Site], []).
+    gen_server:start_link({local, Id}, ?MODULE, [Site], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -109,6 +109,8 @@ start_link(Site) ->
 %% @end
 %%--------------------------------------------------------------------
 init([Site]) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    global:re_register_name(Id, self()),
     [{kvstore, ?zinf_tree, Zinf_tree}] = new_db_api:read_kv(Site, ?zinf_tree),
     % the zinf tree is intermittently written to the db
     % there SHOULD BE no processed records in table dirty_zinf

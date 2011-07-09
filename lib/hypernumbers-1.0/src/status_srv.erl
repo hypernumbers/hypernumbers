@@ -53,7 +53,7 @@ update_status(User, RefX, Change) ->
 %%--------------------------------------------------------------------
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_status"),
-    gen_server:start_link({global, Id}, ?MODULE, [], []).
+    gen_server:start_link({local, Id}, ?MODULE, [Site], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -70,7 +70,9 @@ start_link(Site) ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([]) ->
+init([Site]) ->
+    Id = hn_util:site_to_atom(Site, "_status"),
+    global:re_register_name(Id, self()),
     {ok, []}.
 
 %%--------------------------------------------------------------------

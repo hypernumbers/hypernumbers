@@ -71,7 +71,7 @@ dump(Site) ->
 %%--------------------------------------------------------------------
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    gen_server:start_link({global, Id}, ?MODULE, [Site], []).
+    gen_server:start_link({local, Id}, ?MODULE, [Site], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -89,6 +89,8 @@ start_link(Site) ->
 %% @end
 %%--------------------------------------------------------------------
 init([Site]) ->
+    Id = hn_util:site_to_atom(Site, "_pages"),
+    global:re_register_name(Id, self()),
     [{kvstore, ?pages, Pages}] = new_db_api:read_kv(Site, ?pages),
     {ok, #state{site = Site, pages = Pages}}.
 

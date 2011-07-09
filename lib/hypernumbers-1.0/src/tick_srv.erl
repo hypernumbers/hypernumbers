@@ -42,7 +42,7 @@ tick(Site) ->
 %%--------------------------------------------------------------------
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_tick"),
-    gen_server:start_link({global, Id}, ?MODULE, [Site], []).
+    gen_server:start_link({local, Id}, ?MODULE, [Site], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -60,6 +60,8 @@ start_link(Site) ->
 %% @end
 %%--------------------------------------------------------------------
 init([Site]) ->
+    Id = hn_util:site_to_atom(Site, "_tick"),
+    global:re_register_name(Id, self()),
     TRef = setup_tick(Site),
     {ok, #state{site = Site, timerref = TRef}}.
 
