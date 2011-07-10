@@ -72,18 +72,15 @@
 
 process_zinfs(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    PID = global:whereis_name(Id),
-    gen_server:cast(PID, process_zinfs).
+    gen_server:cast({global, Id}, process_zinfs).
 
 check_zinfs(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    PID = global:whereis_name(Id),
-    gen_server:cast(PID, check_zinfs).
+    gen_server:cast({global, Id}, check_zinfs).
 
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    PID = global:whereis_name(Id),
-    gen_server:cast(PID, {dump, Site}).
+    gen_server:cast({global, Id}, {dump, Site}).
 
 %%--------------------------------------------------------------------
 %% @doc

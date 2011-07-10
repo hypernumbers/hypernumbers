@@ -18,6 +18,7 @@
 -export([
          page_written/2,
          page_deleted/2,
+         get_flatpages/1,
          get_pages/1,
          does_page_exist/2,
          dump/1
@@ -29,36 +30,37 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {site, pages = []}).
+-record(state, {site, pages = dh_tree:new()}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
+page_written(_Site, []) -> ok;
 page_written(Site, Path) when is_list(Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, {page_written, Path}).
+    gen_server:call({global, Id}, {page_written, Path}).
 
+page_deleted(_Site, []) -> ok;
 page_deleted(Site, Path) when is_list(Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, {page_deleted, Path}).
+    gen_server:call({global, Id}, {page_deleted, Path}).
 
 get_pages(Site) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, get_pages).
+    gen_server:call({global, Id}, get_pages).
 
+get_flatpages(Site) ->
+    Id = hn_util:site_to_atom(Site, "_pages"),
+    gen_server:call({global, Id}, get_flatpages).
+
+does_page_exist(_Site, []) -> true;
 does_page_exist(Site, Path) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, {does_page_exist, Path}).
+    gen_server:call({global, Id}, {does_page_exist, Path}).
 
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, dump).
-
+    gen_server:call({global, Id}, dump).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -107,24 +109,32 @@ init([Site]) ->
 handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
     {Rep, NewP} = case Request of
                       {page_written, P} ->
-                          case lists:member(P, Pages) of
+                          case dh_tree:is_member(P, Pages) of
                               true  -> {ok, Pages};
-                              false -> P2 = [P | Pages],
+                              false -> P2 = dh_tree:add(P, Pages),
                                        ok = new_db_api:write_kv(Site, ?pages, P2),
                                        ok = remoting_reg:notify_pages(Site),
                                        {ok, P2}
                           end;
                       {page_deleted, P} ->
-                          P2 = lists:delete(P, Pages),
+                          P2 = delete(P, Pages),
                           ok = new_db_api:write_kv(Site, ?pages, P2),
                           ok = remoting_reg:notify_pages(Site),
                           {ok, P2};
+                      get_flatpages ->
+                          % this is a bit shit
+                          % the caller usually wants the pages as a json
+                          % tree and this fn flatpacks it for the called
+                          % to rebuild the tree :(
+                          % use get_pages if you can
+                          {ok, FlatPages} = dh_tree:flatlist(Pages),
+                          {FlatPages, Pages};
                       get_pages ->
                           {Pages, Pages};
                       {does_page_exist, P} ->
-                          {lists:member(P, Pages), Pages};
+                          {dh_tree:is_member(P, Pages), Pages};
                       dump ->
-                          io:format("Pages is ~p~n", [Pages]),
+                          io:format("Pages is ~p~n", [dh_tree:flatlist(Pages)]),
                           {ok, Pages}
                   end,
     {reply, Rep, State#state{pages = NewP}}.
@@ -183,3 +193,6 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+delete(P, Pages) ->
+    io:format("in delete P is ~p Pages is~p~n", [P, Pages]),
+    Pages.

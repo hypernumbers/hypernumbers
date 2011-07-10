@@ -31,8 +31,7 @@
 %%%===================================================================
 tick(Site) ->
     Id = hn_util:site_to_atom(Site, "_tick"),
-    PID = global:whereis_name(Id),
-    gen_server:cast(PID, tick).
+    gen_server:cast({global, Id}, tick).
 
 %%--------------------------------------------------------------------
 %% @doc

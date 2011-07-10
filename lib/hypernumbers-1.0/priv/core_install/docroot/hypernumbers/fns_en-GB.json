@@ -3384,7 +3384,7 @@
         ]
     },
     {
-        "fn": "countz",
+        "fn": "zcount",
         "category": "HN Database",
         "desc": "Counts the values in a z-query.",
         "experimental": false,
@@ -3392,7 +3392,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/countz.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/zcount.html",
          "args": [
              {
                 "name": "Z Query",
@@ -3465,7 +3465,7 @@
          ]
     },
     {
-        "fn": "sumz",
+        "fn": "zsum",
         "category": "HN Database",
         "desc": "Sums the results of a z query.",
         "experimental": false,
@@ -3473,7 +3473,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/sumz.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/zsum.html",
          "args": [
              {
                 "name": "Z Query",

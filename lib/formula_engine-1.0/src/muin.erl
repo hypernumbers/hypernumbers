@@ -575,10 +575,8 @@ col_index({offset, N}) -> ?mx + N.
 fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     {zpath, ZList} = Z,
     NewPath = muin_util:walk_zpath(?mpath, ZList),
-    Length = length(NewPath),
-    Paths = page_srv:get_pages(?msite),
-    FPaths = [X || X <- Paths, length(X) == Length],
-    {MPaths, NoMatch, Err} = match(?msite, FPaths, NewPath),
+    PageTree = page_srv:get_pages(?msite),
+    {MPaths, NoMatch, Err} = match(?msite, PageTree, NewPath),
     OCol = C#cellref.col,
     ORow = C#cellref.row,
     Vals = fetch_vals(MPaths, ORow, OCol),
@@ -852,26 +850,45 @@ fill1D(Dict, Index, N, Size, Acc, Type) ->
         end,
     fill1D(Dict, Index + 1, NewN, Size, NewAcc, Type).
 
-match(Site, Paths, ZPath) -> m1(Site, Paths, ZPath, [], [], []).
+match(Site, PageTree, ZPath) ->
+    Segments = dh_tree:segments_below([], PageTree),
+    m1(Site, PageTree, Segments, ZPath, [], [], [], []).
 
-m1(_Site, [], _ZPath, Match, NoMatch, Err) -> {Match, NoMatch, Err};
-m1(Site, [H | T], ZPath, Match, NoMatch, Err) ->
+% this clause terminates the second iteration
+% we have run out of ZSegs and Segs to test and all have passed
+m1(_Site, _PageTree, [], [], Htap, Match, NoMatch, Err) ->
+    {[lists:reverse(Htap) | Match], NoMatch, Err};
+%% this clause terminates the first iteration
+%% we have run out of segments at a particular level to test
+m1(_Site, _PageTree, [], _ZPath, Htap, Match, NoMatch, Err) ->
+    {Match, [{nomatch, lists:reverse(Htap)} | NoMatch], Err};
+%% this clause terminates the first iteration
+%% we still have subtrees but there the Segs/ZSegs are not deep enough
+m1(_Site, _PageTree, _Segs, [], Htap, Match, NoMatch, Err) ->
+    {[lists:reverse(Htap) | Match],  NoMatch, Err};
+m1(Site, PageTree, [H | T], [ZH | ZT], Htap, Match, NoMatch, Err) ->
     {NewM, NewNM, NewE} =
-        case m2(Site, H, ZPath, []) of
-            {nomatch, Path}    -> {Match, [{nomatch, Path} | NoMatch], Err};
-            {match,  _Path}    -> {[H | Match], NoMatch, Err};
-            {error,   Path, V} -> {Match, NoMatch, [{error, Path, V} | Err]}
+        case m2(Site, H, ZH, Htap) of
+            {partmatch, Path}  ->
+                Segs = dh_tree:segments_below(Path, PageTree),
+                m1(Site, PageTree, Segs, ZT, [H | Htap], Match,
+                   NoMatch, Err);
+            {nomatch, Path} ->
+                {Match, [{nomatch, Path} | NoMatch], Err};
+            {error,   Path, V} ->
+                {Match, NoMatch, [{error, Path, V} | Err]}
         end,
-    m1(Site, T, ZPath, NewM, NewNM, NewE).
+    m1(Site, PageTree, T, [ZH | ZT], Htap, NewM, NewNM, NewE).
 
-m2(_Site, [], [], Htap)                       -> {match, lists:reverse(Htap)};
-m2(Site, [S | T1], [{seg, S}     | T2], Htap) -> m2(Site, T1, T2, [S | Htap]);
-m2(_Site, [S | _T1], [{seg, _}  | _T2], Htap) -> {nomatch, lists:reverse([S|Htap])};
-m2(Site, [S | T1], [{zseg, Z, _} | T2], Htap) ->
+m2(_Site,  S, {seg, S}, Htap)     ->
+    {partmatch, lists:reverse([S | Htap])};
+m2(_Site, S, {seg, _}, Htap)     ->
+    {nomatch, lists:reverse([S | Htap])};
+m2(Site,  S, {zseg, Z, _}, Htap) ->
     case zeval(Site, lists:reverse([S | Htap]), Z) of
-        match        -> m2(Site, T1, T2, [S | Htap]);
-        nomatch      -> {nomatch, lists:reverse([S | Htap])};
-        {error, Val} -> {error, lists:reverse([S | Htap]), Val}
+        match        -> {partmatch, lists:reverse([S | Htap])};
+        nomatch      -> {nomatch,   lists:reverse([S | Htap])};
+        {error, Val} -> {error,     lists:reverse([S | Htap]), Val}
     end.
 
 % the zinf server has no context to execute at this stage!
@@ -974,7 +991,7 @@ test_xfl() ->
                       {ok, Toks} ->
                           case catch(xfl_parser:parse(Toks)) of
                               {ok, Ast} ->
-                                  io:format("Sucess Expr is ~p Fla is ~p "++
+                                  io:format("Success Expr is ~p Fla is ~p "++
                                             "Trans is ~p~n"++
                                             "Toks is ~p~nAst is ~p~n"++
                                             "Status is ~p~n",

@@ -13,6 +13,7 @@
          show_queues/1,
          process_dump/0,
          top5/0,
+         top/0,
          show_registered/1,
          log/2,
          log_term/2,
@@ -126,6 +127,12 @@ process_dump() ->
             || X <- Procs],
     io:format("Info is ~p~n", [Info]),
     ok.
+
+top() ->
+    Procs = processes(),
+    Lens = [process_info(X, [message_queue_len]) || X <- Procs],
+    Lens2 = [X || [{message_queue_len, X}] <- Lens],
+    lists:max(Lens2).
 
  top5() ->
     Procs = processes(),

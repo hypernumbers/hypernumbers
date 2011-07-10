@@ -1127,8 +1127,6 @@ add_ref(Ref, [KV | Tail], JSON) ->
     JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
     add_ref(Ref, Tail, JSON2).
 
-% ERK seem to be missing a range clause!
-% order of clauses matters because new cols/rows also match old Refs
 add_ref1(#xrefX{obj = {page, "/"}}, {Name, Val}, JSON) ->
     dh_tree:set(["page", Name], Val, JSON);
 add_ref1(#xrefX{obj = {Ref, {X, Y}}}, Data, JSON) ->
