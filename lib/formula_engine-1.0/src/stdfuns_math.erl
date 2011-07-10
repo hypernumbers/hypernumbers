@@ -35,7 +35,8 @@
 
 %% Arithmetic
          sum/1,
-         sumz/1,
+         sumz/1, % deprecated
+         zsum/1,
          product/1,
          quotient/1,
          abs/1,
@@ -235,19 +236,20 @@ negate([V]) ->
                      fun([X]) -> -X end).
 
 %%% Arithmetic ~~~~~
+sumz(List) -> zsum(List).
 
-sumz(List) ->
+zsum(List) ->
     put(recompile, true),
     Strs = typechecks:std_strs(List),
-    Zs = sumz_(Strs, []),
+    Zs = zsum_(Strs, []),
     muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
                           {cast, bool, num}, fetch, fetch_z_no_errs, flatten,
                           {ignore, blank}, {ignore, str}, {ignore, bool}],
                      [return_errors, {all, fun is_number/1}],
                      fun sum1/1).
 
-sumz_([], Acc) -> Acc;
-sumz_([H | T], Acc) ->
+zsum_([], Acc) -> Acc;
+zsum_([H | T], Acc) ->
     NewAcc = case muin:parse(H, {?mx, ?my}) of
               {ok, Ast} ->
                   case muin:external_eval(Ast) of
@@ -258,7 +260,7 @@ sumz_([H | T], Acc) ->
                   end;
               {error, syntax_error} -> ?ERRVAL_REF
           end,
-    sumz_(T, [NewAcc | Acc]).
+    zsum_(T, [NewAcc | Acc]).
 
 sum(Vs) ->
     muin_collect:col(Vs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
