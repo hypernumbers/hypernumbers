@@ -4266,9 +4266,14 @@
                 "type": "finite"
              },
              {
-                "name": "Option",
+                "name": "Target Option",
                 "desc": "0 or 1.",
                 "type": "optional"
+             },
+             {
+                 "name": "Underline Option",
+                 "desc": "0 or 1.",
+                 "type": "optional"
             }
          ]
     },
