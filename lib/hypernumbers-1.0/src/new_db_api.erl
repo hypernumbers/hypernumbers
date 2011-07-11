@@ -896,6 +896,8 @@ tell_front_end(_FnName, _RefX) ->
 move(RefX, Type, Disp, Ar, Report)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
+    io:format("RefX is ~p~nType is ~p~nDisp is ~p~n",
+              [RefX, Type, Disp]),
     Report2 = mnesia_mon:get_stamp(Report),
     Fun = fun() ->
                   mnesia_mon:report(Report2),
@@ -1222,6 +1224,7 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
 'DEBUG'(Type, Payload, Mode, Output) ->
 
     F = fun() ->
+
                 {XRefX, O2}
                     = case Type of
                           idx ->
@@ -1236,14 +1239,21 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                               NewX = new_db_wu:refX_to_xrefX(Payload),
                               {NewX, Output}
                       end,
-                #xrefX{path = P, obj = O} = XRefX,
-                P2 = hn_util:list_to_path(P),
-                O2a  = io_lib:format("The idx points to ~p on page ~p",
-                                     [O, P2]),
-                Contents = lists:sort(new_db_wu:read_ref(XRefX, inside)),
-                O3 = pretty_print(Contents, "The idx contains:", Mode,
-                                  [[O2a] | O2]),
-                lists:reverse(O3)
+                case XRefX of
+                    false ->
+                        OX = io_lib:format("The idx doesn't exist.~n", []),
+                        lists:reverse([OX | Output]);
+                    _     ->
+                        #xrefX{path = P, obj = O} = XRefX,
+                        P2 = hn_util:list_to_path(P),
+                        O2a  = io_lib:format("The idx points to ~p on page ~p",
+                                             [O, P2]),
+                        Cs = lists:sort(new_db_wu:read_ref(XRefX, inside)),
+                        O3 = pretty_print(Cs, "The idx contains:", Mode,
+                                          [[O2a] | O2]),
+
+                        lists:reverse(O3)
+                end
         end,
     {atomic, Msg} = mnesia:transaction(F),
     case Mode of
