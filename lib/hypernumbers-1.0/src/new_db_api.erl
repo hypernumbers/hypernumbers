@@ -1206,7 +1206,8 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                               O1a = pp(Site, Idx, NewRefX, Mode, O1),
                               {NewRefX, [[O1a] | Output]};
                           refX ->
-                              {Payload, Output}
+                              NewX = new_db_wu:refX_to_xrefX(Payload),
+                              {NewX, Output}
                       end,
                 #xrefX{path = P, obj = O} = XRefX,
                 P2 = hn_util:list_to_path(P),
@@ -1243,22 +1244,22 @@ pretty_print(List, Slogan, Acc) ->
     [Marker | Ret].
 
 pretty_p2([], Acc) -> Acc;
-pretty_p2([{R, Vals} | T], Acc) when is_record(R, refX) ->
-    #refX{path = P, type = Ty, obj = O} = R,
-    NewO = io_lib:format(" ~p (~p) of ~p on ~p:", [O, hn_util:obj_to_ref(O), Ty, P]),
-    Idx = new_db_wu:refX_to_idx(R),
+pretty_p2([{X, Vals} | T], Acc) when is_record(X, xrefX) ->
+    #xrefX{idx = Idx, path = P, obj = O} = X,
+    NewO = io_lib:format(" ~p (~p) on ~p:",
+                         [O, hn_util:obj_to_ref(O), P]),
     NewOa = io_lib:format(" has the following idx ~p", [Idx]),
     Keys = ["formula", "value", "__hasform"],
     NewO2 = pretty_p3(Keys, Vals, [NewOa, NewO | Acc]),
     NO3 = case lists:keymember("__hasform", 1, Vals) of
-              true  -> print_form(R#refX{obj = {page, "/"}}, NewO2);
+              true  -> print_form(X#xrefX{obj = {page, "/"}}, NewO2);
               false -> NewO2
           end,
-    NO4 = print_relations(R, NO3),
+    NO4 = print_relations(X, NO3),
     pretty_p2(T, NO4).
 
-print_relations(#refX{site = S} = RefX, Acc) ->
-    case lists:sort(new_db_wu:read_relations(RefX, read)) of
+print_relations(#xrefX{site = S} = XRefX, Acc) ->
+    case lists:sort(new_db_wu:read_relations(XRefX, read)) of
         []  -> Acc;
         [R] -> Ret = io_lib:format("....has the following relationships:", []),
                print_rel2(S, R, [Ret | Acc])
@@ -1279,7 +1280,8 @@ print_rel3(S, OrdDict, Type, Acc) ->
 print_rel4(_S, [], Acc) -> Acc;
 print_rel4(S, [H | T], Acc) ->
     XRefX = new_db_wu:idx_to_xrefX(S, H),
-    NewAcc = [io_lib:format("        ~p on ~p", [XRefX#refX.obj, XRefX#refX.path]) | Acc],
+    NewAcc = [io_lib:format("        ~p on ~p",
+                            [XRefX#xrefX.obj, XRefX#xrefX.path]) | Acc],
     print_rel4(S, T, NewAcc).
 
 pretty_p3([], _Vals, Acc) -> Acc;
@@ -1294,7 +1296,8 @@ pretty_p3([K | T], Vals, Acc) ->
     end,
     pretty_p3(T, Vals, NewO).
 
-print_form(RefX, Acc) ->
+print_form(XRefX, Acc) ->
+    RefX = hn_util:xrefX_to_refX(XRefX),
     Forms = new_db_wu:matching_forms(RefX, common),
     NewAcc = [io_lib:format("....part of a form consisting of:", []) | Acc],
     print_f2(RefX#refX.site, Forms, NewAcc).
@@ -1302,10 +1305,10 @@ print_form(RefX, Acc) ->
 print_f2(_Site, [], Acc) -> Acc;
 print_f2(Site, [H | T], Acc) ->
     #form{id={_, _, Lable}} = H,
-    RefX = new_db_wu:idx_to_refX(Site, H#form.key),
+    XRefX = new_db_wu:idx_to_xrefX(Site, H#form.key),
     NewAcc = [io_lib:format("      ~p on ~p of ~p called ~p",
-                            [RefX#refX.obj,
-                             hn_util:list_to_path(RefX#refX.path),
+                            [XRefX#xrefX.obj,
+                             hn_util:list_to_path(XRefX#xrefX.path),
                              H#form.kind, Lable]) | Acc],
     print_f2(Site, T, NewAcc).
 
