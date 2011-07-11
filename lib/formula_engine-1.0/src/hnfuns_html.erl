@@ -357,7 +357,7 @@ check_alerts(_N)                         -> ?ERR_VAL.
     Js_R = ["Generic.reload();"],
     CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    {preview, {"Menu " ++ hd(Strings), W2, 2, Incs}, Menu}.
+    {preview, {"Menu " ++ hd(Strings), W2, 3, Incs}, Menu}.
 
 'tim.submenu'(List) ->
     [Header | Strings] = typechecks:throw_html_box_contents(List),
@@ -372,9 +372,9 @@ check_alerts(_N)                         -> ?ERR_VAL.
     'tim.menu1'(T, Klass, [Line | Acc]).
 
 'tim.submenu1'([], Header, Klass, Acc) ->
-    "<li>" ++ Header ++ "<ul class='" ++ Klass ++ "'>"
+    Header ++ "<ul class='" ++ Klass ++ "'>"
         ++ lists:flatten(lists:reverse(Acc))
-        ++ "</ul></li>";
+        ++ "</ul>";
 'tim.submenu1'([H | T], Header,Klass, Acc) ->
     Line = "<li>" ++ H ++ "</li>",
     'tim.submenu1'(T, Header, Klass, [Line | Acc]).
