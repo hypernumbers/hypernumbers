@@ -66,7 +66,8 @@
          url_DEBUG/2,
          idx_DEBUG/2,
          idx_DEBUG/3,
-         raw_idx_DEBUG/2
+         raw_idx_DEBUG/2,
+         raw_url_DEBUG/1
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1162,6 +1163,22 @@ dirty_for_zinf_DEBUG(Site) ->
                 new_db_wu:dirty_for_zinf_DEBUG(Site)
         end,
     mnesia:transaction(F).
+
+raw_url_DEBUG(Url) ->
+    Fun = fun() ->
+                  RefX = hn_util:url_to_refX(Url),
+                  #refX{site = S, path = P, obj = O} = RefX,
+                  Table = new_db_wu:trans(S, local_obj),
+                  RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
+                  case mnesia:index_read(Table, term_to_binary(RevIdx),
+                                    #local_obj.revidx) of
+                      []  -> io:format("no object exists at ~p~n", [Url]);
+                      [R] -> io:format("~p has idx of ~p~n",
+                                       [Url, R#local_obj.idx])
+                  end
+          end,
+    {atomic, ok} = mnesia:transaction(Fun),
+    ok.
 
 raw_idx_DEBUG(Site, Idx) ->
     Fun = fun() ->
