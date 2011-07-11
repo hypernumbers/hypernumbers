@@ -1248,7 +1248,7 @@ shift_rows([#local_obj{obj = {row, {MY1, MY2}}} = H | T], Y2, Offset, Acc)
   when MY1 >= Y2 ->
     NewRow = H#local_obj{obj = {row, {MY1 + Offset, MY2 + Offset}}},
     shift_rows(T, Y2, Offset, [NewRow | Acc]);
-shift_rows([H | T], Y2, Offset, Acc) ->
+shift_rows([_H | T], Y2, Offset, Acc) ->
     shift_rows(T, Y2, Offset, Acc).
 
 shift_cols([], _, _, Acc) -> Acc;
