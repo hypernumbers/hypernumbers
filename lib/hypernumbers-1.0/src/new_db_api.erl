@@ -1185,12 +1185,16 @@ raw_idx_DEBUG(Site, Idx) ->
 
 url_DEBUG(Url) -> url_DEBUG(Url, quiet).
 
+% use the atom 'verbose' for this mode to get everything
+% use 'log' to log the results
 url_DEBUG(Url, Mode) -> RefX = hn_util:url_to_refX(Url),
                         Output = io_lib:format("Url ~p being debugged", [Url]),
                         'DEBUG'(refX, RefX, Mode, [Output]).
 
 idx_DEBUG(Site, Idx) -> idx_DEBUG(Site, Idx, false).
 
+% use the atom 'verbose' for this mode to get everything
+% use 'log' to log the results
 idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
 
 'DEBUG'(Type, Payload, Mode, Output) ->
@@ -1200,7 +1204,8 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                     = case Type of
                           idx ->
                               {Site, Idx} = Payload,
-                              O1 = io_lib:format("Debugging the Idx ~p on site ~p",
+                              O1 = io_lib:format("Debugging the Idx ~p "
+                                                 ++ "on site ~p",
                                                  [Idx, Site]),
                               NewRefX = new_db_wu:idx_to_xrefX(Site, Idx),
                               O1a = pp(Site, Idx, NewRefX, Mode, O1),
@@ -1211,9 +1216,11 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                       end,
                 #xrefX{path = P, obj = O} = XRefX,
                 P2 = hn_util:list_to_path(P),
-                O2a  = io_lib:format("The idx points to ~p on page ~p", [O, P2]),
+                O2a  = io_lib:format("The idx points to ~p on page ~p",
+                                     [O, P2]),
                 Contents = lists:sort(new_db_wu:read_ref(XRefX, inside)),
-                O3 = pretty_print(Contents, "The idx contains:", [[O2a] | O2]),
+                O3 = pretty_print(Contents, "The idx contains:", Mode,
+                                  [[O2a] | O2]),
                 lists:reverse(O3)
         end,
     {atomic, Msg} = mnesia:transaction(F),
@@ -1237,26 +1244,29 @@ log(String, File) ->
 	    error
     end.
 
-pretty_print(List, Slogan, Acc) ->
+pretty_print(List, Slogan, Mode, Acc) ->
     Marker = io_lib:format(" ", []),
     Slogan2 = io_lib:format(Slogan, []),
-    Ret = pretty_p2(List, [Marker, Slogan2 | Acc]),
+    Ret = pretty_p2(List, Mode, [Marker, Slogan2 | Acc]),
     [Marker | Ret].
 
-pretty_p2([], Acc) -> Acc;
-pretty_p2([{X, Vals} | T], Acc) when is_record(X, xrefX) ->
+pretty_p2([], _Mode, Acc) -> Acc;
+pretty_p2([{X, Vals} | T], Mode, Acc) when is_record(X, xrefX) ->
     #xrefX{idx = Idx, path = P, obj = O} = X,
     NewO = io_lib:format(" ~p (~p) on ~p:",
                          [O, hn_util:obj_to_ref(O), P]),
     NewOa = io_lib:format(" has the following idx ~p", [Idx]),
-    Keys = ["formula", "value", "__hasform"],
+    Keys = case Mode of
+               verbose -> all;
+               _       -> ["formula", "value", "__hasform"]
+           end,
     NewO2 = pretty_p3(Keys, Vals, [NewOa, NewO | Acc]),
     NO3 = case lists:keymember("__hasform", 1, Vals) of
               true  -> print_form(X#xrefX{obj = {page, "/"}}, NewO2);
               false -> NewO2
           end,
     NO4 = print_relations(X, NO3),
-    pretty_p2(T, NO4).
+    pretty_p2(T, Mode, NO4).
 
 print_relations(#xrefX{site = S} = XRefX, Acc) ->
     case lists:sort(new_db_wu:read_relations(XRefX, read)) of
@@ -1266,10 +1276,10 @@ print_relations(#xrefX{site = S} = XRefX, Acc) ->
     end.
 
 print_rel2(S, R, Acc) ->
-    O1 = print_rel3(S, R#relation.children, "children", Acc),
-    O2 = print_rel3(S, R#relation.parents, "parents", O1),
+    O1 = print_rel3(S, R#relation.children,   "children",         Acc),
+    O2 = print_rel3(S, R#relation.parents,    "parents",          O1),
     O3 = print_rel3(S, R#relation.infparents, "infinite parents", O2),
-    O4 = print_rel3(S, R#relation.z_parents, "z parents", O3),
+    O4 = print_rel3(S, R#relation.z_parents,  "z parents",        O3),
     [io_lib:format("      is it an include? ~p", [R#relation.include]) | O4].
 
 print_rel3(_S, [], Type, Acc) -> [io_lib:format("      no " ++ Type, []) | Acc];
@@ -1290,11 +1300,16 @@ pretty_p3([K | T], Vals, Acc) ->
                false ->
                    Acc;
                {value, {K1, V}} when is_list(V) ->
-                   [io_lib:format("~12s: ~p", [K1, esc(V)]) | Acc];
+                   [io_lib:format("~20s: ~p", [K1, esc(V)]) | Acc];
                {value, {K1, V}} ->
-                       [io_lib:format("~12s: ~p", [K1, V]) | Acc]
+                       [io_lib:format("~20s: ~p", [K1, V]) | Acc]
     end,
-    pretty_p3(T, Vals, NewO).
+    pretty_p3(T, Vals, NewO);
+% dump all attributes
+pretty_p3(all, Vals, Acc) ->
+    {Ks, _Vs} = lists:unzip(Vals),
+    pretty_p3(Ks, Vals, Acc).
+
 
 print_form(XRefX, Acc) ->
     RefX = hn_util:xrefX_to_refX(XRefX),
@@ -1318,7 +1333,8 @@ pp(Site, Idx, XRefX, verbose, O) ->
                        [binary_to_term(I#local_obj.path),
                         I#local_obj.obj,
                         binary_to_term(I#local_obj.revidx)]),
-    O2 = io_lib:format("XRefX contains ~p ~p~n", [XRefX#xrefX.path, XRefX#xrefX.obj]),
+    O2 = io_lib:format("XRefX contains ~p ~p~n",
+                       [XRefX#xrefX.path, XRefX#xrefX.obj]),
 
     [[O1] | [[O2] | O]];
 pp(_, _, _, _, O) -> O.
