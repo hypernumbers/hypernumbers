@@ -1174,8 +1174,13 @@ raw_url_DEBUG(Url) ->
                                     #local_obj.revidx) of
                       []  -> io:format("no object exists at ~p~n", [Url]);
                       [R] -> io:format("~p has idx of ~p~n",
-                                       [Url, R#local_obj.idx])
-                  end
+                                       [Url, R#local_obj.idx]),
+                             io:format("The local_obj is for ~p on ~p and "
+                                       ++ " has a reverse index of ~p~n",
+                                       [R#local_obj.obj,
+                                        binary_to_term(R#local_obj.path),
+                                        binary_to_term(R#local_obj.revidx)])
+                             end
           end,
     {atomic, ok} = mnesia:transaction(Fun),
     ok.
