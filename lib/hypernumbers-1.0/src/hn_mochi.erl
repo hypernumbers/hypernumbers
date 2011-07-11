@@ -849,7 +849,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
   when Attr =/= [] ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     case Attr of
-%% TODO : Get Rid of this (for pasting a range of values)
+        % TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
             post_range_values(Ref, Vals, Uid, Uid);
         [{"input", {struct, [{"select", {array, Array}}]}}] ->
