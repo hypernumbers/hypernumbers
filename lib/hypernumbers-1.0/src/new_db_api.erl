@@ -1222,7 +1222,8 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
 'DEBUG'(Type, Payload, Mode, Output) ->
 
     F = fun() ->
-                {XRefX, O2}
+
+                {XRefX, O2, Pt, Obj}
                     = case Type of
                           idx ->
                               {Site, Idx} = Payload,
@@ -1230,20 +1231,33 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                                                  ++ "on site ~p",
                                                  [Idx, Site]),
                               NewRefX = new_db_wu:idx_to_xrefX(Site, Idx),
+                              #xrefX{path = P, obj = Ob} = NewRefX,
                               O1a = pp(Site, Idx, NewRefX, Mode, O1),
-                              {NewRefX, [[O1a] | Output]};
+                              {NewRefX, [[O1a] | Output], P, Ob};
                           refX ->
                               NewX = new_db_wu:refX_to_xrefX(Payload),
-                              {NewX, Output}
+                              io:format("NewX is ~p~nPayload is ~p~n",
+                                        [NewX, Payload]),
+                              Path = Payload#refX.path,
+                              Ob   = Payload#refX.obj,
+                              {NewX, Output, Path, Ob}
                       end,
-                #xrefX{path = P, obj = O} = XRefX,
-                P2 = hn_util:list_to_path(P),
-                O2a  = io_lib:format("The idx points to ~p on page ~p",
-                                     [O, P2]),
-                Contents = lists:sort(new_db_wu:read_ref(XRefX, inside)),
-                O3 = pretty_print(Contents, "The idx contains:", Mode,
-                                  [[O2a] | O2]),
-                lists:reverse(O3)
+                P2 = hn_util:list_to_path(Pt),
+                case XRefX of
+                    false ->
+                        O2a = io_lib:format("The idx doesn't exist.~n", []),
+                        Cs = lists:sort(new_db_wu:read_ref(Payload, inside)),
+                        O3 = pretty_print(Cs, "The idx contains:", Mode,
+                                          [[O2a] | O2]),
+                        lists:reverse(O3);
+                    _     ->
+                        O2a  = io_lib:format("The idx points to ~p on page ~p",
+                                             [Obj, P2]),
+                        Cs = lists:sort(new_db_wu:read_ref(XRefX, inside)),
+                        O3 = pretty_print(Cs, "The idx contains:", Mode,
+                                          [[O2a] | O2]),
+                        lists:reverse(O3)
+                end
         end,
     {atomic, Msg} = mnesia:transaction(F),
     case Mode of
