@@ -170,7 +170,8 @@ get_initial_params(Site) ->
 -spec create_blank_pages(string()) -> ok.
 create_blank_pages(Site) ->
     Key = ?pages,
-    Value = dh_tree:new(),
+    % Value = dh_tree:new(),
+    Value = [],
     new_db_api:write_kv(Site, Key, Value).
 
 -spec create_blank_z_and_infs(string()) -> ok.

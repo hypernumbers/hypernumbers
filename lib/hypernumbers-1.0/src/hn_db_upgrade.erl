@@ -10,6 +10,8 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         blip/0,
+         unmigrate_page_srv_2011_07_11/0,
          migrate_page_srv_2011_07_09/0,
          add_user_fn_table_2011_06_30/0,
          bug_fix_for_row_cols_2011_06_25/0,
@@ -45,6 +47,30 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+blip() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   [{kvstore, ?pages, P}] = new_db_api:read_kv(Site, ?pages),
+                   {ok, P2} = P,
+                   ok = new_db_api:write_kv(Site, ?pages, P2),
+                   io:format("Page server for ~p updated~n", [Site])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
+
+unmigrate_page_srv_2011_07_11() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   [{kvstore, ?pages, P}] = new_db_api:read_kv(Site, ?pages),
+                   {ok, P2} = dh_tree:flatlist(P),
+                   ok = new_db_api:write_kv(Site, ?pages, P2),
+                   io:format("Page server for ~p updated~n", [Site])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
 
 migrate_page_srv_2011_07_09() ->
     Sites = hn_setup:get_sites(),
