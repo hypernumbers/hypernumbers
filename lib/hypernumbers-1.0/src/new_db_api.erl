@@ -1301,8 +1301,12 @@ pretty_p2([{X, Vals} | T], Mode, Acc) when is_record(X, xrefX) ->
               true  -> print_form(X#xrefX{obj = {page, "/"}}, NewO2);
               false -> NewO2
           end,
-    NO4 = print_relations(X, NO3),
-    pretty_p2(T, Mode, NO4).
+    NO4 = case lists:keymember("__hasincs", 1, Vals) of
+              true  -> print_incs(X, NO3);
+              false -> NO3
+          end,
+    NO5 = print_relations(X, NO4),
+    pretty_p2(T, Mode, NO5).
 
 print_relations(#xrefX{site = S} = XRefX, Acc) ->
     case lists:sort(new_db_wu:read_relations(XRefX, read)) of
@@ -1346,6 +1350,20 @@ pretty_p3(all, Vals, Acc) ->
     {Ks, _Vs} = lists:unzip(Vals),
     pretty_p3(Ks, Vals, Acc).
 
+print_incs(XRefX, Acc) ->
+    io:format("XRefX is ~p~n", [XRefX]),
+    Incs = new_db_wu:read_incs(XRefX),
+    io:format("Incs is ~p~n", [Incs]),
+    NewAcc = [io_lib:format("....has the following include records:", [])
+              | Acc],
+    print_i2(XRefX#xrefX.site, Incs, NewAcc).
+
+print_i2(_Site, [], Acc) -> Acc;
+print_i2(Site, [H | T], Acc) ->
+    Msg = io_lib:format("      Javascript: ~p reloaded by: ~p~n"
+                        ++ "      CSS ~p~n",
+                        [H#include.js, H#include.js_reload, H#include.css]),
+    print_i2(Site, T, [Msg | Acc]).
 
 print_form(XRefX, Acc) ->
     RefX = hn_util:xrefX_to_refX(XRefX),
