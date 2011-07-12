@@ -10,7 +10,6 @@
 -module(curie).
 
 -include("spriki.hrl").
--include("hypernumbers.hrl").
 -include("hn_mochi.hrl").
 
 -compile(export_all).
@@ -19,25 +18,37 @@
          %~ get_cell_s_ast/3
         %~ ]).
 
--define(join, filename:join).
-
-
 %%TODO
-	%~ start working on updating defined functions
+	%~ fix ast so it can be encoded to json, find how hn_mochi can recognise the request?
 %%TODO
+
 
 %~ curie:create_user_fn("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", "b8", ["f5", "f6"], ["b5", "b6"], ["c5", "c6"]).
 create_user_fn(Site, Page, Name, Description, OutputValue, ListOfParameters, ListOfParameterNames, ListOfParameterDescriptions)	->
+	FUNCTION_NAME = get_cell_s_value(Name, Site, Page),
 	AST = build_fun(Site, Page, OutputValue, ListOfParameters),
-	JSON = get_page_s_json(Site, Page),
-	JSON_for_WIZARD = make_json_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions),
-	io:format("----------------------~ncreate_user_fn~n----------------------~n~nAST is:~n~p~n~nJSON is:~n~p~n~nJSON_for_WIZARD is:~n~p~n~n----------------------~n", [AST, JSON, JSON_for_WIZARD]).
+	PAGE_S_JSON = get_page_s_json(Site, Page),
+	PAGE = mochijson:decode(PAGE_S_JSON),
+	WIZARD_TEMPLATE = make_template_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions),
+	
+	%~ just a dummy of what would be posted to a page:
+	Entry = 	{struct,[	{"type","user_defined"},
+							{"properties",
+								{struct,[		{"ast","some_ast"},
+												{"page","some_page"},
+												{"wizard","some_wizard"},
+												{"name","some_name"}
+								]}}
+				]},
 
-%~ curie:make_json_for_fn_wizard("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", ["b5", "b6"], ["c5", "c6"]).
-make_json_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions)	->
+	Json_Entry = mochijson:encode(Entry),
+	httpc:request(post, {"http://hypernumbers.dev:9000/page1/", [{"host","hypernumbers.dev:9000"},{"accept", "application/json"}, {"cookie", "auth=test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|63477687484|e39be50d0302b115c61b67b2c9d206d5"}, {"accept", "application/json"}], "", Json_Entry }, [], []).
+	 
+%~ curie:make_template_for_fn_wizard("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", ["b5", "b6"], ["c5", "c6"]).
+make_template_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions)	->
 	Parameters = get_parameters(Site, Page, ListOfParameterNames, ListOfParameterDescriptions, []),
-	Entry = 
-			{struct,
+	{array,
+			[{struct,
 					[
 						{"fn",get_cell_s_value(Name, Site, Page)},
 						{"category","User Defined"},
@@ -50,11 +61,13 @@ make_json_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, Lis
 						{"link", "REQUIRES A LINK TO DOC PAGE OR HAVE TO GENERATE IT AUTOMATICALLY"},
 						{"args", {array, Parameters}}
 					]
-			},
-	mochijson:encode(Entry).
+			}]
+	}.
+
 
 get_parameters(_Site, _Page, [], [], Parameters)	-> 
 	lists:reverse(Parameters);
+
 	
 get_parameters(Site, Page, [H | T], [H2 | T2], Parameters)	-> 
 	Parameter = {struct, [{"name", get_cell_s_value(H, Site, Page)}, {"desc", get_cell_s_value(H2, Site, Page)}, {"type", "finite"}]},
