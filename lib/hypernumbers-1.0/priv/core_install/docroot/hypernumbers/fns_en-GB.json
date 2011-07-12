@@ -4485,7 +4485,7 @@
                 "type": "finite"
              },
              {
-                "name": "Item Description",
+                "name": "Item Desc",
                 "desc": "The Text.",
                 "type": "finite"
              },
