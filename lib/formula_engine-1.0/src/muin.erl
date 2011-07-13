@@ -400,7 +400,10 @@ call_fun(Fun, Args, []) ->
 
 call_fun(Fun, Args, [Module | Rest]) ->
     case erlang:function_exported(Module, Fun, 1) of
-        true  -> {ok, erlang:apply(Module, Fun, [Args])};
+        true  -> %Msg = io_lib:format("applying (1) ~p ~p ~p",
+                 %                    [Module, Fun, Args]),
+                 %syslib:log(Msg, "muin_apply"),
+                 {ok, erlang:apply(Module, Fun, [Args])};
         false -> call_fun(Fun, Args, Rest)
     end.
 
@@ -707,6 +710,9 @@ loop_transform([Fn|Args]) when ?is_fn(Fn) ->
 userdef_call(Fname, Args) ->
     % changed to apply because using the construction userdef:Fname failed
     % to work after hot code load (Gordon Guthrie 2008_09_08)
+    %Msg = io_lib:format("applying (2) ~p ~p ~p",
+    %                                 ["userdef", Fname, Args]),
+    %syslib:log(Msg, "muin_apply"),
     case (catch apply(userdef,Fname,Args)) of
         {'EXIT', {undef, _}} -> ?ERR_NAME;
         {'EXIT', _}          -> ?ERR_NAME;
