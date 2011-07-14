@@ -76,6 +76,7 @@
                      -> string().
 create_hypertag(Site, Path, Uid, Email, Data, Age) ->
     HalfKey = [string:to_lower(Site), string:to_lower(Path)],
+    io:format("HalfKey is ~p~n", [HalfKey]),
     HT = #hypertag{uid = Uid,
                    email = Email,
                    expiry = gen_expiry(Age),
@@ -92,6 +93,7 @@ open_hypertag(Site, Path, HTEnc) ->
     io:format("in open_hypertag  Site is ~p Path is ~p HTEnc is ~p~n",
               [Site, Path, HTEnc]),
     HalfKey = [Site, Path],
+    io:format("HalfKey is ~p~n", [HalfKey]),
     case decrypt_term_hex(HalfKey, HTEnc) of
         #hypertag{expiry=E, uid=U, email=M, data=D} ->
             case is_expired(E) of
