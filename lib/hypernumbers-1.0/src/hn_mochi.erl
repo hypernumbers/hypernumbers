@@ -472,7 +472,6 @@ iget(#refX{site=S, path=["_logout"]}, page,
 
 iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
   when X == "_mynewsite" ->
-    io:format("In iget (1) hypertag to be opened is ~p~n", [HT]),
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, Data, Stamp, Age} ->
             Param = case lists:keyfind(param, 1, Data) of
@@ -499,7 +498,6 @@ iget(#refX{site=Site, path=[X | _Vanity]}, page, _Qry, Env)
 iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
      #qry{hypertag=HT},
      Env) when X == "_invite"; X == "_validate" ->
-    io:format("In iget (2) hypertag to be opened is ~p~n", [HT]),
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, Data, Stamp, Age} ->
             case proplists:get_value(emailed, Data) of
@@ -1053,7 +1051,6 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
             log_signup(RootSite, Site, Node, Uid, Email),
             Opaque = [{param, InitialView}],
             Expiry = "never",
-            io:format("in ipost about to create hypertag~n"),
             Url = passport:create_hypertag(Site, ["_mynewsite", Name],
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
