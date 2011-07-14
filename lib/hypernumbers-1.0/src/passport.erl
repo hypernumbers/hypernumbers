@@ -81,14 +81,14 @@ create_hypertag(Site, Path, Uid, Email, Data, Age) ->
                    expiry = gen_expiry(Age),
                    data = Data},
     HTEnc = encrypt_term_hex(HalfKey, HT),
-    io:format("HTEnc is ~p~n", [HTEnc]),
+    io:format("in create_hypertag HTEnc is ~p~n", [HTEnc]),
     lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
 
 -spec open_hypertag(string(), [string()], string())
                    -> {ok, auth_srv:uid(), string(), any(), string(),
                        integer()} | {error, any()}.
 open_hypertag(Site, Path, HTEnc) ->
-    io:format("HTEnc is ~p~n", [HTEnc]),
+    io:format("in open_hypertag HTEnc is ~p~n", [HTEnc]),
     HalfKey = [Site, Path],
     case decrypt_term_hex(HalfKey, HTEnc) of
         #hypertag{expiry=E, uid=U, email=M, data=D} ->
