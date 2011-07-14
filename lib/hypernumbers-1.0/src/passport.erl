@@ -75,7 +75,7 @@
                       integer() | string())
                      -> string().
 create_hypertag(Site, Path, Uid, Email, Data, Age) ->
-    HalfKey = [Site, Path],
+    HalfKey = [string:to_lower(Site), string:to_lower(Path)],
     HT = #hypertag{uid = Uid,
                    email = Email,
                    expiry = gen_expiry(Age),
