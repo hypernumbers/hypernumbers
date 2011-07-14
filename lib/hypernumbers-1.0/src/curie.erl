@@ -41,7 +41,19 @@ create_user_fn(Site, Page, Name, Description, OutputValue, ListOfParameters, Lis
 								]}}
 				]},
 
+	%~ the real Entry would look like:
+	%~ Entry = 	{struct,[	{"type","user_defined"},
+							%~ {"properties",
+								%~ {struct,[		{"ast",AST},
+												%~ {"page",PAGE},
+												%~ {"wizard",WIZARD_TEMPLATE},
+												%~ {"name",FUNCTION NAME}
+								%~ ]}}
+				%~ ]},
+				
+
 	Json_Entry = mochijson:encode(Entry),
+	
 	httpc:request(post, {"http://hypernumbers.dev:9000/page1/", [{"host","hypernumbers.dev:9000"},{"accept", "application/json"}, {"cookie", "auth=test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|63477687484|e39be50d0302b115c61b67b2c9d206d5"}, {"accept", "application/json"}], "", Json_Entry }, [], []).
 	 
 %~ curie:make_template_for_fn_wizard("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", ["b5", "b6"], ["c5", "c6"]).
