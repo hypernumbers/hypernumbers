@@ -8,6 +8,11 @@
 -define(D2GS, calendar:datetime_to_gregorian_seconds).
 -define(UT, calendar:universal_time).
 
+-export([
+         test_encryption/0,
+         test_hypertag/0
+        ]).
+
 %% API
 -export([ start_link/0,
           create_hypertag/6,
@@ -76,12 +81,14 @@ create_hypertag(Site, Path, Uid, Email, Data, Age) ->
                    expiry = gen_expiry(Age),
                    data = Data},
     HTEnc = encrypt_term_hex(HalfKey, HT),
+    io:format("HTEnc is ~p~n", [HTEnc]),
     lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
 
 -spec open_hypertag(string(), [string()], string())
                    -> {ok, auth_srv:uid(), string(), any(), string(),
                        integer()} | {error, any()}.
 open_hypertag(Site, Path, HTEnc) ->
+    io:format("HTEnc is ~p~n", [HTEnc]),
     HalfKey = [Site, Path],
     case decrypt_term_hex(HalfKey, HTEnc) of
         #hypertag{expiry=E, uid=U, email=M, data=D} ->
@@ -614,6 +621,8 @@ decrypt_bin(Key0, CipherT) when is_binary(CipherT) ->
     Key = crypto:md5_mac(server_key(), Key0),
     PlainT0 = crypto:aes_cfb_128_decrypt(Key, ivector(), CipherT),
     <<Len:16, PlainT:Len/binary, _/binary>> = PlainT0,
+    io:format("Len is ~p PlainT is ~p~nPlainT0 is ~p~n",
+              [Len, binary_to_list(PlainT), PlainT0]),
     PlainT.
 
 %% Extend binary to a multiple of 128 bits.
@@ -645,8 +654,10 @@ make_script_terms([H | T], Acc) ->
 %%% Tests
 %%%
 unit_test_() ->
-    [fun test_encryption/0,
-     fun test_hypertag/0].
+    [
+     fun test_encryption/0,
+     fun test_hypertag/0
+    ].
 
 -spec test_encryption() -> no_return().
 test_encryption() ->
@@ -659,10 +670,11 @@ test_hypertag() ->
     Site = "http://example.com:1234",
     Path = ["_invite", "alice", "secret", "page"],
     Email = "alice@example.com",
-    "http://"++Url = create_hypertag(Site, Path,
-                                     "alice", Email,
-                                     {"123"}, "never"),
-    {_, "?hypertag="++HyperTag} = httpd_util:split_path(Url),
+    "http://" ++ Url = create_hypertag(Site, Path,
+                                       "alice", Email,
+                                       {"123"}, "never"),
+    {_, "?hypertag=" ++ HyperTag} = httpd_util:split_path(Url),
     {ok, U, Email, D, _Stamp, _Age} = open_hypertag(Site, Path, HyperTag),
     ?assertEqual("alice", U),
     ?assertEqual({"123"}, D).
+
