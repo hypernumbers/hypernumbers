@@ -76,24 +76,18 @@
                      -> string().
 create_hypertag(Site, Path, Uid, Email, Data, Age) ->
     HalfKey = [Site, make_lower(Path, [])],
-    io:format("in create HalfKey is ~p~n", [HalfKey]),
     HT = #hypertag{uid = Uid,
                    email = Email,
                    expiry = gen_expiry(Age),
                    data = Data},
     HTEnc = encrypt_term_hex(HalfKey, HT),
-    io:format("in create_hypertag Site is ~p Path is ~p HTEnc is ~p~n",
-              [Site, Path, HTEnc]),
     lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
 
 -spec open_hypertag(string(), [string()], string())
                    -> {ok, auth_srv:uid(), string(), any(), string(),
                        integer()} | {error, any()}.
 open_hypertag(Site, Path, HTEnc) ->
-    io:format("in open_hypertag  Site is ~p Path is ~p HTEnc is ~p~n",
-              [Site, Path, HTEnc]),
     HalfKey = [Site, Path],
-    io:format("in open HalfKey is ~p~n", [HalfKey]),
     case decrypt_term_hex(HalfKey, HTEnc) of
         #hypertag{expiry=E, uid=U, email=M, data=D} ->
             case is_expired(E) of
@@ -625,8 +619,6 @@ decrypt_bin(Key0, CipherT) when is_binary(CipherT) ->
     Key = crypto:md5_mac(server_key(), Key0),
     PlainT0 = crypto:aes_cfb_128_decrypt(Key, ivector(), CipherT),
     <<Len:16, PlainT:Len/binary, _/binary>> = PlainT0,
-    io:format("Len is ~p PlainT is ~p~nPlainT0 is ~p~n",
-              [Len, binary_to_list(PlainT), PlainT0]),
     PlainT.
 
 %% Extend binary to a multiple of 128 bits.
