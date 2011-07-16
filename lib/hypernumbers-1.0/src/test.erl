@@ -200,7 +200,6 @@ generate_fuzz_tests() ->
 
 gen2([]) -> ok;
 gen2([{struct, H} | T]) ->
-    io:format("H is ~p~n", [H]),
     {"fn", Name} = lists:keyfind("fn", 1, H),
     {"args", {array, Args}} = lists:keyfind("args", 1, H),
     {Name2, Min} = case lists:keyfind("resize", 1, H) of
@@ -223,8 +222,7 @@ get_bounds([{struct, List} | T], Min) ->
                                     0 -> {1, 3};
                                     _ -> {Min, Min + 2}
                                 end;
-        Other                -> io:format("Other is ~p~n", [Other]),
-                                {Min, Min + length(T) + 1}
+        _Other               -> {Min, Min + length(T) + 1}
     end.
 
 gen_fuzz_tests(Module, Name, {Min, Max}) ->
