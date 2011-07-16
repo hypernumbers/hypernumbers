@@ -1,0 +1,162 @@
+%%-*-erlang-*-
+%%% @author    Gordon Guthrie
+%%% @copyright (C) 2011, Hypernumbers Ltd
+%%% @doc       Fuzz tester for fns
+%%%            This module drives random input to all the spreadsheet
+%%%            fns to test for lack of boundary conditions.
+%%% @end
+%%% Created : 16 Jul 2011 by <gordon@hypernumbers.com>
+
+-author("Gordon Guthrie, Hypernumbers Ltd").
+
+% test suite only compile directive
+-compile(export_all).
+
+-define(SITE, "http://tests.hypernumbers.dev:9000").
+-define(PATH, ["fuzz_data"]).
+-define(X, 1).
+-define(Y, 1).
+
+-define(RUNS, 1000).
+-define(ROWS, 33).
+-define(COLS, 33).
+
+init_per_suite(Config) ->
+    ok = init(?ROWS, ?COLS),
+    Config.
+
+init(0, 0) -> ok;
+init(0, M) -> syslib:limiter(?SITE),
+              init(?ROWS, M - 1);
+init(N, M) ->
+    Ref = {refX, ?SITE, url, ?PATH, {cell, {N, M}}},
+    Formula = tconv:to_s(get_parameter(norefs)),
+    ok = new_db_api:write_attributes([{Ref,
+                                       [{"formula", Formula}]}],
+                                     nil, nil),
+    init(N - 1, M).
+
+end_per_suite(_Config) -> ok.
+
+init_per_testcase(_TestCase, Config) ->
+    put(site, ?SITE),
+    put(path, ?PATH),
+    put(col, ?X),
+    put(row, ?Y),
+    put(array_context, false),
+    put(auth_req, nil),
+    Config.
+
+end_per_testcase(_TestCase, _Config) -> ok.
+
+all() ->
+    [
+     test
+    ].
+
+test(_Config) -> test_run(?RUNS).
+
+test_run(0) -> 0;
+test_run(N) ->
+    % only interested in timeouts
+    Param = get_parameters(?NOOFPARAMS, []),
+    Msg = io_lib:format("~p ~p ~p ~p", [?MODULE, ?MODULENAME, ?FN, Param]),
+    syslib:log(Msg, "fuzz.log"),
+    catch erlang:apply(?MODULENAME, ?FN, Param),
+        %% catch
+        %%     error: Err ->
+        %%         io:format("Returned Err with ~p~n", [Err]),
+        %%         ok;
+        %%     exit: Exit ->
+        %%         io:format("Returned Exit with ~p~n", [Exit]),
+        %%         ok;
+        %%     thrown: Throw ->
+        %%         io:format("Returned Thrown with ~p~n", [Throw]),
+        %%         ok
+        %% end,
+%%   io:format("Ret is ~p~n", [Ret]),
+    test_run(N - 1).
+
+get_parameters(0, Acc) -> Acc;
+get_parameters(N, Acc) ->
+    get_parameters(N - 1, [get_parameter(all) | Acc]).
+
+get_parameter(Type) ->
+    Rnd = trunc(stdfuns_math:rand([]) * 15),
+    case {Rnd, Type} of
+        {1, _}      -> get_int();
+        {2, _}      -> get_bool();
+        {3, _}      -> get_err();
+        {4, _}      -> get_float();
+        {5, all}    -> get_cell();
+        {5, norefs} -> get_str();
+        {6, all}    -> get_range();
+        {6, norefs} -> get_str();
+        _           -> get_str()
+    end.
+
+get_int() -> trunc(get_float()).
+
+get_float() ->
+    ZeroRand = stdfuns_math:rand([]),
+    if
+        ZeroRand > 0.95  -> 0;
+        ZeroRand =< 0.95 -> 1000000000 * stdfuns_math:rand([])
+                               * (0.5 - stdfuns_math:rand([]))
+    end.
+
+get_bool() ->
+    BoolRand = stdfuns_math:rand([]),
+    if
+        BoolRand > 0.75                         -> true;
+        0.5 < BoolRand andalso BoolRand =< 0.75 -> false;
+        0.25 < BoolRand andalso BoolRand =< 0.5 -> "true";
+        BoolRand =< 0.25                        -> "false"
+    end.
+
+get_err() ->
+    ErrRand = trunc(stdfuns_math:rand([]) * 13.9),
+    case ErrRand of
+        0  -> "#" ++ get_str() ++ "!";
+        1  -> "#NULL!";
+        2  -> "#DIV/0!";
+        3  -> "#VALUE!";
+        4  -> "#REF!";
+        5  -> "#NAME?";
+        6  -> "#NUM!";
+        7  -> "#N/A";
+        8  -> "#CIRCREF!";
+        9  -> "#AUTH!";
+        10 -> "#ERROR!";
+        11 -> "#ERROR!";
+        12 -> "#MOCHIJSON!";
+        13 -> "#CANTINC!"
+    end.
+
+% 4000 chars is the max length of a string
+get_str() ->
+    Len = trunc(stdfuns_math:rand([]) * 20 + 1),
+    get_str2(Len, []).
+
+get_str2(0, Str) -> xmerl_ucs:to_utf8(Str);
+get_str2(N, Str) ->
+    Char = trunc(stdfuns_math:rand([]) * 1000),
+    get_str2(N - 1, [Char | Str]).
+
+get_cell() ->
+    Row = trunc(stdfuns_math:rand([]) * ?ROWS),
+    Col = trunc(stdfuns_math:rand([]) * ?COLS),
+    Ref = "./" ++ tconv:to_b26(Col) ++ integer_to_list(Row),
+    {cellref, {offset, Col}, {offset, Row}, "./", Ref}.
+
+get_range() ->
+    [Row1, Row2] = lists:sort([trunc(stdfuns_math:rand([]) * ?ROWS),
+                               trunc(stdfuns_math:rand([]) * ?ROWS)]),
+    [Col1, Col2] = lists:sort([trunc(stdfuns_math:rand([]) * ?COLS),
+                               trunc(stdfuns_math:rand([]) * ?COLS)]),
+    Ref1 = tconv:to_b26(Col1) ++ integer_to_list(Row1),
+    Ref2 = tconv:to_b26(Col2) ++ integer_to_list(Row2),
+    {rangereg, finite, "./",
+     {{offset, Col1}, {offset, Row1}},
+     {{offset, Col2}, {offset, Row2}},
+     Col2 - Col1, Row2 - Row1, Ref1 ++ ":" ++ Ref2}.
