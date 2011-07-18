@@ -17,7 +17,7 @@
 -define(X, 1).
 -define(Y, 1).
 
--define(RUNS, 1000).
+-define(RUNS, 10000).
 -define(ROWS, 33).
 -define(COLS, 33).
 
