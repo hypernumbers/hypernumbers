@@ -205,7 +205,7 @@ terminate(_Reason, _State) ->
 %% @end
 %%--------------------------------------------------------------------
 code_change(_OldVsn, State, _Extra) ->
-    {ok, NewState}.
+    {ok, State}.
 
 %%%===================================================================
 %%% Internal functions
