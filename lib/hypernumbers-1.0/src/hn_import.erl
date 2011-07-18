@@ -197,8 +197,10 @@ rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
     [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells],
     ok.
 
-cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun, Uid) ->
+cells(#refX{site = S} = Ref, Row, {Col, {struct, Attrs}}, 
+       Styles, Type, Fun, Uid) ->
     NRef = Ref#refX{obj = {Type, {ltoi(Col), ltoi(Row)}}},
+    syslib:limiter(S),
     Fun(NRef, Styles, Attrs, Uid),
     ok.
 

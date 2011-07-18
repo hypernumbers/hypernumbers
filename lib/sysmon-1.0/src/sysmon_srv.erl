@@ -205,9 +205,7 @@ terminate(_Reason, _State) ->
 %% @end
 %%--------------------------------------------------------------------
 code_change(_OldVsn, State, _Extra) ->
-    {state, Subs} = State,
-    NewState = #state{subs = Subs, log_pid = null},
-    {ok, NewState}.
+    {ok, State}.
 
 %%%===================================================================
 %%% Internal functions
