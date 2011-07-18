@@ -21,10 +21,10 @@
          ]).
 
 % failing tests
-%-export([
+-export([
 %         datevalue/1,
-%         today/1
-%        ]).
+         today/1
+        ]).
 
 % no tests
 %-export([

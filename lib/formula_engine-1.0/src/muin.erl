@@ -723,14 +723,16 @@ userdef_call(Fname, Args) ->
 %% Returns value in the cell + get_value_and_link() is called`
 do_cell(RelPath, Rowidx, Colidx, Type) ->
     Path = muin_util:walk_path(?mpath, RelPath),
-    IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
+    IsCircRef = (Colidx == ?mx andalso Rowidx == ?my
+                 andalso Path == ?mpath),
 
     case IsCircRef of
         true ->
             ?ERRVAL_CIRCREF;
         false ->
             FetchFun = fun() ->
-                               get_cell_info(?msite, Path, Colidx, Rowidx, Type)
+                               get_cell_info(?msite, Path,
+                                             Colidx, Rowidx, Type)
                        end,
             case ?mar of
                 nil   -> get_value_and_link(FetchFun);
@@ -756,7 +758,8 @@ toidx({row, Offset})       -> ?my + Offset;
 toidx({col, Offset})       -> ?mx + Offset.
 
 get_cell_info(S, P, Col, Row, Type) ->
-    RefX = #refX{site = string:to_lower(S), path = P, obj = {cell, {Col, Row}}},
+    RefX = #refX{site = string:to_lower(S), path = P,
+                 obj = {cell, {Col, Row}}},
     new_db_wu:get_cell_for_muin(RefX, Type).
 
 sort1D(Refs, Path, Type) -> sort1D_(Refs, Path, Type, orddict:new()).

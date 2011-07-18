@@ -1,6 +1,7 @@
 -module(test).
 
 -export([all/0,
+         fuzz/0,
          sys/0,
          sys/1,
          excel/0,
@@ -12,6 +13,11 @@
          post_login_TEST/4,
          post_TEST_DEBUG/0
          ]).
+
+% debugging
+-export([
+         generate_fuzz_tests/0
+        ]).
 
 -define(LOG_DIR,     "var/tests/").
 -define(TEST_DIR,    "tests/").
@@ -26,10 +32,26 @@
 init() ->
     catch hn_setup:site(?SITE, blank, []).
 
+init_fuzz() ->
+    {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
+    passport:validate_uid(Uid),
+    passport:set_password(Uid, "i!am!secure"),
+    catch hn_setup:site(?SITE, blank, [{creator, Uid}]).
+
 init_sec() ->
     catch hn_setup:site(?SITE, security_test, []).
 
-all() -> excel(), sys(), security().
+all() -> excel(), sys(), security(), fuzz().
+
+fuzz() ->
+    init_fuzz(),
+    ok = generate_fuzz_tests(),
+    WC = filename:absname(?TEST_DIR)++"/funs_fuzz_test",
+    io:format("WC is ~p~n", [WC]),
+    Tests = filelib:wildcard(WC),
+    io:format("Tests is ~p~n", [Tests]),
+    Opts = [ {dir, Tests} ],
+    do_test(Opts).
 
 security() ->
     init_sec(),
@@ -167,3 +189,79 @@ do_test(Opts) ->
                       lists:keysort(1, Opts),
                       lists:keysort(1, DefaultOps))),
     ok.
+
+generate_fuzz_tests() ->
+    File = code:lib_dir(hypernumbers)
+        ++ "/priv/core_install/docroot/hypernumbers/"
+        ++ "fns_en-GB.json",
+    {ok, Fns} = file:read_file(File),
+    {array, List} = mochijson:decode(Fns),
+    ok = gen2(List).
+
+gen2([]) -> ok;
+gen2([{struct, H} | T]) ->
+    {"fn", Name} = lists:keyfind("fn", 1, H),
+    {"args", {array, Args}} = lists:keyfind("args", 1, H),
+    {Name2, Min} = case lists:keyfind("resize", 1, H) of
+                       {"resize", false}    -> {Name, 0};
+                       {"resize", "row"}    -> {Name ++ ".", 1};
+                       {"resize", "column"} -> {Name ++ ".", 1};
+                       {"resize", "range"}  -> {Name ++ ".", 2}
+            end,
+    Module = find_module(Name2),
+    Bounds = get_bounds(Args, Min),
+    ok = gen_fuzz_tests(Module, Name2, Bounds),
+    gen2(T).
+
+get_bounds([], Min) -> {Min, Min};
+get_bounds([{struct, List} | T], Min) ->
+    case lists:keyfind("type", 1, List) of
+        {"type", "finite"}   -> get_bounds(T, Min + 1);
+        {"type", "variable"} -> get_bounds(T, Min + 2);
+        {"type", "infinite"} -> case Min of
+                                    0 -> {1, 3};
+                                    _ -> {Min, Min + 2}
+                                end;
+        _Other               -> {Min, Min + length(T) + 1}
+    end.
+
+gen_fuzz_tests(Module, Name, {Min, Max}) ->
+    if
+        Min =< Max -> write_test(Module, Name, Min),
+                      gen_fuzz_tests(Module, Name,
+                                     {Min + 1, Max});
+         Min > Max -> ok
+    end.
+
+write_test(Module, Name, Min) ->
+    NewName = "fuzz_" ++ Name ++ "_args_"
+        ++ integer_to_list(Min) ++ "_SUITE",
+    NewName2 = [case X of $. -> $_; X -> X end || X <- NewName],
+    NewName3 = case NewName2 of
+               "and" -> "special_and";
+               "if" -> "special_if";
+               "or" -> "special_or";
+               _     -> NewName2
+           end,
+    File = "-module(" ++ NewName3 ++ ").\n\n"
+        ++ "-define(MODULENAME, '" ++ atom_to_list(Module) ++ "')." ++ "\n"
+        ++ "-define(FN, '" ++ Name ++ "').\n"
+        ++ "-define(NOOFPARAMS, " ++ integer_to_list(Min) ++ ").\n\n"
+        ++ "-include(\"fuzz_include.irl\")." ++ "\n",
+    Dir = code:lib_dir(hypernumbers)++"/../../tests/funs_fuzz_test/",
+    file:write_file(Dir ++ NewName3 ++ ".erl", File),
+    ok.
+
+find_module(Name) ->
+    Modules = muin:get_modules(),
+    find_m(Modules, Name).
+
+find_m([], Name) -> Msg = "function " ++ Name ++ " is not found",
+                    exit(Msg);
+find_m([H | T], Name) ->
+    Info = erlang:apply(H, 'module_info', []),
+    {exports, List} = lists:keyfind(exports, 1, Info),
+    case lists:keyfind(list_to_atom(Name), 1, List) of
+        false -> find_m(T, Name);
+        _     -> H
+    end.
