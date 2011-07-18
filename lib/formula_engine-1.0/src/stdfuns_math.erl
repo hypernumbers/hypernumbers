@@ -243,8 +243,9 @@ zsum(List) ->
     Strs = typechecks:std_strs(List),
     Zs = zsum_(Strs, []),
     muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
-                          {cast, bool, num}, fetch, fetch_z_no_errs, flatten,
-                          {ignore, blank}, {ignore, str}, {ignore, bool}],
+                          {cast, bool, num}, fetch, fetch_z_no_errs,
+                          flatten, {ignore, blank}, {ignore, str},
+                          {ignore, bool}],
                      [return_errors, {all, fun is_number/1}],
                      fun sum1/1).
 
