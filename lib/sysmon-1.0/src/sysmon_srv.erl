@@ -19,6 +19,8 @@
 
 %% API
 -export([
+         start_logging_memory/0,
+         stop_logging_memory/0,
          monitor_mnesia/0,
          monitor_mnesia/1,
          monitor_mnesia/2,
@@ -41,11 +43,18 @@
                  "&relation", "&style", "&local_obj", "&dirty_queue",
                  "&dirty_for_zinf", "&include", "&logging", "&kvstore"]).
 
--record(state, {subs = []}).
+-record(state, {subs = [], log_pid = null}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
+start_logging_memory() ->
+    gen_server:cast(?MODULE, start_logging_memory).
+
+stop_logging_memory() ->
+    gen_server:cast(?MODULE, stop_logging_memory).
+
+
 monitor_mnesia() ->
     gen_server:cast(?MODULE, {monitor,
                               make_tables("http://hypernumbers.dev:9000")}).
@@ -125,6 +134,24 @@ handle_call(_Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_cast(start_logging_memory, State) ->
+    io:format("Starting to log memory~n"),
+    case State#state.log_pid of
+        null -> NewPID = spawn(syslib, log_memory, []),
+                {noreply, State#state{log_pid = NewPID}};
+        PID  -> error_logger:info_msg("sysmon_srv: already logging memory ~p~n",
+                                      [PID]),
+                {noreply, State}
+    end;
+handle_cast(stop_logging_memory, State) ->
+    io:format("Stopping logging memory~n"),
+    case State#state.log_pid of
+        null  -> error_logger:info_msg("sysmon_srv: memory not being logged!~n",
+                                       []),
+                {noreply, State};
+        PID   -> exit(PID, kill),
+                {noreply, State#state{log_pid = null}}
+    end;
 handle_cast(analyze, State) ->
     spawn(sysmon_srv, run_analysis, []),
     {noreply, State};
