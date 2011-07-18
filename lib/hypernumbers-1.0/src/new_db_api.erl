@@ -734,7 +734,7 @@ delete(#refX{obj = {R, _}} = RefX, Disp, Ar)
 
 -spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> list().
 handle_dirty_cell(Site, Idx, Ar) ->
-    Report = mnesia_mon:get_stamp("handle_dirty_cell"),
+    Report = mnesia_mon:get_stamp("handle_dirty_cell: " ++ integer_to_list(Idx)),
     ok = init_front_end_notify(),
     Fun =
         fun() ->

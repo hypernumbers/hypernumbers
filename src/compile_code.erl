@@ -41,13 +41,31 @@
 
 %% Javascript files to be ignored
 -define(JSIGNORE, [
+                   "2.0.0-crypto-md5.js",
+                   "2.0.0-crypto-sha256.js",
                    "ajaxfileupload.js",
+                   "jquery-1.4.2.js",
                    "jquery-1.4.2.min.js",
+                   "jquery-1.4.4.js",
+                   "jquery-1.4.4.min.js",
+                   "jquery-1.5.js",
+                   "jquery-1.5.min.js",
+                   "jquery.columnmanager.js",
                    "jquery.columnmanager.min.js",
+                   "jquery.cookie.js",
+                   "jquery.cookie.min.js",
                    "jquery-ext.js",
                    "jquery.filemenu.js",
+                   "jquery.jstree.js",
+                   "jquery.jstree.min.js",
+                   "jquery.scrollbarWidth.js",
+                   "jquery.scrollbarWidth.min.js",
+                   "jquery.tablesorter.jfilterselect.js",
+                   "jquery.tablesorter.jfilterselect.min.js",
+                   "jquery.tablesorter.js",
                    "jquery.tablesorter.min.js",
-                   "json2.js"
+                   "json2.js",
+                   "json2.min.js"
                    ]).
 
 jslint_DEBUG(File) ->

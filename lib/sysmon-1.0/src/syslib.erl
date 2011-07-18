@@ -21,10 +21,17 @@
          limiter/1,
          sample_fprof/1,
          sample_fprof/0,
-         consult_term_log/1
-         ]).
+         consult_term_log/1,
+         log_memory/0
+        ]).
 
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
+
+log_memory() ->
+    Msg = io_lib:format("~w", [top5_()]),
+    log(lists:flatten(Msg), "memory_log"),
+    timer:sleep(100),
+    log_memory().
 
 clear_log(Log) ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
@@ -134,11 +141,13 @@ top() ->
     Lens2 = [X || [{message_queue_len, X}] <- Lens],
     lists:max(Lens2).
 
- top5() ->
-    Procs = processes(),
-    Info = sort([info(X) || X <- Procs]),
-    io:format("~p~n", [Info]),
+top5() ->
+    io:format("~p~n", [top5_()]),
     ok.
+
+top5_() ->
+    Procs = processes(),
+    sort([info(X) || X <- Procs]).
 
 info(X) ->
     [{current_function, Fn}] = process_info(X, [current_function]),

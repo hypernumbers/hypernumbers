@@ -14,17 +14,17 @@
          dget/1
         ]).
 
-% without testsuite
-%-export([
-%         dmax/1,
-%         dmin/1,
-%         dproduct/1,
-%         dstdev/1,
-%         dstdevp/1,
-%         dsum/1,
-%         dvar/1,
-%         dvarp/1
-%        ]).
+% without testsuite (doesnt matter)
+-export([
+         dmax/1,
+         dmin/1,
+         dproduct/1,
+         dstdev/1,
+         dstdevp/1,
+         dsum/1,
+         dvar/1,
+         dvarp/1
+        ]).
 
 % exports for testing
 %-export([
