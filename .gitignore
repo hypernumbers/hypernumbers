@@ -43,3 +43,4 @@ lib/formula_engine*/src/superlex.erl
 tests/excel_import_*
 tests/system_test/*_SUITE.erl
 tests/cover.data
+tests/funs_fuzz_test/*
