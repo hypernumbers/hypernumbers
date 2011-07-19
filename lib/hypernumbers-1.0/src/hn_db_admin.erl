@@ -8,18 +8,16 @@
 -module(hn_db_admin).
 
 -define(CACHEABLE_TABLES, [
+                           "dirty_for_zinf",
                            "dirty_queue",
                            "dirty_zinf",
-                           "dirty_for_zinf",
-                           "include",
                            "form",
-                           "item",
                            "group",
+                           "include",
+                           "item",
                            "local_obj",
                            "relation",
                            "style",
-                           "form",
-                           "include",
                            "timer",
                            "user_fns"
                           ]).
