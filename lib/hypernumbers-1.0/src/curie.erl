@@ -25,25 +25,34 @@
 
 %~ curie:create_user_fn("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", "b8", ["f5", "f6"], ["b5", "b6"], ["c5", "c6"]).
 create_user_fn(Site, Page, Name, Description, OutputValue, ListOfParameters, ListOfParameterNames, ListOfParameterDescriptions)	->
-	FUNCTION_NAME = get_cell_s_value(Name, Site, Page),
-	AST = build_fun(Site, Page, OutputValue, ListOfParameters),
-	PAGE_S_JSON = get_page_s_json(Site, Page),
-	PAGE = mochijson:decode(PAGE_S_JSON),
-	WIZARD_TEMPLATE = make_template_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions),
-	
-	%~ just a dummy of what would be posted to a page:
-	Entry = 	{struct,[	{"type","user_defined"},
+    FUNCTION_NAME = get_cell_s_value(Name, Site, Page),
+    AST = build_fun(Site, Page, OutputValue, ListOfParameters),
+    PAGE_S_JSON = get_page_s_json(Site, Page),
+    PAGE = mochijson:decode(PAGE_S_JSON),
+    WIZARD_TEMPLATE = make_template_for_fn_wizard(Site, Page, Name,
+                                                  Description,
+                                                  ListOfParameterNames,
+                                                  ListOfParameterDescriptions),
+    %~ just a dummy of what would be posted to a page:
+    Entry = 	{struct,[	{"type","user_defined"},
 							{"properties",
-								{struct,[		{"ast","some_ast"},
-												{"page","some_page"},
-												{"wizard","some_wizard"},
-												{"name","some_name"}
-								]}}
-				]},
+               {struct,[		{"ast","some_ast"},
+                            {"page","some_page"},
+                            {"wizard","some_wizard"},
+                            {"name","some_name"}
+                           ]}}
+                       ]},
 
-	Json_Entry = mochijson:encode(Entry),
-	httpc:request(post, {"http://hypernumbers.dev:9000/page1/", [{"host","hypernumbers.dev:9000"},{"accept", "application/json"}, {"cookie", "auth=test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|63477687484|e39be50d0302b115c61b67b2c9d206d5"}, {"accept", "application/json"}], "", Json_Entry }, [], []).
-	 
+    Json_Entry = lists:flatten(mochijson:encode(Entry)),
+    Auth = "auth=test!hypernumbers.com|"
+        ++ "90a9b1042a97f45c008d1949b3cf25a2|63477687484|"
+        ++ "e39be50d0302b115c61b67b2c9d206d5",
+    httpc:request(post, {"http://hypernumbers.dev:9000/page1",
+                         [{"host","hypernumbers.dev:9000"},
+                          {"accept", "application/json"},
+                          {"cookie", Auth}, {"accept", "application/json"}],
+                         "", Json_Entry }, [], []).
+
 %~ curie:make_template_for_fn_wizard("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", ["b5", "b6"], ["c5", "c6"]).
 make_template_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions)	->
 	Parameters = get_parameters(Site, Page, ListOfParameterNames, ListOfParameterDescriptions, []),
@@ -65,29 +74,29 @@ make_template_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames,
 	}.
 
 
-get_parameters(_Site, _Page, [], [], Parameters)	-> 
+get_parameters(_Site, _Page, [], [], Parameters)	->
 	lists:reverse(Parameters);
 
-	
-get_parameters(Site, Page, [H | T], [H2 | T2], Parameters)	-> 
+
+get_parameters(Site, Page, [H | T], [H2 | T2], Parameters)	->
 	Parameter = {struct, [{"name", get_cell_s_value(H, Site, Page)}, {"desc", get_cell_s_value(H2, Site, Page)}, {"type", "finite"}]},
 	get_parameters(Site, Page, T, T2, [Parameter | Parameters]).
-		
-	
+
+
 %~ curie:get_page_s_json("http://hypernumbers.dev:9000", ["page1"]).
 get_page_s_json(Site, Path) ->
     Ref = hn_util:url_to_refX(Site),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     Page = Encoder(hn_mochi:page_attributes(Ref#refX{path = Path}, #env{})),
     io_lib:format("~s", [lists:flatten(Page)]).
-	
-	
+
+
 %%curie:build_fun("http://hypernumbers.dev:9000", ["function"], "b8", ["b1", "b2", "b3"]).
 build_fun(Site, Page, OutputValue, ListOfParameters) ->
 
 	My_AST = get_cell_s_ast(OutputValue, Site, Page),
 	case is_list(My_AST) of
-		false	-> 
+		false	->
 				 My_AST;
 		true	->
 				case My_AST of
@@ -109,13 +118,13 @@ build_fun(Site, Page, OutputValue, ListOfParameters) ->
 						end
 			   end
 	end.
-	
+
 
 build_fun2(RetRef, AST, ListOfParameters, Site, Page) ->
 	walk(AST, RetRef, ListOfParameters, [], Site, Page).
-	
-    
-%main function of the program, takes AST and walks down it. 
+
+
+%main function of the program, takes AST and walks down it.
 %returns new AST which only contains references to input cells.
 walk(AST, RetRef, ListOfParameters, [], Site, Page)	-> walk2(AST, RetRef, ListOfParameters, [], Site, Page, RetRef).
 
@@ -132,7 +141,7 @@ walk2([{cellref, _OffsetX, _OffsetY, _Page, Cell} = H | T], Ref, Params, Acc, Si
 	end;
 %Translates range to list of cell names ("b1:b3" = ["b1","b2","b3"])
 walk2([{rangeref, finite, _, {{offset, StartX}, {offset, StartY}}, {{offset, StopX}, {offset, StopY}}, _, _, _RangeString} | T], Ref, Params, Acc, Site, Page, FinalRetRef)	->
-	walk2([walk_helper_rangeref(Ref, FinalRetRef,hn_util:range_to_list(#refX{site = Site, path = Page,obj = {range, {StartX, StartY, StopX, StopY}}})) |T], Ref, Params, Acc, Site, Page, FinalRetRef);	
+	walk2([walk_helper_rangeref(Ref, FinalRetRef,hn_util:range_to_list(#refX{site = Site, path = Page,obj = {range, {StartX, StartY, StopX, StopY}}})) |T], Ref, Params, Acc, Site, Page, FinalRetRef);
 walk2([H | T], Ref, Params, Acc, Site, Page, _FinalRetRef)	when is_list(H)	->
 	walk2(T, Ref, Params, [walk2(H, Ref, Params, [], Site, Page, _FinalRetRef) | Acc], Site, Page, _FinalRetRef);
 walk2([H | T], Ref, Params, Acc, Site, Page, _FinalRetRef) ->
@@ -145,12 +154,12 @@ walk_new_ret_ref({cellref, _OffsetX, _OffsetY, Page, Cell}, Site)	->
 	%calculate new refX
 	#refX{site = Site, path = Page,
                    obj = hn_util:parse_ref(Cell)}.
-   
-                
+
+
 walk_helper_rangeref(CurrentRef, FinalRetRef, List)	->
 	{_, _, _, _, {cell, {ReturnX, ReturnY}}} = FinalRetRef,
 	{_, _, _, _, {cell, {CurrentX, CurrentY}}} = CurrentRef,
-	DeltaX = CurrentX - ReturnX, 
+	DeltaX = CurrentX - ReturnX,
 	DeltaY = CurrentY - ReturnY,
 	update_rangeref_offset(FinalRetRef, DeltaX, DeltaY, List, ReturnX, ReturnY, []).
 
@@ -158,7 +167,7 @@ walk_helper_rangeref(CurrentRef, FinalRetRef, List)	->
 %keep track of the offset
 update_rangeref_offset(FinalRetRef, DeltaX, DeltaY, [{refX, _A, _B, _C, {cell,{X,Y}}} | T], ReturnX, ReturnY, Acc)	->
 	update_rangeref_offset(FinalRetRef, DeltaX, DeltaY, T, ReturnX, ReturnY, [refX_to_cellref(FinalRetRef, {refX, _A, _B, _C, {cell,{X + DeltaX,Y + DeltaY}}}) |Acc]);
-update_rangeref_offset(_FinalRetRef, _DeltaX, _DeltaY, [], _ReturnX, _ReturnY, Acc)	->	
+update_rangeref_offset(_FinalRetRef, _DeltaX, _DeltaY, [], _ReturnX, _ReturnY, Acc)	->
 	Acc.
 
 
@@ -171,13 +180,13 @@ walk_helper_cellref(NewReference, _Ref, Params, Site, Page)	->
 	NewRetRef = #refX{site = Site, path = Page,
                    obj = hn_util:parse_ref(Cell)},
     case contains(Params, Cell) of
-		true	-> 
+		true	->
 			NewReference;
 		false	->
 			[{_, AST}] = new_db_api:read_attribute(NewRetRef, "__ast"),
 			case check_off_page(AST, Page) of
 				invalid -> {error, off_page_reference};
-				valid   -> 
+				valid   ->
 					update_cellref_offset(AST, OffsetX, OffsetY, [])
 			end
 	end.
@@ -185,7 +194,7 @@ walk_helper_cellref(NewReference, _Ref, Params, Site, Page)	->
 
 %get cell's name from its coordinates
 %{refX,"http://hypernumbers.dev:9000", undefined, ["function"], {cell,{0,-5}}}
-%{cellref,{offset,0},{offset,-7},"./","B1"},	
+%{cellref,{offset,0},{offset,-7},"./","B1"},
 %refX_to_cellref(FinalRetRef, CurrentCell)
 refX_to_cellref({refX, _, _, _, {cell, {FinalX, FinalY}}}, {refX, _, _, _, {cell, {X, Y}}})	->
 		{cellref, {offset, X}, {offset, Y}, "./", hn_util:obj_to_ref({cell, {X + FinalX, Y + FinalY}})}.
@@ -193,7 +202,7 @@ refX_to_cellref({refX, _, _, _, {cell, {FinalX, FinalY}}}, {refX, _, _, _, {cell
 
 %when hopping from cell to cell (going down the AST) offset has to be updated,
 %to make sure it always points to the final result cell
-update_cellref_offset([], _, _, Acc)	-> 
+update_cellref_offset([], _, _, Acc)	->
 	lists:reverse(Acc);
 update_cellref_offset([H | T], X, Y, Acc) when is_list(H)	->
 	update_cellref_offset(T, X, Y, [ update_cellref_offset(H , X, Y, []) | Acc]);
@@ -207,9 +216,9 @@ update_cellref_offset([H | T], X, Y , Acc)	-> 	update_cellref_offset(T, X, Y , [
 check_off_page([], _Page) -> valid;
 check_off_page([{cellref, _, _, P, _} | T], Page) ->
 	case muin_util:walk_path(Page, P) of
-        Page -> 
+        Page ->
 			check_off_page(T, Page);
-        _    -> 
+        _    ->
 			invalid
     end;
 check_off_page([_H | T], Page) ->
@@ -223,7 +232,7 @@ contains([Element | _T], Element)	->
 	true;
 contains([_H | T], Element)	->
 	contains(T, Element).
-	
+
 
 %check if specified input list contains off page references
 check_input_off_reference([], _Site, _Page) -> valid;
@@ -239,12 +248,12 @@ get_cell_s_ast(H, Site, Page)	->
 	Cell = #refX{site = Site, path = Page,
                    obj = hn_util:parse_ref(H)},
     List = new_db_api:read_ref(Cell),
-    case List of 
+    case List of
 		[]	-> [];
 		_List	->
 			[{_address, Properties}] = _List,
 			Tuple = lists:keyfind("__ast", 1, Properties),
-			case Tuple of 
+			case Tuple of
 				false			-> [];
 				{"__ast", AST}	-> AST;
 				[]				-> []
@@ -257,12 +266,12 @@ get_cell_s_value(Cell, Site, Page)	->
 	Ref = #refX{site = Site, path = Page,
                    obj = hn_util:parse_ref(Cell)},
 	List = new_db_api:read_ref(Ref),
-    case List of 
+    case List of
 		[]	-> [];
 		_List	->
 			[{_address, Properties}] = _List,
 			Tuple = lists:keyfind("value", 1, Properties),
-			case Tuple of 
+			case Tuple of
 				false			-> [];
 				{"value", Value}	-> Value;
 				[]				-> []
