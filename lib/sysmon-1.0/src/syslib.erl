@@ -193,8 +193,7 @@ limiter(Site) ->
     {message_queue_len, Len} = process_info(Pid, message_queue_len),
     DirtyQueue = mnesia:table_info(DQ, size),
     if
-        Len > 100
-            orelse DirtyQueue > 1000  -> timer:sleep(100),
-                                         limiter(Site);
-        true -> ok
+        Len > 100 orelse DirtyQueue > 100  -> timer:sleep(10),
+                                              limiter(Site);
+        true                               -> ok
     end.
