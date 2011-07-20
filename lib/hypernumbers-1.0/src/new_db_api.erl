@@ -13,6 +13,9 @@
 -include("syslib.hrl").
 
 -export([
+         delete_user_fn/2,
+         write_user_fn/2,
+         read_user_fn/2,
          mark_idx_dirty/2,
          read_timers/1,
          read_includes/1,
@@ -242,6 +245,30 @@ process_dirties_for_zinf(Site, Tree, CheckFun) ->
     RefX = #refX{site = Site},
     write_activity(RefX, Fun, "quiet", Report),
     ok.
+
+delete_user_fn(Site, FnName) ->
+    Report = mnesia_mon:get_stamp("delete_user_fn"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:delete_user_fn(Site, FnName)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
+
+write_user_fn(Site, #user_fns{} = Fn) ->
+    Report = mnesia_mon:get_stamp("write_user_fn"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:write_user_fn(Site, Fn)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
+
+read_user_fn(Site, FnName) ->
+    Report = mnesia_mon:get_stamp("read_user_fn"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:read_user_fn(Site, FnName)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 write_kv(Site, Key, Value) ->
     Report = mnesia_mon:get_stamp("write_kv"),
