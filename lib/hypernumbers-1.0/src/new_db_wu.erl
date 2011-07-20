@@ -238,7 +238,7 @@ clear_cells(RefX, Uid) -> clear_cells(RefX, contents, Uid).
 
 -spec clear_cells(#refX{}, all | style | contents | tuple(), auth_srv:uid()) -> ok.
 clear_cells(Ref, contents, Uid) ->
-    do_clear_cells(Ref, ["input", content_attrs()], clear, Uid);
+    do_clear_cells(Ref, ["input" | content_attrs()], clear, Uid);
 clear_cells(Ref, all, Uid) ->
     do_clear_cells(Ref, ["style", "merge", "input" | content_attrs()], clear, Uid);
 clear_cells(Ref, style, Uid) ->
