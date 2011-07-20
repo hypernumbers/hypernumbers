@@ -242,7 +242,6 @@ menu1([H | T], Cl, Acc) ->
 'tim.plainbox.'([Width, Height | List]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
-    check_size(W, H),
     Class = "hn_sld_plainbox",
     Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
     Js_R = ["Generic.reload();"],
@@ -253,7 +252,6 @@ menu1([H | T], Cl, Acc) ->
 'tim.ruledbox.'([Width, Height | List]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
-    check_size(W, H),
     Class = "hn_sld_ruledbox",
     Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
     Js_R = ["Generic.reload();"],
@@ -264,7 +262,6 @@ menu1([H | T], Cl, Acc) ->
 'tim.box.'([Width, Height | List]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
-    check_size(W, H),
     Class = "hn_sld_box",
     Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
     Js_R = ["Generic.reload();"],
@@ -276,7 +273,6 @@ menu1([H | T], Cl, Acc) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
     [S] = typechecks:throw_std_ints([Style]),
-    check_size(W, H),
     check_alerts(S),
     Class = case S of
                 0 -> "hn_sld_alert";
@@ -288,34 +284,41 @@ menu1([H | T], Cl, Acc) ->
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
     'tim.box.1'(Class, W, H, List, Incs).
 
-'tim.box.1'(Class, W, H, [Headline, Content, Footer], Incs) ->
+'tim.box.1'(Class, W, H, [Content, Headline, Footer], Incs) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
     [C1] = typechecks:throw_html_box_contents([Content]),
     [F1] = typechecks:throw_html_box_contents([Footer]),
-    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W)
-        ++ " hn_box_height_" ++ integer_to_list(H),
-    Box = "<div class='"  ++ Class2 ++ "'><h4>" ++ H1 ++ "</h1><p>"
-        ++ C1 ++ "</p><h6>" ++ F1 ++ "</h6></div>",
+    check_size2(W, H, 8),
+    CH = "hn_box_height_" ++ integer_to_list(H - 8 + 5),
+    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W),
+    Box = "<div class='"  ++ Class2 ++ "'>"
+        ++ "<h4 class='hn_box_height_3'>" ++ H1 ++ "</h4>"
+        ++ "<p class='" ++ CH ++ "'>" ++ C1 ++ "</p>"
+        ++ "<h6 class='hn_box_height_2'>" ++ F1 ++ "</h6>"
+        ++ "</div>",
     {resize, {W, H, Incs}, Box};
 
-'tim.box.1'(Class, W, H, [Headline, Content], Incs) ->
+'tim.box.1'(Class, W, H, [Content, Headline], Incs) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
     [C1] = typechecks:throw_html_box_contents([Content]),
-    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W)
-        ++ " hn_box_height_" ++ integer_to_list(H),
-    Box = "<div class='" ++ Class2 ++ "'><h4>" ++ H1 ++ "</h1>" ++ "<p>"
-        ++ C1 ++ "</p></div>",
+    check_size2(W, H, 6),
+    CH = "hn_box_height_" ++ integer_to_list(H - 6 + 3),
+    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W),
+    Box = "<div class='" ++ Class2 ++ "'>"
+        ++ "<h4 class='hn_box_height_3'>" ++ H1 ++ "</h4>"
+        ++ "<p class='" ++ CH ++ "'>" ++ C1 ++ "</p>"
+        ++ "</div>",
     {resize, {W, H, Incs}, Box};
 
-'tim.box.1'(Class, W, H, [Headline], Incs) ->
-    [H1] = typechecks:throw_html_box_contents([Headline]),
-    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W)
-        ++ " hn_box_height_" ++ integer_to_list(H),
-    Box = "<div class='" ++ Class2 ++ "'><p>" ++ H1 ++ "</p></div>",
+'tim.box.1'(Class, W, H, [Content], Incs) ->
+    [C1] = typechecks:throw_html_box_contents([Content]),
+    check_size2(W, H, 3),
+    CH = "hn_box_height_" ++ integer_to_list(H),
+    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W),
+    Box = "<div class='" ++ Class2 ++ "'>"
+        ++ "<p class='" ++ CH ++ "'>" ++ C1 ++ "</p>"
+        ++ "</div>",
     {resize, {W, H, Incs}, Box}.
-
-check_alerts(N) when 0 =< N andalso N < 4 -> ok;
-check_alerts(_N)                         -> ?ERR_VAL.
 
 'tim.headline.'([W, H, Text]) ->
     [W2] = typechecks:throw_std_ints([W]),
@@ -379,4 +382,9 @@ check_alerts(_N)                         -> ?ERR_VAL.
     Line = "<li>" ++ H ++ "</li>",
     'tim.submenu1'(T, Header, Klass, [Line | Acc]).
 
+check_alerts(N) when 0 =< N andalso N < 4 -> ok;
+check_alerts(_N)                         -> ?ERR_VAL.
+
+check_size2(W, H, MinH) when W > 1 andalso W < 16 andalso H >= MinH andalso H < 26 -> ok;
+check_size2(_W, _H, _MinH) -> ?ERR_VAL.
 
