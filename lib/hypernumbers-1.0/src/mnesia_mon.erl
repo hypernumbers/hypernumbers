@@ -26,7 +26,7 @@ get_stamp(Str) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Monitoring Off
-report(Report) -> ok.
+report(_Report) -> ok.
 
 % Monitoring On
 %% report(Report) ->
@@ -36,7 +36,7 @@ report(Report) -> ok.
 %%     ok.
 
 % Monitoring Off
-log_act(Type, Fun, Report) -> mnesia:activity(Type, Fun).
+log_act(Type, Fun, _Report) -> mnesia:activity(Type, Fun).
 
 % Monitoring On
 %% log_act(Type, Fun, Report) ->
