@@ -27,6 +27,9 @@
          read_incs/1,
          xrefX_to_rti/3,
          trans/2,
+         delete_user_fn/2,
+         write_user_fn/2,
+         read_user_fn/2,
          write_kv/3,
          read_kv/2,
          expand_ref/1,
@@ -108,6 +111,18 @@ load_dirty_since(Since, QTbl) ->
                          when Since < T -> {T, D}
                    end),
     mnesia:select(QTbl, M, read).
+
+delete_user_fn(Site, Fn) ->
+    Tbl = trans(Site, user_fns),
+    mnesia:delete(Tbl, Fn, write).
+
+write_user_fn(Site, Fn) ->
+    Tbl = trans(Site, user_fns),
+    mnesia:write(Tbl, Fn, write).
+
+read_user_fn(Site, Key) ->
+    Tbl = trans(Site, user_fns),
+    mnesia:read(Tbl, Key, read).
 
 write_kv(Site, Key, Value) ->
     Tbl = trans(Site, kvstore),
@@ -249,7 +264,7 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
     % now mark the refs dirty for zinfs
     [ok = mark_dirty_for_zinf(X) || X <- XRefs],
     % now mark dirty for includes
-    [ok = new_db_wu:mark_dirty_for_incl([X], nil) || X <- XRefs],
+    [ok = mark_dirty_for_incl([X], nil) || X <- XRefs],
     ok.
 
 %% @doc takes a reference to a
