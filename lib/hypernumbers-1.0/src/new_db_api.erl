@@ -43,6 +43,12 @@
          set_borders/5
         ]).
 
+% fun for smoothing delete
+-export([
+         delete_by_rows/3,
+         delete_by_rows/4
+        ]).
+
 % fns for logging
 -export([
          get_logs/1
@@ -538,7 +544,7 @@ recalc_page(#refX{obj = {page, "/"}} = RefX) ->
           end,
     write_activity(RefX, Fun, "refresh", Report).
 
-clear(RefX, Type, Ar) when is_record(RefX, refX) ->
+clear(#refX{} = RefX, Type, Ar) ->
     Report = mnesia_mon:get_stamp("clear"),
     Fun =
         fun() ->
@@ -723,23 +729,18 @@ insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
 -spec delete(#refX{}, auth_srv:auth_spec()) -> ok.
 delete(#refX{obj = {R, _}} = RefX, Ar) when R == cell orelse R == range ->
     move(RefX, delete, vertical, Ar, "delete cell/range");
-delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
-    Disp = case R of
-               row    -> vertical;
-               column -> horizontal
-           end,
-    move(RefX, delete, Disp, Ar, "delete row/col");
+delete(#refX{obj = {column, _}} = RefX, Ar)  ->
+    move(RefX, delete, horizontal, Ar, "delete row/col");
+delete(#refX{obj = {row, {Min, Max}}} = RefX, Ar) ->
+    move(RefX, delete, vertical, Ar, "delete");
 delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
     ok = page_srv:page_deleted(S, P),
-    Report = mnesia_mon:get_stamp("delete page"),
+    Report1 = mnesia_mon:get_stamp("get no of rows for page delete"),
     Fun1 = fun() ->
-                   mnesia_mon:report(Report),
-                   ok = init_front_end_notify(),
-                   % by default cells have a direction of deletion and it is horiz
-                   Dirty = new_db_wu:delete_cells(RefX, horizontal, Ar),
-                   ok = new_db_wu:mark_these_dirty(Dirty, Ar)
+                   new_db_wu:get_last_row(RefX)
            end,
-    write_activity(RefX, Fun1, "refresh", Report).
+    NoOfRows = mnesia_mon:log_act(transaction, Fun1, Report1),
+    delete_by_rows(NoOfRows, 0, RefX, Ar).
 
 %% @doc deletes a reference.
 %%
@@ -756,8 +757,17 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
 %% cells right-to-left to close the gap. If Disp is vertical is moves
 %% cells bottom-to-top to close the gap
 delete(#refX{obj = {R, _}} = RefX, Disp, Ar)
-  when R == cell orelse R == range orelse R == row orelse R == column ->
+  when R == cell orelse R == range ->
     move(RefX, delete, Disp, Ar, "delete").
+
+delete_by_rows(N, Min, RefX) -> delete_by_rows(N, Min, RefX, nil).
+
+delete_by_rows(Min, Min, _, _) -> ok;
+delete_by_rows(N, Min, #refX{site = S} = RefX, Ar) ->
+    NewRefX = RefX#refX{obj = {row, {N, N}}},
+    delete(NewRefX, Ar),
+    syslib:limiter(S),
+    delete_by_rows(N - 1, Min, RefX, Ar).
 
 -spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> list().
 handle_dirty_cell(Site, Idx, Ar) ->
