@@ -110,8 +110,7 @@ init([Site]) ->
 handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
     {Rep, NewP} = case Request of
                       {page_written, P} ->
-                          % case dh_tree:is_member(P, Pages) of
-                          case lists:member(P, Pages) of
+                          case dh_tree:is_member(P, Pages) of
                               true  -> {ok, Pages};
                               false -> P2 = dh_tree:add(P, Pages),
                                        ok = new_db_api:write_kv(Site, ?pages, P2),
