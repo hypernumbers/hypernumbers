@@ -113,15 +113,13 @@ handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
                           % case dh_tree:is_member(P, Pages) of
                           case lists:member(P, Pages) of
                               true  -> {ok, Pages};
-                              false -> P2 = [P | Pages],
-                                       % P2 = dh_tree:add(P, Pages),
+                              false -> P2 = dh_tree:add(P, Pages),
                                        ok = new_db_api:write_kv(Site, ?pages, P2),
                                        ok = remoting_reg:notify_pages(Site),
                                        {ok, P2}
                           end;
                       {page_deleted, P} ->
-                          % P2 = delete(P, Pages),
-                          P2 = lists:delete(P, Pages),
+                          P2 = delete(P, Pages),
                           ok = new_db_api:write_kv(Site, ?pages, P2),
                           ok = remoting_reg:notify_pages(Site),
                           {ok, P2};
@@ -131,17 +129,14 @@ handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
                           % tree and this fn flatpacks it for the called
                           % to rebuild the tree :(
                           % use get_pages if you can
-                          %{ok, FlatPages} = dh_tree:flatlist(Pages),
-                          %{FlatPages, Pages};
-                          {Pages, Pages};
+                          {ok, FlatPages} = dh_tree:flatlist(Pages),
+                          {FlatPages, Pages};
                       get_pages ->
                           {Pages, Pages};
                       {does_page_exist, P} ->
-                          % {dh_tree:is_member(P, Pages), Pages};
-                          {lists:member(P, Pages), Pages};
+                          {dh_tree:is_member(P, Pages), Pages};
                       dump ->
-                          % io:format("Pages is ~p~n", [dh_tree:flatlist(Pages)]),
-                          io:format("Pages is ~p~n", [Pages]),
+                          io:format("Pages is ~p~n", [dh_tree:flatlist(Pages)]),
                           {ok, Pages}
                   end,
     {reply, Rep, State#state{pages = NewP}}.
