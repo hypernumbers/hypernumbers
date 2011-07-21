@@ -119,7 +119,7 @@ handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
                                        {ok, P2}
                           end;
                       {page_deleted, P} ->
-                          P2 = delete(P, Pages),
+                          P2 = dh_tree:delete(P, Pages),
                           ok = new_db_api:write_kv(Site, ?pages, P2),
                           ok = remoting_reg:notify_pages(Site),
                           {ok, P2};
