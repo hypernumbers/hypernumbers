@@ -19,14 +19,45 @@
         %~ ]).
 
 %%TODO
-	%~ fix ast so it can be encoded to json, find how hn_mochi can recognise the request?
+	%~ write a replacement function for regexp:split/2 as its use is discarded,
+	%~ make sure that data retrieved by create_user_fn is suitable (the same format) for create_user_fn2
+	%~ look into db_wu and db_api
 %%TODO
 
+create_user_fn(Entry)	->
+	io:format("Entry is: ~p~n", [Entry]),
+	[_H | T] = Entry,
+	[{_, A}] = T,
+	{_, B} = A,
+	[{_,Site},{_,Page},{_,Function_Name},{_,Function_Description},{_,Function_Output_Value},{_,C}] = B,
+	{_, Parameters_Array} = C,
+	{ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues} = get_parameters_data(Parameters_Array, [], [], []),
+	{_, Page_Array} = regexp:split(Page, "/"),
+	Page_Array2 = refine_string_list(Page_Array, []),
+	io:format("Site is: ~p~nPage is: ~p~nFunction_Name is: ~p~nFunction_Description is: ~p~nFunction_Output_Value is: ~p~nListOfParameterNames is: ~p~nListOfParameterDescriptions is: ~p~nListOfParameterValues is: ~p~n", [Site, Page, Function_Name, Function_Description, Function_Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues]),
+	io:format("Page_Array2 is: ~p~n", [Page_Array2]).
+	
+	
+	
+	%~ create_user_fn2(Site, Page_Array2, Function_Name, Function_Description, Function_Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues).
+	
+	
+get_parameters_data([], Names, Descriptions, Values)	->
+	{lists:reverse(Names), lists:reverse(Descriptions), lists:reverse(Values)};
 
-%~ curie:create_user_fn("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", "b8", ["f5", "f6"], ["b5", "b6"], ["c5", "c6"]).
-create_user_fn(Site, Page, Name, Description, OutputValue, ListOfParameters, ListOfParameterNames, ListOfParameterDescriptions)	->
+get_parameters_data([H | T], Names, Descriptions, Values)	->
+	{_,A} = H,
+	[B,C,D] = A,
+	{_, Nm} = B,
+	{_, Dsc} = C,
+	{_, Val} = D,
+	get_parameters_data(T, [Nm | Names], [Dsc | Descriptions], [Val | Values]).
+	
+%~ curie:create_user_fn2("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", "b8", ["b5", "b6"], ["c5", "c6"], ["f5", "f6"]).
+create_user_fn2(Site, Page, Name, Description, OutputValue, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues)	->
     FUNCTION_NAME = get_cell_s_value(Name, Site, Page),
-    AST = build_fun(Site, Page, OutputValue, ListOfParameters),
+    AST = build_fun(Site, Page, OutputValue, ListOfParameterValues),
+    io:format("AST is:~p~n", [AST]),
     PAGE_S_JSON = get_page_s_json(Site, Page),
     PAGE = mochijson:decode(PAGE_S_JSON),
     WIZARD_TEMPLATE = make_template_for_fn_wizard(Site, Page, Name,
@@ -36,7 +67,7 @@ create_user_fn(Site, Page, Name, Description, OutputValue, ListOfParameters, Lis
     %~ just a dummy of what would be posted to a page:
     Entry = 	{struct,[	{"type","user_defined"},
 							{"properties",
-               {struct,[		{"ast","some_ast"},
+               {struct,[	{"ast","some_ast"},
                             {"page","some_page"},
                             {"wizard","some_wizard"},
                             {"name","some_name"}
@@ -44,14 +75,13 @@ create_user_fn(Site, Page, Name, Description, OutputValue, ListOfParameters, Lis
                        ]},
 
     Json_Entry = lists:flatten(mochijson:encode(Entry)),
-    Auth = "auth=test!hypernumbers.com|"
-        ++ "90a9b1042a97f45c008d1949b3cf25a2|63477687484|"
-        ++ "e39be50d0302b115c61b67b2c9d206d5",
-    httpc:request(post, {"http://hypernumbers.dev:9000/page1",
-                         [{"host","hypernumbers.dev:9000"},
-                          {"accept", "application/json"},
-                          {"cookie", Auth}, {"accept", "application/json"}],
-                         "", Json_Entry }, [], []).
+	io:format("Json_entry is:~p~n", [Json_Entry]).
+    %~ Auth = "test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|63478978880|e50fa7683a5852dbd57fc4b62406c3b4",
+    %~ httpc:request(post, {"http://hypernumbers.dev:9000/page1/",
+                         %~ [{"host","hypernumbers.dev:9000"},
+                          %~ {"accept", "application/json"},
+                          %~ {"cookie", Auth}],
+                         %~ "", Json_Entry }, [], []).
 
 %~ curie:make_template_for_fn_wizard("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", ["b5", "b6"], ["c5", "c6"]).
 make_template_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions)	->
@@ -277,3 +307,15 @@ get_cell_s_value(Cell, Site, Page)	->
 				[]				-> []
 			end
 	end.
+
+
+%if string starts with / regexp:split/2 wuould return [] as its representation,
+%this module gets rid of empty lists in a result list.
+refine_string_list([H | T], Result)	->
+	case H of
+		[]	-> refine_string_list(T, Result);
+		_	-> refine_string_list(T, [Result | H])
+	end;
+	
+refine_string_list([], Result)	->
+	lists:reverse(Result).

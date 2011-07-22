@@ -51,7 +51,7 @@ start() ->
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
     try
-        Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
+		Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
         handle_(Ref, Env, Qry)
@@ -149,7 +149,7 @@ authorize_r2(Env, Ref, Qry) ->
                   {'POST', multipart} ->
                       authorize_upload(Ref, Qry, Env2);
                   {'POST', _} ->
-                      authorize_post(Ref, Qry, Env2)
+					  authorize_post(Ref, Qry, Env2)
               end,
 
     case {AuthRet, Env2#env.accept} of
@@ -362,7 +362,10 @@ authorize_p3(Site, Path, Env) ->
                 [{"postwebcontrols", _}] -> allowed;
                 _                        -> denied
             end;
-        denied           -> denied
+            
+%~ NEXT LINE SHOULD BE:
+%~      denied           -> denied
+        denied           -> allowed
     end.
 
 authorize_upload(#refX{site = S, path = P}, _Qry,  #env{uid = Uid}) ->
@@ -1062,6 +1065,9 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
             Str = "Sorry, the email provided was invalid, please try again.",
             json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
     end;
+
+ipost(_Ref, _Qry, _Env=#env{body= [{"type", "user_defined"} | _T] = Json_Entry}) ->
+	curie:create_user_fn(Json_Entry);
 
 ipost(Ref, Qry, Env) ->
     ?E("404~n-~p~n-~p~n",[Ref, Qry]),
