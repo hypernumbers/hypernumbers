@@ -14,32 +14,26 @@
 
 -compile(export_all).
 %~ -export([
-         %~ build_fun/4,
-         %~ get_cell_s_ast/3
+      %~ 
         %~ ]).
 
 %%TODO
-	%~ write a replacement function for regexp:split/2 as its use is discarded,
-	%~ make sure that data retrieved by create_user_fn is suitable (the same format) for create_user_fn2
-	%~ look into db_wu and db_api
+	%~ find out how to send the whole page (encoded as a json struct) to the browser, so it can be displayed.
 %%TODO
 
 create_user_fn(Entry)	->
-	io:format("Entry is: ~p~n", [Entry]),
+	%~ io:format("Entry is: ~p~n", [Entry]),
 	[_H | T] = Entry,
 	[{_, A}] = T,
 	{_, B} = A,
 	[{_,Site},{_,Page},{_,Function_Name},{_,Function_Description},{_,Function_Output_Value},{_,C}] = B,
 	{_, Parameters_Array} = C,
 	{ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues} = get_parameters_data(Parameters_Array, [], [], []),
-	{_, Page_Array} = regexp:split(Page, "/"),
+	Page_Array = re:split(Page, "/", [{return,list}]),
 	Page_Array2 = refine_string_list(Page_Array, []),
-	io:format("Site is: ~p~nPage is: ~p~nFunction_Name is: ~p~nFunction_Description is: ~p~nFunction_Output_Value is: ~p~nListOfParameterNames is: ~p~nListOfParameterDescriptions is: ~p~nListOfParameterValues is: ~p~n", [Site, Page, Function_Name, Function_Description, Function_Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues]),
-	io:format("Page_Array2 is: ~p~n", [Page_Array2]).
+	%~ io:format("Site is: ~p~nPage is: ~p~nFunction_Name is: ~p~nFunction_Description is: ~p~nFunction_Output_Value is: ~p~nListOfParameterNames is: ~p~nListOfParameterDescriptions is: ~p~nListOfParameterValues is: ~p~n", [Site, Page_Array2, Function_Name, Function_Description, Function_Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues]),
 	
-	
-	
-	%~ create_user_fn2(Site, Page_Array2, Function_Name, Function_Description, Function_Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues).
+	create_user_fn2(Site, Page_Array2, Function_Name, Function_Description, Function_Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues).
 	
 	
 get_parameters_data([], Names, Descriptions, Values)	->
@@ -57,32 +51,16 @@ get_parameters_data([H | T], Names, Descriptions, Values)	->
 create_user_fn2(Site, Page, Name, Description, OutputValue, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues)	->
     FUNCTION_NAME = get_cell_s_value(Name, Site, Page),
     AST = build_fun(Site, Page, OutputValue, ListOfParameterValues),
-    io:format("AST is:~p~n", [AST]),
     PAGE_S_JSON = get_page_s_json(Site, Page),
-    PAGE = mochijson:decode(PAGE_S_JSON),
     WIZARD_TEMPLATE = make_template_for_fn_wizard(Site, Page, Name,
                                                   Description,
                                                   ListOfParameterNames,
                                                   ListOfParameterDescriptions),
-    %~ just a dummy of what would be posted to a page:
-    Entry = 	{struct,[	{"type","user_defined"},
-							{"properties",
-               {struct,[	{"ast","some_ast"},
-                            {"page","some_page"},
-                            {"wizard","some_wizard"},
-                            {"name","some_name"}
-                           ]}}
-                       ]},
-
-    Json_Entry = lists:flatten(mochijson:encode(Entry)),
-	io:format("Json_entry is:~p~n", [Json_Entry]).
-    %~ Auth = "test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|63478978880|e50fa7683a5852dbd57fc4b62406c3b4",
-    %~ httpc:request(post, {"http://hypernumbers.dev:9000/page1/",
-                         %~ [{"host","hypernumbers.dev:9000"},
-                          %~ {"accept", "application/json"},
-                          %~ {"cookie", Auth}],
-                         %~ "", Json_Entry }, [], []).
-
+	WIZARD_S_JSON = lists:flatten(mochijson:encode(WIZARD_TEMPLATE)),
+    DB_Entry = #user_fns{name = FUNCTION_NAME, ast = AST, pagejson = PAGE_S_JSON, wizardjson = WIZARD_S_JSON},
+    new_db_api:write_user_fn(Site, DB_Entry),
+    io:format("ok~n~p~n", [DB_Entry]).
+		
 %~ curie:make_template_for_fn_wizard("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", ["b5", "b6"], ["c5", "c6"]).
 make_template_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions)	->
 	Parameters = get_parameters(Site, Page, ListOfParameterNames, ListOfParameterDescriptions, []),
@@ -119,6 +97,24 @@ get_page_s_json(Site, Path) ->
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     Page = Encoder(hn_mochi:page_attributes(Ref#refX{path = Path}, #env{})),
     io_lib:format("~s", [lists:flatten(Page)]).
+
+
+read_user_fn(Entry)	->
+	[_H | T] = Entry,
+	[{_, A}] = T,
+	{_, B} = A,
+	[{_,Site},{_,Function_Name}] = B,
+	[{_, FUNCTION_NAME, AST, PAGE_S_JSON, WIZARD_S_JSON}] = new_db_api:read_user_fn(Site, Function_Name),
+	io:format("ok, read~n~p").
+	
+	
+delete_user_fn(Entry)	->
+	[_H | T] = Entry,
+	[{_, A}] = T,
+	{_, B} = A,
+	[{_,Site},{_,Function_Name}] = B,
+	new_db_api:delete_user_fn(Site, Function_Name),
+	io:format("ok, delete~n").
 
 
 %%curie:build_fun("http://hypernumbers.dev:9000", ["function"], "b8", ["b1", "b2", "b3"]).
@@ -314,7 +310,7 @@ get_cell_s_value(Cell, Site, Page)	->
 refine_string_list([H | T], Result)	->
 	case H of
 		[]	-> refine_string_list(T, Result);
-		_	-> refine_string_list(T, [Result | H])
+		_	-> refine_string_list(T, [H | Result])
 	end;
 	
 refine_string_list([], Result)	->
