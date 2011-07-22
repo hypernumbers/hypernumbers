@@ -107,7 +107,7 @@ erase1([H|T],Dict) ->
 -spec delete(Key::list(string()),Dict::any()) -> any().
 %% @doc delete a node from the tree
 %%      (does not include children)
-% the empty paxth is the root
+% the empty path is the root
 delete([], _Dict) ->
     dict:new();
 delete(List, Dict) ->

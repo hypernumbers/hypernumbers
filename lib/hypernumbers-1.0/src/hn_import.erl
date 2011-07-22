@@ -173,8 +173,9 @@ json_file(Url, FileName, Uid) ->
      || X <- Rows],
     [rows(Ref, X, Styles, column, fun write_col_row/4, Uid)
      || X <- Cols],
+
     [rows(Ref, X, Styles, cell,   fun write_cells/4,   Uid)
-     || X <- Cells],
+     || X <- lists:sort(fun int_sort/2, Cells)],
     ok.
 
 make_styles([], Acc) -> Acc;
@@ -193,14 +194,15 @@ set_view(Site, Path, {View, {struct, Propslist}}) ->
                            {"groups",   Groups},
                            {"everyone", Everyone}]).
 
-rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
-    [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells],
+rows(#refX{site = S} = Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
+    Cells2 = lists:sort(fun int_sort/2, Cells),
+    syslib:limiter(S),
+    [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells2],
     ok.
 
-cells(#refX{site = S} = Ref, Row, {Col, {struct, Attrs}}, 
+cells(Ref, Row, {Col, {struct, Attrs}},
        Styles, Type, Fun, Uid) ->
     NRef = Ref#refX{obj = {Type, {ltoi(Col), ltoi(Row)}}},
-    syslib:limiter(S),
     Fun(NRef, Styles, Attrs, Uid),
     ok.
 
@@ -689,6 +691,13 @@ chunk3([{{cell, {X, Y}}, Val}  | T], _Y1, OldY, Acc1, Acc2) ->
 
 row_sort({{cell, {_, Y1}}, _}, {{cell, {_, Y2}}, _}) when Y1 >= Y2 -> true;
 row_sort({{cell, {_, Y1}}, _}, {{cell, {_, Y2}}, _}) when Y1 <  Y2 -> false.
+
+int_sort({A, _}, {B, _}) ->
+    A1 = list_to_integer(A),
+    B1 = list_to_integer(B),
+    if A1 >  B1 -> false;
+       A1 =< B1 -> true
+    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
