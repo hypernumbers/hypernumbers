@@ -9,7 +9,9 @@
 -include("hypernumbers.hrl").
 -include("muin_proc_dict.hrl").
 
--define(notincfns, [include, tick, snapshot, input, textarea, button, radio, select, 'create.button', 'map.rows.button', 'map.sheet.button']).
+-define(notincfns, [include, tick, snapshot, input, textarea, button, radio,
+                    select, 'create.button', 'map.rows.button',
+                    'map.sheet.button']).
 
 -define(timalert, $t,$i,$m,$.,$a,$l,$e,$r,$t,$.).
 -define(timbox, $t,$i,$m,$.,$b,$o,$x,$.).
@@ -121,12 +123,12 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                           col=Col,   row=Row,
                           array_context=AryCtx,
                           auth_req=AuthReq}) ->
-    %% Populate the process dictionary.
+%% Populate the process dictionary.
     lists:map(fun({K,V}) -> put(K, V) end,
-        [{site, Site}, {path, Path}, {x, Col}, {y, Row},
-         {array_context, AryCtx}, {infinite, []},
-         {retvals, {[], []}}, {recompile, false},
-         {auth_req, AuthReq}]),
+              [{site, Site}, {path, Path}, {x, Col}, {y, Row},
+               {array_context, AryCtx}, {infinite, []},
+               {retvals, {[], []}}, {recompile, false},
+               {auth_req, AuthReq}]),
     Fcode = case ?array_context of
                 true -> loopify(Pcode);
                 false -> Pcode
@@ -211,7 +213,7 @@ eval(_Node = [Func|Args]) when ?is_fn(Func) ->
     {NewFunc, NewArgs} = transform(atom_to_list(Func), Args),
     case muin_util:attempt(?MODULE, funcall, [NewFunc, NewArgs]) of
         {error, {errval, _}  = Err} -> Err;
-        {error, {aborted, _} = Err} -> exit(Err); % re-exit - this is an mnesia transaction!
+        {error, {aborted, _} = Err} -> exit(Err); % re-exit - an mnesia trans!
         {error, _E}                 -> ?error_in_formula;
         {ok, {error, _E}}           -> ?error_in_formula; % in stdfuns
         {ok, V}                     -> V
@@ -306,9 +308,9 @@ transform([?html | R], Args) ->
 transform(List, Args) -> {list_to_atom(List), Args}.
 
 get_dims(String) -> case string:tokens(String, "x") of
-                     [W, H] -> {W, H};
-                     _      -> {?ERRVAL_NAME, ?ERRVAL_NAME} % think about it!
-                 end.
+                        [W, H] -> {W, H};
+                        _      -> {?ERRVAL_NAME, ?ERRVAL_NAME} % think about it!
+                    end.
 
 funcall(make_list, Args) ->
     area_util:make_array([Args]); % horizontal array
@@ -392,7 +394,7 @@ funcall(Fname, Args0) ->
     end.
 
 call_fun(Fun, Args, []) ->
-    %% mebbies the VM has unloaded the function, so try and reload them
+    % mebbies the VM has unloaded the function, so try and reload them
     case force_load(get_modules()) of
         reloaded -> call_fun(Fun, Args, get_modules());
         loaded   -> {error, not_found}
@@ -400,10 +402,7 @@ call_fun(Fun, Args, []) ->
 
 call_fun(Fun, Args, [Module | Rest]) ->
     case erlang:function_exported(Module, Fun, 1) of
-        true  -> %Msg = io_lib:format("applying (1) ~p ~p ~p",
-                 %                    [Module, Fun, Args]),
-                 %syslib:log(Msg, "muin_apply"),
-                 {ok, erlang:apply(Module, Fun, [Args])};
+        true  -> {ok, erlang:apply(Module, Fun, [Args])};
         false -> call_fun(Fun, Args, Rest)
     end.
 
@@ -463,10 +462,10 @@ process_for_gui([Fn| Args])
                            orelse Fn == '%'
                            orelse Fn == '^^') ->
     {struct, [{fn, {struct, [{name, Fn}, {type, "infix"}]}},
-               {args, {array, process_args(Args, [])}}]};
+              {args, {array, process_args(Args, [])}}]};
 process_for_gui([Fn| Args]) when ?is_fn(Fn) ->
     {struct, [{fn, {struct, [{name, Fn}, {type, "prefix"}]}},
-               {args, {array, process_args(Args, [])}}]};
+              {args, {array, process_args(Args, [])}}]};
 % so its not a fn - must be a constant
 process_for_gui({cellref, _, _, _, Text}) ->
     {struct, [{cellref, Text}]};
@@ -578,12 +577,8 @@ col_index({offset, N}) -> ?mx + N.
 fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     {zpath, ZList} = Z,
     NewPath = muin_util:walk_zpath(?mpath, ZList),
-    %PageTree = page_srv:get_pages(?msite),
-    %{MPaths, NoMatch, Err} = match(?msite, PageTree, NewPath),
-    Length = length(NewPath),
-    Paths = page_srv:get_pages(?msite),
-    FPaths = [X || X <- Paths, length(X) == Length],
-    {MPaths, NoMatch, Err} = match(?msite, FPaths, NewPath),
+    PageTree = page_srv:get_pages(?msite),
+    {MPaths, NoMatch, Err} = match(?msite, PageTree, NewPath),
     OCol = C#cellref.col,
     ORow = C#cellref.row,
     Vals = fetch_vals(MPaths, ORow, OCol),
@@ -592,9 +587,9 @@ fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     Infinites = get(infinite),
     put(infinite, ordsets:add_element(RefX, Infinites)),
     {zeds, Vals, NoMatch, Err};
-    % pinch it off from working
-    %error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
-    %?ERRVAL_ERR;
+% pinch it off from working
+% error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
+% ?ERRVAL_ERR;
 fetch(Ref) when ?is_zrangeref(Ref) ->
     error_logger:info_msg("(from muin) Somebody tried a z-order rangeref~n"),
     ?ERRVAL_ERR;
@@ -614,11 +609,11 @@ fetch(#rangeref{type = Type, path = Path} = Ref)
     Rows = case Obj of
                {Type2, {_I, _I}} -> sort1D(Refs, Path, Type2);
                {Type2, {I,   J}} -> sort2D(Refs, Path, {Type2, I, J})
-    end,
+           end,
     % pinch out the functionality for a release
     {range, Rows};
-    %error_logger:info_msg("Somebody tried a row or column rangeref~n"),
-    %?ERRVAL_ERR;
+% error_logger:info_msg("Somebody tried a row or column rangeref~n"),
+% ?ERRVAL_ERR;
 fetch(#rangeref{type = finite} = Ref) ->
     CellCoords = muin_util:expand_cellrange(Ref),
     Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows
@@ -645,7 +640,7 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
     Child  = #refX{site=MSite, path=NewMPath, obj={cell, {MX, MY}}},
     Parent = #refX{site=RSite, path=NewRPath, obj={cell, {RX, RY}}},
 
-    %% Yup it is not implemented...
+    % Yup it is not implemented...
     case new_db_api:read_incoming_hn(Parent, Child) of
 
         {error,permission_denied} ->
@@ -710,9 +705,6 @@ loop_transform([Fn|Args]) when ?is_fn(Fn) ->
 userdef_call(Fname, Args) ->
     % changed to apply because using the construction userdef:Fname failed
     % to work after hot code load (Gordon Guthrie 2008_09_08)
-    %Msg = io_lib:format("applying (2) ~p ~p ~p",
-    %                                 ["userdef", Fname, Args]),
-    %syslib:log(Msg, "muin_apply"),
     case (catch apply(userdef,Fname,Args)) of
         {'EXIT', {undef, _}} -> ?ERR_NAME;
         {'EXIT', _}          -> ?ERR_NAME;
@@ -765,15 +757,15 @@ get_cell_info(S, P, Col, Row, Type) ->
 sort1D(Refs, Path, Type) -> sort1D_(Refs, Path, Type, orddict:new()).
 
 sort1D_([], _Path, Type, Dict) -> Size = orddict:size(Dict),
-                           List = orddict:to_list(Dict),
-                           Filled = fill1D(List, 1, 1, Size + 1, [], 'to-last-key'),
-                           % if it is row then you need to flatten the List
-                           % by one degree and wrap it in a list
-                           % (ie a 2d transposition)
-                           case Type of
-                               column -> Filled;
-                               row    -> [[X || [X] <- Filled]]
-                           end;
+                                  List = orddict:to_list(Dict),
+                                  Filled = fill1D(List, 1, 1, Size + 1, [], 'to-last-key'),
+                                  % if it is row then you need to flatten the List
+                                  % by one degree and wrap it in a list
+                                  % (ie a 2d transposition)
+                                  case Type of
+                                      column -> Filled;
+                                      row    -> [[X || [X] <- Filled]]
+                                  end;
 sort1D_([#refX{obj = {cell, {X, Y}}} | T], Path, row, Dict) ->
     V = do_cell(Path, Y, X, infinite),
     sort1D_(T, Path, row, orddict:append(X, V, Dict));
@@ -793,7 +785,7 @@ sort2D_([], _Path, {Type, Start, End}, Dict) ->
               {row, 0}    -> [lists:duplicate(End - Start, blank)];
               {column, 0} ->  lists:duplicate(End - Start, [blank]);
               {_, _}      -> fill2D(Dict, Type, Start, End, [])
-    end,
+          end,
     Ret;
 sort2D_([#refX{obj = {cell, {X, Y}}} | T], Path, Def, Dict) ->
     SubDict = case orddict:is_key(X, Dict) of
@@ -837,7 +829,8 @@ fill2D_a(Dict, Index, End, Acc, Max) ->
     {NewAcc, DictMax} =
         case orddict:is_key(Index, Dict) of
             true  -> SubDict = orddict:fetch(Index, Dict),
-                     [{MyMax, _} | _T] = lists:reverse(orddict:to_list(SubDict)),
+                     List = orddict:to_list(SubDict),
+                     [{MyMax, _} | _T] = lists:reverse(List),
                      {{Index, SubDict}, MyMax};
             false -> {{Index, orddict:new()}, 0}
         end,
@@ -863,80 +856,49 @@ fill1D(Dict, Index, N, Size, Acc, Type) ->
         end,
     fill1D(Dict, Index + 1, NewN, Size, NewAcc, Type).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% Old z-query stuff
-%%%
-match(Site, Paths, ZPath) -> m1(Site, Paths, ZPath, [], [], []).
+match(Site, PageTree, ZPath) ->
+    Segments = dh_tree:segments_below([], PageTree),
+    m1(Site, PageTree, Segments, ZPath, [], [], [], []).
 
-m1(_Site, [], _ZPath, Match, NoMatch, Err) -> {Match, NoMatch, Err};
-m1(Site, [H | T], ZPath, Match, NoMatch, Err) ->
+%% this clause terminates the second iteration
+%% we have run out of ZSegs and Segs to test and all have passed
+m1(_Site, _PageTree, [], [], Htap, Match, NoMatch, Err) ->
+    {[lists:reverse(Htap) | Match], NoMatch, Err};
+%% this clause terminates the first iteration
+%% we have run out of segments at a particular level to test
+m1(_Site, _PageTree, [], _ZPath, Htap, Match, NoMatch, Err) ->
+    {Match, [{nomatch, lists:reverse(Htap)} | NoMatch], Err};
+%% this clause terminates the first iteration
+%% we still have subtrees but there the Segs/ZSegs are not deep enough
+m1(_Site, _PageTree, _Segs, [], Htap, Match, NoMatch, Err) ->
+    {[lists:reverse(Htap) | Match],  NoMatch, Err};
+m1(Site, PageTree, [H | T], [ZH | ZT], Htap, Match, NoMatch, Err) ->
     {NewM, NewNM, NewE} =
-        case m2(Site, H, ZPath, []) of
-            {nomatch, Path}    -> {Match, [{nomatch, Path} | NoMatch], Err};
-            {match,  _Path}    -> {[H | Match], NoMatch, Err};
-            {error,   Path, V} -> {Match, NoMatch, [{error, Path, V} | Err]}
+        case m2(Site, H, ZH, Htap) of
+            {partmatch, Path}  ->
+                Segs = dh_tree:segments_below(Path, PageTree),
+                m1(Site, PageTree, Segs, ZT, [H | Htap], Match,
+                   NoMatch, Err);
+            {nomatch, Path} ->
+                {Match, [{nomatch, Path} | NoMatch], Err};
+            {error,   Path, V} ->
+                {Match, NoMatch, [{error, Path, V} | Err]}
         end,
-    m1(Site, T, ZPath, NewM, NewNM, NewE).
+    m1(Site, PageTree, T, [ZH | ZT], Htap, NewM, NewNM, NewE).
 
-m2(_Site, [], [], Htap)                       -> {match, lists:reverse(Htap)};
-m2(Site, [S | T1], [{seg, S}     | T2], Htap) -> m2(Site, T1, T2, [S | Htap]);
-m2(_Site, [S | _T1], [{seg, _}  | _T2], Htap) -> {nomatch, lists:reverse([S|Htap])};
-m2(Site, [S | T1], [{zseg, Z, _} | T2], Htap) ->
+m2(_Site,  S, {seg, S}, Htap)     ->
+    {partmatch, lists:reverse([S | Htap])};
+m2(_Site, S, {seg, _}, Htap)     ->
+    {nomatch, lists:reverse([S | Htap])};
+m2(Site,  S, {zseg, Z, _}, Htap) ->
     case zeval(Site, lists:reverse([S | Htap]), Z) of
-        match        -> m2(Site, T1, T2, [S | Htap]);
-        nomatch      -> {nomatch, lists:reverse([S | Htap])};
-        {error, Val} -> {error, lists:reverse([S | Htap]), Val}
+        match        -> {partmatch, lists:reverse([S | Htap])};
+        nomatch      -> {nomatch,   lists:reverse([S | Htap])};
+        {error, Val} -> {error,     lists:reverse([S | Htap]), Val}
     end.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% Faster z-queries, more memory :(
-%%%
-%% match(Site, PageTree, ZPath) ->
-%%     Segments = dh_tree:segments_below([], PageTree),
-%%     m1(Site, PageTree, Segments, ZPath, [], [], [], []).
 
-%% %% this clause terminates the second iteration
-%% %% we have run out of ZSegs and Segs to test and all have passed
-%% m1(_Site, _PageTree, [], [], Htap, Match, NoMatch, Err) ->
-%%     {[lists:reverse(Htap) | Match], NoMatch, Err};
-%% %% this clause terminates the first iteration
-%% %% we have run out of segments at a particular level to test
-%% m1(_Site, _PageTree, [], _ZPath, Htap, Match, NoMatch, Err) ->
-%%     {Match, [{nomatch, lists:reverse(Htap)} | NoMatch], Err};
-%% %% this clause terminates the first iteration
-%% %% we still have subtrees but there the Segs/ZSegs are not deep enough
-%% m1(_Site, _PageTree, _Segs, [], Htap, Match, NoMatch, Err) ->
-%%     {[lists:reverse(Htap) | Match],  NoMatch, Err};
-%% m1(Site, PageTree, [H | T], [ZH | ZT], Htap, Match, NoMatch, Err) ->
-%%     {NewM, NewNM, NewE} =
-%%         case m2(Site, H, ZH, Htap) of
-%%             {partmatch, Path}  ->
-%%                 Segs = dh_tree:segments_below(Path, PageTree),
-%%                 m1(Site, PageTree, Segs, ZT, [H | Htap], Match,
-%%                    NoMatch, Err);
-%%             {nomatch, Path} ->
-%%                 {Match, [{nomatch, Path} | NoMatch], Err};
-%%             {error,   Path, V} ->
-%%                 {Match, NoMatch, [{error, Path, V} | Err]}
-%%         end,
-%%     m1(Site, PageTree, T, [ZH | ZT], Htap, NewM, NewNM, NewE).
-
-%% m2(_Site,  S, {seg, S}, Htap)     ->
-%%     {partmatch, lists:reverse([S | Htap])};
-%% m2(_Site, S, {seg, _}, Htap)     ->
-%%     {nomatch, lists:reverse([S | Htap])};
-%% m2(Site,  S, {zseg, Z, _}, Htap) ->
-%%     case zeval(Site, lists:reverse([S | Htap]), Z) of
-%%         match        -> {partmatch, lists:reverse([S | Htap])};
-%%         nomatch      -> {nomatch,   lists:reverse([S | Htap])};
-%%         {error, Val} -> {error,     lists:reverse([S | Htap]), Val}
-%%     end.
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% the zinf server has no context to execute at this stage!
+%% the zinf server has no context to execute at this stage!
 zeval_from_zinf(Site, Path, Toks) ->
     % zeval evaluates an expression in a cell context - but that cell
     % cannot actually exists - so use {0,0} which is the cell 1 up and 1
@@ -948,9 +910,9 @@ zeval(Site, Path, Toks) ->
     Y = ?my,
     zeval2(Site, Path, Toks, X, Y).
 
-% the execution context for expressions is stored in the process dictionary
-% so here you need to rip it out and then stick it back in
-% (not good, Damn you Hasan!).
+%% the execution context for expressions is stored in the process dictionary
+%% so here you need to rip it out and then stick it back in
+%% (not good, Damn you Hasan!).
 zeval2(Site, Path, Toks, X, Y) ->
     % capture the process dictionary (it will get gubbed!)
     OldContext = get(),
@@ -961,15 +923,17 @@ zeval2(Site, Path, Toks, X, Y) ->
     % no array context (fine) or security context (erk!)
     RTI = new_db_wu:xrefX_to_rti(XRefX, nil, false),
     Return = case catch(xfl_parser:parse(Toks)) of
-                 {ok, Ast}   -> {ok, {_, Rs, _, _, _}} = muin:run_code(Ast, RTI),
-                                % cast to a boolean
-                                Rs2 = typechecks:std_bools([Rs]),
-                                case Rs2 of
-                                    [true]  -> match;
-                                    [false] -> nomatch;
-                                    Val     -> {error, Val}
-                                end;
-                 ?syntax_err -> ?error_in_formula
+                 {ok, Ast} ->
+                     {ok, {_, Rs, _, _, _}} = muin:run_code(Ast, RTI),
+                     % cast to a boolean
+                     Rs2 = typechecks:std_bools([Rs]),
+                     case Rs2 of
+                         [true]  -> match;
+                         [false] -> nomatch;
+                         Val     -> {error, Val}
+                     end;
+                 ?syntax_err ->
+                     ?error_in_formula
              end,
     % restore the process dictionary (fugly! fugly! fugly!)
     [put(K, V) || {K, V} <- OldContext],
@@ -1029,32 +993,32 @@ test_xfl() ->
              "sum(/bleh/gloh/dleh/1:1)"
             ],
     Fun= fun(X) ->
-                  Fla = superparser:process("="++X),
-                  io:format("~n~nStarting a new parse...~n"),
-                  Trans = translator:do(Fla),
-                  case catch (xfl_lexer:lex(Trans, {1, 1})) of
-                      {ok, Toks} ->
-                          case catch(xfl_parser:parse(Toks)) of
-                              {ok, Ast} ->
-                                  io:format("Success Expr is ~p Fla is ~p "++
-                                            "Trans is ~p~n"++
-                                            "Toks is ~p~nAst is ~p~n"++
-                                            "Status is ~p~n",
-                                            [X, Fla, Trans, Toks, Ast, "Ok"]),
-                                  {ok, Ast};
-                              O2         ->
-                                  io:format("Parse fail: "++
-                                            "Expr is ~p Fla is ~p Trans is ~p~n"++
-                                            "Toks is ~p~nStatus is ~p~n",
-                                            [X, Fla, Trans, Toks, O2]),
-                                  ?syntax_err
-                          end;
-                      O1 -> io:format("Lex fail: Expr is ~p Fla is ~p "++
-                                      "Trans is ~p~n"++
-                                      "Status is ~p~n",
-                                      [X, Fla, Trans, O1]),
-                            ?syntax_err
-                  end
+                 Fla = superparser:process("="++X),
+                 io:format("~n~nStarting a new parse...~n"),
+                 Trans = translator:do(Fla),
+                 case catch (xfl_lexer:lex(Trans, {1, 1})) of
+                     {ok, Toks} ->
+                         case catch(xfl_parser:parse(Toks)) of
+                             {ok, Ast} ->
+                                 io:format("Success Expr is ~p Fla is ~p "++
+                                           "Trans is ~p~n"++
+                                           "Toks is ~p~nAst is ~p~n"++
+                                           "Status is ~p~n",
+                                           [X, Fla, Trans, Toks, Ast, "Ok"]),
+                                 {ok, Ast};
+                             O2         ->
+                                 io:format("Parse fail: "++
+                                           "Expr is ~p Fla is ~p Trans is ~p~n"++
+                                           "Toks is ~p~nStatus is ~p~n",
+                                           [X, Fla, Trans, Toks, O2]),
+                                 ?syntax_err
+                         end;
+                     O1 -> io:format("Lex fail: Expr is ~p Fla is ~p "++
+                                     "Trans is ~p~n"++
+                                     "Status is ~p~n",
+                                     [X, Fla, Trans, O1]),
+                           ?syntax_err
+                 end
          end,
     [Fun(X) || X <- Exprs],
     ok.
