@@ -54,6 +54,7 @@
 
 % fns for logging
 -export([
+         log_page_delete/2,
          log_move/4,
          get_logs/1
         ]).
@@ -1225,6 +1226,14 @@ has_include(Site, CellIdx) ->
         [R] -> R#relation.include
     end.
 
+log_page_delete(#refX{site = S, path = P, obj = {page, "/"} = O}, Uid) ->
+    Log = #logging{idx = "", uid = Uid,
+                   action = 'page deleted', actiontype = "",
+                   type = page, path = hn_util:list_to_path(P),
+                   obj = O, log = ""},
+    write_log(S, Log),
+    ok.
+
 log_move(#refX{site = S, path = P, obj = {Type, _} = O}, Action, Disp, Uid)
   when Type ==  row orelse Type ==  column orelse Type ==  range ->
     Log = #logging{idx = "", uid = Uid,
@@ -1232,8 +1241,7 @@ log_move(#refX{site = S, path = P, obj = {Type, _} = O}, Action, Disp, Uid)
                    type = page, path = hn_util:list_to_path(P),
                    obj = O, log = ""},
     write_log(S, Log),
-    ok;
-log_move(_, _, _, _) -> ok.
+    ok.
 
 shift_rows_and_columns(#refX{site = S, path = P, obj = {column, {X1, X2}}},
                        Type, horizontal, _Ar) ->

@@ -707,18 +707,18 @@ drag_n_drop(From, #refX{site = ToS, path = ToP} = To, Ar)
 %% @todo This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
 insert(#refX{obj = {column, _}} = RefX, Ar) ->
-    move(RefX, insert, horizontal, Ar, "insert_col");
+    move(RefX, insert, horizontal, Ar, "insert_col", false);
 insert(#refX{obj = {row, _}} = RefX, Ar) ->
-    move(RefX, insert, vertical, Ar, "insert_row");
+    move(RefX, insert, vertical, Ar, "insert_row", false);
 insert(#refX{obj = R} = RefX, Ar)
   when R == cell orelse R == range ->
-    move(RefX, insert, vertical, Ar, "insert cell/range").
+    move(RefX, insert, vertical, Ar, "insert cell/range", false).
 
 %% The Type variable determines how the insert displaces the existing cases...
 insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
   when is_record(RefX, refX), (R == cell orelse R == range),
        (Disp == horizontal orelse Disp == vertical)->
-    move(RefX, insert, Disp, Ar, "insert cell/range").
+    move(RefX, insert, Disp, Ar, "insert cell/range", false).
 
 %% @doc deletes a column or a row or a page
 %%
@@ -728,15 +728,26 @@ insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
 %% and if it does it should fail...
 -spec delete(#refX{}, auth_srv:auth_spec()) -> ok.
 delete(#refX{obj = {R, _}} = RefX, Ar) when R == cell orelse R == range ->
-    move(RefX, delete, vertical, Ar, "delete cell/range");
+    move(RefX, delete, vertical, Ar, "delete cell/range", false);
 delete(#refX{obj = {column, _}} = RefX, Ar)  ->
-    move(RefX, delete, horizontal, Ar, "delete row/col");
-delete(#refX{obj = {row, {Min, Max}}} = RefX, Ar) ->
-    move(RefX, delete, vertical, Ar, "delete");
+    move(RefX, delete, horizontal, Ar, "delete row/col", false);
+delete(#refX{obj = {row, {_Min, _Max}}} = RefX, Ar) ->
+    move(RefX, delete, vertical, Ar, "delete", false);
 delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
     ok = page_srv:page_deleted(S, P),
+    % page deletes are too 'big' cause massive memory spikes
+    % and dirty cell rushes and message queues to go through
+    % the roof, so we don't do them atomically.
+    %
+    % Instead we delete the page row-by-row starting with the last
+    % row.
+    %
+    % Need to do jiggery-pokery to make the logs look OK
     Report1 = mnesia_mon:get_stamp("get no of rows for page delete"),
     Fun1 = fun() ->
+                   % log it as a page delete in this transction
+                   % bit of a cheat...
+                   new_db_wu:log_page_delete(RefX, Ar),
                    new_db_wu:get_last_row(RefX)
            end,
     NoOfRows = mnesia_mon:log_act(transaction, Fun1, Report1),
@@ -758,14 +769,14 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
 %% cells bottom-to-top to close the gap
 delete(#refX{obj = {R, _}} = RefX, Disp, Ar)
   when R == cell orelse R == range ->
-    move(RefX, delete, Disp, Ar, "delete").
+    move(RefX, delete, Disp, Ar, "delete", false).
 
 delete_by_rows(N, Min, RefX) -> delete_by_rows(N, Min, RefX, nil).
 
 delete_by_rows(Min, Min, _, _) -> ok;
 delete_by_rows(N, Min, #refX{site = S} = RefX, Ar) ->
     NewRefX = RefX#refX{obj = {row, {N, N}}},
-    delete(NewRefX, Ar),
+    move(NewRefX, delete, vertical, Ar, "delete", false),
     syslib:limiter(S),
     delete_by_rows(N - 1, Min, RefX, Ar).
 
@@ -930,17 +941,17 @@ tell_front_end(_FnName, _RefX) ->
     [ok = Fun(X) || X <- List],
     ok.
 
-move(RefX, Type, Disp, Ar, Report)
+move(RefX, Type, Disp, Ar, Report, LogChange)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
     Report2 = mnesia_mon:get_stamp(Report),
     Fun = fun() ->
                   mnesia_mon:report(Report2),
-                  move_tr(RefX, Type, Disp, Ar)
+                  move_tr(RefX, Type, Disp, Ar, LogChange)
           end,
     write_activity(RefX, Fun, "move", Report2).
 
-move_tr(RefX, Type, Disp, Ar) ->
+move_tr(RefX, Type, Disp, Ar, LogChange) ->
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
     _R = {insert, atom_to_list(Disp)},
@@ -951,7 +962,10 @@ move_tr(RefX, Type, Disp, Ar) ->
     % To make this work we shift the RefX up 1, left 1
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
-    ok = new_db_wu:log_move(RefX, Type, Disp, Ar),
+    case LogChange of
+        true  -> new_db_wu:log_move(RefX, Type, Disp, Ar);
+        false -> ok
+    end,
     ReWr = do_delete(Type, RefX, Disp, Ar),
     ok = new_db_wu:shift_rows_and_columns(RefX, Type, Disp, Ar),
     MoreDirty = new_db_wu:shift_cells(RefX, Type, Disp, ReWr, Ar),
