@@ -43,6 +43,8 @@
 -define(horizontalline, $h,$o,$r,$i,$z,$o,$n,$t,$a,$l,$.,$l,$i,$n,$e,$.).
 -define(verticalline, $v,$e,$r,$t,$i,$c,$a,$l,$.,$l,$i,$n,$e,$.).
 -define(htmlmenu, $h,$t,$m,$l,$.,$m,$e,$n,$u,$.).
+% note special match - not final '$.'
+-define(htmlsubmenu, $h,$t,$m,$l,$.,$s,$u,$b,$m,$e,$n,$u).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -300,6 +302,9 @@ transform([?timmenu | R], Args) ->
     {list_to_atom([?timmenu]), [R | Args]};
 transform([?htmlmenu | R], Args) ->
     {list_to_atom([?htmlmenu]), [R | Args]};
+% this clause needs to be captured to stop the next one capturing it!
+transform([?htmlsubmenu], Args) ->
+    {list_to_atom([?htmlsubmenu]), Args};
 %% order matters to prevent premature matching!
 transform([?html | R], Args) ->
     {W, H} = get_dims(R),
