@@ -209,7 +209,8 @@ tables() ->
      ?TBL(logging,        bag, [path],            disc_only_copies),
      ?TBL(include,        set, [path],            disc_copies),
      ?TBL(timer,          set, [],                disc_copies),
-     ?TBL(user_fns,       set, [],                disc_copies)
+     ?TBL(user_fns,       set, [],                disc_copies),
+     ?TBL(api     ,       set, [],                disc_copies)
     ].
 
 %% Import files on a batch basis

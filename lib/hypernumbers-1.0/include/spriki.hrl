@@ -315,6 +315,16 @@
           css
          }).
 
+% api table records
+-record(api,
+        {
+          privatekey,
+          publickey,
+          path = undefined,   % unitialised records will cause a crash! Good!
+          inclue_subs = false,
+          append_only = true  % by default can only append
+         }).
+
 % records for data upload maps
 -record(head,
         {type,
