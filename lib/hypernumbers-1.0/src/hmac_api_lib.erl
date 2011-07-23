@@ -6,7 +6,7 @@
 -author("Hypernumbers Ltd <gordon@hypernumbers.com>").
 
 -define(RFC2116_SP, "\x20").
--define(RFC2116_HT, "\t"
+-define(RFC2116_HT, "\t").
 
 -compile(export_all).
 
