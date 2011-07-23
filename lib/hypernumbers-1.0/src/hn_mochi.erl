@@ -51,7 +51,7 @@ start() ->
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
     try
-		Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
+        Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
         handle_(Ref, Env, Qry)
@@ -91,7 +91,8 @@ handle_(#refX{site = _S, path=["_sync" | Cmd]}, Env,
         #qry{return=QReturn, stamp=QStamp})
   when QReturn /= undefined ->
     Env2 = process_sync(Cmd, Env, QReturn, QStamp),
-    %Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p QStamp of ~p",
+    % Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p"
+    %                    ++ "QStamp of ~p",
     %                    [S, Cmd, QReturn, QStamp]),
     %syslib:log(Msg, ?auth),
     respond(303, Env2),
@@ -114,7 +115,10 @@ authorize_resource(Env, Ref, Qry) ->
     case cluster_up() of
         false -> text_html(Env, "There appears to be a network problem. "++
                            "Please try later");
-        true  -> authorize_r2(Env, Ref, Qry)
+        true  -> case Env#env.auth of
+                     null -> authorize_r2(Env, Ref, Qry);
+                     Auth -> authorize_api(Auth, Env, Ref, Qry)
+                 end
     end.
 
 % this function will kinda be kooky in dev if you deregister your globals
@@ -140,6 +144,9 @@ cluster_up() ->
             end
     end.
 
+authorize_api(_Auth, _Env, _Ref, _Qry) ->
+    denied.
+
 authorize_r2(Env, Ref, Qry) ->
     Env2 = process_user(Ref#refX.site, Env),
     #env{method = Method, body = Body} = Env,
@@ -149,7 +156,7 @@ authorize_r2(Env, Ref, Qry) ->
                   {'POST', multipart} ->
                       authorize_upload(Ref, Qry, Env2);
                   {'POST', _} ->
-					  authorize_post(Ref, Qry, Env2)
+                      authorize_post(Ref, Qry, Env2)
               end,
 
     case {AuthRet, Env2#env.accept} of
@@ -362,10 +369,7 @@ authorize_p3(Site, Path, Env) ->
                 [{"postwebcontrols", _}] -> allowed;
                 _                        -> denied
             end;
-            
-%~ NEXT LINE SHOULD BE:
-%~      denied           -> denied
-        denied           -> allowed
+        denied           -> denied
     end.
 
 authorize_upload(#refX{site = S, path = P}, _Qry,  #env{uid = Uid}) ->
@@ -1066,8 +1070,8 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
             json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
     end;
 
-ipost(_Ref, _Qry, _Env=#env{body= [{"type", "user_defined"} | _T] = Json_Entry}) ->
-	curie:create_user_fn(Json_Entry);
+ipost(_Ref, _Qry, #env{body = [{"type", "user_defined"} | _T] = Json_Entry}) ->
+    curie:create_user_fn(Json_Entry);
 
 ipost(Ref, Qry, Env) ->
     ?E("404~n-~p~n-~p~n",[Ref, Qry]),
@@ -1205,8 +1209,8 @@ post_column_values(Ref, Values, PAr, VAr, Offset) ->
                     "" -> ok = new_db_api:clear(NRef, contents, PAr),
                           Acc + 1;
                     _  -> ok = new_db_api:write_attributes([{NRef,
-                                                            [{"formula", Val}]}],
-                                                          PAr, VAr),
+                                                             [{"formula", Val}]}],
+                                                           PAr, VAr),
                           Acc + 1
                 end
         end,
@@ -1324,7 +1328,7 @@ process_environment(Mochi) ->
             'GET'  -> {undefined, undefined};
             'HEAD' -> {undefined, undefined};
             'POST' -> Headers = mochiweb_headers:lookup('Content-Type',
-                                                          Mochi:get(headers)),
+                                                        Mochi:get(headers)),
                       case Headers of
                           none -> RB = Mochi:recv_body(),
                                   {ok, B} = get_json_post(RB),
@@ -1338,11 +1342,14 @@ process_environment(Mochi) ->
                               end
                       end
         end,
-    #env{mochi = Mochi,
-         accept = accept_type(Mochi),
-         method = Mochi:get(method),
+    Hdrs = Mochi:get(headers),
+    {value, {_, Auth}} = mochiweb_headers:lookup("authorization", Hdrs),
+    #env{mochi    = Mochi,
+         accept   = accept_type(Mochi),
+         method   = Mochi:get(method),
          raw_body = RawBody,
-         body = Body}.
+         body     = Body,
+         auth     = Auth}.
 
 -spec process_user(string(), #env{}) -> #env{} | no_return().
 process_user(Site, E=#env{mochi = Mochi}) ->
@@ -1383,11 +1390,11 @@ process_user(Site, E=#env{mochi = Mochi}) ->
             %syslib:log(Msg5, ?auth),
             cleanup(Site, cur_url(Site, E), E)
     catch error:_ ->
-                                %Msg6 = io_lib:format("~p in process_user (g) "
-                                %                     ++ "cleanup",[Site]),
-                                %syslib:log(Msg6, ?auth),
-                                cleanup(Site, cur_url(Site, E), E)
-                        end.
+                                 %Msg6 = io_lib:format("~p in process_user (g) "
+                                 %                     ++ "cleanup",[Site]),
+                                 %syslib:log(Msg6, ?auth),
+                                 cleanup(Site, cur_url(Site, E), E)
+                         end.
 
 %% Clears out auth cookie on current and main server.
 -spec cleanup(string(), string(), #env{}) -> no_return().
@@ -1399,7 +1406,7 @@ cleanup(Site, Return, E) ->
                     %Msg1 = io_lib:format("~p in cleanup Return with ~p",
                     %                     [Site, Return]),
                     %syslib:log(Msg1, ?auth),
-                              Return;
+                    Return;
                 {redir, R} ->
                     %Msg2 = io_lib:format("~p in cleanup Redir with ~p",
                     %                     [Site, R]),
@@ -1629,9 +1636,9 @@ reset_password(Email, Password, Hash) ->
 run_actions(#refX{site = S, path = P} = RefX, Env,
             {struct, [{_, {array, Json}}]}, Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
-                  N2 = list_to_integer(N),
-                  {N2, lists:flatten([json_recs:json_to_rec(X)
-                                      || X <- Exprs])}
+                   N2 = list_to_integer(N),
+                   {N2, lists:flatten([json_recs:json_to_rec(X)
+                                       || X <- Exprs])}
            end,
     Commands = [Fun1(X) || X <- Json],
     Expected = new_db_api:matching_forms(RefX, 'create-button'),
@@ -1652,10 +1659,10 @@ run_actions(#refX{site = S, path = P} = RefX, Env,
                 true ->
                     % create the pages
                     Fun2 = fun({Template, Path}) ->
-                                  RefX2 = #refX{site = S, path = Path,
-                                                obj = {page, "/"}},
+                                   RefX2 = #refX{site = S, path = Path,
+                                                 obj = {page, "/"}},
                                    ok = ?LOAD(RefX2, Template)
-                          end,
+                           end,
                     [Fun2(X) || X <- Actions],
                     % now run the permissions
                     Fun3 = fun({Path, Ps}) ->
@@ -1696,7 +1703,7 @@ templates_e2([], List) ->
 load_file(Ref, Data, File, Name, UserName, Uid) ->
     Type = get_type(Data),
     Ext = filename:extension(Name),
-    %% need to reauthorize
+    % need to reauthorize
     case authorize_upload_again(Ref, Type, Uid) of
         true  -> load_file2(Ref, File, Name, UserName, Uid, Type, Ext);
         false -> Msg = "Permission denied: 401",
@@ -1749,7 +1756,7 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
                    [File, UserName, Reason,
                     erlang:get_stacktrace()]),
             {ok, { {struct, [{"error", Reason}]},
-              undefined}}
+                   undefined}}
     end.
 
 get_type(Data) -> get_t2(lists:sort(Data)).
