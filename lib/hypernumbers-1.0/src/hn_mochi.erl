@@ -1066,8 +1066,14 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
             json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
     end;
 
-ipost(_Ref, _Qry, _Env=#env{body= [{"type", "user_defined"} | _T] = Json_Entry}) ->
+ipost(_Ref, _Qry, _Env=#env{body= [{"type", "user_defined_write"} | _T] = Json_Entry}) ->
 	curie:create_user_fn(Json_Entry);
+	
+ipost(_Ref, _Qry, _Env=#env{body= [{"type", "user_defined_read"} | _T] = Json_Entry}) ->
+	curie:read_user_fn(Json_Entry);
+
+ipost(_Ref, _Qry, _Env=#env{body= [{"type", "user_defined_delete"} | _T] = Json_Entry}) ->
+	curie:delete_user_fn(Json_Entry);
 
 ipost(Ref, Qry, Env) ->
     ?E("404~n-~p~n-~p~n",[Ref, Qry]),
