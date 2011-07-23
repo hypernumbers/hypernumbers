@@ -116,7 +116,7 @@ authorize_resource(Env, Ref, Qry) ->
         false -> text_html(Env, "There appears to be a network problem. "++
                            "Please try later");
         true  -> case Env#env.auth of
-                     null -> authorize_r2(Env, Ref, Qry);
+                     []   -> authorize_r2(Env, Ref, Qry);
                      Auth -> authorize_api(Auth, Env, Ref, Qry)
                  end
     end.
@@ -1343,7 +1343,10 @@ process_environment(Mochi) ->
                       end
         end,
     Hdrs = Mochi:get(headers),
-    {value, {_, Auth}} = mochiweb_headers:lookup("authorization", Hdrs),
+    Auth = case mochiweb_headers:lookup("authorization", Hdrs) of
+               none            -> [];
+               {value, {_, A}} -> A
+           end,
     #env{mochi    = Mochi,
          accept   = accept_type(Mochi),
          method   = Mochi:get(method),
