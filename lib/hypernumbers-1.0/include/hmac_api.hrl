@@ -8,7 +8,7 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -define(schema, "MOCHIAPI").
--define(headerprefix, $x,$-,$m,$o,$c,$h,$i,$w,$a,$p,$i,$-).
+-define(headerprefix, $x,$-,$m,$o,$c,$h,$i,$a,$p,$i,$-).
 -define(dateheader, "x-mochiapi-date").
 
 -define(publickey,  "0PN5J17HBGZHT7JJ3X82").
