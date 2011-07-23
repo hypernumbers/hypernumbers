@@ -27,6 +27,9 @@
          read_incs/1,
          xrefX_to_rti/3,
          trans/2,
+         delete_api/2,
+         write_api/2,
+         read_api/2,
          delete_user_fn/2,
          write_user_fn/2,
          read_user_fn/2,
@@ -112,6 +115,18 @@ load_dirty_since(Since, QTbl) ->
                          when Since < T -> {T, D}
                    end),
     mnesia:select(QTbl, M, read).
+
+delete_api(Site, PublicKey) ->
+    Tbl = trans(Site, api),
+    mnesia:delete(Tbl, PublicKey, write).
+
+write_api(Site, API) ->
+    Tbl = trans(Site, api),
+    mnesia:write(Tbl, API, write).
+
+read_api(Site, PublicKey) ->
+    Tbl = trans(Site, api),
+    mnesia:read(Tbl, PublicKey, read).
 
 delete_user_fn(Site, Fn) ->
     Tbl = trans(Site, user_fns),

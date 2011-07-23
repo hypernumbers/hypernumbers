@@ -13,6 +13,9 @@
 -include("syslib.hrl").
 
 -export([
+         delete_api/2,
+         write_api/2,
+         read_api/2,
          delete_user_fn/2,
          write_user_fn/2,
          read_user_fn/2,
@@ -251,6 +254,30 @@ process_dirties_for_zinf(Site, Tree, CheckFun) ->
     RefX = #refX{site = Site},
     write_activity(RefX, Fun, "quiet", Report),
     ok.
+
+delete_api(Site, PublicKey) ->
+    Report = mnesia_mon:get_stamp("delete_api"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:delete_api(Site, PublicKey)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
+
+write_api(Site, #api{} = API) ->
+    Report = mnesia_mon:get_stamp("write_api"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:write_api(Site, API)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
+
+read_api(Site, PublicKey) ->
+    Report = mnesia_mon:get_stamp("read_api"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:read_api(Site, PublicKey)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 delete_user_fn(Site, FnName) ->
     Report = mnesia_mon:get_stamp("delete_user_fn"),
