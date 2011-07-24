@@ -104,28 +104,28 @@ get_views(Site, Path, Uid) ->
 -spec add_view(string(), [string()], auth_spec(), string()) -> ok.
 add_view(Site, Path, AuthSpec, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call({global, Id}, {add_view, Path, AuthSpec, View}).
+    gen_server:cast({global, Id}, {add_view, Path, AuthSpec, View}).
 
 %% A non-additive way of setting views.
 -spec set_view(string(), [string()], auth_spec(), string()) -> ok.
 set_view(Site, Path, AuthSpec, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call({global, Id}, {set_view, Path, AuthSpec, View}).
+    gen_server:cast({global, Id}, {set_view, Path, AuthSpec, View}).
 
 -spec set_champion(string(), [string()], string()) -> ok.
 set_champion(Site, Path, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call({global, Id}, {set_champion, Path, View}).
+    gen_server:cast({global, Id}, {set_champion, Path, View}).
 
 -spec set_challenger(string(), [string()], string()) -> ok.
 set_challenger(Site, Path, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call({global, Id}, {set_challenger, Path, View}).
+    gen_server:cast({global, Id}, {set_challenger, Path, View}).
 
 -spec remove_views(string(), [string()], [string()]) -> ok.
 remove_views(Site, Path, Views) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call({global, Id}, {rem_views, Path, Views}).
+    gen_server:cast({global, Id}, {rem_views, Path, Views}).
 
 -spec get_as_json(string(), [string()]) -> any().
 get_as_json(Site, Path) ->
@@ -135,7 +135,7 @@ get_as_json(Site, Path) ->
 -spec clear_all_perms_DEBUG(string()) -> ok.
 clear_all_perms_DEBUG(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call({global, Id}, clear_all_perms).
+    gen_server:cast({global, Id}, clear_all_perms).
 
 -spec dump_script(string()) -> iodata().
 dump_script(Site) ->
@@ -196,20 +196,8 @@ handle_call(Request, _From, State) ->
                       {check_particular_view1(Site, Tr, P, U, V), false};
                   {get_views, P, U} ->
                       {get_views1(Site, Tr, P, U), false};
-                  {add_view, Pg, AS, V} ->
-                      {add_view1(Tr, Pg, AS, V), true};
-                  {set_view, Pg, AS, V} ->
-                      {set_view1(Tr, Pg, AS, V), true};
-                  {set_champion, Pg, Df} ->
-                      {set_default(Tr, Pg, Df, champion), true};
-                  {set_challenger, Pg, Df} ->
-                      {set_default(Tr, Pg, Df, challenger), true};
-                  {rem_views, P, Vs} ->
-                      {remove_views1(Tr, P, Vs), true};
                   {get_as_json, P} ->
                       {get_as_json1(Tr, P), false};
-                  clear_all_perms ->
-                      {gb_trees:empty(), true};
                   dump_script ->
                       {dump_script1(Tr), false};
                   {load_script, Terms} ->
@@ -233,8 +221,31 @@ handle_call(Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_cast(_Msg, State) ->
-    {noreply, State}.
+handle_cast(Request, State) ->
+    #state{tree = Tr, site = Site} = State,
+    Return1 = case Request of
+                  {add_view, Pg, AS, V} ->
+                      {add_view1(Tr, Pg, AS, V), true};
+                  {set_view, Pg, AS, V} ->
+                      {set_view1(Tr, Pg, AS, V), true};
+                  {set_champion, Pg, Df} ->
+                      {set_default(Tr, Pg, Df, champion), true};
+                  {set_challenger, Pg, Df} ->
+                      {set_default(Tr, Pg, Df, challenger), true};
+                  {rem_views, P, Vs} ->
+                      {remove_views1(Tr, P, Vs), true};
+                  clear_all_perms ->
+                      {gb_trees:empty(), true}
+              end,
+    NewState = case Return1 of
+                   {NewTree, true} ->
+                       ok = save_tree(Site, NewTree),
+                       State#state{tree = NewTree};
+                   {Reply, _} ->
+                       State
+               end,
+
+    {noreply, NewState}.
 
 %%--------------------------------------------------------------------
 %% @private
