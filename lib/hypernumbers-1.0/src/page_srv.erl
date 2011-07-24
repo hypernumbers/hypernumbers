@@ -30,8 +30,7 @@
 
 -define(SERVER, ?MODULE).
 
-%-record(state, {site, pages = dh_tree:new()}).
--record(state, {site, pages = []}).
+-record(state, {site, pages = dh_tree:new()}).
 
 %%%===================================================================
 %%% API

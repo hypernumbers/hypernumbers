@@ -8,6 +8,7 @@
 -module(hn_db_admin).
 
 -define(CACHEABLE_TABLES, [
+                           "api",
                            "dirty_for_zinf",
                            "dirty_queue",
                            "dirty_zinf",

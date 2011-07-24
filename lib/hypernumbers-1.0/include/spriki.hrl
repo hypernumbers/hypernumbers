@@ -5,7 +5,6 @@
 -type generator() :: fun(() -> string()).
 -type resource_addr() :: {string(), integer(), atom()}. %% (IP, Port, Node).
 
-%% Core Tables
 
 -record(core_site, {site = [] :: string(),
                     type :: atom()}).
@@ -313,6 +312,22 @@
           js,
           js_reload,
           css
+         }).
+
+% api table records
+-record(api,
+        {
+          publickey,
+          privatekey,
+          urls = []
+          }).
+
+-record(api_urls,
+        {
+          path = undefined,    % unitialised records will cause a crash! Good!
+          admin = false,       % by default not admin
+          inclue_subs = false,
+          append_only = true   % by default can only append
          }).
 
 % records for data upload maps

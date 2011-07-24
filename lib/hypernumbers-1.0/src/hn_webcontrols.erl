@@ -8,7 +8,8 @@
 -module(hn_webcontrols).
 
 -export([
-         make_actions/3
+         make_actions/3,
+         pad/1
          ]).
 
 -include("spriki.hrl").

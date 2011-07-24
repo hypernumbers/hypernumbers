@@ -170,8 +170,7 @@ get_initial_params(Site) ->
 -spec create_blank_pages(string()) -> ok.
 create_blank_pages(Site) ->
     Key = ?pages,
-    % Value = dh_tree:new(),
-    Value = [],
+    Value = dh_tree:new(),
     new_db_api:write_kv(Site, Key, Value).
 
 -spec create_blank_z_and_infs(string()) -> ok.
@@ -209,7 +208,8 @@ tables() ->
      ?TBL(logging,        bag, [path],            disc_only_copies),
      ?TBL(include,        set, [path],            disc_copies),
      ?TBL(timer,          set, [],                disc_copies),
-     ?TBL(user_fns,       set, [],                disc_copies)
+     ?TBL(user_fns,       set, [],                disc_copies),
+     ?TBL(api     ,       set, [],                disc_copies)
     ].
 
 %% Import files on a batch basis

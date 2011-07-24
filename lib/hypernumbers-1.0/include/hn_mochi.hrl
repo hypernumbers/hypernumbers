@@ -6,5 +6,6 @@
                method,
                mochi,
                uid :: string(),
-               email = "anonymous" :: string()
+               email = "anonymous" :: string(),
+               auth = null
              }).

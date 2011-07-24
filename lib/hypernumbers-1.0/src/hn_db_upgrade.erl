@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_api_table_2011_07_23/0,
          blip/0,
          unmigrate_page_srv_2011_07_11/0,
          migrate_page_srv_2011_07_09/0,
@@ -48,6 +49,15 @@
          %% upgrade_1776/0
         ]).
 
+add_api_table_2011_07_23() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fields = record_info(fields, api),
+                   make_table(Site, api, Fields, disc_copies)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
 blip() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
@@ -58,7 +68,6 @@ blip() ->
            end,
     lists:foreach(Fun1, Sites),
     ok.
-
 
 unmigrate_page_srv_2011_07_11() ->
     Sites = hn_setup:get_sites(),
@@ -71,7 +80,6 @@ unmigrate_page_srv_2011_07_11() ->
     lists:foreach(Fun1, Sites),
     ok.
 
-
 migrate_page_srv_2011_07_09() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
@@ -82,7 +90,6 @@ migrate_page_srv_2011_07_09() ->
            end,
     lists:foreach(Fun1, Sites),
     ok.
-
 
 add_user_fn_table_2011_06_30() ->
     Sites = hn_setup:get_sites(),
