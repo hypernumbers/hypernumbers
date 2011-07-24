@@ -91,6 +91,7 @@
       <a data-tab="sitemypages">My Pages</a>
       <a data-tab="sitesettings">Settings</a>
       <a class="hn_advanced" data-tab="sitedataupload">Data Upload</a>
+      <a class="hn_developer" data-tab="sitemanageapi">Manage API</a>
       <a data-tab="sitetour">Tour</a>
       </div>
       </div>
@@ -571,10 +572,11 @@
       <a id="ctrlclose">x</a>
 
       <ul id="ctrltabs">
-	<li><a data-tab="sitemypages">Pages</a></li>
-	<li><a data-tab="sitesettings">Settings</a></li>
-	<li class="hn_advanced"><a data-tab="sitedataupload">Data Upload</a></li>
-	<li><a data-tab="sitetour">Tour</a></li>
+        <li><a data-tab="sitemypages">Pages</a></li>
+        <li><a data-tab="sitesettings">Settings</a></li>
+        <li class="hn_advanced"><a data-tab="sitedataupload">Data Upload</a></li>
+        <li class="hn_developer"><a data-tab="sitemanageapi">Manage Api</a></li>
+        <li><a data-tab="sitetour">Tour</a></li>
       </ul>
 
       <div id="ctrltabdivs">
@@ -625,7 +627,16 @@
 	    include punctuation and numbers</p>
 	    </form>
 	  <div id="hn_pwd_feedback" class="hn_settings_feedback"> </div>
-	</div>
+    <div class='hn_admin'>
+      <h4>Advanced Options</h4>
+      <div>Show Advanced Features
+        <input id='hn_showadvanced' type='checkbox' value='show_advanced' />
+      </div>
+      <!-- <div>Show Developer Features
+        <input id='hn_showdeveloper' type='checkbox' value='show_developer' />
+       </div> -->
+    </div>
+  </div>
   <div id="sitedataupload" class="sitedialogwrapper">
     <h4>Data Upload Manager</h4>
     <p>This panel manages data uploads.</p>
@@ -707,6 +718,9 @@
       </div>
      </div>
     </div>
+  <div id="sitemanageapi">
+    Yeah!
+  </div>
   <div id="sitetour">
 	<div id="tourwrapper">
       <div class="tourpage">
