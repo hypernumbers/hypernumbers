@@ -16,6 +16,7 @@
          delete_api/2,
          write_api/2,
          read_api/2,
+         get_api_keys/1,
          delete_user_fn/2,
          write_user_fn/2,
          read_user_fn/2,
@@ -268,6 +269,14 @@ write_api(Site, #api{} = API) ->
     Fun = fun() ->
                   mnesia_mon:report(Report),
                   new_db_wu:write_api(Site, API)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
+
+get_api_keys(Site) ->
+    Report = mnesia_mon:get_stamp("get_api_keys"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:get_api_keys(Site)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 

@@ -30,6 +30,7 @@
          delete_api/2,
          write_api/2,
          read_api/2,
+         get_api_keys/1,
          delete_user_fn/2,
          write_user_fn/2,
          read_user_fn/2,
@@ -127,6 +128,11 @@ write_api(Site, API) ->
 read_api(Site, PublicKey) ->
     Tbl = trans(Site, api),
     mnesia:read(Tbl, PublicKey, read).
+
+get_api_keys(Site) ->
+    Tbl = trans(Site, api),
+    Pattern = mnesia:table_info(Tbl, wild_pattern),
+    mnesia:match_object(Tbl, Pattern, read).
 
 delete_user_fn(Site, Fn) ->
     Tbl = trans(Site, user_fns),
