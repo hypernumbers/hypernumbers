@@ -36,8 +36,9 @@ export_as_sitetype(Site, NewType) ->
                 ?join([Dest, "permissions.script"])),
 
     %% Delete backup-centric artifacts.
+    io:format("about to clean up and delete views, docroots and etf folders~n"),
     [ hn_util:delete_directory( ?join([SiteTypes, NewType, ?join(Dir)]) )
-      || Dir <- [["etf"], ["views", "_g", "core"]] ],
+      || Dir <- [["etf"], ["views"], ["docroot"]] ],
     ok.
 
 %% Export sites to the given directory.
@@ -64,8 +65,10 @@ export_site(Dest, Site) ->
     ok = dump_groups(Site, Dest),
     io:format("about to dump perms~n"),
     ok = dump_perms(Site, Dest),
-    io:format("about to dump views~n"),
-    ok = dump_views(Site, Dest),
+    io:format("about to dump views, docroot and templates~n"),
+    ok = dump_folder(Site, Dest, "views"),
+    ok = dump_folder(Site, Dest, "docroot"),
+    ok = dump_folder(Site, Dest, "templates"),
     io:format("export site completed~n"),
     ok.
 
@@ -97,11 +100,11 @@ dump_perms(Site, SiteDest) ->
     ok = file:write_file(?join(SiteDest, "permissions.export"),
                          Perms).
 
-dump_views(Site, SiteDest) ->
-    ViewDest = ?join([SiteDest, "views"]),
+dump_folder(Site, SiteDest, Folder) ->
+    Dest = ?join([SiteDest, Folder]),
     SiteFs   = hn_util:site_to_fs(Site),
-    Source   = ?join([code:priv_dir(hypernumbers), "../../../", "var", "sites", SiteFs, "views"]),
-    hn_util:recursive_copy(Source, ViewDest).
+    Source   = ?join([code:priv_dir(hypernumbers), "../../../", "var", "sites", SiteFs, Folder]),
+    hn_util:recursive_copy(Source, Dest).
 
 %% Import all sites found in the given directory.
 import(Src) ->
