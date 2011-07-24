@@ -175,7 +175,7 @@ log_term(Term, File) ->
 
 log(String, File) ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
-    _Return=filelib:ensure_dir(Dir ++ File),
+    _Return = filelib:ensure_dir(Dir ++ File),
     Date = dh_date:format("d-M-y h:i:s"),
 
     case file:open(Dir ++ File, [append]) of
