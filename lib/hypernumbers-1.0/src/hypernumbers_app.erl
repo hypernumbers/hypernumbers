@@ -106,14 +106,19 @@ local_hypernumbers() ->
     Site = "http://hypernumbers.dev:9000",
     {ok, _, Uid1} = passport:get_or_create_user("test@hypernumbers.com"),
     {ok, _, Uid2} = passport:get_or_create_user("guest@hypernumbers.com"),
-    hn_setup:site(Site, blank, [{creator, Uid1}]),
-    passport:validate_uid(Uid1),
-    passport:validate_uid(Uid2),
-    % make guest a member of group guest
-    hn_groups:add_user(Site, "guest", Uid2),
-    passport:set_password(Uid1, "i!am!secure"),
-    passport:set_password(Uid2, "i!am!secure"),
-    ok = hn_db_admin:disc_only(Site).
+    case hn_setup:site(Site, blank, [{creator, Uid1}]) of
+        true ->
+            passport:validate_uid(Uid1),
+            passport:validate_uid(Uid2),
+            % make guest a member of group guest
+            hn_groups:add_user(Site, "guest", Uid2),
+            passport:set_password(Uid1, "i!am!secure"),
+            passport:set_password(Uid2, "i!am!secure"),
+            ok = hn_db_admin:disc_only(Site);
+        {error, site_exists} ->
+            io:format("Site exists..."),
+            ok
+    end.
 
 production_tasks() ->
     % net_adm:world() depends on you being in $GITROOT
