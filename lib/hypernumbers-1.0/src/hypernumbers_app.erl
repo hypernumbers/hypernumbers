@@ -112,7 +112,8 @@ local_hypernumbers() ->
     % make guest a member of group guest
     hn_groups:add_user(Site, "guest", Uid2),
     passport:set_password(Uid1, "i!am!secure"),
-    passport:set_password(Uid2, "i!am!secure").
+    passport:set_password(Uid2, "i!am!secure"),
+    ok = hn_db_admin:disc_only(Site).
 
 production_tasks() ->
     % net_adm:world() depends on you being in $GITROOT
