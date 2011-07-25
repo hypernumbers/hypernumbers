@@ -9,7 +9,7 @@
 
 -include("spriki.hrl").
 
--define(site, "http://load.hypernumbers.dev:9000").
+-define(site, "http://loadtesting.hypernumbers.com:80").
 
 % basic load parameters
 -define(no_of_datapages, 100).
@@ -60,7 +60,10 @@ load_test() ->
 
     % bulk up on pages
     io:format("~nabout to bulk up pages...~n"),
+    % put the auth_srv into memory first
+    ok = hn_db_admin:mem_only(?site, "kvstore"),
     ok = bulk_pages(?pageload, ?pageload, ?pageload, ?pageload, ?pageload),
+    ok = hn_db_admin:disc_only(?site, "kvstore"),
 
     % load zqueries
     io:format("~nabout to load zquery pages...~n"),
@@ -92,15 +95,18 @@ load_test() ->
     ok.
 
 bulk_pages(_Max, 0, 0, 0, 0) -> ok;
-bulk_pages(Max, I, 0, 0, 0) -> io:format("bulking pages: ~p~n", [I]),
-                               bulk_pages(Max, I - 1, Max, Max, Max);
-bulk_pages(Max, I, J, 0, 0) -> bulk_pages(Max, I, J - 1, Max, Max);
-bulk_pages(Max, I, J, K, 0) -> bulk_pages(Max, I, J, K - 1, Max);
+bulk_pages(Max, I, 0, 0, 0) -> bulk_pages(Max, I - 1, Max, Max, Max);
+bulk_pages(Max, I, J, 0, 0) -> io:format("bulking pages: ~p, ~p~n",
+                                         [I, J]),
+                               bulk_pages(Max, I, J - 1, Max, Max);
+bulk_pages(Max, I, J, K, 0) -> syslib:limit_global_mq(?site, "_pages"),
+                               new_db_api:wait_for_dirty(?site),
+                               bulk_pages(Max, I, J, K - 1, Max);
 bulk_pages(Max, I, J, K, L) ->
     Path = [hn_webcontrols:pad(I), hn_webcontrols:pad(J),
             hn_webcontrols:pad(K), hn_webcontrols:pad(L)],
-    RefX = #refX{site = ?site, path = Path, obj = {page, "/"}},
-    ok = hn_templates:load_template(RefX, ?bulkpage),
+    RefX = #refX{site = ?site, path = Path, obj = {cell, {1,2}}},
+    new_db_api:write_attributes([{RefX, [{"formula", "xxx"}]}]),
     bulk_pages(Max, I, J, K, L - 1).
 
 force_recalc_test(_Label, _Prefix, _Max, 0) -> ok;
