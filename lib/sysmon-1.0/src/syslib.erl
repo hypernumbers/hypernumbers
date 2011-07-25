@@ -19,6 +19,7 @@
          log_term/2,
          clear_log/1,
          limiter/1,
+         limit_global_mq/2,
          sample_fprof/1,
          sample_fprof/0,
          consult_term_log/1,
@@ -197,3 +198,14 @@ limiter(Site) ->
                                               limiter(Site);
         true                               -> ok
     end.
+
+limit_global_mq(Site, Q) ->
+    Srv = hn_util:site_to_atom(Site, Q),
+    Pid = global:whereis_name(Srv),
+    {message_queue_len, Len} = process_info(Pid, message_queue_len),
+    if
+        Len > 100 -> timer:sleep(10),
+                     limit_global_mq(Site, Q);
+        true      -> ok
+    end.
+
