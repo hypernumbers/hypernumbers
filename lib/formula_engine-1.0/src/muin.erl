@@ -13,39 +13,6 @@
                     select, 'create.button', 'map.rows.button',
                     'map.sheet.button']).
 
--define(timalert, $t,$i,$m,$.,$a,$l,$e,$r,$t,$.).
--define(timbox, $t,$i,$m,$.,$b,$o,$x,$.).
--define(timplainbox, $t,$i,$m,$.,$p,$l,$a,$i,$n,$b,$o,$x,$.).
--define(timruledbox, $t,$i,$m,$.,$r,$u,$l,$e,$d,$b,$o,$x,$.).
--define(timheadline, $t,$i,$m,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
--define(timhorizontalline, $t,$i,$m,$.,$h,$o,$r,$i,$z,$o,$n,$t,$a,$l,$.,$l,$i,$n,$e,$.).
--define(timverticalline, $t,$i,$m,$.,$v,$e,$r,$t,$i,$c,$a,$l,$.,$l,$i,$n,$e,$.).
--define(timmenu, $t,$i,$m,$.,$m,$e,$n,$u,$.).
-
--define(genint, $g,$e,$n,$e,$r,$i,$c,$.,$i,$n,$t,$e,$g,$r,$a,$t,$i,$o,$n,$.).
--define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
--define(iframe, $i,$f,$r,$a,$m,$e,$.).
--define(html, $h,$t,$m,$l,$.).
--define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
--define(htmlplainbox, $h,$t,$m,$l,$.,$p,$l,$a,$i,$n,$b,$o,$x,$.).
--define(htmlalert, $h,$t,$m,$l,$.,$a,$l,$e,$r,$t,$.).
--define(htmlruledbox, $h,$t,$m,$l,$.,$r,$u,$l,$e,$d,$b,$o,$x,$.).
--define(sparkline, $s,$p,$a,$r,$k,$l,$i,$n,$e,$.).
--define(xy, $x,$y,$.).
--define(speedo, $s,$p,$e,$e,$d,$o,$.).
--define(histogram, $h,$i,$s,$t,$o,$g,$r,$a,$m,$.).
--define(linegraph, $l,$i,$n,$e,$g,$r,$a,$p,$h,$.).
--define(dategraph, $d,$a,$t,$e,$g,$r,$a,$p,$h,$.).
--define(equigraph, $e,$q,$u,$i,$g,$r,$a,$p,$h,$.).
--define(piechart, $p,$i,$e,$c,$h,$a,$r,$t,$.).
--define(linkbox, $l,$i,$n,$k,$.,$b,$o,$x,$.).
-
--define(horizontalline, $h,$o,$r,$i,$z,$o,$n,$t,$a,$l,$.,$l,$i,$n,$e,$.).
--define(verticalline, $v,$e,$r,$t,$i,$c,$a,$l,$.,$l,$i,$n,$e,$.).
--define(htmlmenu, $h,$t,$m,$l,$.,$m,$e,$n,$u,$.).
-% note special match - not final '$.'
--define(htmlsubmenu, $h,$t,$m,$l,$.,$s,$u,$b,$m,$e,$n,$u).
-
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
 % ability to be called inside other fns
@@ -226,89 +193,92 @@ eval(Value) ->
 
 % I know it is fugly but you try and get it to work with guards and
 % it won't - so stick it up yes
-transform([?timalert | R], Args) ->
+transform("tim.alert." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?timalert]), [W, H | Args]};
-transform([?timbox | R], Args) ->
+    {list_to_atom("tim.alert."), [W, H | Args]};
+transform("tim.box." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?timbox]), [W, H | Args]};
-transform([?timplainbox | R], Args) ->
+    {list_to_atom("tim.box."), [W, H | Args]};
+transform("tim.plainbox." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?timplainbox]), [W, H | Args]};
-transform([?timruledbox | R], Args) ->
+    {list_to_atom("tim.plainbox."), [W, H | Args]};
+transform("tim.ruledbox." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?timruledbox]), [W, H | Args]};
-transform([?timheadline | R], Args) ->
+    {list_to_atom("tim.ruledbox."), [W, H | Args]};
+transform("tim.tabs." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?timheadline]), [W, H | Args]};
-transform([?genint | R], Args) ->
+    {list_to_atom("tim.tabs."), [W, H | Args]};
+transform("tim.headline." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?genint]), [W, H | Args]};
-transform([?htmlheadline | R], Args) ->
+    {list_to_atom("tim.headline."), [W, H | Args]};
+transform("generic.integration." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?htmlheadline]), [W , H | Args]};
-transform([?iframe | R], Args) ->
+    {list_to_atom("generic.integration."), [W, H | Args]};
+transform("html.headline." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?iframe]), [W , H | Args]};
-transform([?htmlbox | R], Args) ->
+    {list_to_atom("html.headline."), [W , H | Args]};
+transform("iframe." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?htmlbox]), [W , H | Args]};
-transform([?htmlplainbox | R], Args) ->
+    {list_to_atom("iframe."), [W , H | Args]};
+transform("html.box." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?htmlplainbox]), [W , H | Args]};
-transform([?htmlalert | R], Args) ->
+    {list_to_atom("html.box."), [W , H | Args]};
+transform("html.plainbox." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?htmlalert]), [W , H | Args]};
-transform([?htmlruledbox | R], Args) ->
+    {list_to_atom("html.plainbox."), [W , H | Args]};
+transform("html.alert." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?htmlruledbox]), [W , H | Args]};
-transform([?sparkline | R], Args) ->
+    {list_to_atom("html.alert."), [W , H | Args]};
+transform("html.ruledbox." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?sparkline]), [W , H | Args]};
-transform([?xy | R], Args) ->
+    {list_to_atom("html.ruledbox."), [W , H | Args]};
+transform("sparkline." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?xy]), [W , H | Args]};
-transform([?speedo | R], Args) ->
+    {list_to_atom("sparkline."), [W , H | Args]};
+transform("xy." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?speedo]), [W , H | Args]};
-transform([?histogram | R], Args) ->
+    {list_to_atom("xy."), [W , H | Args]};
+transform("speedo." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?histogram]), [W , H | Args]};
-transform([?linegraph | R], Args) ->
+    {list_to_atom("speedo."), [W , H | Args]};
+transform("histogram." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?linegraph]), [W , H | Args]};
-transform([?dategraph | R], Args) ->
+    {list_to_atom("histogram."), [W , H | Args]};
+transform("linegraph." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?dategraph]), [W , H | Args]};
-transform([?equigraph | R], Args) ->
+    {list_to_atom("linegraph."), [W , H | Args]};
+transform("dategraph." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?equigraph]), [W , H | Args]};
-transform([?piechart | R], Args) ->
+    {list_to_atom("dategraph."), [W , H | Args]};
+transform("equigraph." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?piechart]), [W , H | Args]};
-transform([?linkbox | R], Args) ->
+    {list_to_atom("equigraph."), [W , H | Args]};
+transform("piechart." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?linkbox]), [W , H | Args]};
+    {list_to_atom("piechart."), [W , H | Args]};
+transform("linkbox." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("linkbox."), [W , H | Args]};
 % single parameter stuff
-transform([?timverticalline | R], Args) ->
-    {list_to_atom([?timverticalline]), [R | Args]};
-transform([?timhorizontalline | R], Args) ->
-    {list_to_atom([?timhorizontalline]), [R | Args]};
-transform([?horizontalline | R], Args) ->
-    {list_to_atom([?horizontalline]), [R | Args]};
-transform([?verticalline | R], Args) ->
-    {list_to_atom([?verticalline]), [R | Args]};
-transform([?timmenu | R], Args) ->
-    {list_to_atom([?timmenu]), [R | Args]};
-transform([?htmlmenu | R], Args) ->
-    {list_to_atom([?htmlmenu]), [R | Args]};
+transform("tim.vertical.line." ++ R, Args) ->
+    {list_to_atom("tim.vertical.line."), [R | Args]};
+transform("tim.horizontal.line." ++ R, Args) ->
+    {list_to_atom("tim.horizontal.line."), [R | Args]};
+transform("horizontal.line." ++ R, Args) ->
+    {list_to_atom("horizontal.line."), [R | Args]};
+transform("vertical.line." ++ R, Args) ->
+    {list_to_atom("vertical.line."), [R | Args]};
+transform("tim.menu." ++ R, Args) ->
+    {list_to_atom("tim.menu."), [R | Args]};
+transform("html.menu." ++ R, Args) ->
+    {list_to_atom("html.menu."), [R | Args]};
 % this clause needs to be captured to stop the next one capturing it!
-transform([?htmlsubmenu], Args) ->
-    {list_to_atom([?htmlsubmenu]), Args};
+transform("html.submenu", Args) ->
+    {list_to_atom("html.submenu"), Args};
 %% order matters to prevent premature matching!
-transform([?html | R], Args) ->
+transform("html." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom([?html]), [W , H | Args]};
+    {list_to_atom("html."), [W , H | Args]};
 %% terminal clause
 transform(List, Args) -> {list_to_atom(List), Args}.
 
