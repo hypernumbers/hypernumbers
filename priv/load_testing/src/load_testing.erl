@@ -8,32 +8,35 @@
 -module(load_testing).
 
 -include("spriki.hrl").
-
--define(site, "http://loadtesting.hypernumbers.com:80").
-
-% basic load parameters
--define(no_of_datapages, 100).
--define(no_of_calcpages, 100).
--define(no_of_zquerypages, 100).
--define(dataprefix, "datapages").
--define(datapage, "400datapoints").
--define(calcsprefix, "calcspages").
--define(calcspage, "400calcs").
--define(zqueryprefix, "zquerypages").
--define(zquerypage, "400zqueries").
--define(bulkpage, "onecell").
--define(pageload, 10). % creates N^4 pages
-
-% now the number times the tests have to run
--define(no_of_deletes, 25).
--define(no_of_recalcs, 25).
--define(no_of_forcedzs, 25).
+-include("load_testing.hrl").
 
 -export([
-         load_test/0
+         load_only/0,
+         load_only/1,
+         load_test/0,
+         load_test/1
         ]).
 
-load_test() ->
+load_only() -> load_2(disc_only, load_only).
+
+load_only(Type) -> load_2(Type, load_only).
+
+load_test() -> load_2(disc_only, all).
+
+load_test(Type) -> load_2(Type, all).
+
+load_2(Type, Extent) ->
+
+    % check the type
+    case Type of
+        disc_only    -> load_3(Type, Extent);
+        disc_and_mem -> load_3(Type, Extent);
+        Other     -> io:format("Invalid parameter. Type is ~p and it should "
+                               ++ "be one of 'disc_only' or 'disc_and_mem'~n",
+                              [Other])
+    end.
+
+load_3(Type, Extent) ->
 
     % first get a filestamp
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
@@ -45,8 +48,18 @@ load_test() ->
         false -> ok
     end,
     hn_setup:site(?site, load_testing, []),
-    io:format("~nSetting the site to run from disc only~n"),
-    hn_db_admin:disc_only(?site),
+    case Type of
+        disc_only    -> io:format("~nSetting the site to run from disc only~n"),
+                        hn_db_admin:disc_only(?site);
+        disc_and_mem -> ok
+    end,
+
+    % bulk up on pages
+    io:format("~nabout to bulk up pages...~n"),
+    % put the auth_srv into memory first
+    ok = hn_db_admin:mem_only(?site, "kvstore"),
+    ok = bulk_pages(?pageload, ?pageload, ?pageload, ?pageload, ?pageload),
+    ok = hn_db_admin:disc_only(?site, "kvstore"),
 
     % load datapoints
     io:format("~nabout to load data pages...~n"),
@@ -58,41 +71,42 @@ load_test() ->
     ok = load_pages("calculations" ++ Stamp, ?calcspage, ?calcsprefix,
                     ?no_of_calcpages, ?no_of_calcpages),
 
-    % bulk up on pages
-    io:format("~nabout to bulk up pages...~n"),
-    % put the auth_srv into memory first
-    ok = hn_db_admin:mem_only(?site, "kvstore"),
-    ok = bulk_pages(?pageload, ?pageload, ?pageload, ?pageload, ?pageload),
-    ok = hn_db_admin:disc_only(?site, "kvstore"),
-
     % load zqueries
     io:format("~nabout to load zquery pages...~n"),
     ok = load_pages("zqueries" ++ Stamp, ?zquerypage, ?zqueryprefix,
                     ?no_of_zquerypages, ?no_of_zquerypages),
 
     % now start some tests
+    case Extent of
+        load_only ->
 
-    % create a page, delete it and then create it again
-    io:format("~nabout to test page deletes...~n"),
-    ok = force_page_del_test("delete_with_calcs" ++ Stamp,
-                             "delete_page_with_calcs", ?calcspage,
-                             ?no_of_deletes, ?no_of_deletes),
-    ok = force_page_del_test("delete_with_data" ++ Stamp,
-                             "delete_page_with_data", ?datapage,
-                             ?no_of_deletes, ?no_of_deletes),
+            % just stop
+            io:format("Site loaded. Over and out...~n");
 
-    % force a recalc on a calcs page by updating cell A1
-    io:format("~nabout to force recalcs...~n"),
-    ok = force_recalc_test("force_recalc" ++ Stamp, ?calcsprefix,
-                           ?no_of_recalcs, ?no_of_recalcs),
+        all ->
 
-    % force the zqueries to recalc by updating a data page
-    io:format("~nabout to test zqueries...~n"),
-    ok = force_zquery_test("force_zquery" ++ Stamp, ?dataprefix,
-                          ?no_of_forcedzs, ?no_of_forcedzs),
+            % create a page, delete it and then create it again
+            io:format("~nabout to test page deletes...~n"),
+            ok = force_page_del_test("delete_with_calcs" ++ Stamp,
+                                     "delete_page_with_calcs", ?calcspage,
+                                     ?no_of_deletes, ?no_of_deletes),
+            ok = force_page_del_test("delete_with_data" ++ Stamp,
+                                     "delete_page_with_data", ?datapage,
+                                     ?no_of_deletes, ?no_of_deletes),
 
-    io:format("Over and out...~n"),
-    ok.
+            % force a recalc on a calcs page by updating cell A1
+            io:format("~nabout to force recalcs...~n"),
+            ok = force_recalc_test("force_recalc" ++ Stamp, ?calcsprefix,
+                                   ?no_of_recalcs, ?no_of_recalcs),
+
+            % force the zqueries to recalc by updating a data page
+            io:format("~nabout to test zqueries...~n"),
+            ok = force_zquery_test("force_zquery" ++ Stamp, ?dataprefix,
+                                   ?no_of_forcedzs, ?no_of_forcedzs),
+
+            io:format("Over and out...~n"),
+            ok
+    end.
 
 bulk_pages(_Max, 0, 0, 0, 0) -> ok;
 bulk_pages(Max, I, 0, 0, 0) -> bulk_pages(Max, I - 1, Max, Max, Max);
