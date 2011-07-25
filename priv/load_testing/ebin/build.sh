@@ -1,0 +1,1 @@
+erlc -I ../../../lib/hypernumbers-1.0/include/ ../src/load_testing.erl
