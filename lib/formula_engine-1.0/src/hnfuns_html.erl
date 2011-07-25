@@ -29,8 +29,9 @@
          'tim.horizontal.line.'/1,
          'tim.vertical.line.'/1,
          'tim.menu.'/1,
-         'tim.submenu'/1
-         ]).
+         'tim.submenu'/1,
+         'tim.tabs.'/1
+        ]).
 
 'link.box.'([H, W, Z]) ->
     'link.box.'([H, W, Z, 0]);
@@ -239,6 +240,29 @@ menu1([H | T], Cl, Acc) ->
 %%% Propsed new components                                                   %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+'tim.tabs.'([Width, Height | List]) ->
+    [W] = typechecks:throw_std_ints([Width]),
+    [H] = typechecks:throw_std_ints([Height]),
+    {HeaderTxt, TabTxt} = split(List),
+    HeaderTxt2 = typechecks:std_strs(HeaderTxt),
+    TabTxt2 = typechecks:std_strs(TabTxt),
+    Headers = make_headers(HeaderTxt2, 1, []),
+    Tabs = make_tabs(TabTxt2, 1, []),
+    HTML = lists:flatten(["<div id='hn_sld_tabs'>", Headers, Tabs, "</div>"]),
+    Js   = ["/webcomponents/jquery.tabs.js"],
+    Js_R = ["Generic.reload();"],
+    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
+    {preview, {"Tabs box", W, H, Incs}, HTML}.
+
+split(List) ->
+    Len = length(List),
+    % needs an even number of parameters
+    case Len rem 2 of
+        1 -> ?ERR_VAL;
+        0 -> unzip(List, [], [])
+    end.
+
 'tim.plainbox.'([Width, Height | List]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
@@ -387,4 +411,22 @@ check_alerts(_N)                         -> ?ERR_VAL.
 
 check_size2(W, H, MinH) when W > 1 andalso W < 16 andalso H >= MinH andalso H < 26 -> ok;
 check_size2(_W, _H, _MinH) -> ?ERR_VAL.
+
+unzip([], Acc1, Acc2) ->
+    {lists:reverse(Acc1), lists:reverse(Acc2)};
+unzip([Hdr, Tb | Rest], Acc1, Acc2) ->
+    unzip(Rest, [Hdr | Acc1], [Tb | Acc2]).
+
+make_headers([], _N, Acc) ->
+    "<ul>" ++ lists:reverse(Acc) ++ "</ul>";
+make_headers([H | T], N, Acc) ->
+    NewAcc = "<li><a href='#hn_sld_tabs-" ++ integer_to_list(N) ++ "'>"
+        ++ H ++ "</a></li>",
+    make_headers(T, N + 1, [NewAcc | Acc]).
+
+make_tabs([], _N, Acc) -> lists:reverse(Acc);
+make_tabs([H | T], N, Acc) ->
+    NewAcc = "<div id='hn_sld_tabs-" ++ integer_to_list(N) ++ "'>"
+        ++ "<p>" ++ H ++ "</p></div>",
+    make_tabs(T, N + 1, [NewAcc | Acc]).
 
