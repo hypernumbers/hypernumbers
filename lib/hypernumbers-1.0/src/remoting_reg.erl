@@ -227,8 +227,8 @@ microsecs({MegaSecs,Secs,MicroSecs}) ->
 
 %% Expires any messages older than one minute
 expire_updates(Old) ->
-    MinuteAgo = timestamp()  - 60000000,
-    [ Msg || Msg = {msg, _Site, _Path, _Msg, Time} <- Old, Time > MinuteAgo].
+    FifteenSecsAgo = timestamp()  - 15000000,
+    [ Msg || Msg = {msg, _Site, _Path, _Msg, Time} <- Old, Time > FifteenSecsAgo].
 
 %%
 %% Tests
