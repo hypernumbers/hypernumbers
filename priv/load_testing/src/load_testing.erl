@@ -282,6 +282,4 @@ subst([{Pid, A, B, C, D} | T], Names, Acc) ->
 get_names() ->
     Global = [{global:whereis_name(X), X} || X <- global:registered_names()],
     Local  = [{whereis(X), X}             || X <- registered()],
-    Names = lists:merge([Global, Local]),
-    io:format("Names is ~p~n", [Names]),
-    Names.
+    lists:merge([Global, Local]).
