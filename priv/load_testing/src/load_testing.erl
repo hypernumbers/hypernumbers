@@ -18,6 +18,11 @@
          load_test/1
         ]).
 
+% exports for spawning
+-export([
+         log_memory/1
+         ]).
+
 load_only() -> load_2(disc_only, load_only).
 
 load_only(Type) -> load_2(Type, load_only).
@@ -26,7 +31,8 @@ load_test() -> load_2(disc_only, all).
 
 load_test(Type) -> load_2(Type, all).
 
-test_zs() -> spawn(syslib, log_memory, []),
+test_zs() -> Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+             spawn(load_testing, log_memory, [Stamp]),
              test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles).
 
 test_z2(_Max, 0) -> ok;
@@ -92,7 +98,7 @@ load_3(Type, Extent) ->
     ok = load_pages("calculations" ++ Stamp, ?calcspage, ?calcsprefix,
                     ?no_of_calcpages, ?no_of_calcpages),
 
-    ok = memory_log(Stamp),
+    spawn(load_testing, log_memory, [Stamp]),
 
     % load zqueries
     io:format("~nabout to load zquery pages...~n"),
@@ -225,7 +231,7 @@ log(String, File) ->
     end.
 
 log_memory(Stamp) ->
-    Msg = io_lib:format("~w", [syslib:top5_()]),
+    Msg = io_lib:format("~w", [top5_()]),
     log(lists:flatten(Msg), "memory_log" ++ Stamp),
     timer:sleep(100),
     log_memory(Stamp).
@@ -240,3 +246,9 @@ info(X) ->
     [{heap_size, Heap}] = process_info(X, [heap_size]),
     [{reductions, Reductions}] = process_info(X, [reductions]),
     {X, Fn, Len, Heap, Reductions}.
+
+sort(List) ->
+    {Len5, _}  = lists:split(5, lists:reverse(lists:keysort(3, List))),
+    {Heap5, _} = lists:split(5, lists:reverse(lists:keysort(4, List))),
+    {Red5, _}  = lists:split(5, lists:reverse(lists:keysort(5, List))),
+    [{longest, Len5}, {heapiest, Heap5}, {most_reductions, Red5}].
