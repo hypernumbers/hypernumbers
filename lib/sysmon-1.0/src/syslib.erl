@@ -19,6 +19,7 @@
          log_term/2,
          clear_log/1,
          limiter/1,
+         limit_global_mq/2,
          sample_fprof/1,
          sample_fprof/0,
          consult_term_log/1,
@@ -150,11 +151,23 @@ top5_() ->
     sort([info(X) || X <- Procs]).
 
 info(X) ->
-    [{current_function, Fn}] = process_info(X, [current_function]),
-    [{message_queue_len, Len}] = process_info(X, [message_queue_len]),
-    [{heap_size, Heap}] = process_info(X, [heap_size]),
-    [{reductions, Reductions}] = process_info(X, [reductions]),
-    {X, Fn, Len, Heap, Reductions}.
+    Fn1  = case process_info(X, [current_function]) of
+               [{current_function, Fn}] -> Fn;
+               undefined                -> 0
+           end,
+    Len1  = case process_info(X, [message_queue_len]) of
+                [{message_queue_len, Len}] -> Len;
+                undefined                   -> 0
+           end,
+    Heap1  = case process_info(X, [heap_size]) of
+               [{heap_size, Heap}] -> Heap;
+               undefined           -> 0
+             end,
+    Reds1  = case process_info(X, [reductions]) of
+               [{reductions, Reds}] -> Reds;
+               undefined            -> 0
+           end,
+    {X, Fn1, Len1, Heap1, Reds1}.
 
 sort(List) ->
     {Len5, _}  = lists:split(5, lists:reverse(lists:keysort(3, List))),
@@ -197,3 +210,14 @@ limiter(Site) ->
                                               limiter(Site);
         true                               -> ok
     end.
+
+limit_global_mq(Site, Q) ->
+    Srv = hn_util:site_to_atom(Site, Q),
+    Pid = global:whereis_name(Srv),
+    {message_queue_len, Len} = process_info(Pid, message_queue_len),
+    if
+        Len > 100 -> timer:sleep(10),
+                     limit_global_mq(Site, Q);
+        true      -> ok
+    end.
+

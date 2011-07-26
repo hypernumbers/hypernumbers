@@ -26,8 +26,11 @@
 -export([
          create_table/7,
          mem_only/1,
+         mem_only/2,
          disc_only/1,
+         disc_only/2,
          disc_and_mem/1,
+         disc_and_mem/2,
          backup/3,
          restore/2,
          dump_site_table/2,
@@ -104,6 +107,12 @@ disc_and_mem("http://" ++ SiteAndPort) ->
      || X <- ?CACHEABLE_TABLES],
     ok.
 
+-spec disc_and_mem(list(), list()) -> ok.
+disc_and_mem("http://" ++ SiteAndPort, Table) ->
+    [Site, Port] = string:tokens(SiteAndPort, ":"),
+    {atomic, ok} = chg_copy_type(Site, Port, Table, disc_copies),
+    ok.
+
 -spec disc_only(list()) -> ok.
 disc_only("http://" ++ SiteAndPort) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
@@ -111,11 +120,23 @@ disc_only("http://" ++ SiteAndPort) ->
      || X <- ?CACHEABLE_TABLES],
     ok.
 
+-spec disc_only(list(), list()) -> ok.
+disc_only("http://" ++ SiteAndPort, Table) ->
+    [Site, Port] = string:tokens(SiteAndPort, ":"),
+    {atomic, ok} = chg_copy_type(Site, Port, Table, disc_only_copies),
+    ok.
+
 -spec mem_only(list()) -> ok.
 mem_only("http://" ++ SiteAndPort) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
     [{atomic, ok} = chg_copy_type(Site, Port, X, ram_copies)
      || X <- ?CACHEABLE_TABLES],
+    ok.
+
+-spec mem_only(list(), list()) -> ok.
+mem_only("http://" ++ SiteAndPort, Table) ->
+    [Site, Port] = string:tokens(SiteAndPort, ":"),
+    {atomic, ok} = chg_copy_type(Site, Port, Table, ram_copies),
     ok.
 
 chg_copy_type(Site, Port, Table, Mode) ->
