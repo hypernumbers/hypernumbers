@@ -107,7 +107,7 @@ local_hypernumbers() ->
     {ok, _, Uid1} = passport:get_or_create_user("test@hypernumbers.com"),
     {ok, _, Uid2} = passport:get_or_create_user("guest@hypernumbers.com"),
     case hn_setup:site(Site, blank, [{creator, Uid1}]) of
-        true ->
+        {initial_view, []} ->
             passport:validate_uid(Uid1),
             passport:validate_uid(Uid2),
             % make guest a member of group guest
