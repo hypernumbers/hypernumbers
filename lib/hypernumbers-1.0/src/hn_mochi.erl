@@ -1229,7 +1229,8 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
     receive
         {tcp_closed, Socket} -> ok;
         {error, timeout}     -> json(Env, <<"timeout">>);
-        {msg, Data}          -> json(Env, Data)
+        {msg, Data}          -> Data2 = expand_binaries(Data),
+                                json(Env, Data2)
     after
 %% TODO : Fix, should be controlled by remoting_reg
         600000 ->
@@ -1793,6 +1794,11 @@ expand_width(#refX{obj = {column, {X1, X2}}} = Ref, Attr, PAr, VAr) ->
 make_name(Name, Ext) ->
     Basename = filename:basename(Name, Ext),
     re:replace(Basename,"\s","_",[{return,list}, global]).
+
+expand_binaries({struct, [{"time", Time}, {"msgs", {array, List}}]}) ->
+    List2 = [binary_to_term(X) || X <- List],
+    {struct, [{"time", Time}, {"msgs", {array, List2}}]}.
+
 
 make_demo(Site, Path) ->
     URL = Site ++ hn_util:list_to_path(Path),
