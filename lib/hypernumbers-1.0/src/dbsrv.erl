@@ -135,7 +135,7 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
     true = if
                HSZ >  ?HEAP_SIZE -> garbage_collect(self());
                HSZ =< ?HEAP_SIZE -> true
-    end,
+           end,
     Wait = case WorkPlan of
                [] -> infinity;
                _ -> 0
