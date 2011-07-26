@@ -49,6 +49,8 @@
 
 % fun for smoothing delete
 -export([
+         clear_by_rows/4,
+         clear_by_rows/5,
          delete_by_rows/3,
          delete_by_rows/4
         ]).
@@ -580,6 +582,19 @@ recalc_page(#refX{obj = {page, "/"}} = RefX) ->
           end,
     write_activity(RefX, Fun, "refresh", Report).
 
+clear(#refX{obj = {page, "/"}} = RefX, Type, Ar) ->
+    % page clear are too 'big' cause massive memory spikes
+    % and dirty cell rushes and message queues to go through
+    % the roof, so we don't do them atomically.
+    %
+    % Instead we clear the page row-by-row starting with the last
+    % row.
+    Report1 = mnesia_mon:get_stamp("get no of rows for page clear"),
+    Fun1 = fun() ->
+                   new_db_wu:get_last_row(RefX)
+           end,
+    NoOfRows = mnesia_mon:log_act(transaction, Fun1, Report1),
+    clear_by_rows(NoOfRows, 0, RefX, Type, Ar);
 clear(#refX{} = RefX, Type, Ar) ->
     Report = mnesia_mon:get_stamp("clear"),
     Fun =
@@ -781,9 +796,9 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
     % Need to do jiggery-pokery to make the logs look OK
     Report1 = mnesia_mon:get_stamp("get no of rows for page delete"),
     Fun1 = fun() ->
-                   % log it as a page delete in this transction
+                   % log it as a page delete in this transaction
                    % bit of a cheat...
-                   new_db_wu:log_page_delete(RefX, Ar),
+                   new_db_wu:log_page(RefX, 'page deleted', Ar),
                    new_db_wu:get_last_row(RefX)
            end,
     NoOfRows = mnesia_mon:log_act(transaction, Fun1, Report1),
@@ -815,6 +830,15 @@ delete_by_rows(N, Min, #refX{site = S} = RefX, Ar) ->
     move(NewRefX, delete, vertical, Ar, "delete", false),
     syslib:limiter(S),
     delete_by_rows(N - 1, Min, RefX, Ar).
+
+clear_by_rows(N, Min, RefX, Type) -> clear_by_rows(N, Min, RefX, Type, nil).
+
+clear_by_rows(Min, Min, _, _, _) -> ok;
+clear_by_rows(N, Min, #refX{site = S} = RefX, Type, Ar) ->
+    NewRefX = RefX#refX{obj = {row, {N, N}}},
+    clear(NewRefX, Type, Ar),
+    syslib:limiter(S),
+    clear_by_rows(N - 1, Min, RefX, Type,Ar).
 
 -spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> list().
 handle_dirty_cell(Site, Idx, Ar) ->
