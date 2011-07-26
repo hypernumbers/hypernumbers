@@ -5,6 +5,8 @@
 -behaviour(gen_server).
 
 -define(SERVER, ?MODULE).
+-define(HEAP_SIZE, 250000).
+
 -include("spriki.hrl").
 
 %% gen_server callbacks
@@ -51,6 +53,11 @@ handle_call(_Req, _From, State) -> {reply,invalid_message, State}.
 %% @doc  Handle incoming update mesage
 handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
     Packet   = {msg, Site, Path, Msg, timestamp()},
+    {heap_size, HSZ} = process_info(self(), heap_size),
+    true = if
+               HSZ >  ?HEAP_SIZE -> garbage_collect(self());
+               HSZ =< ?HEAP_SIZE -> true
+           end,
     NUpdates = [Packet | Updates],
     {noreply, send_to_waiting(NUpdates, Waiting)};
 %% @doc  Handle incoming request for updates
