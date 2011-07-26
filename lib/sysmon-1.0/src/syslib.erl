@@ -23,10 +23,21 @@
          sample_fprof/1,
          sample_fprof/0,
          consult_term_log/1,
-         log_memory/0
+         log_memory/0,
+         log_process/1
         ]).
 
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
+
+log_process(Pid) when is_pid(Pid) ->
+    {Pid, Fn, Length, Heap, Reductions} = info(Pid),
+    Msg = io_lib:format("Pid,~p,Function,~p,Message Queue Length,~p,"
+                        ++ "Heap,~p,Reductions,~p",
+                        [Pid, Fn, Length, Heap, Reductions]),
+    log(Msg, "process_log"),
+    timer:sleep(100),
+    log_process(Pid).
+
 
 log_memory() ->
     Msg = io_lib:format("~w", [top5_()]),
