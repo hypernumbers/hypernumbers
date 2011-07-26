@@ -58,7 +58,7 @@
 
 % fns for logging
 -export([
-         log_page_delete/2,
+         log_page/3,
          log_move/4,
          get_logs/1
         ]).
@@ -1248,9 +1248,9 @@ has_include(Site, CellIdx) ->
         [R] -> R#relation.include
     end.
 
-log_page_delete(#refX{site = S, path = P, obj = {page, "/"} = O}, Uid) ->
+log_page(#refX{site = S, path = P, obj = {page, "/"} = O}, Action, Uid) ->
     Log = #logging{idx = "", uid = Uid,
-                   action = 'page deleted', actiontype = "",
+                   action = Action, actiontype = "",
                    type = page, path = hn_util:list_to_path(P),
                    obj = O, log = ""},
     write_log(S, Log),

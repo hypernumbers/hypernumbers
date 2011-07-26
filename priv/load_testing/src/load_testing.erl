@@ -11,11 +11,17 @@
 -include("load_testing.hrl").
 
 -export([
+         test_zs/0,
          load_only/0,
          load_only/1,
          load_test/0,
          load_test/1
         ]).
+
+% exports for spawning
+-export([
+         log_memory/1
+         ]).
 
 load_only() -> load_2(disc_only, load_only).
 
@@ -24,6 +30,26 @@ load_only(Type) -> load_2(Type, load_only).
 load_test() -> load_2(disc_only, all).
 
 load_test(Type) -> load_2(Type, all).
+
+test_zs() -> Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+             spawn(load_testing, log_memory, [Stamp]),
+             test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles).
+
+test_z2(_Max, 0) -> ok;
+test_z2(Max, N) ->
+    Path = [?zquery_profile_page],
+    RefX = #refX{site = ?site, path = Path, obj = {cell, {1, 1}}},
+    io:format("forcing recalcs ~p on ~p~n", [N, Path]),
+    StartTime = get_time(),
+    new_db_api:write_attributes([{RefX, [{"formula",
+                                          "=sum(/data/[true]/a1)"}]}]),
+    new_db_api:wait_for_dirty(?site),
+    EndTime = get_time(),
+    Msg = io_lib:format("~p,~p", [Max - N + 1,
+                                  EndTime - StartTime]),
+    log(Msg, ?zquery_profile_page ++ ".csv"),
+    test_z2(Max, N - 1).
+
 
 load_2(Type, Extent) ->
 
@@ -59,6 +85,7 @@ load_3(Type, Extent) ->
     % put the auth_srv into memory first
     ok = hn_db_admin:mem_only(?site, "kvstore"),
     ok = bulk_pages(?pageload, ?pageload, ?pageload, ?pageload, ?pageload),
+    % now pull the auth_srv back in place
     ok = hn_db_admin:disc_only(?site, "kvstore"),
 
     % load datapoints
@@ -70,6 +97,8 @@ load_3(Type, Extent) ->
     io:format("~nabout to load calculation pages...~n"),
     ok = load_pages("calculations" ++ Stamp, ?calcspage, ?calcsprefix,
                     ?no_of_calcpages, ?no_of_calcpages),
+
+    spawn(load_testing, log_memory, [Stamp]),
 
     % load zqueries
     io:format("~nabout to load zquery pages...~n"),
@@ -201,3 +230,25 @@ log(String, File) ->
             error
     end.
 
+log_memory(Stamp) ->
+    Msg = io_lib:format("~w", [top5_()]),
+    log(lists:flatten(Msg), "memory_log" ++ Stamp),
+    timer:sleep(100),
+    log_memory(Stamp).
+
+top5_() ->
+    Procs = processes(),
+    sort([info(X) || X <- Procs]).
+
+info(X) ->
+    [{current_function, Fn}] = process_info(X, [current_function]),
+    [{message_queue_len, Len}] = process_info(X, [message_queue_len]),
+    [{heap_size, Heap}] = process_info(X, [heap_size]),
+    [{reductions, Reductions}] = process_info(X, [reductions]),
+    {X, Fn, Len, Heap, Reductions}.
+
+sort(List) ->
+    {Len5, _}  = lists:split(5, lists:reverse(lists:keysort(3, List))),
+    {Heap5, _} = lists:split(5, lists:reverse(lists:keysort(4, List))),
+    {Red5, _}  = lists:split(5, lists:reverse(lists:keysort(5, List))),
+    [{longest, Len5}, {heapiest, Heap5}, {most_reductions, Red5}].

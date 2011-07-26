@@ -114,6 +114,7 @@ csv_file(Url, FileName) ->
 
     % first clear the page
     ok = new_db_api:clear(Ref, all, nil),
+
     % now write it
     [ok = new_db_api:write_attributes([X]) || X <- Refs],
     ok.
