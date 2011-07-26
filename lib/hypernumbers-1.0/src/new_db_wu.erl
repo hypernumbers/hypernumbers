@@ -275,7 +275,8 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                              true ->
                                  ok = set_relations(XRefX, [], [], false),
                                  ok = unattach_form(XRefX),
-                                 ok = delete_incs(XRefX);
+                                 ok = delete_incs(XRefX),
+                                 ok = mark_these_dirty([XRefX], nil);
                              false -> ok
                         end,
                          {clean, del_attributes(Attrs, DelAttrs)}
