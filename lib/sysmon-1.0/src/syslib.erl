@@ -213,8 +213,8 @@ log(String, File) ->
 limiter(Site) ->
     DBSrv = hn_util:site_to_atom(Site, "_dbsrv"),
     DBPid = whereis(DBSrv),
-    RemSrv = hn_util:site_to_atom(Site, "&_remoting"),
-    RemPid = whereis(RemSrv),
+    RemSrv = hn_util:site_to_atom(Site, "_remoting"),
+    RemPid = global:whereis_name(RemSrv),
     DQ = hn_util:site_to_atom(Site, "&dirty_queue"),
     {message_queue_len, DBLen} = process_info(DBPid, message_queue_len),
     {message_queue_len, RemLen} = process_info(RemPid, message_queue_len),
