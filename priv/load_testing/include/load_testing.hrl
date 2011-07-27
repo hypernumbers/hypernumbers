@@ -1,5 +1,6 @@
 %%% constants for load testing to make it easier to develop
 
+%-define(site, "http://load.hypernumbers.dev:9000").
 -define(site, "http://loadtesting.hypernumbers.com:80").
 
 % basic load parameters
@@ -19,3 +20,7 @@
 -define(no_of_deletes, 25).
 -define(no_of_recalcs, 25).
 -define(no_of_forcedzs, 25).
+
+% define the number of times indivual profiles have to run
+-define(no_of_zquery_profiles, 500).
+-define(zquery_profile_page, "zquery_profile").

@@ -11,11 +11,18 @@
 -include("load_testing.hrl").
 
 -export([
+         test_zs/0,
          load_only/0,
          load_only/1,
          load_test/0,
          load_test/1
         ]).
+
+% exports for spawning
+-export([
+         log_memory/1,
+         log_memory_LOOP/2
+         ]).
 
 load_only() -> load_2(disc_only, load_only).
 
@@ -24,6 +31,26 @@ load_only(Type) -> load_2(Type, load_only).
 load_test() -> load_2(disc_only, all).
 
 load_test(Type) -> load_2(Type, all).
+
+test_zs() -> Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+             spawn(load_testing, log_memory, [Stamp]),
+             test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles).
+
+test_z2(_Max, 0) -> ok;
+test_z2(Max, N) ->
+    Path = [?zquery_profile_page],
+    RefX = #refX{site = ?site, path = Path, obj = {cell, {1, 1}}},
+    io:format("forcing recalcs ~p on ~p~n", [N, Path]),
+    StartTime = get_time(),
+    new_db_api:write_attributes([{RefX, [{"formula",
+                                          "=sum(/data/[true]/a1)"}]}]),
+    new_db_api:wait_for_dirty(?site),
+    EndTime = get_time(),
+    Msg = io_lib:format("~p,~p", [Max - N + 1,
+                                  EndTime - StartTime]),
+    log(Msg, ?zquery_profile_page ++ ".csv"),
+    test_z2(Max, N - 1).
+
 
 load_2(Type, Extent) ->
 
@@ -59,7 +86,10 @@ load_3(Type, Extent) ->
     % put the auth_srv into memory first
     ok = hn_db_admin:mem_only(?site, "kvstore"),
     ok = bulk_pages(?pageload, ?pageload, ?pageload, ?pageload, ?pageload),
+    % now put the auth_srv back in place
     ok = hn_db_admin:disc_only(?site, "kvstore"),
+
+    spawn(load_testing, log_memory, [Stamp]),
 
     % load datapoints
     io:format("~nabout to load data pages...~n"),
@@ -201,3 +231,55 @@ log(String, File) ->
             error
     end.
 
+log_memory(Stamp) ->
+    Names = get_names(),
+    log_memory_LOOP(Stamp, Names).
+
+log_memory_LOOP(Stamp, Names) ->
+    Msg = io_lib:format("~w", [top5(Names)]),
+    log(lists:flatten(Msg), "memory_log" ++ Stamp),
+    timer:sleep(100),
+    log_memory_LOOP(Stamp, Names).
+
+top5(Names) ->
+    Procs = processes(),
+    sort(Names, [info(X) || X <- Procs]).
+
+info(X) ->
+    Fn1  = case process_info(X, [current_function]) of
+               [{current_function, Fn}] -> Fn;
+               undefined                -> 0
+           end,
+    Len1  = case process_info(X, [message_queue_len]) of
+                [{message_queue_len, Len}] -> Len;
+                undefined                   -> 0
+           end,
+    Heap1  = case process_info(X, [heap_size]) of
+               [{heap_size, Heap}] -> Heap;
+               undefined           -> 0
+             end,
+    Reds1  = case process_info(X, [reductions]) of
+               [{reductions, Reds}] -> Reds;
+               undefined            -> 0
+           end,
+    {X, Fn1, Len1, Heap1, Reds1}.
+
+sort(Names, List) ->
+    {Len5, _}  = lists:split(5, lists:reverse(lists:keysort(3, List))),
+    {Heap5, _} = lists:split(5, lists:reverse(lists:keysort(4, List))),
+    {Red5, _}  = lists:split(5, lists:reverse(lists:keysort(5, List))),
+    [{longest, subst(Len5, Names, [])}, {heapiest, subst(Heap5, Names, [])},
+     {most_reductions, subst(Red5, Names, [])}].
+
+subst([], _Names, Acc) -> lists:reverse(Acc);
+subst([{Pid, A, B, C, D} | T], Names, Acc) ->
+    Pid2 = case lists:keyfind(Pid, 1, Names) of
+               false       -> Pid;
+               {Pid, Name} -> Name
+           end,
+    subst(T, Names, [{Pid2, A, B, C, D} | Acc]).
+
+get_names() ->
+    Global = [{global:whereis_name(X), X} || X <- global:registered_names()],
+    Local  = [{whereis(X), X}             || X <- registered()],
+    lists:merge([Global, Local]).

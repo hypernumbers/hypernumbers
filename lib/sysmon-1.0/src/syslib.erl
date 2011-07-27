@@ -23,10 +23,21 @@
          sample_fprof/1,
          sample_fprof/0,
          consult_term_log/1,
-         log_memory/0
+         log_memory/0,
+         log_process/1
         ]).
 
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
+
+log_process(Pid) when is_pid(Pid) ->
+    {Pid, Fn, Length, Heap, Reductions} = info(Pid),
+    Msg = io_lib:format("Pid,~p,Function,~p,Message Queue Length,~p,"
+                        ++ "Heap,~p,Reductions,~p",
+                        [Pid, Fn, Length, Heap, Reductions]),
+    log(Msg, "process_log"),
+    timer:sleep(100),
+    log_process(Pid).
+
 
 log_memory() ->
     Msg = io_lib:format("~w", [top5_()]),
@@ -151,11 +162,23 @@ top5_() ->
     sort([info(X) || X <- Procs]).
 
 info(X) ->
-    [{current_function, Fn}] = process_info(X, [current_function]),
-    [{message_queue_len, Len}] = process_info(X, [message_queue_len]),
-    [{heap_size, Heap}] = process_info(X, [heap_size]),
-    [{reductions, Reductions}] = process_info(X, [reductions]),
-    {X, Fn, Len, Heap, Reductions}.
+    Fn1  = case process_info(X, [current_function]) of
+               [{current_function, Fn}] -> Fn;
+               undefined                -> 0
+           end,
+    Len1  = case process_info(X, [message_queue_len]) of
+                [{message_queue_len, Len}] -> Len;
+                undefined                   -> 0
+           end,
+    Heap1  = case process_info(X, [heap_size]) of
+               [{heap_size, Heap}] -> Heap;
+               undefined           -> 0
+             end,
+    Reds1  = case process_info(X, [reductions]) of
+               [{reductions, Reds}] -> Reds;
+               undefined            -> 0
+           end,
+    {X, Fn1, Len1, Heap1, Reds1}.
 
 sort(List) ->
     {Len5, _}  = lists:split(5, lists:reverse(lists:keysort(3, List))),
@@ -188,15 +211,20 @@ log(String, File) ->
     end.
 
 limiter(Site) ->
-    Srv = hn_util:site_to_atom(Site, "_dbsrv"),
-    Pid = whereis(Srv),
+    DBSrv = hn_util:site_to_atom(Site, "_dbsrv"),
+    DBPid = whereis(DBSrv),
+    RemSrv = hn_util:site_to_atom(Site, "_remoting"),
+    RemPid = global:whereis_name(RemSrv),
     DQ = hn_util:site_to_atom(Site, "&dirty_queue"),
-    {message_queue_len, Len} = process_info(Pid, message_queue_len),
+    {message_queue_len, DBLen} = process_info(DBPid, message_queue_len),
+    {message_queue_len, RemLen} = process_info(RemPid, message_queue_len),
     DirtyQueue = mnesia:table_info(DQ, size),
     if
-        Len > 100 orelse DirtyQueue > 100  -> timer:sleep(10),
-                                              limiter(Site);
-        true                               -> ok
+        DBLen > 100
+        orelse RemLen > 100
+        orelse DirtyQueue > 100  -> timer:sleep(10),
+                                    limiter(Site);
+        true                     -> ok
     end.
 
 limit_global_mq(Site, Q) ->

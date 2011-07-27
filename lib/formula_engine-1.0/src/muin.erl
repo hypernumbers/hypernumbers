@@ -256,9 +256,9 @@ transform("equigraph." ++ R, Args) ->
 transform("piechart." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("piechart."), [W , H | Args]};
-transform("linkbox." ++ R, Args) ->
+transform("link.box." ++ R, Args) ->
     {W, H} = get_dims(R),
-    {list_to_atom("linkbox."), [W , H | Args]};
+    {list_to_atom("link.box."), [W , H | Args]};
 % single parameter stuff
 transform("tim.vertical.line." ++ R, Args) ->
     {list_to_atom("tim.vertical.line."), [R | Args]};

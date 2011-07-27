@@ -5,6 +5,8 @@
 -behaviour(gen_server).
 
 -define(SERVER, ?MODULE).
+-define(HEAP_SIZE, 250000).
+
 -include("spriki.hrl").
 
 %% gen_server callbacks
@@ -51,7 +53,12 @@ handle_call(_Req, _From, State) -> {reply,invalid_message, State}.
 %% @doc  Handle incoming update mesage
 handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
     Packet   = {msg, Site, Path, Msg, timestamp()},
-    NUpdates = [Packet | Updates],
+    {heap_size, HSZ} = process_info(self(), heap_size),
+    true = if
+               HSZ >  ?HEAP_SIZE -> garbage_collect(self());
+               HSZ =< ?HEAP_SIZE -> true
+           end,
+        NUpdates = [Packet | Updates],
     {noreply, send_to_waiting(NUpdates, Waiting)};
 %% @doc  Handle incoming request for updates
 handle_cast({fetch, Site, Path, Time, Pid}, {Updates, Waiting}) ->
@@ -73,25 +80,28 @@ request_update(Site, Path, Time, Pid) ->
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast({global, Id}, {fetch, Site, Path, Time, Pid}).
 
-%% @doc Nofity server of site details refresh
+%% @doc Notify server of site details refresh
 notify_site(Site) ->
     Msg = {struct, [{"type", "site_refresh"}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast({global, Id}, {msg, Site, ["/"], Msg}).
+    gen_server:cast({global, Id}, {msg, Site, term_to_binary(["/"]),
+                                   term_to_binary(Msg)}).
 
-%% @doc Nofity server that the pages have changed
+%% @doc Notify server that the pages have changed
 notify_pages(Site) ->
     Msg = {struct, [{"type", "pages_refresh"}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
     PID = global:whereis_name(Id),
-    gen_server:cast(PID, {msg, Site, ["/"], Msg}).
+    gen_server:cast(PID, {msg, Site, term_to_binary(["/"]),
+                          term_to_binary(Msg)}).
 
 %% @doc  Notify server of full page refresh
 notify_refresh(Site, Path) ->
     Msg = {struct, [{"type", "refresh"},
                     {"path", hn_util:list_to_path(Path)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast({global, Id}, {msg, Site, Path, Msg}).
+    gen_server:cast({global, Id}, {msg, Site, term_to_binary(Path),
+                                   term_to_binary(Msg)}).
 
 %% @doc  Notify server of change to a cell
 notify_change(Site, Path, {RefType, _} = R, Attrs) ->
@@ -104,7 +114,8 @@ notify_change(Site, Path, {RefType, _} = R, Attrs) ->
                     {"ref", hn_util:obj_to_change_msg(R)},
                     {"attrs", {struct, Attrs2}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast({global, Id}, {msg, Site, Path, Msg}).
+    gen_server:cast({global, Id}, {msg, Site, term_to_binary(Path),
+                                   term_to_binary(Msg)}).
 
 notify_delete_attrs(Site, Path, {RefType, _} = R, Attrs) ->
     Msg = {struct, [{"type", "delete_attrs"},
@@ -113,7 +124,8 @@ notify_delete_attrs(Site, Path, {RefType, _} = R, Attrs) ->
                     {"ref", hn_util:obj_to_change_msg(R)},
                     {"attrs", {struct, [{X, ""} || X <- Attrs]}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast({global, Id}, {msg, Site, Path, Msg}).
+    gen_server:cast({global, Id}, {msg, Site, term_to_binary(Path),
+                                   term_to_binary(Msg)}).
 
 notify_delete(Site, Path, {RefType, _} = R) ->
     Msg = {struct, [{"type", "delete"},
@@ -121,7 +133,8 @@ notify_delete(Site, Path, {RefType, _} = R) ->
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_change_msg(R)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast({global, Id}, {msg, Site, Path, Msg}).
+    gen_server:cast({global, Id}, {msg, Site, term_to_binary(Path),
+                                   term_to_binary(Msg)}).
 
 %% @doc  Notify server of a new style
 notify_style(Site, Path, Style) ->
@@ -131,7 +144,8 @@ notify_style(Site, Path, Style) ->
                     {"index", Key},
                     {"css", CSS}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast({global, Id}, {msg, Site, Path, Msg}).
+    gen_server:cast({global, Id}, {msg, Site, term_to_binary(Path),
+                                   term_to_binary(Msg)}).
 
 %% @doc  Notify server of an error to a cell
 notify_error(Site, Path, Ref, error_in_formula, Value) ->
@@ -141,7 +155,8 @@ notify_error(Site, Path, Ref, error_in_formula, Value) ->
                     {"original", Value},
                     {"path", hn_util:list_to_path(Path)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast({global, Id}, {msg, Site, Path, Msg}).
+    gen_server:cast({global, Id}, {msg, Site, term_to_binary(Path),
+                                   term_to_binary(Msg)}).
 
 %%
 %% Internal Functions
@@ -193,9 +208,10 @@ send_to_waiting(Updates, Waiting) ->
 
 
 has_path(MsgPath, ClientPath) ->
-    lists:member(MsgPath, ClientPath).
+    lists:member(binary_to_term(MsgPath), ClientPath).
 
-is_site({struct, List}) ->
+is_site(Binary) ->
+    {struct, List} = binary_to_term(Binary),
     case lists:keysearch("type", 1, List) of
         {value, {"type", "style"}}         -> true;
         {value, {"type", "site_refresh"}}  -> true;
@@ -211,8 +227,8 @@ microsecs({MegaSecs,Secs,MicroSecs}) ->
 
 %% Expires any messages older than one minute
 expire_updates(Old) ->
-    MinuteAgo = timestamp()  - 60000000,
-    [ Msg || Msg = {msg, _Site, _Path, _Msg, Time} <- Old, Time > MinuteAgo].
+    FifteenSecsAgo = timestamp()  - 15000000,
+    [ Msg || Msg = {msg, _Site, _Path, _Msg, Time} <- Old, Time > FifteenSecsAgo].
 
 %%
 %% Tests
