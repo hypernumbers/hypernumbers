@@ -211,15 +211,20 @@ log(String, File) ->
     end.
 
 limiter(Site) ->
-    Srv = hn_util:site_to_atom(Site, "_dbsrv"),
-    Pid = whereis(Srv),
+    DBSrv = hn_util:site_to_atom(Site, "_dbsrv"),
+    DBPid = whereis(DBSrv),
+    RemSrv = hn_util:site_to_atom(Site, "_remoting"),
+    RemPid = global:whereis_name(RemSrv),
     DQ = hn_util:site_to_atom(Site, "&dirty_queue"),
-    {message_queue_len, Len} = process_info(Pid, message_queue_len),
+    {message_queue_len, DBLen} = process_info(DBPid, message_queue_len),
+    {message_queue_len, RemLen} = process_info(RemPid, message_queue_len),
     DirtyQueue = mnesia:table_info(DQ, size),
     if
-        Len > 100 orelse DirtyQueue > 100  -> timer:sleep(10),
-                                              limiter(Site);
-        true                               -> ok
+        DBLen > 100
+        orelse RemLen > 100
+        orelse DirtyQueue > 100  -> timer:sleep(10),
+                                    limiter(Site);
+        true                     -> ok
     end.
 
 limit_global_mq(Site, Q) ->

@@ -208,9 +208,6 @@ transform("tim.ruledbox." ++ R, Args) ->
 transform("tim.tabs." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("tim.tabs."), [W, H | Args]};
-transform("tim.headline." ++ R, Args) ->
-    {W, H} = get_dims(R),
-    {list_to_atom("tim.headline."), [W, H | Args]};
 transform("generic.integration." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("generic.integration."), [W, H | Args]};
@@ -260,6 +257,8 @@ transform("link.box." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("link.box."), [W , H | Args]};
 % single parameter stuff
+transform("tim.headline." ++ R, Args) ->
+    {list_to_atom("tim.headline."), [R | Args]};
 transform("tim.vertical.line." ++ R, Args) ->
     {list_to_atom("tim.vertical.line."), [R | Args]};
 transform("tim.horizontal.line." ++ R, Args) ->

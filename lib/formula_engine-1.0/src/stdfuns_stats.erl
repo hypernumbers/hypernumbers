@@ -208,7 +208,8 @@ counta(Vs) ->
     length(Vals).
 
 count(Vs) ->
-    Vals = col(Vs, [eval_funs, fetch, fetch_z_all, flatten_as_str, {ignore, blank},
+    Vals = col(Vs, [eval_funs, fetch, fetch_z_all, flatten_as_str,
+                    {ignore, blank},
                     {cast, num}, {ignore, error}, {ignore, str}]),
     length(Vals).
 

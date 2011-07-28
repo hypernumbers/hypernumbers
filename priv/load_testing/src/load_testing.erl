@@ -20,7 +20,8 @@
 
 % exports for spawning
 -export([
-         log_memory/1
+         log_memory/1,
+         log_memory_LOOP/2
          ]).
 
 load_only() -> load_2(disc_only, load_only).
@@ -85,8 +86,10 @@ load_3(Type, Extent) ->
     % put the auth_srv into memory first
     ok = hn_db_admin:mem_only(?site, "kvstore"),
     ok = bulk_pages(?pageload, ?pageload, ?pageload, ?pageload, ?pageload),
-    % now pull the auth_srv back in place
+    % now put the auth_srv back in place
     ok = hn_db_admin:disc_only(?site, "kvstore"),
+
+    spawn(load_testing, log_memory, [Stamp]),
 
     % load datapoints
     io:format("~nabout to load data pages...~n"),
@@ -97,8 +100,6 @@ load_3(Type, Extent) ->
     io:format("~nabout to load calculation pages...~n"),
     ok = load_pages("calculations" ++ Stamp, ?calcspage, ?calcsprefix,
                     ?no_of_calcpages, ?no_of_calcpages),
-
-    spawn(load_testing, log_memory, [Stamp]),
 
     % load zqueries
     io:format("~nabout to load zquery pages...~n"),
@@ -231,24 +232,54 @@ log(String, File) ->
     end.
 
 log_memory(Stamp) ->
-    Msg = io_lib:format("~w", [top5_()]),
+    Names = get_names(),
+    log_memory_LOOP(Stamp, Names).
+
+log_memory_LOOP(Stamp, Names) ->
+    Msg = io_lib:format("~w", [top5(Names)]),
     log(lists:flatten(Msg), "memory_log" ++ Stamp),
     timer:sleep(100),
-    log_memory(Stamp).
+    log_memory_LOOP(Stamp, Names).
 
-top5_() ->
+top5(Names) ->
     Procs = processes(),
-    sort([info(X) || X <- Procs]).
+    sort(Names, [info(X) || X <- Procs]).
 
 info(X) ->
-    [{current_function, Fn}] = process_info(X, [current_function]),
-    [{message_queue_len, Len}] = process_info(X, [message_queue_len]),
-    [{heap_size, Heap}] = process_info(X, [heap_size]),
-    [{reductions, Reductions}] = process_info(X, [reductions]),
-    {X, Fn, Len, Heap, Reductions}.
+    Fn1  = case process_info(X, [current_function]) of
+               [{current_function, Fn}] -> Fn;
+               undefined                -> 0
+           end,
+    Len1  = case process_info(X, [message_queue_len]) of
+                [{message_queue_len, Len}] -> Len;
+                undefined                   -> 0
+           end,
+    Heap1  = case process_info(X, [heap_size]) of
+               [{heap_size, Heap}] -> Heap;
+               undefined           -> 0
+             end,
+    Reds1  = case process_info(X, [reductions]) of
+               [{reductions, Reds}] -> Reds;
+               undefined            -> 0
+           end,
+    {X, Fn1, Len1, Heap1, Reds1}.
 
-sort(List) ->
+sort(Names, List) ->
     {Len5, _}  = lists:split(5, lists:reverse(lists:keysort(3, List))),
     {Heap5, _} = lists:split(5, lists:reverse(lists:keysort(4, List))),
     {Red5, _}  = lists:split(5, lists:reverse(lists:keysort(5, List))),
-    [{longest, Len5}, {heapiest, Heap5}, {most_reductions, Red5}].
+    [{longest, subst(Len5, Names, [])}, {heapiest, subst(Heap5, Names, [])},
+     {most_reductions, subst(Red5, Names, [])}].
+
+subst([], _Names, Acc) -> lists:reverse(Acc);
+subst([{Pid, A, B, C, D} | T], Names, Acc) ->
+    Pid2 = case lists:keyfind(Pid, 1, Names) of
+               false       -> Pid;
+               {Pid, Name} -> Name
+           end,
+    subst(T, Names, [{Pid2, A, B, C, D} | Acc]).
+
+get_names() ->
+    Global = [{global:whereis_name(X), X} || X <- global:registered_names()],
+    Local  = [{whereis(X), X}             || X <- registered()],
+    lists:merge([Global, Local]).
