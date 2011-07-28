@@ -99,12 +99,12 @@ Menu
 	height: auto;
 	width:10em;
 }
-	
+
 .hn_sld_menu li:hover ul li { display: block; border-right: none; border-top:none; border-bottom: 1px solid #DEDEDE; width: 100%; -moz-box-shadow: none; -webkit-box-shadow: none;box-shadow: none;}
 .hn_sld_menu ul li:hover { border-bottom: 1px solid #999; }
 .hn_sld_menu ul li {text-align: left; padding: 6px 30px 6px 6px; width: 12em; border-bottom: none;}
 
-.hn_sld_menu ul li a:link, .hn_sld_menu ul li a:visited { 
+.hn_sld_menu ul li a:link, .hn_sld_menu ul li a:visited {
 text-align: left; display: block}
 
 .hn_sld_menu ul.first_level ul { background-color: orange; position:absolute; left: -8000px; top: 0;}
@@ -125,16 +125,16 @@ Alert box
 
 **********************************************/
 div.hn_sld_alert { border: 1px solid #3f3f3f;;}
-div.hn_sld_alert h4, div.hn_sld_alert h6 { background-color: #f6f6f6; padding: 11px;  margin: 0}
-div.hn_sld_alert h4 { border-bottom: 1px solid #999; font-size: 1.5em; background: #f6f6f6 url("http://www.soundslikedesign.co.uk/HyperNumbers/media/images/alert_0.png") no-repeat right center;}
+div.hn_sld_alert h4, div.hn_sld_alert h6 { background-color: #f6f6f6; padding: 11px;  margin: 0; overflow: hidden;}
+div.hn_sld_alert h4 { border-bottom: 1px solid #999; font-size: 1.5em; background: #f6f6f6 url("/img/alert_0.png") no-repeat right center;}
 div.hn_sld_alert p { margin: 11px; font-size: 1em;}
 div.hn_sld_alert h6 { padding: 11px; font-size:0.95em;}
 
-div.hn_sld_level1 h4 { background-image: url("http://www.soundslikedesign.co.uk/HyperNumbers/media/images/alert_1.png");}
+div.hn_sld_level1 h4 { background-image: url("/img/alert_1.png");}
 div.hn_sld_level2 { border-color: #F5993D;}
-div.hn_sld_level2 h4 { color: #F5993D; background-image: url("http://www.soundslikedesign.co.uk/HyperNumbers/media/images/alert_2.png"); border-color: #F5993D}
+div.hn_sld_level2 h4 { color: #F5993D; background-image: url("/img/alert_2.png"); border-color: #F5993D}
 div.hn_sld_level3 { border-color: #AD3333;}
-div.hn_sld_level3 h4 { color: #AD3333; border-color: #AD3333; background-image: url("http://www.soundslikedesign.co.uk/HyperNumbers/media/images/alert_3.png");}
+div.hn_sld_level3 h4 { color: #AD3333; border-color: #AD3333; background-image: url("/img/alert_3.png");}
 
 
 /**********************************************
@@ -194,7 +194,7 @@ Table
 table.tablesorter {
 	border-collapse:collapse;
 	border: 1px solid #3f3f3f;}
-	
+
 table.tablesorter thead tr th, table.tablesorter tfoot tr th { background-color: #3f3f3f; color: #dedede;}
 
 thead { background-color: #F6F6F6; padding: 14px;}
@@ -288,13 +288,14 @@ FIXES MAY BE FOR DELETE
 
 ******************************************/
 
-div.hn_sld_alert, div.hn_sld_box, div.hn_sld_plainbox, div.hn_sld_ruledbox { margin: 0; padding: 0; height: 99%;}
+div.hn_sld_alert, div.hn_sld_box, div.hn_sld_plainbox, div.hn_sld_ruledbox { margin: 0; padding: 0;}
 
 div.hn_sld_alert h4, div.hn_sld_plainbox h4, div.hn_sld_ruledbox h4 {margin: 0;  padding: 11px; display: block; }
 
 
-div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ruledbox div { height: 100%; overflow: auto;}
+div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ruledbox div { overflow: auto;}
 
+.hn_sld_footer { height: 33px; }
 
 /* Set the height ad allow for overflow
 */
@@ -306,3 +307,30 @@ div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ru
     position: absolute;
     width: 99.8%;
 }
+
+// Generic boxes
+.hn_box_height_1 {height: 16px; }
+.hn_box_height_2 {height: 38px; }
+.hn_box_height_3 {height: 60px; }
+.hn_box_height_4 {height: 82px; }
+.hn_box_height_5 {height: 104px; }
+.hn_box_height_6 {height: 126px; }
+.hn_box_height_7 {height: 148px; }
+.hn_box_height_8 {height: 170px; }
+.hn_box_height_9 {height: 192px; }
+.hn_box_height_10 {height: 214px; }
+.hn_box_height_11 {height: 236px; }
+.hn_box_height_12 {height: 258px; }
+.hn_box_height_13 {height: 280px; }
+.hn_box_height_14 {height: 302px; }
+.hn_box_height_15 {height: 324px; }
+.hn_box_height_16 {height: 346px; }
+.hn_box_height_17 {height: 368px; }
+.hn_box_height_18 {height: 390px; }
+.hn_box_height_19 {height: 412px; }
+.hn_box_height_20 {height: 434px; }
+.hn_box_height_21 {height: 456px; }
+.hn_box_height_22 {height: 478px; }
+.hn_box_height_23 {height: 500px; }
+.hn_box_height_24 {height: 522px; }
+.hn_box_height_25 {height: 544px; }
