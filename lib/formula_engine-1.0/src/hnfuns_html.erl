@@ -153,7 +153,7 @@ links2([{{P, _}, V} | T], 2, Acc) -> P2 = hn_util:list_to_path(P),
                                  BodyStyle, [Content])}.
 
 check_size(W, H) when W > 0 andalso W < 16 andalso H > 1 andalso H < 26 -> ok;
-check_size(_W, _H)                                                      -> ?ERR_VAL.
+check_size(_W, _H) -> ?ERR_VAL.
 
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Content]) ->
     [C1] = typechecks:throw_html_box_contents([Content]),
@@ -243,15 +243,21 @@ menu1([H | T], Cl, Acc) ->
 'tim.tabs.'([Width, Height | List]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
+    check_size2(W, H, 6),
     {HeaderTxt, TabTxt} = split(List),
     HeaderTxt2 = typechecks:std_strs(HeaderTxt),
     TabTxt2 = typechecks:std_strs(TabTxt),
-    Headers = make_headers(HeaderTxt2, 1, []),
-    Tabs = make_tabs(TabTxt2, 1, []),
-    HTML = lists:flatten(["<div id='hn_sld_tabs'>", Headers, Tabs, "</div>"]),
-    Js   = ["/webcomponents/jquery.tabs.js"],
-    Js_R = ["Generic.reload();"],
-    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Class = "hn_box_height_" ++ integer_to_list(H - 6 + 3),
+    Name = muin_util:create_name(),
+    Headers = make_headers(HeaderTxt2, Name, 1, []),
+    Tabs = make_tabs(TabTxt2, Name, Class, 1, []),
+    HTML = lists:flatten(["<div id='hn_sld_tabs-" ++ Name ++
+                          "' class='hn_sld_tabs'>",
+                          Headers, Tabs, "</div>"]),
+    Js   = ["/webcomponents/hn.newwebcomponents.js",
+           "/webcomponents/jquery.tabs.js"],
+    Js_R = ["HN.NewWebComponents.reload_tabs();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
     {preview, {"Tabs box", W, H, Incs}, HTML}.
 
@@ -267,9 +273,9 @@ split(List) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
     Class = "hn_sld_plainbox",
-    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
-    Js_R = ["Generic.reload();"],
-    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js_R = ["HN.NewWebComponents.reload();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
     'tim.box.1'(Class, W, H, List, Incs).
 
@@ -277,9 +283,9 @@ split(List) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
     Class = "hn_sld_ruledbox",
-    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
-    Js_R = ["Generic.reload();"],
-    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js_R = ["HN.NewWebComponents.reload();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
     'tim.box.1'(Class, W, H, List, Incs).
 
@@ -287,9 +293,9 @@ split(List) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
     Class = "hn_sld_box",
-    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
-    Js_R = ["Generic.reload();"],
-    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js_R = ["HN.NewWebComponents.reload();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
     'tim.box.1'(Class, W, H, List, Incs).
 
@@ -302,23 +308,35 @@ split(List) ->
                 0 -> "hn_sld_alert";
                 _ -> "hn_sld_alert hn_sld_level" ++ integer_to_list(Style)
             end,
-    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
-    Js_R = ["Generic.reload();"],
-    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    % always want a header
+    List2 = case length(List) of
+                1 -> [C] = List,
+                     case Style of
+                         0 -> [C, "Notice"];
+                         1 -> [C, "Alert"];
+                         2 -> [C, "Warning"];
+                         3 -> [C, "Strong Warning"]
+                     end;
+                _ -> List
+            end,
+    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js_R = ["HN.NewWebComponents.reload();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    'tim.box.1'(Class, W, H, List, Incs).
+    'tim.box.1'(Class, W, H, List2, Incs).
 
 'tim.box.1'(Class, W, H, [Content, Headline, Footer], Incs) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
     [C1] = typechecks:throw_html_box_contents([Content]),
     [F1] = typechecks:throw_html_box_contents([Footer]),
     check_size2(W, H, 8),
-    CH = "hn_box_height_" ++ integer_to_list(H - 8 + 5),
-    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W),
+    CHBox = "hn_box_height_" ++ integer_to_list(H),
+    Class2 = Class ++ " " ++ CHBox,
+    CH = "hn_box_height_" ++ integer_to_list(H - 8 + 3),
     Box = "<div class='"  ++ Class2 ++ "'>"
-        ++ "<h4 class='hn_box_height_3'>" ++ H1 ++ "</h4>"
-        ++ "<p class='" ++ CH ++ "'>" ++ C1 ++ "</p>"
-        ++ "<h6 class='hn_box_height_2'>" ++ F1 ++ "</h6>"
+        ++ "<h4>" ++ H1 ++ "</h4>"
+        ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
+        ++ "<h6 class='hn_sld_footer'>" ++ F1 ++ "</h6>"
         ++ "</div>",
     {resize, {W, H, Incs}, Box};
 
@@ -326,11 +344,12 @@ split(List) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
     [C1] = typechecks:throw_html_box_contents([Content]),
     check_size2(W, H, 6),
+    CHBox = "hn_box_height_" ++ integer_to_list(H),
+    Class2 = Class ++ " " ++ CHBox,
     CH = "hn_box_height_" ++ integer_to_list(H - 6 + 3),
-    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W),
     Box = "<div class='" ++ Class2 ++ "'>"
-        ++ "<h4 class='hn_box_height_3'>" ++ H1 ++ "</h4>"
-        ++ "<p class='" ++ CH ++ "'>" ++ C1 ++ "</p>"
+        ++ "<h4>" ++ H1 ++ "</h4>"
+        ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
         ++ "</div>",
     {resize, {W, H, Incs}, Box};
 
@@ -338,41 +357,41 @@ split(List) ->
     [C1] = typechecks:throw_html_box_contents([Content]),
     check_size2(W, H, 3),
     CH = "hn_box_height_" ++ integer_to_list(H),
-    Class2 = Class ++ " hn_box_width_" ++ integer_to_list(W),
+    Class2 = Class ++ " " ++ CH,
     Box = "<div class='" ++ Class2 ++ "'>"
-        ++ "<p class='" ++ CH ++ "'>" ++ C1 ++ "</p>"
+        ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
         ++ "</div>",
     {resize, {W, H, Incs}, Box}.
 
-'tim.headline.'([W, H, Text]) ->
+'tim.headline.'([W, Text]) ->
     [W2] = typechecks:throw_std_ints([W]),
-    [H2] = typechecks:throw_std_ints([H]),
     [T2] = typechecks:throw_std_strs([Text]),
-    check_size(W2, H2),
-    Class = "hn_sld_headline" ++ " hn_box_width_" ++ integer_to_list(W)
-        ++ " hn_box_height_" ++ integer_to_list(H),
+    Height = 2,
+    check_size(W2, Height),
+    Class = "hn_sld_headline" ++ " hn_box_width_" ++ integer_to_list(W2)
+        ++ " hn_box_height_2",
     HTML = "<h3 class='" ++ Class ++ "'>" ++ T2 ++ "</h3>",
-    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
-    Js_R = ["Generic.reload();"],
-    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js_R = ["HN.NewWebComponents.reload();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    {resize, {W2, H2, Incs}, HTML}.
+    {resize, {W2, Height, Incs}, HTML}.
 
 'tim.horizontal.line.'([W]) ->
     [W2] = typechecks:throw_std_ints([W]),
     HTML = "<hr class='hn_sld_hr' />",
-    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
-    Js_R = ["Generic.reload();"],
-    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js_R = ["HN.NewWebComponents.reload();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
     {resize, {W2, 1, Incs}, HTML}.
 
 'tim.vertical.line.'([H]) ->
     [H2] = typechecks:throw_std_ints([H]),
     HTML = "<div class='hn_sld_vertline'></div>",
-    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
-    Js_R = ["Generic.reload();"],
-    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js_R = ["HN.NewWebComponents.reload();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
     {resize, {1, H2, Incs}, HTML}.
 
@@ -380,9 +399,9 @@ split(List) ->
     [W2] = typechecks:throw_std_ints([W]),
     Strings = typechecks:throw_html_box_contents(Rest),
     Menu = 'tim.menu1'(Strings, "hn_sld_menu sld_menu1", []),
-    Js   = ["http://soundslikedesign.co.uk/HyperNumbers/media/js/generic.js"],
-    Js_R = ["Generic.reload();"],
-    CSS  = ["http://www.soundslikedesign.co.uk/HyperNumbers/media/style/generic.css"],
+    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js_R = ["HN.NewWebComponents.reload();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
     {preview, {"Menu " ++ hd(Strings), W2, 3, Incs}, Menu}.
 
@@ -417,16 +436,19 @@ unzip([], Acc1, Acc2) ->
 unzip([Hdr, Tb | Rest], Acc1, Acc2) ->
     unzip(Rest, [Hdr | Acc1], [Tb | Acc2]).
 
-make_headers([], _N, Acc) ->
+make_headers([], _Name, _N, Acc) ->
     "<ul>" ++ lists:reverse(Acc) ++ "</ul>";
-make_headers([H | T], N, Acc) ->
-    NewAcc = "<li><a href='#hn_sld_tabs-" ++ integer_to_list(N) ++ "'>"
+make_headers([H | T], Name, N, Acc) ->
+    NewAcc = "<li><a href='#hn_sld_tabs-" ++ Name ++ "-"
+        ++ integer_to_list(N) ++ "'>"
         ++ H ++ "</a></li>",
-    make_headers(T, N + 1, [NewAcc | Acc]).
+    make_headers(T, Name, N + 1, [NewAcc | Acc]).
 
-make_tabs([], _N, Acc) -> lists:reverse(Acc);
-make_tabs([H | T], N, Acc) ->
-    NewAcc = "<div id='hn_sld_tabs-" ++ integer_to_list(N) ++ "'>"
+make_tabs([], _Name, _Class, _N, Acc) -> lists:reverse(Acc);
+make_tabs([H | T], Name, Class, N, Acc) ->
+    NewAcc = "<div id='hn_sld_tabs-" ++ Name ++ "-"
+        ++ integer_to_list(N) ++ "' "
+        ++ "class='" ++ Class ++ "'>"
         ++ "<p>" ++ H ++ "</p></div>",
-    make_tabs(T, N + 1, [NewAcc | Acc]).
+    make_tabs(T, Name, Class, N + 1, [NewAcc | Acc]).
 
