@@ -254,7 +254,8 @@ menu1([H | T], Cl, Acc) ->
     HTML = lists:flatten(["<div id='hn_sld_tabs-" ++ Name ++
                           "' class='hn_sld_tabs'>",
                           Headers, Tabs, "</div>"]),
-    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js   = ["/webcomponents/hn.newwebcomponents.js",
+           "/webcomponents/jquery.tabs.js"],
     Js_R = ["HN.NewWebComponents.reload_tabs();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},

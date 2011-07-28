@@ -238,20 +238,20 @@ Tabs
 .ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; }
 .ui-tabs .ui-tabs-hide { display: none !important; }
 
-#hn_sld_tabs { border: 1px solid #3f3f3f;padding: 0; margin: 0}
-#hn_sld_tabs ul { height:37px; border-bottom: 4px solid #3f3f3f;  padding: 0; margin: 0 }
-#hn_sld_tabs ul li { float: left;}
+.hn_sld_tabs { border: 1px solid #3f3f3f;padding: 0; margin: 0}
+.hn_sld_tabs ul { height:37px; border-bottom: 4px solid #3f3f3f;  padding: 0; margin: 0 }
+.hn_sld_tabs ul li { float: left;}
 
-#hn_sld_tabs ul a:link, #hn_sld_tabs ul a:visited { border: none; display:block; background-color: #fff; color: #3f3f3f; border-left: 1px solid #3f3f3f; margin: 4px 0; font-size: 1.5em;}
+.hn_sld_tabs ul a:link, #hn_sld_tabs ul a:visited { border: none; display:block; background-color: #fff; color: #3f3f3f; border-left: 1px solid #3f3f3f; margin: 4px 0; font-size: 1.5em;}
 
-#hn_sld_tabs ul li.ui-tabs-selected { }
-#hn_sld_tabs ul li.ui-tabs-selected a { color: #fff; background-color: #3f3f3f;}
+.hn_sld_tabs ul li.ui-tabs-selected { }
+.hn_sld_tabs ul li.ui-tabs-selected a { color: #fff; background-color: #3f3f3f;}
 
 /* Extra for more accurate style */
-#hn_sld_tabs { border: none}
-#hn_sld_tabs ul { border: 1px solid #3f3f3f; margin-bottom: 1px;  }
+.hn_sld_tabs { border: none}
+.hn_sld_tabs ul { border: 1px solid #3f3f3f; margin-bottom: 1px;  }
 .ui-tabs  .ui-tabs-panel { border-width: 1px; border-color: #3f3f3f; border-style: solid; border-top-width: 4px;}
-#hn_sld_tabs ul li.ui-tabs-selected a {
+.hn_sld_tabs ul li.ui-tabs-selected a {
     background-color: #3F3F3F;
     color: #DEDEDE;
     margin: 0;
@@ -259,27 +259,27 @@ Tabs
 	padding-bottom: 14px;;
 }
 
-#hn_sld_tabs ul.ui-tabs-nav { height: 51px}
+.hn_sld_tabs ul.ui-tabs-nav { height: 51px}
 
-#hn_sld_tabs ul.ui-tabs-nav li a { padding: 11px 11px 9px;;}
+.hn_sld_tabs ul.ui-tabs-nav li a { padding: 11px 11px 9px;;}
 
-#hn_sld_tabs ul.ui-tabs-nav a:link, #hn_sld_tabs ul.ui-tabs-nav a:visited { margin: 0;}
-#hn_sld_tabs ul.ui-tabs-nav a:hover { color: #7f7f7f;}
-#hn_sld_tabs ul li {
+.hn_sld_tabs ul.ui-tabs-nav a:link, #hn_sld_tabs ul.ui-tabs-nav a:visited { margin: 0;}
+.hn_sld_tabs ul.ui-tabs-nav a:hover { color: #7f7f7f;}
+.hn_sld_tabs ul li {
     float: left;
     overflow: hidden;
 }
-#hn_sld_tabs ul li.ui-tabs-selected a:hover { color: #fff}
+.hn_sld_tabs ul li.ui-tabs-selected a:hover { color: #fff}
 
-#hn_sld_tabs ul li.ui-tabs-selected a  { padding-bottom: 14px;}
+.hn_sld_tabs ul li.ui-tabs-selected a  { padding-bottom: 14px;}
 
-#hn_sld_tabs div.ui-tabs-panel { padding: 0; height: 200px; overflow: auto;}
-#hn_sld_tabs div.ui-tabs-panel p {
+.hn_sld_tabs div.ui-tabs-panel { padding: 0; height: 200px; overflow: auto;}
+.hn_sld_tabs div.ui-tabs-panel p {
 	font-size: 1em;
     margin: 11px;
 }
 
-#hn_sld_tabs div.ui-tabs-panel img { margin: 11px }
+.hn_sld_tabs div.ui-tabs-panel img { margin: 11px }
 
 
 /********************************
@@ -299,7 +299,7 @@ div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ru
 
 /* Set the height ad allow for overflow
 */
-#hn_sld_tabs div.ui-tabs-panel {
+.hn_sld_tabs div.ui-tabs-panel {
     height: 200px;
     left: 0;
     overflow: auto;
