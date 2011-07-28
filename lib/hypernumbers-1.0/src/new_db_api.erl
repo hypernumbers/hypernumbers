@@ -979,7 +979,7 @@ tell_front_end(Type, #refX{path = P} = RefX)
     Fun = fun(X) ->
                   case X of
                       {_, #xrefX{path = P}, _} -> false;
-                      _                       -> true
+                      _                        -> true
                   end
           end,
     Extra = lists:filter(Fun, Notifications),

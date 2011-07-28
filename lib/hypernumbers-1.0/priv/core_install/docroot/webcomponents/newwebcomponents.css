@@ -273,7 +273,7 @@ Tabs
 
 .hn_sld_tabs ul li.ui-tabs-selected a  { padding-bottom: 14px;}
 
-.hn_sld_tabs div.ui-tabs-panel { padding: 0; height: 200px; overflow: auto;}
+.hn_sld_tabs div.ui-tabs-panel { padding: 0; overflow: auto;}
 .hn_sld_tabs div.ui-tabs-panel p {
 	font-size: 1em;
     margin: 11px;
@@ -300,12 +300,11 @@ div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ru
 /* Set the height ad allow for overflow
 */
 .hn_sld_tabs div.ui-tabs-panel {
-    height: 200px;
     left: 0;
     overflow: auto;
     padding: 0;
     position: absolute;
-    width: 99.8%;
+    width: 99.5%;
 }
 
 // Generic boxes
