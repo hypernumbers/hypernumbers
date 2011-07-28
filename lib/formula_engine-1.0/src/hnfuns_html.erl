@@ -332,7 +332,7 @@ split(List) ->
     check_size2(W, H, 8),
     CHBox = "hn_box_height_" ++ integer_to_list(H),
     Class2 = Class ++ " " ++ CHBox,
-    CH = "hn_box_height_" ++ integer_to_list(H - 8 + 3),
+    CH = "hn_box_height_" ++ integer_to_list(H - 4),
     Box = "<div class='"  ++ Class2 ++ "'>"
         ++ "<h4>" ++ H1 ++ "</h4>"
         ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
@@ -346,7 +346,7 @@ split(List) ->
     check_size2(W, H, 6),
     CHBox = "hn_box_height_" ++ integer_to_list(H),
     Class2 = Class ++ " " ++ CHBox,
-    CH = "hn_box_height_" ++ integer_to_list(H - 6 + 3),
+    CH = "hn_box_height_" ++ integer_to_list(H - 3),
     Box = "<div class='" ++ Class2 ++ "'>"
         ++ "<h4>" ++ H1 ++ "</h4>"
         ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
@@ -366,7 +366,7 @@ split(List) ->
 'tim.headline.'([W, Text]) ->
     [W2] = typechecks:throw_std_ints([W]),
     [T2] = typechecks:throw_std_strs([Text]),
-    Height = 2,
+    Height = 3,
     check_size(W2, Height),
     Class = "hn_sld_headline" ++ " hn_box_width_" ++ integer_to_list(W2)
         ++ " hn_box_height_2",
