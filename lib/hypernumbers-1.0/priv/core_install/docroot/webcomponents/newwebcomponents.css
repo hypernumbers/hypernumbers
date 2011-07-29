@@ -304,7 +304,7 @@ div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ru
     overflow: auto;
     padding: 0;
     position: absolute;
-    width: 99.5%;
+    width: auto;
 }
 
 // Generic boxes
