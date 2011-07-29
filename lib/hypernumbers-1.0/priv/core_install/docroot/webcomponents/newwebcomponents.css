@@ -271,8 +271,6 @@ Tabs
 }
 .hn_sld_tabs ul li.ui-tabs-selected a:hover { color: #fff}
 
-.hn_sld_tabs ul li.ui-tabs-selected a  { padding-bottom: 14px;}
-
 .hn_sld_tabs div.ui-tabs-panel { width: auto; padding: 0; overflow: auto;}
 .hn_sld_tabs div.ui-tabs-panel p {
 	font-size: 1em;
