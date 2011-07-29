@@ -128,7 +128,7 @@ div.hn_sld_alert { border: 1px solid #3f3f3f;;}
 div.hn_sld_alert h4, div.hn_sld_alert h6 { background-color: #f6f6f6; padding: 11px;  margin: 0; overflow: hidden;}
 div.hn_sld_alert h4 { border-bottom: 1px solid #999; font-size: 1.5em; background: #f6f6f6 url("/img/alert_0.png") no-repeat right center;}
 div.hn_sld_alert p { margin: 11px; font-size: 1em;}
-div.hn_sld_alert h6 { padding: 11px; font-size:0.95em;}
+div.hn_sld_alert h6 { padding: 11px; font-size:0.95em; border-top: 1px solid #999999;}
 
 div.hn_sld_level1 h4 { background-image: url("/img/alert_1.png");}
 div.hn_sld_level2 { border-color: #F5993D;}
@@ -144,6 +144,7 @@ Box standard
 **********************************************/
 div.hn_sld_box { border: 1px solid #3f3f3f; text-align:left;}
 div.hn_sld_box h4 { border-bottom: 1px solid #999; font-size: 1.5em; display: block; padding: 11px 0px; margin: 0 11px;}
+div.hn_sld_box div { margin:0 11px; }
 div.hn_sld_box p { margin: 11px; font-size: 1em; clear:both;}
 div.hn_sld_box h6 {font-size: 0.95em; display: block; padding: 10px 0 11px; margin: 0 11px; border-top: 1px solid #999;}
 
@@ -153,7 +154,7 @@ div.hn_sld_box h6 {font-size: 0.95em; display: block; padding: 10px 0 11px; marg
 Headline
 
 **********************************************/
-h3.hn_sld_headline { border-bottom: 1px solid #3f3f3f; font-size: 1.8em; display: inline; padding-bottom: 6px; text-align:left;}
+h3.hn_sld_headline { border-bottom: 2px solid #3f3f3f; font-size: 2.2em; display: inline-block; padding-bottom: 3px; text-align:left;}
 
 
 /**********************************************
@@ -175,8 +176,7 @@ Ruledbox
 div.hn_sld_ruledbox { padding: 11px 0; text-align:left; border: 1px solid #3F3F3F;}
 div.hn_sld_ruledbox h4 {font-size: 1.5em; display: block; border-bottom: 1px solid #999;margin: 0 11px; padding: 11px 0 }
 div.hn_sld_ruledbox p { margin: 11px; font-size: 1em; clear:both;}
-div.hn_sld_ruledbox h6 {font-size: 0.95em;
-    padding: 11px;}
+div.hn_sld_ruledbox h6 {font-size: 0.95em; padding: 11px; border-top 1px solid #999999;}
 
 
 /**********************************************
@@ -232,10 +232,10 @@ Tabs
 .ui-tabs .ui-tabs-nav li { list-style: none; float: left; position: relative; border-bottom: 0 !important; padding: 0; white-space: nowrap; margin-left: -1px; }
 
 .ui-tabs .ui-tabs-nav li a { float: left; padding: 6px 12px; text-decoration: none; }
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; padding-bottom: 1px; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; }
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
 .ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
-.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; }
+.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; z-index: 0}
 .ui-tabs .ui-tabs-hide { display: none !important; }
 
 .hn_sld_tabs { border: 1px solid #3f3f3f;padding: 0; margin: 0}
@@ -249,19 +249,19 @@ Tabs
 
 /* Extra for more accurate style */
 .hn_sld_tabs { border: none}
-.hn_sld_tabs ul { border: 1px solid #3f3f3f; margin-bottom: 1px;  }
+.hn_sld_tabs ul { border: 1px solid #3f3f3f; margin-bottom: 0px;  }
 .ui-tabs  .ui-tabs-panel { border-width: 1px; border-color: #3f3f3f; border-style: solid; border-top-width: 4px;}
 .hn_sld_tabs ul li.ui-tabs-selected a {
     background-color: #3F3F3F;
     color: #DEDEDE;
     margin: 0;
-    padding-top:10px;
-	padding-bottom: 14px;;
+    /*padding-top:10px;
+	padding-bottom: 14px;;*/;
 }
 
-.hn_sld_tabs ul.ui-tabs-nav { height: 51px}
+.hn_sld_tabs ul.ui-tabs-nav { height: 53px}
 
-.hn_sld_tabs ul.ui-tabs-nav li a { padding: 11px 11px 9px;;}
+.hn_sld_tabs ul.ui-tabs-nav li a { padding: 11px;}
 
 .hn_sld_tabs ul.ui-tabs-nav a:link, #hn_sld_tabs ul.ui-tabs-nav a:visited { margin: 0;}
 .hn_sld_tabs ul.ui-tabs-nav a:hover { color: #7f7f7f;}
@@ -271,9 +271,7 @@ Tabs
 }
 .hn_sld_tabs ul li.ui-tabs-selected a:hover { color: #fff}
 
-.hn_sld_tabs ul li.ui-tabs-selected a  { padding-bottom: 14px;}
-
-.hn_sld_tabs div.ui-tabs-panel { padding: 0; height: 200px; overflow: auto;}
+.hn_sld_tabs div.ui-tabs-panel { width: auto; padding: 0; overflow: auto;}
 .hn_sld_tabs div.ui-tabs-panel p {
 	font-size: 1em;
     margin: 11px;
@@ -288,24 +286,23 @@ FIXES MAY BE FOR DELETE
 
 ******************************************/
 
-div.hn_sld_alert, div.hn_sld_box, div.hn_sld_plainbox, div.hn_sld_ruledbox { margin: 0; padding: 0;}
+div.hn_sld_alert, div.hn_sld_box, div.hn_sld_plainbox, div.hn_sld_ruledbox { margin: 0; padding: 0; height: auto;}
 
 div.hn_sld_alert h4, div.hn_sld_plainbox h4, div.hn_sld_ruledbox h4 {margin: 0;  padding: 11px; display: block; }
 
 
 div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ruledbox div { overflow: auto;}
 
-.hn_sld_footer { height: 33px; }
+.hn_sld_footer { height: 11px; }
 
-/* Set the height ad allow for overflow
+/* Set the height and allow for overflow
 */
 .hn_sld_tabs div.ui-tabs-panel {
-    height: 200px;
     left: 0;
     overflow: auto;
     padding: 0;
     position: absolute;
-    width: 99.8%;
+    width: auto;
 }
 
 // Generic boxes
