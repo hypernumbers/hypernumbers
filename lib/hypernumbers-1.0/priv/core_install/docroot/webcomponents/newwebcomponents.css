@@ -235,7 +235,7 @@ Tabs
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; }
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
 .ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
-.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; z-index: -1}
+.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; z-index: 0}
 .ui-tabs .ui-tabs-hide { display: none !important; }
 
 .hn_sld_tabs { border: 1px solid #3f3f3f;padding: 0; margin: 0}
@@ -249,7 +249,7 @@ Tabs
 
 /* Extra for more accurate style */
 .hn_sld_tabs { border: none}
-.hn_sld_tabs ul { border: 1px solid #3f3f3f; margin-bottom: 1px;  }
+.hn_sld_tabs ul { border: 1px solid #3f3f3f; margin-bottom: 0px;  }
 .ui-tabs  .ui-tabs-panel { border-width: 1px; border-color: #3f3f3f; border-style: solid; border-top-width: 4px;}
 .hn_sld_tabs ul li.ui-tabs-selected a {
     background-color: #3F3F3F;
@@ -259,7 +259,7 @@ Tabs
 	padding-bottom: 14px;;*/;
 }
 
-.hn_sld_tabs ul.ui-tabs-nav { height: 51px}
+.hn_sld_tabs ul.ui-tabs-nav { height: 53px}
 
 .hn_sld_tabs ul.ui-tabs-nav li a { padding: 11px;}
 
@@ -273,7 +273,7 @@ Tabs
 
 .hn_sld_tabs ul li.ui-tabs-selected a  { padding-bottom: 14px;}
 
-.hn_sld_tabs div.ui-tabs-panel { padding: 0; overflow: auto;}
+.hn_sld_tabs div.ui-tabs-panel { width: auto; padding: 0; overflow: auto;}
 .hn_sld_tabs div.ui-tabs-panel p {
 	font-size: 1em;
     margin: 11px;
@@ -288,7 +288,7 @@ FIXES MAY BE FOR DELETE
 
 ******************************************/
 
-div.hn_sld_alert, div.hn_sld_box, div.hn_sld_plainbox, div.hn_sld_ruledbox { margin: 0; padding: 0; height: 99%;}
+div.hn_sld_alert, div.hn_sld_box, div.hn_sld_plainbox, div.hn_sld_ruledbox { margin: 0; padding: 0; height: auto;}
 
 div.hn_sld_alert h4, div.hn_sld_plainbox h4, div.hn_sld_ruledbox h4 {margin: 0;  padding: 11px; display: block; }
 
