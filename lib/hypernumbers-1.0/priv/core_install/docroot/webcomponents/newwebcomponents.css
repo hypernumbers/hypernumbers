@@ -271,8 +271,6 @@ Tabs
 }
 .hn_sld_tabs ul li.ui-tabs-selected a:hover { color: #fff}
 
-.hn_sld_tabs ul li.ui-tabs-selected a  { padding-bottom: 14px;}
-
 .hn_sld_tabs div.ui-tabs-panel { width: auto; padding: 0; overflow: auto;}
 .hn_sld_tabs div.ui-tabs-panel p {
 	font-size: 1em;
@@ -304,7 +302,7 @@ div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ru
     overflow: auto;
     padding: 0;
     position: absolute;
-    width: 99.5%;
+    width: auto;
 }
 
 // Generic boxes
