@@ -370,7 +370,13 @@ authorize_p3(Site, Path, Env) ->
                 _                        -> denied
             end;
         % jakub's clause
-        denied           -> denied
+        denied           -> 
+			case Env#env.body of
+				[{"type","user_defined_read"} | _T]		-> allowed;
+				[{"type","user_defined_delete"} | _T]	-> allowed;
+				[{"type","user_defined_write"} | _T]	-> allowed;
+				_										-> denied
+			end
     end.
 
 authorize_upload(#refX{site = S, path = P}, _Qry,  #env{uid = Uid}) ->
