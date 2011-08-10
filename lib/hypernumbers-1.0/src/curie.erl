@@ -18,33 +18,28 @@
         %~ ]).
 
 %%TODO
-	%~ find out how to send the whole page (encoded as a json struct) to the browser, so it can be displayed.
 %%TODO
 
-create_user_fn(Entry)	->
-	%~ io:format("Entry is: ~p~n", [Entry]),
-	[_H | T] = Entry,
-	[{_, A}] = T,
-	{_, B} = A,
-	[{_,Site},{_,Page},{_,Function_Name},{_,Function_Description},{_,Function_Output_Value},{_,C}] = B,
-	{_, Parameters_Array} = C,
-	{ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues} = get_parameters_data(Parameters_Array, [], [], []),
+create_user_fn(Site, Function_Name, Page, Function_Description, Output_Value, Parameters_Array)	->
+	{array, Parameters} = Parameters_Array,
+	{ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues} = get_parameters_data(Parameters, [], [], []),
 	Page_Array = re:split(Page, "/", [{return,list}]),
 	Page_Array2 = refine_string_list(Page_Array, []),
 	%~ io:format("Site is: ~p~nPage is: ~p~nFunction_Name is: ~p~nFunction_Description is: ~p~nFunction_Output_Value is: ~p~nListOfParameterNames is: ~p~nListOfParameterDescriptions is: ~p~nListOfParameterValues is: ~p~n", [Site, Page_Array2, Function_Name, Function_Description, Function_Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues]),
 	
-	create_user_fn2(Site, Page_Array2, Function_Name, Function_Description, Function_Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues).
+	create_user_fn2(Site, Page_Array2, Function_Name, Function_Description, Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues).
 	
 	
 get_parameters_data([], Names, Descriptions, Values)	->
 	{lists:reverse(Names), lists:reverse(Descriptions), lists:reverse(Values)};
 
 get_parameters_data([H | T], Names, Descriptions, Values)	->
-	{_,A} = H,
-	[B,C,D] = A,
-	{_, Nm} = B,
-	{_, Dsc} = C,
-	{_, Val} = D,
+	io:format("H is: ~p~n", [H]),
+	{struct, Args} = H,
+	io:format("Args are: ~p~n", [Args]),
+	Nm	= kfind("name", Args),
+	Dsc	= kfind("description", Args),
+	Val	= kfind("value", Args),
 	get_parameters_data(T, [Nm | Names], [Dsc | Descriptions], [Val | Values]).
 	
 %~ curie:create_user_fn2("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", "b8", ["b5", "b6"], ["c5", "c6"], ["f5", "f6"]).
@@ -52,7 +47,8 @@ create_user_fn2(Site, Page, Name, Description, OutputValue, ListOfParameterNames
     FUNCTION_NAME = get_cell_s_value(Name, Site, Page),
     AST = build_fun(Site, Page, OutputValue, ListOfParameterValues),
 	case AST of
-		{error, Message}	-> io:format("error, ~p~n", [Message]);
+		{error, Message}	-> 	io:format("error, ~p~n", [Message]),
+								{error, Message};
 		_					->
 			PAGE_S_JSON = get_page_s_json(Site, Page),
 			WIZARD_TEMPLATE = make_template_for_fn_wizard(Site, Page, Name,
@@ -63,7 +59,8 @@ create_user_fn2(Site, Page, Name, Description, OutputValue, ListOfParameterNames
 			DB_Entry = #user_fns{name = FUNCTION_NAME, ast = AST, pagejson = PAGE_S_JSON, wizardjson = WIZARD_S_JSON},
 			new_db_api:write_user_fn(Site, DB_Entry),
 			io:format("ok~n~p~n", [DB_Entry])
-	end.
+	end,
+	{ok, "create_user_fn"}.
 			
 %~ curie:make_template_for_fn_wizard("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", ["b5", "b6"], ["c5", "c6"]).
 %~ curie:make_template_for_fn_wizard("http://hypernumbers.dev:9000", ["page2"],"b1", "b2", ["b5"], ["c5"]).
@@ -105,22 +102,14 @@ get_page_s_json(Site, Path) ->
     io_lib:format("~s", [lists:flatten(Page)]).
 
 
-read_user_fn(Entry)	->
-	[_H | T] = Entry,
-	[{_, A}] = T,
-	{_, B} = A,		
-	[{_,Site},{_,Function_Name}] = B,
-	[{_, FUNCTION_NAME, AST, PAGE_S_JSON, WIZARD_S_JSON}] = new_db_api:read_user_fn(Site, Function_Name),
-	io:format("ok, read~n").
+read_user_fn(Site, Name)	->
+	Result = new_db_api:read_user_fn(Site, Name),
+	io:format("Read User Fn, Result is: ~p~n", [Result]),
+	{ok, "read_user_fn"}.
 	
-delete_user_fn(Entry)	->
-	[_H | T] = Entry,
-	[{_, A}] = T,
-	{_, B} = A,
-	[{_,Site},{_,Function_Name}] = B,
-	new_db_api:delete_user_fn(Site, Function_Name),
-	io:format("ok, delete~n").
-
+delete_user_fn(Site, Name)	->
+	new_db_api:delete_user_fn(Site, Name),
+	{ok, "delete_user_fn"}.
 
 %~ curie:build_fun("http://hypernumbers.dev:9000", ["function"], "b8", ["b1", "b2", "b3"]).
 %~ curie:build_fun("http://hypernumbers.dev:9000", ["page2"]).
@@ -321,3 +310,8 @@ refine_string_list([H | T], Result)	->
 	
 refine_string_list([], Result)	->
 	lists:reverse(Result).
+
+-spec kfind(string(), list()) -> any().
+kfind(Key, List) ->
+    {Key, Val} = lists:keyfind(Key, 1, List),
+    Val.
