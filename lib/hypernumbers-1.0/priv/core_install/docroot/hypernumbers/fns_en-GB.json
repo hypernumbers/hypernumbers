@@ -4219,6 +4219,34 @@
          ]
     },
     {
+        "fn": "html.zsubmenu",
+        "category": "HN Navigation",
+        "desc": "Creates sub menus for use in HTML menu from z-queries.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/html-zsubmenu.html",
+         "args": [
+             {
+                "name": "Title",
+                "desc": "The title of the menu item",
+                "type": "finite"
+             },
+             {
+                "name": "Z-Query",
+                "desc": "A z-query to build the submenu from.",
+                "type": "finite"
+             },
+             {
+                 "name": "Style",
+                 "desc": "An integer between 0 and 2",
+                 "type": "optional"
+             }
+         ]
+    },
+    {
         "fn": "link",
         "category": "HN Navigation",
         "desc": "Make a link to a webpage",
