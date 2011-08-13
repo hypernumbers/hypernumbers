@@ -25,75 +25,70 @@ test_write(Site, Page, Name, Description, OutputValue, ListOfParameterNames, Lis
     Params = get_parameters(Site, Page, ListOfParameterNames,
                             ListOfParameterDescriptions,
                             ListOfParameterValues, []),
-    Entry = {struct,[	{"type","user_defined_write"},
-                      {"properties",
-                       {struct,[	{"site", Site},
-                                  {"page", String_Page},
-                                  {"fn_name",Name},
-                                  {"fn_description", Description},
-                                  {"fn_output_value", OutputValue},
-                                  {"fn_parameters", {array, Params}}
-                                 ]}}
-                     ]},
-
+    
+	Entry = {struct,	[{	"write_user_fn",
+										{struct,	[	{site, Site},
+														{page, String_Page},
+														{name, Name},
+														{description, Description},
+														{output_value, OutputValue},
+														{parameters, {array, Params}}
+										]}
+					}]
+			},    
+    
     Json_Entry = lists:flatten(mochijson:encode(Entry)),
     % Cookie lives only 7 days!
-    Auth = "test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|"
-        ++ "63478978880|e50fa7683a5852dbd57fc4b62406c3b4",
+    Auth = "test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|63480704413|de3b4a5f22afae3b4452c176934922dd",
     httpc:request(post, {"http://hypernumbers.dev:9000/page1/",
                          [{"host","hypernumbers.dev:9000"},
                           {"accept", "application/json"},
                           {"cookie", Auth}],
                          "", Json_Entry }, [], []).
+	
 
 %% curie_test:test_delete("http://hypernumbers.dev:9000", "user.normalise").
 test_delete(Site, Function_Name)	->
-		Entry = {struct,[	{"type","user_defined_delete"},
-                      {"properties",
-                       {struct,[	{"site", Site},
-                                  {"function_name", Function_Name}
-                                 ]
-                       }
-                      }
-                     ]},
-
+	Entry = {struct,	[{	"delete_user_fn",
+										{struct,	[	{site,Site},
+														{name,Function_Name}
+										]}
+					}]
+			},
     Json_Entry = lists:flatten(mochijson:encode(Entry)),
     % Cookie lives only 7 days!
-    Auth = "test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|"
-        ++ "63478978880|e50fa7683a5852dbd57fc4b62406c3b4",
+    Auth = "test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|63480704413|de3b4a5f22afae3b4452c176934922dd",
     httpc:request(post, {"http://hypernumbers.dev:9000/page1/",
                          [{"host","hypernumbers.dev:9000"},
                           {"accept", "application/json"},
                           {"cookie", Auth}],
                          "", Json_Entry }, [], []).
-
+	
 
 %% curie_test:test_read("http://hypernumbers.dev:9000", "user.normalise").
 test_read(Site, Function_Name)	->
-    Entry = {struct,[	{"type","user_defined_read"},
-                      {"properties",
-                       {struct,[	{"site", Site},
-                                  {"function_name", Function_Name}
-                                 ]
-                       }
-                      }
-                     ]},
+    Entry = {struct,	[{	"read_user_fn",
+											{struct,	[	{site,Site},
+															{name,Function_Name}
+											]}
+						}]
+			},
 
     Json_Entry = lists:flatten(mochijson:encode(Entry)),
     % Cookie lives only 7 days!
-    Auth = "test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|"
-        ++ "63478978880|e50fa7683a5852dbd57fc4b62406c3b4",
+    Auth = "test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|63480704413|de3b4a5f22afae3b4452c176934922dd",
     httpc:request(post, {"http://hypernumbers.dev:9000/page1/",
                          [{"host","hypernumbers.dev:9000"},
                           {"accept", "application/json"},
                           {"cookie", Auth}],
                          "", Json_Entry }, [], []).
-
+                         
+	
 get_parameters(_Site, _Page, [], [], [], Parameters)	->
     lists:reverse(Parameters);
 
 get_parameters(Site, Page, [H | T], [H2 | T2], [H3 | T3], Parameters)	->
-    Parameter = {struct, [{"name", H}, {"desc", H2}, {"value", H3}]},
+    Parameter = {struct, [{name, H}, {description, H2}, {value, H3}]},
     get_parameters(Site, Page, T, T2, T3, [Parameter | Parameters]).
 
 get_page([], String_Page)	->
