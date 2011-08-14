@@ -271,9 +271,11 @@ transform("tim.menu." ++ R, Args) ->
     {list_to_atom("tim.menu."), [R | Args]};
 transform("html.menu." ++ R, Args) ->
     {list_to_atom("html.menu."), [R | Args]};
-% this clause needs to be captured to stop the next one capturing it!
+% thse clauses needs to be captured to stop the next one capturing it!
 transform("html.submenu", Args) ->
     {list_to_atom("html.submenu"), Args};
+transform("html.zsubmenu", Args) ->
+    {list_to_atom("html.zsubmenu"), Args};
 %% order matters to prevent premature matching!
 transform("html." ++ R, Args) ->
     {W, H} = get_dims(R),

@@ -369,7 +369,14 @@ authorize_p3(Site, Path, Env) ->
                 [{"postwebcontrols", _}] -> allowed;
                 _                        -> denied
             end;
-        denied           -> denied
+        % jakub's clause
+        denied           -> 
+			case Env#env.body of
+				[{"read_user_fn", _Args}]		-> allowed;
+				[{"delete_user_fn", _Args}]	-> allowed;
+				[{"write_user_fn", _Args}]	-> allowed;
+				_										-> denied
+			end
     end.
 
 authorize_upload(#refX{site = S, path = P}, _Qry,  #env{uid = Uid}) ->
@@ -1070,14 +1077,43 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
             json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
     end;
 
-ipost(_Ref, _Qry, _Env=#env{body= [{"type", "user_defined_write"} | _T] = Json_Entry}) ->
-	curie:create_user_fn(Json_Entry);
-
-ipost(_Ref, _Qry, _Env=#env{body= [{"type", "user_defined_read"} | _T] = Json_Entry}) ->
-	curie:read_user_fn(Json_Entry);
-
-ipost(_Ref, _Qry, _Env=#env{body= [{"type", "user_defined_delete"} | _T] = Json_Entry}) ->
-	curie:delete_user_fn(Json_Entry);
+ipost(#refX{site = Site, path = _P}, _Qry,
+		Env=#env{body = [{"read_user_fn", Entry}], uid = Uid}) ->
+	{struct, Args} = Entry,
+	case hn_web_admin:rpc(Uid, Site, "read_user_fn", Args) of
+        {ok, Return}	-> json(Env, Return);
+        {error, Reason} -> ?E("invalid curie request ~p~n", [Reason]),
+                           json(Env, {struct, [{"failure", Reason}]})
+    end;
+	
+	
+ipost(#refX{site = Site, path = _P}, _Qry,
+		Env=#env{body = [{"delete_user_fn", Entry}], uid = Uid}) ->
+	{struct, Args} = Entry,
+	case hn_web_admin:rpc(Uid, Site, "delete_user_fn", Args) of
+        {ok, Return}	-> json(Env, Return);
+        {error, Reason} -> ?E("invalid curie request ~p~n", [Reason]),
+                           json(Env, {struct, [{"failure", Reason}]})
+    end;
+    
+    
+ipost(#refX{site = Site, path = _P}, _Qry,
+		Env=#env{body = [{"write_user_fn", Entry}], uid = Uid}) ->
+	{struct, Args} = Entry,
+	case hn_web_admin:rpc(Uid, Site, "write_user_fn", Args) of
+        {ok, Return}	-> json(Env, Return);
+        {error, Reason} -> ?E("invalid curie request ~p~n", [Reason]),
+                           json(Env, {struct, [{"failure", Reason}]})
+    end;
+	
+%~ ipost(_Ref, _Qry, Env=#env{body= [{"type", "user_defined_read"} | _T] = Json_Entry}) ->
+    %~ Return = curie:read_user_fn(Json_Entry),
+    %~ json(Env, Return);
+%~ 
+%~ 
+%~ ipost(_Ref, _Qry, Env=#env{body= [{"type", "user_defined_delete"} | _T] = Json_Entry}) ->
+    %~ Return = curie:delete_user_fn(Json_Entry),
+    %~ json(Env, Return);
 
 ipost(Ref, Qry, Env) ->
     ?E("404~n-~p~n-~p~n",[Ref, Qry]),
