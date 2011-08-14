@@ -32,9 +32,15 @@ load_test() -> load_2(disc_only, all).
 
 load_test(Type) -> load_2(Type, all).
 
-test_zs() -> Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-             spawn(load_testing, log_memory, [Stamp]),
-             test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles).
+test_zs() ->
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    TraceFile = Dir ++ "test_zs" ++ Stamp ++ ".trace",
+    fprof:trace(start, TraceFile),
+    test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles),
+    fprof:trace(stop),
+    fprof:profile(file, TraceFile),
+    fprof:analyse([{dest, Dir ++ "test_zs" ++ Stamp ++ ".analysis"}]).
 
 test_z2(_Max, 0) -> ok;
 test_z2(Max, N) ->
@@ -50,7 +56,6 @@ test_z2(Max, N) ->
                                   EndTime - StartTime]),
     log(Msg, ?zquery_profile_page ++ ".csv"),
     test_z2(Max, N - 1).
-
 
 load_2(Type, Extent) ->
 
