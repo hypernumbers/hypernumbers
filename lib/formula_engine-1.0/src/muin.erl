@@ -742,10 +742,10 @@ sort1D_([], _Path, Type, Dict) -> Size = orddict:size(Dict),
                                       column -> Filled;
                                       row    -> [[X || [X] <- Filled]]
                                   end;
-sort1D_([#refX{obj = {cell, {X, Y}}} | T], Path, row, Dict) ->
+sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, row, Dict) ->
     V = do_cell(Path, Y, X, infinite),
     sort1D_(T, Path, row, orddict:append(X, V, Dict));
-sort1D_([#refX{obj = {cell, {X, Y}}} | T], Path, column, Dict) ->
+sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, column, Dict) ->
     V = do_cell(Path, Y, X, infinite),
     sort1D_(T, Path, column, orddict:append(Y, V, Dict)).
 
@@ -763,7 +763,7 @@ sort2D_([], _Path, {Type, Start, End}, Dict) ->
               {_, _}      -> fill2D(Dict, Type, Start, End, [])
           end,
     Ret;
-sort2D_([#refX{obj = {cell, {X, Y}}} | T], Path, Def, Dict) ->
+sort2D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, Def, Dict) ->
     SubDict = case orddict:is_key(X, Dict) of
                   true  -> orddict:fetch(X, Dict);
                   false -> orddict:new()
