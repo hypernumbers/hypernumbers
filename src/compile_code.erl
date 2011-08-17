@@ -147,6 +147,7 @@ make_release_boot_scripts() ->
 
 build_release() ->
     get_rel_file(),
+    get_debug_rel_file(),
     get_ssl_rel_file().
 
 get_root() ->
@@ -264,8 +265,15 @@ get_rel_file() ->
     ok   = systools:make_script("hypernumbers",
                                 [local,{path,["../lib/*/ebin","."]}]).
 
+get_debug_rel_file() ->
+    Rel = make_rel_file("DEBUG", "1.0", [kernel, stdlib, inets, ssl,
+                                             crypto, public_key, mnesia]),
+    ok  = file:write_file("debug.rel", fmt("~p.", [Rel])),
+    ok  = systools:make_script("debug", [local]).
+
 get_ssl_rel_file() ->
-    Rel = make_rel_file("START SSL", "1.0", [kernel, stdlib, inets, ssl, crypto, public_key]),
+    Rel = make_rel_file("START SSL", "1.0", [kernel, stdlib, inets, ssl,
+                                             crypto, public_key]),
     ok  = file:write_file("start_ssl.rel", fmt("~p.", [Rel])),
     ok  = systools:make_script("start_ssl", [local]).
 
