@@ -172,7 +172,7 @@ clause1([{plainpath, A}, {plainpath, "date"}, {plainpath, "dddd"}]) ->
 clause1([{plainpath, A}, {plainpath, "auto"}, {plainpath, "incr"},
          {plainpath, B}]) ->
     ok = check_not_num_prefix(B),
-    #numberedpage{template = A, type = increment, prefix = B};
+    #numberedpage{template = A, type = "increment", prefix = B};
 clause1([{plainpath, A}, {plainpath, "auto"}, {plainpath, "increment"},
          {plainpath, B}]) ->
     ok = check_not_num_prefix(B),
