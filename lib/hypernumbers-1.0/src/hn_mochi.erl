@@ -370,7 +370,7 @@ authorize_p3(Site, Path, Env) ->
                 _                        -> denied
             end;
         % jakub's clause
-        denied           -> 
+        denied           ->
 			case Env#env.body of
 				[{"read_user_fn", _Args}]		-> allowed;
 				[{"delete_user_fn", _Args}]	-> allowed;
@@ -1085,8 +1085,8 @@ ipost(#refX{site = Site, path = _P}, _Qry,
         {error, Reason} -> ?E("invalid curie request ~p~n", [Reason]),
                            json(Env, {struct, [{"failure", Reason}]})
     end;
-	
-	
+
+
 ipost(#refX{site = Site, path = _P}, _Qry,
 		Env=#env{body = [{"delete_user_fn", Entry}], uid = Uid}) ->
 	{struct, Args} = Entry,
@@ -1095,8 +1095,8 @@ ipost(#refX{site = Site, path = _P}, _Qry,
         {error, Reason} -> ?E("invalid curie request ~p~n", [Reason]),
                            json(Env, {struct, [{"failure", Reason}]})
     end;
-    
-    
+
+
 ipost(#refX{site = Site, path = _P}, _Qry,
 		Env=#env{body = [{"write_user_fn", Entry}], uid = Uid}) ->
 	{struct, Args} = Entry,
@@ -1105,12 +1105,12 @@ ipost(#refX{site = Site, path = _P}, _Qry,
         {error, Reason} -> ?E("invalid curie request ~p~n", [Reason]),
                            json(Env, {struct, [{"failure", Reason}]})
     end;
-	
+
 %~ ipost(_Ref, _Qry, Env=#env{body= [{"type", "user_defined_read"} | _T] = Json_Entry}) ->
     %~ Return = curie:read_user_fn(Json_Entry),
     %~ json(Env, Return);
-%~ 
-%~ 
+%~
+%~
 %~ ipost(_Ref, _Qry, Env=#env{body= [{"type", "user_defined_delete"} | _T] = Json_Entry}) ->
     %~ Return = curie:delete_user_fn(Json_Entry),
     %~ json(Env, Return);
@@ -1828,7 +1828,7 @@ expand_width(#refX{obj = {column, {X1, X2}}} = Ref, Attr, PAr, VAr) ->
     expand_width(NewRef2, Attr, PAr, VAr).
 
 make_name(Name, Ext) ->
-    Basename = filename:basename(Name, Ext),
+    Basename = string:to_lower(filename:basename(Name, Ext)),
     re:replace(Basename,"\s","_",[{return,list}, global]).
 
 expand_binaries({struct, [{"time", Time}, {"msgs", {array, List}}]}) ->
