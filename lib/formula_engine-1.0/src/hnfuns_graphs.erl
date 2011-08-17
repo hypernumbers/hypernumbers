@@ -13,6 +13,7 @@
 -export([
          'status.bar'/1,
          'sparkline.'/1,
+         'sparkbar.'/1,
          'xy.'/1,
          'speedo.'/1,
          'histogram.'/1,
@@ -58,6 +59,7 @@
 -define(axeslabpos, "chxp").
 -define(tickmarks,  "chxt").
 -define(speedolab,  "chl").
+-define(barwidths, "chbh").
 
 % definition of standard stuff
 -define(SPEEDOPARAMS, {array, [[0, 33, 66, 100]]}).
@@ -83,6 +85,7 @@
 -define(BOTVERT,      "bv").
 -define(NORMMARGINS,  "5,5,5,5").
 -define(BOTHAXES,     "x,y").
+-define(SPKBARWIDTHS, "9,5,5").
 
 -define(SPCOLOURS, [
                     "444444",
@@ -191,6 +194,15 @@ spark1(Size, Data, Colours) ->
                 {?piecolours, "0,444499,11.5"} | Opts]),
     {resize, {Width, Height, #incs{}}, Chart}.
 
+'sparkbar.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    Ret = chunk_sparkbar(List),
+    {DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
+    {resize, {Width, Height, #incs{}},
+     sparkbar1(Type, make_size(Width, Height), DataY, MinY, MaxY,
+              Colours, Rest, [], ?NOMARGIN)}.
+
 'histogram.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
@@ -233,6 +245,27 @@ spark1(Size, Data, Colours) ->
     {resize, {Width, Height, #incs{}},
      xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
+
+chunk_sparkbar([Type, Lines| List]) ->
+    [Type2, Lines2] = typechecks:throw_std_ints([Type, Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
+    {Orientation, MaxType, Type3} = case Type2 of
+        0 -> {vertical,   group, ?HIST_VGROUP};
+        1 -> {vertical,   stack, ?HIST_VSTACK};
+        2 -> {horizontal, group, ?HIST_HGROUP};
+        3 -> {horizontal, stack, ?HIST_HSTACK};
+        _ -> ?ERR_VAL
+    end,
+    {MinY, MaxY, DataY, Cols, Rest}
+        = case {Orientation, MaxType} of
+              {vertical,   group} -> chunk_hist(false, Lines2, List, ?NOMARGIN);
+              {horizontal, group} -> chunk_hist(false, Lines2, List, ?NOMARGIN);
+              {vertical,   stack} -> chunk_hist(true,  Lines2, List, ?NOMARGIN);
+              {horizontal, stack} -> chunk_hist(true,  Lines2, List, ?NOMARGIN);
+              _                   -> ?ERR_VAL
+          end,
+    DataY2 = "t:" ++ conv_data_rev(DataY),
+    {DataY2, MinY, MaxY, Type3, Cols, Rest}.
 
 chunk_histogram([Type, X, Lines| List]) ->
     [Type2, Lines2] = typechecks:throw_std_ints([Type, Lines]),
@@ -356,6 +389,13 @@ chunk_xy([Lines | List], LabType) ->
     Colours = allocate_colours(Lines, ?XYCOLOURS),
     {Data1, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
+
+sparkbar1(Type, Size, DataY, MinY, MaxY, Colours, [], Opts, Margin) ->
+    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
+    Width = {?barwidths, ?SPKBARWIDTHS},
+    AddOpts = lists:concat([[Width,Scale, Colours], Opts]),
+    NewOpts = opts(Type, Size, DataY),
+    make_chart(DataY, NewOpts, AddOpts).
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [], Opts, Margin) ->
     Axes = {?axes, ?LABLEAXES},
