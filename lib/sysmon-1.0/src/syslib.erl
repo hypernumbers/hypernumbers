@@ -216,22 +216,23 @@ limiter(Site) ->
     DBPid = whereis(DBSrv),
     RemSrv = hn_util:site_to_atom(Site, "_remoting"),
     RemPid = global:whereis_name(RemSrv),
+    ZinfSrv = hn_util:site_to_atom(Site, "_zinf"),
+    ZinfPid = global:whereis_name(ZinfSrv),
     DQ = hn_util:site_to_atom(Site, "&dirty_queue"),
-    limiter1(DBPid, RemPid, DQ).
+    limiter1(DBPid, RemPid, ZinfPid, DQ).
 
-limiter1(DBPid, RemPid, DQ) ->
+limiter1(DBPid, RemPid, ZinfPid, DQ) ->
     {message_queue_len, DBLen} = process_info(DBPid, message_queue_len),
     {message_queue_len, RemLen} = process_info(RemPid, message_queue_len),
+    {message_queue_len, ZinfLen} = process_info(ZinfPid, message_queue_len),
     DirtyQueue = mnesia:table_info(DQ, size),
-    io:format("DBLen is ~p RemLen is ~p DirtyQueue is ~p~n",
-              [DBLen, RemLen, DirtyQueue]),
     if
         DBLen > 100
+        orelse ZinfLen > 100
         orelse RemLen > 100
-        orelse DirtyQueue > 100  -> timer:sleep(1000),
-                                    limiter1(DBPid, RemPid, DQ);
-        true                     -> io:format("cleared...~n"),
-                                    ok
+        orelse DirtyQueue > 100  -> timer:sleep(100),
+                                    limiter1(DBPid, RemPid, ZinfPid, DQ);
+        true                     -> ok
     end.
 
 limit_global_mq(Site, Q) ->
