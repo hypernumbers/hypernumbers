@@ -135,14 +135,16 @@ get_seg(Path, Pages, Prefix) ->
                   {Hd, [T]} = lists:split(length(X) - 1, X),
                   case Hd of
                       Path -> case re:run(T, "^"++Prefix) of
-                                  {match, [{0, _N}]} ->
+                                  {match, [{0, N}]} ->
                                       % now check if the last seg is an int
                                       Last = hd(lists:reverse(X)),
-                                      case to_num(Last) of
+                                      MebbiesNum = lists:nthtail(N, Last),
+                                      case to_num(MebbiesNum) of
                                           {error, nan} -> Acc;
                                           I           -> [I | Acc]
                                       end;
                                   nomatch ->
+                                      io:format("No match~n"),
                                       Acc
                               end;
                       _    -> Acc
@@ -186,3 +188,4 @@ to_num(Str) when is_list(Str)   ->
         exit:
         _ -> {error, nan}
     end.
+
