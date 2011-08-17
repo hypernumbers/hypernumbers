@@ -227,7 +227,8 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
             ?rc_XF_V_ALIGN_CENTRED     -> "middle";
             ?rc_XF_V_ALIGN_BOTTOM      -> "text-bottom";
             ?rc_XF_V_ALIGN_JUSTIFIED   -> "middle"; % cant be done
-            ?rc_XF_V_ALIGN_DISTRIBUTED -> "middle"  % cant be done
+            ?rc_XF_V_ALIGN_DISTRIBUTED -> "middle"; % cant be done
+            _Trunc                     -> "middle"  % need to make it work
         end,
 
     VAlignCSS=[{'vertical-align',VAlignCSSbits}],
