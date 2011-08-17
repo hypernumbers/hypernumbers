@@ -85,7 +85,7 @@
 -define(BOTVERT,      "bv").
 -define(NORMMARGINS,  "5,5,5,5").
 -define(BOTHAXES,     "x,y").
--define(SPKBARWIDTHS, "9,5,5").
+-define(SPKBARWIDTHS, "4,1,2").
 
 -define(SPCOLOURS, [
                     "444444",
