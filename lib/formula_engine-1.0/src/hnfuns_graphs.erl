@@ -393,7 +393,7 @@ chunk_xy([Lines | List], LabType) ->
 sparkbar1(Type, Size, DataY, MinY, MaxY, Colours, [], Opts, Margin) ->
     Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
     Width = {?barwidths, ?SPKBARWIDTHS},
-    AddOpts = lists:concat([[Width,Scale, Colours], Opts]),
+    AddOpts = lists:concat([[Width, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts).
 
