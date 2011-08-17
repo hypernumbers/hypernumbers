@@ -14,10 +14,6 @@
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 
-% TODO - rest if chunking and sleep is still needed
--define(CHUNK, 1000).
--define(SLEEP, 500).
-
 %% holds upload state for callback function in the hn_file_upload module.
 -record(file_upload_state, {
           ref,               % The RefX for the request
@@ -48,14 +44,14 @@ convert_addr({Row, Col}) ->
 split_css(X, Acc) ->
     {SheetName, Target, V} = read_reader_record(X),
     Sheet = excel_util:esc_tab_name(SheetName),
-    [{Sheet, convert_addr(Target), V} | Acc].
+    [{Sheet, convert_addr(Target), defaultize(V)} | Acc].
 
 split_sheets(X, {Ls, Fs}) ->
     {SheetName, Target, V} = read_reader_record(X),
     Sheet = excel_util:esc_tab_name(SheetName),
 
     Postdata = conv_for_post(V),
-    Datatpl = {Sheet, convert_addr(Target), Postdata},
+    Datatpl = {Sheet, convert_addr(Target), [{"formula", Postdata}]},
 
     case Postdata of
         [$=|_] -> {Ls, [Datatpl|Fs]};
@@ -65,12 +61,7 @@ split_sheets(X, {Ls, Fs}) ->
 write_data(Ref, {Sheet, Target, Data}, Uid) when is_list(Target) ->
     NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
                     obj  = hn_util:parse_attr(Target)},
-    new_db_api:write_attributes([{NRef, [{"formula", Data}]}], Uid).
-
-write_css(Ref, {Sheet, Target, CSS}, Uid) when is_list(Target) ->
-    NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
-                    obj  = hn_util:parse_attr(Target)},
-    new_db_api:write_attributes([{NRef, defaultize(CSS)}], Uid).
+    new_db_api:write_attributes([{NRef, Data}], Uid).
 
 %% Excel's default borders are
 %% * no type of border
@@ -124,9 +115,13 @@ import(File, User, Ref, Name, Uid) ->
                                        {[], []}, Cells),
     CSS2 = lists:foldl(fun split_css/2, [], CSS),
 
-    [ write_data(Ref, X, Uid) || X <- Literals ],
-    [ write_data(Ref, X, Uid) || X <- Formulas ],
-    [ write_css(Ref,  X, Uid) || X <- CSS2 ],
+    ChunkedLit = chunk(Literals, "", [], []),
+    ChunkedForm = chunk(Formulas, "", [], []),
+    ChunkedCSS = chunk(CSS2, "", [], []),
+
+    ok = write_chunks(ChunkedLit, Ref, Uid),
+    ok = write_chunks(ChunkedForm, Ref, Uid),
+    ok = write_chunks(ChunkedCSS, Ref, Uid),
 
     ok = write_warnings_page(Ref, Sheets, User, Name, Wrngs, Uid).
 
@@ -271,4 +266,27 @@ file_upload_callback(body_end, S, data) ->
 
 file_upload_callback(eof, State, _) -> State.
 
+chunk([], _Sheet, SubAcc, Acc) -> lists:merge(subchunk(SubAcc), Acc);
+chunk([{Sheet, _, _} = H | T], Sheet, SubAcc, Acc) ->
+    chunk(T, Sheet, [H | SubAcc], Acc);
+% wierd first time initialisation clause
+chunk([{NewSheet, _, _} = H | T], [], [], []) ->
+    chunk(T, NewSheet, [H], []);
+chunk([{NewSheet, _, _} = H | T], _Sheet, SubAcc, Acc) ->
+    chunk(T, NewSheet, [H], lists:merge(subchunk(SubAcc), Acc)).
 
+subchunk(List) -> sub2(List, "", [], []).
+
+sub2([], _, SubAcc, Acc) -> [SubAcc | Acc];
+sub2([{_, Cell, _} = H | T], Row, SubAcc, Acc) ->
+    {cell, {_X, Y}} = hn_util:parse_ref(Cell),
+    case Y of
+        Row    -> sub2(T, Row, [H | SubAcc], Acc);
+        NewRow -> sub2(T, NewRow, [H], [SubAcc | Acc])
+    end.
+
+write_chunks([], _, _) -> ok;
+write_chunks([Chunk | T], #refX{site = S} = Ref, Uid) ->
+    [ write_data(Ref, X, Uid) || X <- Chunk ],
+    syslib:limiter(S),
+    write_chunks(T, Ref, Uid).
