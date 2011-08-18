@@ -309,7 +309,7 @@ menu1([H | T], Cl, Acc) ->
     Js_R = ["HN.NewWebComponents.reload_tabs();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    {preview, {"Tabs box", W, H, Incs}, HTML}.
+    {include, {"Tabs box", W, H, Incs}, HTML}.
 
 split(List) ->
     Len = length(List),
@@ -503,6 +503,6 @@ make_tabs([H | T], Name, Class, N, Acc) ->
     make_tabs(T, Name, Class, N + 1, [NewAcc | Acc]).
 
 make_links(Matches, N) when N == 0 orelse N == 1 orelse N == 2 ->
-    links2(Matches, 0, []);
+    links2(Matches, N, []);
 make_links(_, _) -> ?ERR_VAL.
 
