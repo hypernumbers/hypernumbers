@@ -85,7 +85,10 @@
 -define(BOTVERT,      "bv").
 -define(NORMMARGINS,  "5,5,5,5").
 -define(BOTHAXES,     "x,y").
--define(SPKBARWIDTHS, "4,1,2").
+-define(SPKBARWIDTHS, "10,1,2").
+-define(SPKBARWIDTH,  10).
+-define(SPKBARSPACE,  1).
+-define(SPKBARGRPSP,  2).
 
 -define(SPCOLOURS, [
                     "444444",
@@ -198,10 +201,16 @@ spark1(Size, Data, Colours) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_sparkbar(List),
-    {DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
+    {DataY, NoBars, NoGroups, Orientation, MinY, MaxY, Type, Colours, Rest} = Ret,
+    BarSize = case Orientation of
+                  vertical ->
+                      make_barsize(Width, Orientation, NoBars, NoGroups);
+                  horizontal ->
+                      make_barsize(Height, Orientation, NoBars, NoGroups)
+              end,
     {resize, {Width, Height, #incs{}},
      sparkbar1(Type, make_size(Width, Height), DataY, MinY, MaxY,
-              Colours, Rest, [], ?NOMARGIN)}.
+              Colours, BarSize, Rest, [], ?NOMARGIN)}.
 
 'histogram.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -248,14 +257,16 @@ spark1(Size, Data, Colours) ->
 
 chunk_sparkbar([Type, Lines| List]) ->
     [Type2, Lines2] = typechecks:throw_std_ints([Type, Lines]),
+    SeriesLength = get_series_length(List),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
-    {Orientation, MaxType, Type3} = case Type2 of
-        0 -> {vertical,   group, ?HIST_VGROUP};
-        1 -> {vertical,   stack, ?HIST_VSTACK};
-        2 -> {horizontal, group, ?HIST_HGROUP};
-        3 -> {horizontal, stack, ?HIST_HSTACK};
+    {Orientation, MaxType, Type3, NoBars} = case Type2 of
+        0 -> {vertical,   group, ?HIST_VGROUP, Lines2 * SeriesLength};
+        1 -> {vertical,   stack, ?HIST_VSTACK, SeriesLength};
+        2 -> {horizontal, group, ?HIST_HGROUP, Lines2 * SeriesLength};
+        3 -> {horizontal, stack, ?HIST_HSTACK, SeriesLength};
         _ -> ?ERR_VAL
     end,
+    NoGroups = NoBars/Lines2,
     {MinY, MaxY, DataY, Cols, Rest}
         = case {Orientation, MaxType} of
               {vertical,   group} -> chunk_hist(false, Lines2, List, ?NOMARGIN);
@@ -265,7 +276,7 @@ chunk_sparkbar([Type, Lines| List]) ->
               _                   -> ?ERR_VAL
           end,
     DataY2 = "t:" ++ conv_data_rev(DataY),
-    {DataY2, MinY, MaxY, Type3, Cols, Rest}.
+    {DataY2, NoBars, NoGroups, Orientation, MinY, MaxY, Type3, Cols, Rest}.
 
 chunk_histogram([Type, X, Lines| List]) ->
     [Type2, Lines2] = typechecks:throw_std_ints([Type, Lines]),
@@ -390,10 +401,9 @@ chunk_xy([Lines | List], LabType) ->
     {Data1, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
 
-sparkbar1(Type, Size, DataY, MinY, MaxY, Colours, [], Opts, Margin) ->
+sparkbar1(Type, Size, DataY, MinY, MaxY, Colours, BarSize, [], Opts, Margin) ->
     Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
-    Width = {?barwidths, ?SPKBARWIDTHS},
-    AddOpts = lists:concat([[Width, Scale, Colours], Opts]),
+    AddOpts = lists:concat([[BarSize, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts).
 
@@ -1182,3 +1192,27 @@ colours() -> [
 make_size(W, H) -> make_width(W) ++ "x" ++ make_height(H).
 make_height(N)  -> integer_to_list(N * 22 - 1).
 make_width(N)   -> integer_to_list(N * 80 - 14).
+
+get_series_length(List) ->
+    {range, [L2]} = hd(List),
+    length(L2).
+
+make_barsize(Size, Orientation, NoBars, NoGroups) ->
+    Pixels = case Orientation of
+                 horizontal -> list_to_integer(make_height(Size));
+                 vertical   -> list_to_integer(make_width(Size))
+             end,
+    Padding = trunc(((NoGroups - 1) * ?SPKBARGRPSP)
+        + (NoGroups * (NoBars/NoGroups - 1) * ?SPKBARSPACE)),
+    Remainder = Pixels - Padding,
+    Line = trunc(Remainder/NoBars),
+    if
+        Line < 2  -> {?barwidths, make_list(?SPKBARWIDTH, ?SPKBARSPACE,
+                                            ?SPKBARGRPSP)};
+        Line >= 2 -> {?barwidths, make_list(Line, ?SPKBARSPACE,
+                                            ?SPKBARGRPSP)}
+    end.
+
+make_list(N, M, O) -> integer_to_list(N) ++ ","
+                          ++ integer_to_list(M) ++ ","
+                          ++ integer_to_list(O).
