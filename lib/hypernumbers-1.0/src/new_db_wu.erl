@@ -525,13 +525,19 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
                                 {Pars, false}, InfPars, Recompile);
         % special case for the include function (special dirty!)
-        {ok, {Pcode, {include, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
+        {ok, {Pcode, {include, {PreV, Ht, Wd, Incs}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
+            Blank = #incs{},
+            Attrs3 = case Incs of
+                         Blank -> Attrs2;
+                         _     -> ok = update_incs(XRefX, Incs),
+                                  orddict:store("__hasincs", t, Attrs2)
+                     end,
             % with include you might need to bring incs through from
             % whatever is included so some jiggery might be required on the pokey
-            Attrs3 = bring_through(Attrs2, XRefX, Pars),
+            Attrs4 = bring_through(Attrs3, XRefX, Pars),
             % mebbies there was incs, nuke 'em
-            write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
+            write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
                                 {Pars, true}, InfPars, Recompile);
         % normal functions with a resize
         {ok, {Pcode, {resize, {Wd, Ht, Incs}, Res}, Parents,
@@ -1308,21 +1314,28 @@ shift_cells(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
   when (Type ==  insert orelse Type ==  delete) andalso
        (Disp ==  vertical orelse Disp ==  horizontal) ->
     {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
+    io:format("in shift_cells ~p~n", [From]),
     RefXSel = shift_pattern(From, Disp),
+    io:format("RefXSel is ~p~n", [RefXSel]),
     % mark the refs dirty for zinfs to force recalc
     [ok = mark_dirty_for_zinf(X) || X <- expand_ref(From)],
     case read_objs(RefXSel, inside) of
         [] -> [];
         ObjsList ->
+            io:format("ObjsList is ~p~n", [ObjsList]),
             % Rewrite the formulas of all the child cells
             RefXList = [lobj_to_xrefX(Site, O) || O <- ObjsList],
             ChildCells = lists:flatten([get_children(X) || X <- RefXList]),
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
+            io:format("ChildCells2 is ~p~nDedupedChildren is ~p~n",
+                      [ChildCells2, DedupedChildren]),
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
+            io:format("Formulas is ~p~n", [Formulas]),
             Fun  =
                 fun({ChildRef, F1}, Acc) ->
+                        io:format("about to offset ~p~n", [F1]),
                         {St, F2} = offset_fm_w_rng(ChildRef, F1, From,
                                                    {XOff, YOff}),
                         Op = fun(Attrs) ->
