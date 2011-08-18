@@ -316,7 +316,7 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
                           H2 = trunc(Height/22),
                           HTML = hn_render:wrap_region(Html, Width, Height),
                           HTML2 = lists:flatten(HTML),
-                          {include, {"Included Cells", W2, H2}, HTML2};
+                          {include, {"Included Cells", W2, H2, #incs{}}, HTML2};
                 true  -> ?ERRVAL_CANTINC
             end
     end.
