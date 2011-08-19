@@ -806,11 +806,13 @@ update_incs(XRefX, Incs) when is_record(XRefX, xrefX)
     Tbl = trans(S, include),
     Blank = #incs{},
     case {mnesia:read(Tbl, Idx, write), Incs} of
-        {[], Blank}  -> ok;
-        {Incs, Incs} -> ok;
-        {_, _}       -> Inc = #include{idx = Idx, path = P, js = Js,
-                                       js_reload = Js_reload, css = CSS},
-                        mnesia:write(Tbl, Inc, write)
+        {[], Blank}     -> ok;
+        {Incs, Incs}    -> ok;
+        {[], Incs}      -> Inc = #include{idx = Idx, path = P, js = Js,
+                                     js_reload = Js_reload, css = CSS},
+                           mnesia:write(Tbl, Inc, write);
+        {OldIncs, Incs} -> NewInc = merge_incs(OldIncs, Incs),
+                           mnesia:write(Tbl, NewInc, write)
     end.
 
 bring_through(Attrs, XRefX, Pars) ->
@@ -1314,28 +1316,21 @@ shift_cells(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
   when (Type ==  insert orelse Type ==  delete) andalso
        (Disp ==  vertical orelse Disp ==  horizontal) ->
     {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
-    io:format("in shift_cells ~p~n", [From]),
     RefXSel = shift_pattern(From, Disp),
-    io:format("RefXSel is ~p~n", [RefXSel]),
     % mark the refs dirty for zinfs to force recalc
     [ok = mark_dirty_for_zinf(X) || X <- expand_ref(From)],
     case read_objs(RefXSel, inside) of
         [] -> [];
         ObjsList ->
-            io:format("ObjsList is ~p~n", [ObjsList]),
             % Rewrite the formulas of all the child cells
             RefXList = [lobj_to_xrefX(Site, O) || O <- ObjsList],
             ChildCells = lists:flatten([get_children(X) || X <- RefXList]),
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
-            io:format("ChildCells2 is ~p~nDedupedChildren is ~p~n",
-                      [ChildCells2, DedupedChildren]),
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
-            io:format("Formulas is ~p~n", [Formulas]),
             Fun  =
                 fun({ChildRef, F1}, Acc) ->
-                        io:format("about to offset ~p~n", [F1]),
                         {St, F2} = offset_fm_w_rng(ChildRef, F1, From,
                                                    {XOff, YOff}),
                         Op = fun(Attrs) ->
@@ -2208,6 +2203,14 @@ get_page_l([H | T], Acc)                         -> get_page_l(T, [H | Acc]).
 
 make_blank(#refX{obj = O}, Idx) ->
     [#logging{idx = Idx, obj = O, log = term_to_binary("This cell is blank")}].
+
+merge_incs([], Incs) -> Incs;
+merge_incs([#include{js = JS1, js_reload = JSR1, css = CSS1} = Inc | T],
+           #incs{js = JS2, js_reload = JSR2, css = CSS2}) ->
+    NewIncs = Inc#include{js = hslists:uniq(lists:merge(JS1, JS2)),
+                          js_reload = hslists:uniq(lists:merge(JSR1, JSR2)),
+                          css = hslists:uniq(lists:merge(CSS1, CSS2))},
+    merge_incs(T, NewIncs).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%

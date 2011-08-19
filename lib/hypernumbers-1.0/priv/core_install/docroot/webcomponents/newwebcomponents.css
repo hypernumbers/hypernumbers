@@ -298,11 +298,8 @@ div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ru
 /* Set the height and allow for overflow
 */
 .hn_sld_tabs div.ui-tabs-panel {
-    left: 0;
     overflow: auto;
     padding: 0;
-    position: absolute;
-    width: auto;
 }
 
 // Generic boxes

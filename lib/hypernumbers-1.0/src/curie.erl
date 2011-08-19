@@ -34,9 +34,7 @@ get_parameters_data([], Names, Descriptions, Values)	->
 	{lists:reverse(Names), lists:reverse(Descriptions), lists:reverse(Values)};
 
 get_parameters_data([H | T], Names, Descriptions, Values)	->
-	io:format("H is: ~p~n", [H]),
 	{struct, Args} = H,
-	io:format("Args are: ~p~n", [Args]),
 	Nm	= kfind("name", Args),
 	Dsc	= kfind("description", Args),
 	Val	= kfind("value", Args),
@@ -112,7 +110,6 @@ delete_user_fn(Site, Name)	->
 	{ok, "delete_user_fn"}.
 
 %~ curie:build_fun("http://hypernumbers.dev:9000", ["function"], "b8", ["b1", "b2", "b3"]).
-%~ curie:build_fun("http://hypernumbers.dev:9000", ["page2"]).
 build_fun(Site, Page, OutputValue, ListOfParameters) ->
 
 	My_AST = get_cell_s_ast(OutputValue, Site, Page),
@@ -154,7 +151,7 @@ walk(AST, RetRef, ListOfParameters, [], Site, Page)	-> walk2(AST, RetRef, ListOf
 walk2([], _, _, Acc,_ ,_, _) ->
 	lists:reverse(Acc);
 walk2([{cellref, _OffsetX, _OffsetY, _Page, Cell} = H | T], Ref, Params, Acc, Site, Page, _FinalRetRef) ->
-	case contains(Params, Cell) of
+	case contains(Params, string:to_upper(Cell)) of
 		true	->
 			walk2(T, Ref, Params, [H | Acc], Site, Page, _FinalRetRef);
 		false	->
@@ -197,9 +194,6 @@ update_rangeref_offset(_FinalRetRef, _DeltaX, _DeltaY, [], _ReturnX, _ReturnY, A
 walk_helper_cellref(NewReference, _Ref, Params, Site, Page)	->
 	%get the cell name and store it in Cell
 	{cellref, {offset, OffsetX}, {offset, OffsetY}, _Page, Cell} = NewReference,
-	%calculate new refX
-	NewRetRef = #refX{site = Site, path = Page,
-                   obj = hn_util:parse_ref(Cell)},
     case contains(Params, Cell) of
 		true	->
 			NewReference;
