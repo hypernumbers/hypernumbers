@@ -1212,8 +1212,10 @@ make_height(N)  -> integer_to_list(N * 22 - 1).
 make_width(N)   -> integer_to_list(N * 80 - 14).
 
 get_series_length(List) ->
-    {range, [L2]} = hd(List),
-    length(L2).
+    case hd(List) of
+        {range, [L2]} -> length(L2);
+        {range, L3}   -> length(L3)
+    end.
 
 make_barsize(Size, Orientation, NoBars, NoGroups) ->
     Pixels = case Orientation of
