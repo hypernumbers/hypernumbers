@@ -95,7 +95,7 @@ html_box_contents(Vals) ->
     Passes = [return_errors, {all, fun muin_collect:is_string/1}],
     muin_collect:col(Vals, Rules, Passes).
 
-is_positive([])                 -> true;
-is_positive([H | T]) when H < 0 -> false;
-is_positive([H | T])            -> is_positive(T).
+is_positive([])                  -> true;
+is_positive([H | _T]) when H < 0 -> false;
+is_positive([_H | T])            -> is_positive(T).
 
