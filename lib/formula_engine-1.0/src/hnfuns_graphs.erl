@@ -910,8 +910,11 @@ aggregate([], Acc)      -> Acc;
 aggregate([H | T], Acc) -> Acc2 = agg2(H, Acc, []),
                            aggregate(T, Acc2).
 
-agg2([], [], Acc)               -> lists:reverse(Acc);
-agg2([H1 | T1], [H2 | T2], Acc) -> agg2(T1, T2, [H1 + H2 | Acc]).
+agg2([], [], Acc)                     -> lists:reverse(Acc);
+agg2([blank | T1], [blank | T2], Acc) -> agg2(T1, T2, [0 | Acc]);
+agg2([blank | T1], [H2 | T2],    Acc) -> agg2(T1, T2, [H2 | Acc]);
+agg2([H1 | T1],    [blank | T2], Acc) -> agg2(T1, T2, [H1 | Acc]);
+agg2([H1 | T1],    [H2 | T2],    Acc) -> agg2(T1, T2, [H1 + H2 | Acc]).
 
 get_maxes_lg(List) -> get_mlg(List, none, none).
 
@@ -1152,10 +1155,13 @@ make_data_rev(List) ->
 
 make_drev([], Acc) ->
     string:join(Acc, ",");
+make_drev([blank | T], Acc) ->
+    make_drev(T, ["0" | Acc]);
 make_drev([H | T], Acc) when is_integer(H) ->
     make_drev(T, [integer_to_list(H) | Acc]);
 make_drev([H | T], Acc) when is_float(H) ->
-    make_drev(T, [tconv:to_s(H) | Acc]).
+    make_drev(T, [tconv:to_s(H) | Acc]);
+make_drev(_List, _Acc) -> ?ERR_VAL.
 
 make_data(List) ->
     make_d1(List, []).
