@@ -3608,9 +3608,14 @@
                 "type": "optional"
              },
              {
-                "name": "Series Names",
-                "desc": "A text string.",
-                "type": "optional"
+                 "name": "Series Names",
+                 "desc": "a range of text items.",
+                 "type": "optional"
+             },
+             {
+                 "name": "Bar Width",
+                 "desc": "a positive integer",
+                 "type": "optional"
              }
          ]
     },

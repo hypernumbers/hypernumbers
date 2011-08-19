@@ -457,6 +457,24 @@ eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []],
     AddOpts = lists:concat([[Title, Series, Axes, AxesLables,
                              {?legendpos, ?TOPHORIZ}, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
+    make_chart(DataY, NewOpts, AddOpts);
+
+% barwidth is only an option for histograms
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours,
+         [Tt, Xl, Yl, Srs, BarWidth | []], Opts, Margin)
+  when Type == ?HIST_VGROUP orelse Type == ?HIST_VSTACK
+       orelse Type == ?HIST_HGROUP orelse Type == ?HIST_HSTACK->
+    Axes = {?axes, ?LABLEAXES},
+    AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
+    Title = make_title(Tt),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
+    Series = make_series(Srs),
+    [BarW2] = typechecks:std_pos_ints([BarWidth]),
+    BarOpts = {?barwidths, make_list(BarW2, ?SPKBARSPACE,
+                                            ?SPKBARGRPSP)},
+    AddOpts = lists:concat([[BarOpts, Title, Series, Axes, AxesLables,
+                             {?legendpos, ?TOPHORIZ}, Scale, Colours], Opts]),
+    NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts).
 
 dg1(Size, Data, Scale, AxesLabPos, Colours, [], StartDate, EndDate, Opts) ->
