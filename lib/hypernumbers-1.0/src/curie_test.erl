@@ -19,6 +19,7 @@
 %%TODO
 
 %% curie_test:test_write("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", "b8", ["b5", "b6"], ["c5", "c6"], ["f5", "f6"]).
+%% curie_test:test_write("http://hypernumbers.dev:9000", ["page2"],"b1", "b2", "b8", ["b5", "b6"], ["c5", "c6"], ["f5", "f6"]).
 test_write(Site, Page, Name, Description, OutputValue, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues)	->
 
     String_Page = get_page(Page, ""),
