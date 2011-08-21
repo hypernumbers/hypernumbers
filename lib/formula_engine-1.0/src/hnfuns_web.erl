@@ -29,6 +29,7 @@
 -include("spriki.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
+-include("muin_proc_dict.hrl").
 -include("hypernumbers.hrl").
 
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
@@ -143,7 +144,7 @@ get_lorem() ->
 'crumb.trail'([]) ->
     trail2(lists:reverse(get(path)), []).
 
-trail2([], Acc) -> lists:flatten(["<a href=\"/\">" ++ get(site) ++
+trail2([], Acc) -> lists:flatten(["<a href=\"/\">" ++ ?msite ++
                                   "</a>" | Acc]);
 trail2([H | T] = L, Acc) ->
     Path = "/" ++ string:join(lists:reverse(L), "/") ++ "/",
@@ -263,21 +264,26 @@ img([Src]) ->
 %        fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
 table([Ref]) ->
-    table([Ref, 0]);
+    table([Ref, -99]); % negative number means no sorting
 table([#rangeref{height = Len} = Ref, Sort]) ->
     table2(Len, Ref, Sort);
 table([{range, R} = Ref, Sort]) ->
     Len = length(R),
     table2(Len, Ref, Sort).
 
-table2(Len, Ref, Sort) ->
-    Rules = [eval_funs, fetch, flatten, err_as_str, {cast, str}],
-    Passes = [],
-    Ref2 = muin_collect:col([Ref], Rules, Passes),
-    SubLen = trunc(length(Ref2)/Len),
-    Ref3 = make_ref3(Ref2, SubLen, []),
-    Sort2 = typechecks:std_strs([Sort]),
-    table_(Ref3, Sort2).
+table2(Len, Ref, Sort) when ?is_rangeref(Ref) ->
+    %% DIRTY HACK. This forces muin to setup dependencies, and checks
+    %% for circ errors.
+    Ret = muin:fetch(Ref),
+    case has_circref(Ret) of
+        true  -> {errval, '#CIRCREF'};
+        false ->
+            Ref2 = table_collect(Ref),
+            SubLen = trunc(length(Ref2)/Len),
+            Ref3 = make_ref3(Ref2, SubLen, []),
+            [Sort2] = typechecks:std_ints([Sort]),
+            table_(Ref3, Sort2 - 1) % users sort from 1 not 0
+    end.
 
 %background([Url]) -> background([Url, ""]);
 %background([V1, V2]) ->
@@ -339,12 +345,38 @@ table_([THead | Range], Sort) ->
 
     Script = ["<script type='text/javascript'>$(\"#", Id,
               "\").tablesorter({headers: { 1: { sorter:'digit' }}, sortList:[[",
-              Sort, ",0]]});</script>"],
-
-    lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
-                   "</table>", Script]).
+              integer_to_list(Sort), ",0]]});</script>"],
+    HTML = lists:flatten(["<table id='", Id,"' class='tablesorter'>",
+                          Head, Rows, "</table>", Script]),
+    {include, {"Table ", 1, 1, #incs{}}, HTML}.
 
 make_ref3([], _SubLen, Acc) -> lists:reverse(Acc);
 make_ref3(List, SubLen, Acc) ->
     {Row, Rest} = lists:split(SubLen, List),
     make_ref3(Rest, SubLen,[Row | Acc]).
+
+table_collect(Ref) ->
+    case ?is_rangeref(Ref) of
+        false -> ?ERR_VAL;
+        true  ->
+            Site = ?msite,
+            Path = ?mpath,
+            NewPath = muin_util:walk_path(Path, Ref#rangeref.path),
+            RefX = muin_util:make_refX(Site, NewPath, Ref),
+            Attrs = new_db_api:read_attribute(RefX, "value"),
+            fix_up(Attrs)
+    end.
+
+sort({{_, _, _, _, {cell, {X1, Y1}}}, _},
+     {{_, _, _, _, {cell, {X2, Y2}}}, _}) ->
+    if
+        Y1 >  Y2 -> false;
+        Y1 <  Y2 -> true;
+        Y1 == Y2 -> if
+                        X1 >  X2 -> false;
+                        X1 =< X2 -> true
+                    end
+    end.
+
+fix_up(List) -> List2 = lists:sort(fun sort/2, List),
+                [X || {_, X} <- List2].

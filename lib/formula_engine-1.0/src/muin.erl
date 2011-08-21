@@ -360,7 +360,7 @@ funcall(Fname, Args0) ->
              odd, int, degrees, radians, proper, index, var, steyx,
              small, skew, large, sumproduct, daverage, dcount, isref,
              irr, even,
-             include, 'tim.tabs.'],
+             include, 'tim.tabs.', table],
 
     Args = case lists:member(Fname, Funs) of
                true  -> Args0;
