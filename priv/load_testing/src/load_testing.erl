@@ -111,6 +111,16 @@ load_3(Type, Extent) ->
     ok = load_pages("zqueries" ++ Stamp, ?zquerypage, ?zqueryprefix,
                     ?no_of_zquerypages, ?no_of_zquerypages),
 
+    % test impact of zqueries on load
+    % load datapoints
+    io:format("~nabout to load post-z data pages...~n"),
+    ok = load_pages("data" ++ Stamp, ?datapage, "additionaldata",
+                    20, 20),
+    % load calculations
+    io:format("~nabout to load post-z calculation pages...~n"),
+    ok = load_pages("calculations" ++ Stamp, ?calcspage, "additionalcalcs",
+                    20, 20),
+
     % now start some tests
     case Extent of
         load_only ->
