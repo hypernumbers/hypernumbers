@@ -7,8 +7,8 @@
 
 -module(hnfuns_html).
 
--include("errvals.hrl").
 -include("spriki.hrl").
+-include("typechecks.hrl").
 
 -export(['html.headline.'/1,
          'html.plainbox.'/1,
@@ -296,7 +296,7 @@ menu1([H | T], Cl, Acc) ->
     check_size2(W, H, 6),
     {HeaderTxt, TabTxt} = split(List),
     HeaderTxt2 = typechecks:std_strs(HeaderTxt),
-    TabTxt2 = typechecks:std_strs(TabTxt),
+    TabTxt2 = tabs_cast(TabTxt, []),
     Class = "hn_box_height_" ++ integer_to_list(H - 6 + 3),
     Name = muin_util:create_name(),
     Headers = make_headers(HeaderTxt2, Name, 1, []),
@@ -506,3 +506,11 @@ make_links(Matches, N) when N == 0 orelse N == 1 orelse N == 2 ->
     links2(Matches, N, []);
 make_links(_, _) -> ?ERR_VAL.
 
+tabs_cast([], Acc) -> lists:reverse(Acc);
+tabs_cast([Ref | T], Acc) when ?is_cellref(Ref) orelse ?is_rangeref(Ref) ->
+    Ret = hnfuns_web:include([Ref]),
+    {include, _, NewAcc} = Ret,
+    tabs_cast(T, [NewAcc | Acc]);
+tabs_cast([H | T], Acc) ->
+    [NewAcc] = typechecks:std_strs([H]),
+    tabs_cast(T, [NewAcc | Acc]).
