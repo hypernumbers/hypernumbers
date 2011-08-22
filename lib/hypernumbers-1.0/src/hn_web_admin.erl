@@ -109,30 +109,32 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
             M2 = clean_up(Mapping, mapping),
             hn_import:save_map(Site, Name, H2, V2, M2),
             ok;
-            
+
         %~ curie's cases
-        "read_user_fn"		->
-			Name	= kfind("name", Args),
-			Site	= kfind("site", Args),
-			curie:read_user_fn(Site, Name);
-			
-		"delete_user_fn"	->
-			Name	= kfind("name", Args),
-			Site	= kfind("site", Args),
-			curie:delete_user_fn(Site, Name);
-			
-		"write_user_fn"		->
-			Site					= kfind("site", Args),
-			Function_Name			= kfind("name", Args),
-			Page					= kfind("page", Args),
-			Function_Description	= kfind("description", Args),
-			Output_Value			= kfind("output_value", Args),
-			Parameters				= kfind("parameters", Args),
-			curie:create_user_fn(Site, Function_Name, Page, Function_Description, Output_Value, Parameters);
+        "read_user_fn" ->
+            Name = kfind("name", Args),
+            Site = kfind("site", Args),
+            curie:read_user_fn(Site, Name);
+
+        "delete_user_fn" ->
+            Name = kfind("name", Args),
+            Site = kfind("site", Args),
+            curie:delete_user_fn(Site, Name);
+
+        "write_user_fn"	->
+            Site					= kfind("site", Args),
+            Function_Name	= kfind("name", Args),
+            Page					= kfind("page", Args),
+            Function_Desc	= kfind("description", Args),
+            Output_Value	= kfind("output_value", Args),
+            Parameters		= kfind("parameters", Args),
+            curie:create_user_fn(Site, Function_Name, Page,
+                                 Function_Desc, Output_Value,
+                                 Parameters);
 
         Other ->
             {error, Other ++ " is not a valid administrative task"}
-        end.
+    end.
 
 -spec add_user_to_groups(string(), string(), list()) -> ok.
 add_user_to_groups(Site, UID, Groups) when is_list(Groups) ->
