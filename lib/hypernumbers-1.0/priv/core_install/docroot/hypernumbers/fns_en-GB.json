@@ -4154,7 +4154,7 @@
         "experimental": false,
         "includable": true,
         "inexcel": false,
-        "resize": false,
+        "resize": "range",
         "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/layout-and-display/table.html",
          "args": [
