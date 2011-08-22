@@ -525,8 +525,9 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
                                 {Pars, false}, InfPars, Recompile);
         % special case for the include function (special dirty!)
-        {ok, {Pcode, {include, {PreV, Ht, Wd, Incs}, Res}, Pars, InfPars, Recompile}} ->
-            Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
+        {ok, {Pcode, {include, {PreV, Wd, Ht, Incs}, Res}, Pars,
+              InfPars, Recompile}} ->
+            Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Blank = #incs{},
             Attrs3 = case Incs of
                          Blank -> Attrs2;
@@ -535,9 +536,16 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                      end,
             % with include you might need to bring incs through from
             % whatever is included so some jiggery might be required on the pokey
-            Attrs4 = bring_through(Attrs3, XRefX, Pars),
+            Attrs4 = case {Ht, Wd} of
+                         {1, 1} -> orddict:erase("merge", Attrs3);
+                         _      -> orddict:store("merge", {struct,
+                                                           [{"right", Wd - 1},
+                                                            {"down",  Ht - 1}]},
+                                                 Attrs3)
+                     end,
+            Attrs5 = bring_through(Attrs4, XRefX, Pars),
             % mebbies there was incs, nuke 'em
-            write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
+            write_formula_attrs(Attrs5, XRefX, Formula, Pcode, Res,
                                 {Pars, true}, InfPars, Recompile);
         % normal functions with a resize
         {ok, {Pcode, {resize, {Wd, Ht, Incs}, Res}, Parents,

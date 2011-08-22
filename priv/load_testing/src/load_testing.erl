@@ -11,6 +11,8 @@
 -include("load_testing.hrl").
 
 -export([
+         profile_zinf_srv/0,
+         profile_zs/0,
          test_zs/0,
          load_only/0,
          load_only/1,
@@ -24,6 +26,11 @@
          log_memory_LOOP/2
          ]).
 
+profile_zinf_srv() ->
+    TraceFile = zinf_srv:start_fprof(?site),
+    load_only(),
+    zinf_srv:stop_fprof(?site, TraceFile).
+
 load_only() -> load_2(disc_only, load_only).
 
 load_only(Type) -> load_2(Type, load_only).
@@ -32,15 +39,28 @@ load_test() -> load_2(disc_only, all).
 
 load_test(Type) -> load_2(Type, all).
 
+profile_zs() ->
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    TraceFile = Dir ++ "profile_zs" ++ Stamp ++ ".trace",
+    %fprof:trace(start, TraceFile),
+    Path = ["profile_zs"],
+    RefX = #refX{site = ?site, path = Path, obj = {page, "/"}},
+    Template = "minizs",
+    ok = hn_templates:load_template(RefX, Template).
+    %fprof:trace(stop),
+    %fprof:profile(file, TraceFile),
+    %fprof:analyse([{dest, Dir ++ "profile_zs" ++ Stamp ++ ".analysis"}]).
+
 test_zs() ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
     Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
     TraceFile = Dir ++ "test_zs" ++ Stamp ++ ".trace",
-    fprof:trace(start, TraceFile),
-    test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles),
-    fprof:trace(stop),
-    fprof:profile(file, TraceFile),
-    fprof:analyse([{dest, Dir ++ "test_zs" ++ Stamp ++ ".analysis"}]).
+    %%fprof:trace(start, TraceFile),
+    test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles).
+    %%fprof:trace(stop),
+    %%fprof:profile(file, TraceFile),
+    %%fprof:analyse([{dest, Dir ++ "test_zs" ++ Stamp ++ ".analysis"}]).
 
 test_z2(_Max, 0) -> ok;
 test_z2(Max, N) ->
@@ -110,6 +130,18 @@ load_3(Type, Extent) ->
     io:format("~nabout to load zquery pages...~n"),
     ok = load_pages("zqueries" ++ Stamp, ?zquerypage, ?zqueryprefix,
                     ?no_of_zquerypages, ?no_of_zquerypages),
+
+    % test impact of zqueries on load
+    % load datapoints
+    io:format("~nabout to load post-z data pages...~n"),
+    ok = load_pages("data" ++ Stamp, ?datapage, ?additionaldata,
+                    ?no_of_additional_data, ?no_of_additional_data),
+
+    % load calculations
+    io:format("~nabout to load post-z calculation pages...~n"),
+    ok = load_pages("calculations" ++ Stamp, ?calcspage,
+                    ?additionalcalcs,
+                    ?no_of_additional_calcs, ?no_of_additional_calcs),
 
     % now start some tests
     case Extent of
