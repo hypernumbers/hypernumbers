@@ -6,7 +6,7 @@
          'horizontal.line.'/1,
          'vertical.line.'/1,
          include/1,
-         table/1,
+         'table.'/1,
          %background/1,
          link/1,
          img/1,
@@ -263,16 +263,19 @@ img([Src]) ->
 %    muin_collect:col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
 %        fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
-table([Ref]) ->
-    table([Ref, -99]); % negative number means no sorting
-table([#rangeref{height = Len} = Ref, Sort]) ->
-    table2(Len, Ref, Sort);
-table([{range, R} = Ref, Sort]) ->
+'table.'([W, H, Ref]) ->
+    'table.'([W, H, Ref, -99]); % negative number means no sorting
+'table.'([W, H, #rangeref{height = Len} = Ref, Sort]) ->
+    table2(W, H, Len, Ref, Sort);
+'table.'([W, H, {range, R} = Ref, Sort]) ->
     Len = length(R),
-    table2(Len, Ref, Sort).
+    table2(W, H, Len, Ref, Sort).
 
-table2(Len, Ref, Sort) when ?is_rangeref(Ref) ->
-    %% DIRTY HACK. This forces muin to setup dependencies, and checks
+table2(W, H, Len, Ref, Sort) when ?is_rangeref(Ref) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    funs_util:check_size(Width, Height),
+    % DIRTY HACK. This forces muin to setup dependencies, and checks
     %% for circ errors.
     Ret = muin:fetch(Ref),
     case has_circref(Ret) of
@@ -282,7 +285,7 @@ table2(Len, Ref, Sort) when ?is_rangeref(Ref) ->
             SubLen = trunc(length(Ref2)/Len),
             Ref3 = make_ref3(Ref2, SubLen, []),
             [Sort2] = typechecks:std_ints([Sort]),
-            table_(Ref3, Sort2 - 1) % users sort from 1 not 0
+            table_(Width, Height, Ref3, Sort2 - 1) % users sort from 1 not 0
     end.
 
 %background([Url]) -> background([Url, ""]);
@@ -333,7 +336,7 @@ has_c1([])                                -> false;
 has_c1([[{errval, '#CIRCREF!'} , _] | _T]) -> true;
 has_c1([_H | T])                          -> has_c1(T).
 
-table_([THead | Range], Sort) ->
+table_(W, H, [THead | Range], Sort) ->
     Id = "tbl_" ++ muin_util:create_name(),
 
     Head = ["<thead><tr>",
@@ -348,7 +351,7 @@ table_([THead | Range], Sort) ->
               integer_to_list(Sort), ",0]]});</script>"],
     HTML = lists:flatten(["<table id='", Id,"' class='tablesorter'>",
                           Head, Rows, "</table>", Script]),
-    {include, {"Table ", 1, 1, #incs{}}, HTML}.
+    {include, {"Table ", W, H, #incs{}}, HTML}.
 
 make_ref3([], _SubLen, Acc) -> lists:reverse(Acc);
 make_ref3(List, SubLen, Acc) ->

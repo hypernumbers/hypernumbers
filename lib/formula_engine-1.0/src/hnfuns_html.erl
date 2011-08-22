@@ -141,7 +141,7 @@ links2([{{P, _}, V} | T], 2, Acc) ->
     [W2] = typechecks:throw_std_ints([W]),
     [H2] = typechecks:throw_std_ints([H]),
     [T2] = typechecks:throw_std_strs([Text]),
-    check_size(W2, H2),
+    funs_util:check_size(W2, H2),
     {resize, {W2, H2, #incs{}}, "<span class='hn-wc-headline hn-wc-wd-"
      ++ integer_to_list(W2) ++
      " hn-wc-ht-" ++ integer_to_list(H2) ++ "' " ++
@@ -161,7 +161,7 @@ links2([{{P, _}, V} | T], 2, Acc) ->
              [Width, Height, Headline, Content, Footer]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
-    check_size(W, H),
+    funs_util:check_size(W, H),
     BodyStyle = "hn-wc-ht-body2-" ++ Height,
     [H1] = typechecks:throw_html_box_contents([Headline]),
     {resize, {W, H, #incs{}}, box(Width, Height, Background, Border, Style, Lines,
@@ -169,7 +169,7 @@ links2([{{P, _}, V} | T], 2, Acc) ->
 'html.box.1'(Background, Border, Style, Lines, [Width, Height, Headline, Content]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
-    check_size(W, H),
+    funs_util:check_size(W, H),
     BodyStyle = "hn-wc-ht-body1-" ++ Height,
     [H1] = typechecks:throw_html_box_contents([Headline]),
     {resize, {W, H, #incs{}}, box(Width, Height, Background, Border, Style, Lines,
@@ -177,13 +177,10 @@ links2([{{P, _}, V} | T], 2, Acc) ->
 'html.box.1'(Background, Border, Style, Lines, [Width, Height, Content]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
-    check_size(W, H),
+    funs_util:check_size(W, H),
     BodyStyle = "hn-wc-ht-" ++ Height,
     {resize, {W, H, #incs{}}, box(Width, Height, Background, Border, Style, Lines,
                                  BodyStyle, [Content])}.
-
-check_size(W, H) when W > 0 andalso W < 16 andalso H > 1 andalso H < 26 -> ok;
-check_size(_W, _H) -> ?ERR_VAL.
 
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Content]) ->
     [C1] = typechecks:throw_html_box_contents([Content]),
@@ -293,7 +290,7 @@ menu1([H | T], Cl, Acc) ->
 'tim.tabs.'([Width, Height | List]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
-    check_size2(W, H, 6),
+    funs_util:check_size2(W, H, 6),
     {HeaderTxt, TabTxt} = split(List),
     HeaderTxt2 = typechecks:std_strs(HeaderTxt),
     TabTxt2 = tabs_cast(TabTxt, []),
@@ -379,7 +376,7 @@ split(List) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
     [C1] = typechecks:throw_html_box_contents([Content]),
     [F1] = typechecks:throw_html_box_contents([Footer]),
-    check_size2(W, H, 8),
+    funs_util:check_size2(W, H, 8),
     CHBox = "hn_box_height_" ++ integer_to_list(H),
     Class2 = Class ++ " " ++ CHBox,
     CH = "hn_box_height_" ++ integer_to_list(H - 4),
@@ -393,7 +390,7 @@ split(List) ->
 'tim.box.1'(Class, W, H, [Content, Headline], Incs) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
     [C1] = typechecks:throw_html_box_contents([Content]),
-    check_size2(W, H, 6),
+    funs_util:check_size2(W, H, 6),
     CHBox = "hn_box_height_" ++ integer_to_list(H),
     Class2 = Class ++ " " ++ CHBox,
     CH = "hn_box_height_" ++ integer_to_list(H - 3),
@@ -405,7 +402,7 @@ split(List) ->
 
 'tim.box.1'(Class, W, H, [Content], Incs) ->
     [C1] = typechecks:throw_html_box_contents([Content]),
-    check_size2(W, H, 3),
+    funs_util:check_size2(W, H, 3),
     CH = "hn_box_height_" ++ integer_to_list(H),
     Class2 = Class ++ " " ++ CH,
     Box = "<div class='" ++ Class2 ++ "'>"
@@ -417,7 +414,7 @@ split(List) ->
     [W2] = typechecks:throw_std_ints([W]),
     [T2] = typechecks:throw_std_strs([Text]),
     Height = 3,
-    check_size(W2, Height),
+    funs_util:check_size(W2, Height),
     Class = "hn_sld_headline" ++ " hn_box_width_" ++ integer_to_list(W2)
         ++ " hn_box_height_2",
     HTML = "<h3 class='" ++ Class ++ "'>" ++ T2 ++ "</h3>",
@@ -477,11 +474,6 @@ split(List) ->
 
 check_alerts(N) when 0 =< N andalso N < 4 -> ok;
 check_alerts(_N)                         -> ?ERR_VAL.
-
-check_size2(W, H, MinH)
-  when W > 1 andalso W < 16
-andalso H >= MinH andalso H < 26 -> ok;
-check_size2(_W, _H, _MinH) -> ?ERR_VAL.
 
 unzip([], Acc1, Acc2) ->
     {lists:reverse(Acc1), lists:reverse(Acc2)};
