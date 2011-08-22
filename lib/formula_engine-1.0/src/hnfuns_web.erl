@@ -367,7 +367,8 @@ table_collect(Ref) ->
             NewPath = muin_util:walk_path(Path, Ref#rangeref.path),
             RefX = muin_util:make_refX(Site, NewPath, Ref),
             Attrs = new_db_api:read_attribute(RefX, "value"),
-            fix_up(Attrs)
+            RefXS = new_db_wu:expand_ref(RefX),
+            fix_up(RefXS, Attrs)
     end.
 
 sort({{_, _, _, _, {cell, {X1, Y1}}}, _},
@@ -381,5 +382,17 @@ sort({{_, _, _, _, {cell, {X1, Y1}}}, _},
                     end
     end.
 
-fix_up(List) -> List2 = lists:sort(fun sort/2, List),
-                [X || {_, X} <- List2].
+fix_up(RefS, List) ->
+    List2 = fix2(lists:sort(RefS), lists:sort(List), []),
+    List3 = lists:sort(fun sort/2, List2),
+    [X || {_, X} <- List3].
+
+% the database only returns values for which there is an attribute.
+% This fun compares what is returned with what oughta've bin and
+% sticks in blanks as appropriate...
+fix2([], [], Acc) ->
+    lists:reverse(Acc);
+fix2([H1 | T1], [{H1, _} = H2 | T2], Acc) ->
+    fix2(T1, T2, [H2 | Acc]);
+fix2([H1 | T1], List, Acc) ->
+    fix2(T1, List, [{H1, ""} | Acc]).
