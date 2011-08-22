@@ -18,6 +18,7 @@
         %~ ]).
 
 %%TODO
+	%~ update cellref goes crazy if in cell there is =2. remember to change it when geting rid of cellref in a AST, just swap it for 2
 %%TODO
 
 create_user_fn(Site, Function_Name, Page, Function_Description, Output_Value, Parameters_Array)	->
@@ -130,8 +131,13 @@ build_fun(Site, Page, OutputValue, ListOfParameters) ->
 							invalid -> {error, off_page_reference};
 							valid   ->
 								case check_input_off_reference(ListOfParameters, Site, Page) of
-										invalid -> {error, off_page_reference};
-										valid   -> build_fun2(RetRef, _My_AST, ParamListUpper, Site, Page)
+										invalid ->	{error, off_page_reference};
+										valid   ->	
+													AST = build_fun2(RetRef, _My_AST, ParamListUpper, Site, Page),
+													case check_for_not_in_param_error(AST) of
+														{error, Message}	->	{error, Message};
+														_					->	AST
+													end
 								end
 						end
 			   end
@@ -202,7 +208,10 @@ walk_helper_cellref(NewReference, _Ref, Params, Site, Page)	->
 			case check_off_page(AST, Page) of
 				invalid -> {error, off_page_reference};
 				valid   ->
-					update_cellref_offset(AST, OffsetX, OffsetY, [])
+					case update_cellref_offset(AST, OffsetX, OffsetY, []) of
+						{error, Message}	-> {error, Message};
+						Succes				-> Succes
+					end
 			end
 	end.
 
@@ -218,17 +227,24 @@ refX_to_cellref({refX, _, _, _, {cell, {FinalX, FinalY}}}, {refX, _, _, _, {cell
 %when hopping from cell to cell (going down the AST) offset has to be updated,
 %to make sure it always points to the final result cell
 update_cellref_offset([], _, _, Acc)	->
-	lists:reverse(Acc);
+	case Acc of
+		[]	-> {error, cell_not_in_param};
+		_	-> lists:reverse(Acc)
+	end;
 update_cellref_offset([H | T], X, Y, Acc) when is_list(H)	->
 	update_cellref_offset(T, X, Y, [ update_cellref_offset(H , X, Y, []) | Acc]);
 update_cellref_offset([{cellref, {offset, OldX}, {offset, OldY}, _A, _B} | T], X, Y, Acc)	->
 	update_cellref_offset(T, X, Y, [{cellref, {offset, OldX + X}, {offset, OldY + Y}, _A, _B} | Acc]);
-update_cellref_offset([H | T], X, Y , Acc)	-> 	update_cellref_offset(T, X, Y , [H | Acc]).
+update_cellref_offset([H | T], X, Y , Acc)	-> 	update_cellref_offset(T, X, Y , [H | Acc]);
+update_cellref_offset({cellref, {offset, OldX}, {offset, OldY}, _A, _B}, X, Y, _Acc)	->
+	{cellref, {offset, OldX + X}, {offset, OldY + Y}, _A, _B}.
+
 
 
 %check if a cell points away from a specified worksheet
 %check_off_page({cellref, {offset,-1}, {offset,-57}, "/page1/","/page1/a1"}, ["function"])
 check_off_page([], _Page) -> valid;
+check_off_page(Number, _Page) when not(is_list(Number))	-> valid;
 check_off_page([{cellref, _, _, P, _} | T], Page) ->
 	case muin_util:walk_path(Page, P) of
         Page ->
@@ -292,7 +308,14 @@ get_cell_s_value(Cell, Site, Page)	->
 				[]				-> []
 			end
 	end.
-
+	
+	
+%curie:read_cell_s_attributes("a1", "http://hypernumbers.dev:9000", ["page3"]).
+read_cell_s_attributes(Cell, Site, Page)	->
+	Ref = #refX{site = Site, path = Page,
+                   obj = hn_util:parse_ref(Cell)},
+    Attributes = new_db_api:read_ref(Ref),
+	io:format("Attributes are: ~p~n", [Attributes]).
 
 %if string starts with / regexp:split/2 wuould return [] as its representation,
 %this module gets rid of empty lists in a result list.
@@ -301,7 +324,6 @@ refine_string_list([H | T], Result)	->
 		[]	-> refine_string_list(T, Result);
 		_	-> refine_string_list(T, [H | Result])
 	end;
-	
 refine_string_list([], Result)	->
 	lists:reverse(Result).
 
@@ -309,3 +331,10 @@ refine_string_list([], Result)	->
 kfind(Key, List) ->
     {Key, Val} = lists:keyfind(Key, 1, List),
     Val.
+
+check_for_not_in_param_error([])						-> ok;
+check_for_not_in_param_error([{error, Message} | _T])	-> {error, Message};
+check_for_not_in_param_error({error, Message})			-> {error, Message};
+check_for_not_in_param_error([H | T]) when is_list(H)	-> check_for_not_in_param_error([check_for_not_in_param_error(H) | T]);
+check_for_not_in_param_error([_H | T])					-> check_for_not_in_param_error(T).
+	
