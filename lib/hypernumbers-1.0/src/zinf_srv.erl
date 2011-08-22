@@ -20,7 +20,7 @@
 -define(E, error_logger:error_msg).
 -define(sq_bra, 91).
 -define(sq_ket, 93).
-
+-define(PROFILE, "profile_zinf_srv").
 -compile(export_all).
 
 %% API
@@ -33,11 +33,21 @@
          dump/1
         ]).
 
+% perf testing API
+-export([
+         start_fprof/1,
+         stop_fprof/2
+        ]).
+
 %% API for fns used in new_db_api
 -export([
          add/2,
          del/2,
          expand_zrefs/1
+        ]).
+
+-export([
+         perf_testing/0
         ]).
 
 -export([
@@ -81,6 +91,17 @@ check_zinfs(Site) ->
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:cast({global, Id}, {dump, Site}).
+
+%%%===================================================================
+%%% Profiling
+%%%===================================================================
+start_fprof(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:call({global, Id}, start_fprof).
+
+stop_fprof(Site, TraceFile) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:cast({global, Id}, {stop_fprof, TraceFile}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -140,7 +161,15 @@ init([Site]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(_Request, _From, State) ->
+handle_call(start_fprof, From, State) ->
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    TraceFile = Dir ++ ?PROFILE ++ Stamp ++ ".trace",
+    fprof:trace(start, TraceFile),
+    io:format("TraceFile is ~p~n", [TraceFile]),
+    {reply, TraceFile, State};
+handle_call(Request, _From, State) ->
+    io:format("Request is ~p~n", [Request]),
     {reply, ok, State}.
 
 %%--------------------------------------------------------------------
@@ -153,6 +182,12 @@ handle_call(_Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_cast({stop_fprof, TraceFile}, State) ->
+    fprof:trace(stop),
+    fprof:profile(file, TraceFile),
+    Root = filename:rootname(TraceFile),
+    fprof:analyse([{dest, Root ++ ".analysis"}]),
+    {noreply, State};
 handle_cast(Msg, State) ->
     #state{site = S, zinf_tree = Tree} = State,
     {Act, NewT} =
@@ -210,10 +245,19 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 process_zs(Site, Tree) ->
-    new_db_api:process_dirty_zinfs(Site, Tree, fun add/2, fun del/2).
+    StartTime = get_time(),
+    Ret = new_db_api:process_dirty_zinfs(Site, Tree, fun add/2, fun del/2),
+    EndTime = get_time(),
+    Msg = io_lib:format("~p", [EndTime - StartTime]),
+    log(Msg, "process_zs" ++ ".csv"),
+    Ret.
 
 check_zs(Site, Tree) ->
+    StartTime = get_time(),
     ok = new_db_api:process_dirties_for_zinf(Site, Tree, fun check/2),
+    EndTime = get_time(),
+    Msg = io_lib:format("~p", [EndTime - StartTime]),
+    log(Msg, "check_zs" ++ ".csv"),
     Tree.
 
 add({XRefX, Idx}, Tree) ->
@@ -1293,4 +1337,48 @@ unit_test_() ->
 
     %{setup, Setup, Cleanup,
      {setup, Setup, [{with, [], SeriesA}]}.
+
+% test the performance of the zinf server
+perf_testing() -> Tree = gb_trees:empty(),
+               perf2(Tree, 1, 100, 20, 20, 20, 20).
+
+perf2(_Tree, _Idx, 0, _, 0, _,  0) -> ok;
+% order matters!
+perf2(Tree, Idx, NPages, MaxXs, 0, MaxYs, 0) ->
+    io:format("Page: ~p~n", [NPages]),
+    perf2(Tree, Idx, NPages - 1, MaxXs, MaxXs, MaxYs, MaxYs);
+perf2(Tree, Idx, NPages, MaxXs, NXs, MaxYs, 0) ->
+    perf2(Tree, Idx, NPages, MaxXs, NXs - 1, MaxYs, MaxYs);
+perf2(Tree, Idx, NPages, MaxXs, NXs, MaxYs, NYs) ->
+    S = "http://example.com",
+    P = [integer_to_list(NPages)],
+    Obj = {cell, {NXs, NYs}},
+    {NewIdx, NewTree} = perf3(100, Tree, Idx, S, P, Obj),
+    perf2(NewTree, NewIdx, NPages, MaxXs, NXs, MaxYs, NYs - 1).
+
+perf3(0, Tree, Idx, _S, _P, _Obj) ->
+    {Idx, Tree};
+perf3(N, Tree, Idx, S, P, Obj) ->
+    RefX = #xrefX{site = S, path = P, obj = Obj},
+    Start = get_time(),
+    NewTree = add({RefX, Idx}, Tree),
+    End = get_time(),
+    Msg = io_lib:format("~p", [End - Start]),
+    log(Msg, "zinf_loading"),
+    perf3(N - 1, NewTree, Idx + 1, S, P, Obj).
+
+log(String, File) ->
+    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    _Return = filelib:ensure_dir(Dir ++ File),
+    Date = dh_date:format("d-M-y h:i:s"),
+
+    case file:open(Dir ++ File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
+            file:close(Id);
+        _ ->
+            error
+    end.
+
+get_time() -> util2:get_timestamp()/1000000.
 
