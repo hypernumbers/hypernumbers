@@ -259,6 +259,9 @@ transform("piechart." ++ R, Args) ->
 transform("link.box." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("link.box."), [W , H | Args]};
+transform("table." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("table."), [W , H | Args]};
 % single parameter stuff
 transform("tim.headline." ++ R, Args) ->
     {list_to_atom("tim.headline."), [R | Args]};
@@ -360,7 +363,7 @@ funcall(Fname, Args0) ->
              odd, int, degrees, radians, proper, index, var, steyx,
              small, skew, large, sumproduct, daverage, dcount, isref,
              irr, even,
-             include, 'tim.tabs.', table],
+             include, 'tim.tabs.', 'table.'],
 
     Args = case lists:member(Fname, Funs) of
                true  -> Args0;
