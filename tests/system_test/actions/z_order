@@ -7,7 +7,7 @@ sites() -> [?site].
 
 % don't do bugger all for recalc
 actions() ->
-    N = 10000,
+    N = 100,
     ok = load_z(N),
     ok.
 
