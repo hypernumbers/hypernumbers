@@ -22,7 +22,7 @@ save(Path, Fixture) ->
             FN = filename:join(?FIXTURE_DIR, Fixture++".json"),
             file:write_file(FN, JSON);
         Other ->
-            throw({bad_http_request, Other})
+            throw({bad_http_request_1, Other})
     end.
 
 
@@ -37,7 +37,7 @@ restore(Path, Fixture, Profile) ->
             FN = filename:join(?rel(?FIXTURE_DIR), Fixture++".json"),
             hn_import:json_file(Path, FN);
         Other ->
-            throw({bad_http_request, Other})
+            throw({bad_http_request_2, Other})
     end.
 
 generate() ->
