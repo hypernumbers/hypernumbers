@@ -87,8 +87,8 @@
 -define(BOTHAXES,     "x,y").
 -define(SPKBARWIDTHS, "10,1,2").
 -define(SPKBARWIDTH,  10).
--define(SPKBARSPACE,  1).
--define(SPKBARGRPSP,  2).
+-define(SPKBARSPACE,  4).
+-define(SPKBARGRPSP,  5).
 
 -define(SPCOLOURS, [
                     "444444",
