@@ -478,7 +478,9 @@ split(List) ->
 check_alerts(N) when 0 =< N andalso N < 4 -> ok;
 check_alerts(_N)                         -> ?ERR_VAL.
 
-check_size2(W, H, MinH) when W > 1 andalso W < 16 andalso H >= MinH andalso H < 26 -> ok;
+check_size2(W, H, MinH)
+  when W > 1 andalso W < 16
+andalso H >= MinH andalso H < 26 -> ok;
 check_size2(_W, _H, _MinH) -> ?ERR_VAL.
 
 unzip([], Acc1, Acc2) ->
