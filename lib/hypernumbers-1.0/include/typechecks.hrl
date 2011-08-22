@@ -37,8 +37,11 @@
 -define(is_cellref(X),
         element(1, X) == cellref).
 
+% this just checks for finite rangerefs - not columns or z-queries
 -define(is_rangeref(X),
-        (is_tuple(X) andalso element(1, X) == rangeref)).
+        (is_tuple(X)
+         andalso element(1, X) == rangeref
+         andalso element(2, X) == finite)).
 
 -define(is_zcellref(X),
         element(1, X) == zcellref).
