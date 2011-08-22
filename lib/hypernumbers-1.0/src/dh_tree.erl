@@ -114,10 +114,15 @@ delete(List, Dict) ->
     delete1(List, Dict).
 
 delete1([H],Dict) ->
-    Empty = dict:new(),
-    case dict:fetch(H, Dict) of
-        Empty -> dict:erase(H,Dict);
-        _     -> Dict % sub-trees exist -don't delete!
+    Keys = dict:fetch_keys(Dict),
+    case lists:member(H, Keys) of
+        true ->
+            Empty = dict:new(),
+            case dict:fetch(H, Dict) of
+                Empty -> dict:erase(H,Dict);
+                _     -> Dict % sub-trees exist -don't delete!
+            end;
+        false -> Dict % page doesn't exist
     end;
 delete1([H|T],Dict) ->
     dict:store(H,delete1(T,dict:fetch(H,Dict)),Dict).
