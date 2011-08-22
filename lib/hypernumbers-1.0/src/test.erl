@@ -29,17 +29,26 @@
 
 -define(SITE, "http://tests.hypernumbers.dev:9000").
 
-init() ->
-    catch hn_setup:site(?SITE, blank, []).
+init() -> setup(blank, []).
 
 init_fuzz() ->
     {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
     passport:validate_uid(Uid),
     passport:set_password(Uid, "i!am!secure"),
-    catch hn_setup:site(?SITE, blank, [{creator, Uid}]).
+    setup:site(blank, [{creator, Uid}]).
 
 init_sec() ->
-    catch hn_setup:site(?SITE, security_test, []).
+    {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
+    passport:validate_uid(Uid),
+    passport:set_password(Uid, "i!am!secure"),
+    setup(security_test, [{creator, Uid}]).
+
+setup(Type, Opts) when is_list(Opts) ->
+    case hn_setup:site_exists(?SITE) of
+        true  -> hn_setup:delete_site(?SITE);
+        false -> ok
+    end,
+    catch hn_setup:site(?SITE, Type, Opts).
 
 all() -> excel(), sys(), security(), fuzz().
 
@@ -84,6 +93,7 @@ compile(File) ->
 
 sys() ->
     sys([]).
+
 sys(Suites) ->
     init(),
     %% Copy source files
@@ -108,12 +118,14 @@ sys(Suites) ->
 excel() ->
     excel("1"),
     excel("2").
+
 excel(TName) ->
     init(),
     WC = filename:absname(?TEST_DIR)++"/excel_import_"++TName++"*_test",
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
     do_test(Opts).
+
 excel(T, S) ->
     init(),
     Test = filename:absname(?TEST_DIR)++"/excel_import_"++T++"_test",
