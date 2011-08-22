@@ -371,11 +371,11 @@ authorize_p3(Site, Path, Env) ->
             end;
         % jakub's clause
         denied           ->
-			case Env#env.body of
-				[{"read_user_fn", _Args}]		-> allowed;
-				[{"delete_user_fn", _Args}]	-> allowed;
-				[{"write_user_fn", _Args}]	-> allowed;
-				_										-> denied
+            case Env#env.body of
+                [{"read_user_fn", _Args}]		-> allowed;
+                [{"delete_user_fn", _Args}]	-> allowed;
+                [{"write_user_fn", _Args}]	-> allowed;
+                _						        				-> denied
 			end
     end.
 

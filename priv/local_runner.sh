@@ -19,6 +19,8 @@ printf $(./hn call 'testsys:generate().')
 printf "\n\n"
 printf $(./hn call 'test:sys().')
 printf "\n\n"
+printf $(./hn call 'test:security().')
+printf "\n\n"
 
 ## Run tests
 printf $(./hn call 'test:excel("1a").')

@@ -16,6 +16,9 @@
 {add_user, [{email, "test@hypernumbers.com"},
             {group, "test1"},
             {password, "i!am!secure"}]}.
+{add_user, [{email, "debug@hypernumbers.com"},
+            {group, "admin"},
+            {password, "i!am!secure"}]}.
 
 % ditto for set_users 2 syntaxs
 %{set_users, [{group, "test2"}, {uids, ["test@hypernumbers.com"]}]}.
