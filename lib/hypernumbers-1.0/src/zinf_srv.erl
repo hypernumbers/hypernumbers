@@ -245,19 +245,19 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 process_zs(Site, Tree) ->
-    StartTime = get_time(),
+    %StartTime = get_time(),
     Ret = new_db_api:process_dirty_zinfs(Site, Tree, fun add/2, fun del/2),
-    EndTime = get_time(),
-    Msg = io_lib:format("~p", [EndTime - StartTime]),
-    log(Msg, "process_zs" ++ ".csv"),
+    %EndTime = get_time(),
+    %Msg = io_lib:format("~p", [EndTime - StartTime]),
+    %log(Msg, "process_zs" ++ ".csv"),
     Ret.
 
 check_zs(Site, Tree) ->
-    StartTime = get_time(),
+    %StartTime = get_time(),
     ok = new_db_api:process_dirties_for_zinf(Site, Tree, fun check/2),
-    EndTime = get_time(),
-    Msg = io_lib:format("~p", [EndTime - StartTime]),
-    log(Msg, "check_zs" ++ ".csv"),
+    %EndTime = get_time(),
+    %Msg = io_lib:format("~p", [EndTime - StartTime]),
+    %log(Msg, "check_zs" ++ ".csv"),
     Tree.
 
 add({XRefX, Idx}, Tree) ->
