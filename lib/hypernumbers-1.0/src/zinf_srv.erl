@@ -161,7 +161,7 @@ init([Site]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(start_fprof, From, State) ->
+handle_call(start_fprof, _From, State) ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
     Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
     TraceFile = Dir ++ ?PROFILE ++ Stamp ++ ".trace",
