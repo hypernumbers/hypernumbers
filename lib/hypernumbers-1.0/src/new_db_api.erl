@@ -238,15 +238,14 @@ process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
            end,
     mnesia_mon:log_act(transaction, Fun2, Report).
 
-process_dirties_for_zinf(Site, Tree, CheckFun) ->
+process_dirties_for_zinf(Site, CheckFun, Tree) ->
     Report = mnesia_mon:get_stamp("process_dirties_for_zinf"),
     Tbl = new_db_wu:trans(Site, dirty_for_zinf),
     Fun = fun() ->
                   mnesia_mon:report(Report),
                   L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, write),
-                  L2 = hslists:uniq(L),
-                  Dirties = [CheckFun(Tree, D)
-                             || #dirty_for_zinf{dirty = D} <- L2],
+                  L2 = shrink(L),
+                  Dirties = [CheckFun(Tree, X) || X <- L2],
                   D1 = hslists:uniq(lists:flatten(Dirties)),
                   ok = new_db_wu:mark_these_idxs_dirty(D1, Site, nil),
                   [ok = mnesia:delete(Tbl, Id, write)
@@ -1256,6 +1255,17 @@ filter_pages([], Tree) ->
     Tree;
 filter_pages([Path | T], Tree) ->
     filter_pages(T, dh_tree:add(Path, Tree)).
+
+shrink([])   -> [];
+shrink(List) -> List2 = lists:sort(List),
+                shrink2(List2, []).
+
+shrink2([#dirty_for_zinf{dirty = D}], Acc) -> [D | Acc];
+% if they are the same xrefX drop one
+shrink2([#dirty_for_zinf{dirty = D} = H,
+         #dirty_for_zinf{dirty = D} | T], Acc) ->
+    shrink2([H | T], Acc);
+shrink2([#dirty_for_zinf{dirty = D} | T], Acc) -> shrink2(T, [D | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
