@@ -238,7 +238,7 @@ process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
            end,
     mnesia_mon:log_act(transaction, Fun2, Report).
 
-process_dirties_for_zinf(Site, CheckFun, Tree) ->
+process_dirties_for_zinf(Site, Tree, CheckFun) ->
     Report = mnesia_mon:get_stamp("process_dirties_for_zinf"),
     Tbl = new_db_wu:trans(Site, dirty_for_zinf),
     Fun = fun() ->
