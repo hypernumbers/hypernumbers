@@ -53,10 +53,6 @@ body { color: #3f3f3f; font-family: Verdana, Geneva, sans-serif; }
 Crumbs
 
 **********************************************/
-a:link, a:visited { color: #999; text-decoration: none; border-bottom: 1px dashed #8a8a8a;}
-a:hover { color: #3f3f3f;}
-
-a img:hover { opacity: 0.6;}
 
 /**********************************************
 
@@ -271,13 +267,13 @@ Tabs
 }
 .hn_sld_tabs ul li.ui-tabs-selected a:hover { color: #fff}
 
-.hn_sld_tabs div.ui-tabs-panel { width: auto; padding: 0; overflow: auto;}
+.hn_sld_tabs div.ui-tabs-panel { padding: 0; overflow: auto;}
 .hn_sld_tabs div.ui-tabs-panel p {
 	font-size: 1em;
     margin: 11px;
 }
 
-.hn_sld_tabs div.ui-tabs-panel img { margin: 11px }
+.hn_sld_tabs div.ui-tabs-panel img { margin: 0 }
 
 
 /********************************
@@ -294,13 +290,6 @@ div.hn_sld_alert h4, div.hn_sld_plainbox h4, div.hn_sld_ruledbox h4 {margin: 0; 
 div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ruledbox div { overflow: auto;}
 
 .hn_sld_footer { height: 11px; }
-
-/* Set the height and allow for overflow
-*/
-.hn_sld_tabs div.ui-tabs-panel {
-    overflow: auto;
-    padding: 0;
-}
 
 // Generic boxes
 .hn_box_height_1 {height: 16px; }
