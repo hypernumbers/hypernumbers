@@ -47,6 +47,18 @@ a img {
 a {
     color: inherit;
 }
+
+a:link, a:visited { text-decoration: none; border-bottom: 1px dashed;}
+a:hover { color: #3f3f3f;}
+
+a img:hover { opacity: 0.6;}
+
+#editloggedin a:link, #editloggedin a:visited {
+    color: darkorange;
+}
+#editloggedin a:hover, a:hover  { color: #3f3f3f;}
+
+
 td {
     vertical-align:top;
 }
@@ -114,8 +126,8 @@ body {
 
 #hn_reset_pwd
 {
-  text-decoration: underline;
   cursor: pointer;
+  border-bottom: 1px dashed;
   }
 
 #editspreadsheet {
