@@ -103,8 +103,10 @@ get_page_s_json(Site, Path) ->
 
 read_user_fn(Site, Name)	->
 	Result = new_db_api:read_user_fn(Site, Name),
-	io:format("Read User Fn, Result is: ~p~n", [Result]),
-	{ok, "read_user_fn"}.
+	case Result of
+		[]	->	{error, no_entry_in_DB};
+		_	->	{ok, Result}
+	end.
 	
 delete_user_fn(Site, Name)	->
 	new_db_api:delete_user_fn(Site, Name),
