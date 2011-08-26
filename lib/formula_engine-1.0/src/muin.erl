@@ -123,11 +123,10 @@ external_eval_formula(X) ->
 %% evaluates a formula rather than a piece of AST, i.e. will do implicit
 %% intersection, resolve a final cellref &c.
 eval_formula(Fcode) ->
-    case eval(Fcode) of
-        ?error_in_formula ->
-            ?ERRVAL_FORM;
+	case eval(Fcode) of
+        ?error_in_formula ->	?ERRVAL_FORM;
         Value ->
-            case Value of
+	        case Value of
                 R when ?is_cellref(R) ->
                     case muin_util:attempt(?MODULE, fetch, [R]) of
                         {ok,    blank}              -> 0;
@@ -351,15 +350,10 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
 funcall(user_defined_function, [Function_Name, Site | Args])	->
 	case curie:read_user_fn(Site, atom_to_list(Function_Name)) of
 		{ok, DB_Entry}	->	[{user_fns, _name, AST, _page, _wizard}] = DB_Entry,
-							Params_in_AST = length(curie_arity:walk_AST(lists:flatten(AST), [])),
-							case Params_in_AST =:= length(Args) of
-								true	->	io:format("TRUE~n~p~n", [AST]);
-											%~ TODO
-												%~ Now need to swap AST for function parameters. 
-												%~ Walk through the AST and for each cellref grab its cell Address,
-												%~ than compare it with walk_AST result (get its position) and 
-												%~ grab argument with the same position from Args.
-											%~ TODO
+							Params_in_AST = curie_arity:walk_AST(lists:flatten(AST), []),
+							case length(Params_in_AST) =:= length(Args) of
+								true	->	Applied_AST = curie_arity:apply_function(Params_in_AST, Args, AST),
+											external_eval(Applied_AST);
 								false	->	?ERRVAL_VAL
 							end;
 		{error, _Message}	->	?ERRVAL_NAME
