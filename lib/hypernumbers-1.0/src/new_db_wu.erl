@@ -95,7 +95,10 @@ proc_dirties_for_zinfD(Site, Tree, CheckFun) ->
     L2 = shrink(L),
     Dirties = [CheckFun(Tree, X) || X <- L2],
     D1 = hslists:uniq(lists:flatten(Dirties)),
-    ok = new_db_wu:mark_these_idxs_dirtyD(D1, Site, nil),
+    ok = case D1 of % this construction takes the call out of cprof!
+             []   -> ok;
+             List -> new_db_wu:mark_these_idxs_dirtyD(List, Site, nil)
+         end,
     [ok = mnesia:delete(Tbl, Id, write)
      || #dirty_for_zinf{id = Id} <- L].
 
