@@ -74,17 +74,6 @@
          read_styles_IMPORT/1
         ]).
 
--export([
-         dirty_for_zinf_DEBUG/1,
-         item_and_local_objs_DEBUG/1,
-         url_DEBUG/1,
-         url_DEBUG/2,
-         idx_DEBUG/2,
-         idx_DEBUG/3,
-         raw_idx_DEBUG/2,
-         raw_url_DEBUG/1
-        ]).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
 %%% API Functions
@@ -104,23 +93,21 @@ mark_idx_dirty(Site, Idx) ->
     Report1 = mnesia_mon:get_stamp("mark_idx_dirty (1)"),
     Fun1 = fun() ->
                   mnesia_mon:report(Report1),
-                  new_db_wu:idx_to_xrefX(Site, Idx)
+                  new_db_wu:idx_to_xrefXD(Site, Idx)
            end,
     XRefX = mnesia_mon:log_act(transaction, Fun1, Report1),
     Report2 = mnesia_mon:get_stamp("mark_idx_dirty (2)"),
     Fun2 = fun() ->
                   mnesia_mon:report(Report1),
-                  ok = new_db_wu:mark_these_dirty([XRefX], nil)
+                  ok = new_db_wu:mark_these_dirtyD([XRefX], nil)
           end,
     RefX = hn_util:xrefX_to_refX(XRefX),
     write_activity(RefX, Fun2, "quiet", Report2).
 
 read_timers(Site) ->
     Report = mnesia_mon:get_stamp("read_timers"),
-    Tbl = new_db_wu:trans(Site, timer),
     Fun = fun() ->
-                  Spec = #timer{_ ='_'},
-                  mnesia:match_object(Tbl, Spec, read)
+                  new_db_wu:read_timersD(Site)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -128,8 +115,8 @@ read_includes(#refX{obj = {page, "/"}} = RefX) ->
     Report = mnesia_mon:get_stamp("read_includes"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  XRefX = new_db_wu:refX_to_xrefX_create(RefX),
-                  unpack_incs(new_db_wu:read_incs(XRefX))
+                  XRefX = new_db_wu:refX_to_xrefX_createD(RefX),
+                  unpack_incs(new_db_wu:read_incsD(XRefX))
            end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -138,7 +125,7 @@ handle_circref_cell(Site, Idx, Ar) ->
     Report = mnesia_mon:get_stamp("handle_circref_cell"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  Cell = new_db_wu:idx_to_xrefX(Site, Idx),
+                  Cell = new_db_wu:idx_to_xrefXD(Site, Idx),
                   _Dict = new_db_wu:write_attrs(Cell,
                                                 [{"formula", "=#CIRCREF!"}],
                                                 Ar),
@@ -150,7 +137,7 @@ get_logs(RefX) when is_record(RefX, refX) ->
     Report = mnesia_mon:get_stamp("get_logs"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:get_logs(RefX)
+                  new_db_wu:get_logsD(RefX)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -160,7 +147,7 @@ load_dirty_since(Since, QTbl) ->
     Report = mnesia_mon:get_stamp("load_dirty_since"),
     F = fun() ->
                 mnesia_mon:report(Report),
-                new_db_wu:load_dirty_since(Since, QTbl)
+                new_db_wu:load_dirty_sinceD(Since, QTbl)
         end,
     case mnesia_mon:log_act(transaction, F, Report) of
         [] -> {Since, []};
@@ -176,14 +163,9 @@ load_dirty_since(Since, QTbl) ->
 %% a hard failure AND NOT FOR ANY OTHER REASON
 reset_dirty_zinfs(Site) ->
     Report = mnesia_mon:get_stamp("reset_dirty_zinfs"),
-    Tbl = new_db_wu:trans(Site, dirty_zinf),
     Fun  = fun() ->
                    mnesia_mon:report(Report),
-                   Spec = #dirty_zinf{_='_', processed = true},
-                   L = mnesia:match_object(Tbl, Spec, write),
-                   [ok = mnesia:write(Tbl, X#dirty_zinf{processed = false},
-                                      write) || X  <- L],
-                   ok
+                   new_db_wu:reset_dirty_zinfs(Site)
            end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -197,59 +179,26 @@ maybe_write_zinftree(Site, Tree, MaxSize) ->
         Size > MaxSize ->
             Fun  = fun() ->
                            mnesia_mon:report(Report),
-                           ok = new_db_wu:write_kv(Site, ?zinf_tree, Tree),
-                           Spec = #dirty_zinf{_='_', processed = true},
-                           L = mnesia:match_object(Tbl, Spec, write),
-                           [ok = mnesia:delete(Tbl, Id, write)
-                            || #dirty_zinf{id = Id} <- L]
+                           new_db_wu:maybe_write_zinftreeD(Site, Tree)
                    end,
-            mnesia_mon:log_act(transaction, Fun, Report),
-            ok;
+            mnesia_mon:log_act(transaction, Fun, Report);
         Size =< MaxSize ->
             ok
     end.
 
 process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
     Report = mnesia_mon:get_stamp("process_dirty_zinfs"),
-    Tbl = new_db_wu:trans(Site, dirty_zinf),
-    Fun1 = fun(DirtyZinf, Tr) ->
-                   #dirty_zinf{dirtycellidx = CI, old = OldP,
-                               new = NewP} = DirtyZinf,
-                   % expand the new and old parents
-                   NewP2 = get_zinfs(NewP, CI),
-                   OldP2 = get_zinfs(OldP, CI),
-                   Add = ordsets:subtract(NewP2, OldP2),
-                   Del = ordsets:subtract(OldP2, NewP2),
-                   NewTree = lists:foldl(AddFun, Tr, Add),
-                   NewTree2 = lists:foldl(DelFun, NewTree, Del),
-                   NewTree2
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:proc_dirty_zinfsD(Site, Tree, AddFun, DelFun)
            end,
-    Fun2 = fun() ->
-                   mnesia_mon:report(Report),
-                   Spec = #dirty_zinf{_='_', processed = false},
-                   L = mnesia:match_object(Tbl, Spec, write),
-                   % need to apply the dirty zinfs in the order
-                   % they were added
-                   L2 = lists:sort(L),
-                   NewTree = lists:foldl(Fun1, Tree, L2),
-                   [ok = mnesia:write(Tbl, X#dirty_zinf{processed = true},
-                                      write) || X  <- L],
-                   NewTree
-           end,
-    mnesia_mon:log_act(transaction, Fun2, Report).
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 process_dirties_for_zinf(Site, Tree, CheckFun) ->
     Report = mnesia_mon:get_stamp("process_dirties_for_zinf"),
-    Tbl = new_db_wu:trans(Site, dirty_for_zinf),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, write),
-                  L2 = shrink(L),
-                  Dirties = [CheckFun(Tree, X) || X <- L2],
-                  D1 = hslists:uniq(lists:flatten(Dirties)),
-                  ok = new_db_wu:mark_these_idxs_dirty(D1, Site, nil),
-                  [ok = mnesia:delete(Tbl, Id, write)
-                   || #dirty_for_zinf{id = Id} <- L]
+                  new_db_wu:proc_dirties_for_zinfD(Site, Tree, CheckFun)
           end,
     % using a spoof RefX because it is not going to the front end
     % (change that from a quiet report and watch it die!)
@@ -261,7 +210,7 @@ delete_api(Site, PublicKey) ->
     Report = mnesia_mon:get_stamp("delete_api"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:delete_api(Site, PublicKey)
+                  new_db_wu:delete_apiD(Site, PublicKey)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -269,7 +218,7 @@ write_api(Site, #api{} = API) ->
     Report = mnesia_mon:get_stamp("write_api"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:write_api(Site, API)
+                  new_db_wu:write_apiD(Site, API)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -277,7 +226,7 @@ get_api_keys(Site) ->
     Report = mnesia_mon:get_stamp("get_api_keys"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:get_api_keys(Site)
+                  new_db_wu:get_api_keysD(Site)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -285,7 +234,7 @@ read_api(Site, PublicKey) ->
     Report = mnesia_mon:get_stamp("read_api"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:read_api(Site, PublicKey)
+                  new_db_wu:read_apiD(Site, PublicKey)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -293,7 +242,7 @@ delete_user_fn(Site, FnName) ->
     Report = mnesia_mon:get_stamp("delete_user_fn"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:delete_user_fn(Site, FnName)
+                  new_db_wu:delete_user_fnD(Site, FnName)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -301,7 +250,7 @@ write_user_fn(Site, #user_fns{} = Fn) ->
     Report = mnesia_mon:get_stamp("write_user_fn"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:write_user_fn(Site, Fn)
+                  new_db_wu:write_user_fnD(Site, Fn)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -309,7 +258,7 @@ read_user_fn(Site, FnName) ->
     Report = mnesia_mon:get_stamp("read_user_fn"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:read_user_fn(Site, FnName)
+                  new_db_wu:read_user_fnD(Site, FnName)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -317,7 +266,7 @@ write_kv(Site, Key, Value) ->
     Report = mnesia_mon:get_stamp("write_kv"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:write_kv(Site, Key, Value)
+                  new_db_wu:write_kvD(Site, Key, Value)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -325,7 +274,7 @@ read_kv(Site, Key) ->
     Report = mnesia_mon:get_stamp("read_kv"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:read_kv(Site, Key)
+                  new_db_wu:read_kvD(Site, Key)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
@@ -353,7 +302,7 @@ read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
     Report = mnesia_mon:get_stamp("read_styles_IMPORT"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:read_styles_IMPORT(RefX)
+                  new_db_wu:read_styles_IMPORTD(RefX)
           end,
     read_activity(RefX, Fun, Report).
 
@@ -380,18 +329,18 @@ handle_form_post(#refX{site = S, path = P,
 
                   NLbls = [ {Lref, [{"formula", Val}]} || {Lref, Val} <- NewLabels],
                   [begin
-                       XRefX = new_db_wu:refX_to_xrefX_create(X),
+                       XRefX = new_db_wu:refX_to_xrefX_createD(X),
                        _Dict = new_db_wu:write_attrs(XRefX, A, PosterUid)
                    end || {X, A} <- NLbls],
                   Row = new_db_wu:get_last_row(RefX) + 1,
                   F = fun(X, Val) ->
                               Obj = {cell, {X, Row}},
                               RefX2 = #refX{site = S, path = P, obj = Obj},
-                              XRefX2 = new_db_wu:refX_to_xrefX_create(RefX2),
+                              XRefX2 = new_db_wu:refX_to_xrefX_createD(RefX2),
                               _Dict = new_db_wu:write_attrs(XRefX2,
                                                             [{"formula", Val}],
                                                             PosterUid),
-                              ok = new_db_wu:mark_these_dirty([XRefX2], PosterUid)
+                              ok = new_db_wu:mark_these_dirtyD([XRefX2], PosterUid)
                       end,
                   [F(X, V) || {#refX{site = S1, path = P1,
                                      obj = {column, {X, X}}}, V}
@@ -415,11 +364,11 @@ append_row(List, PAr, VAr) when is_list(List) ->
                 F = fun(X, Val) ->
                             Obj = {cell, {X, Row}},
                             RefX2 = #refX{site = S, path = P, obj = Obj},
-                            XRefX2 = new_db_wu:refX_to_xrefX_create(RefX2),
+                            XRefX2 = new_db_wu:refX_to_xrefX_createD(RefX2),
                             _Dict = new_db_wu:write_attrs(XRefX2,
                                                           [{"formula", Val}],
                                                           PAr),
-                            ok = new_db_wu:mark_these_dirty([XRefX2], VAr)
+                            ok = new_db_wu:mark_these_dirtyD([XRefX2], VAr)
                     end,
                 [F(X, V) || {#refX{site = S1, path = P1,
                                    obj = {column, {X, X}}}, V}
@@ -433,7 +382,7 @@ matching_forms(RefX, Transaction) ->
     Report = mnesia_mon:get_stamp("matching_forms"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  new_db_wu:matching_forms(RefX, Transaction)
+                  new_db_wu:matching_formsD(RefX, Transaction)
           end,
     read_activity(RefX, Fun, Report).
 
@@ -565,7 +514,7 @@ read_attribute(RefX, Field) when is_record(RefX, refX) ->
     Report = mnesia_mon:get_stamp("read_attribute"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  XRefX = new_db_wu:refX_to_xrefX_create(RefX),
+                  XRefX = new_db_wu:refX_to_xrefX_createD(RefX),
                   new_db_wu:read_ref_field(XRefX, Field, read)
           end,
     read_activity(RefX, Fun, Report).
@@ -574,10 +523,10 @@ recalc_page(#refX{obj = {page, "/"}} = RefX) ->
     Report = mnesia_mon:get_stamp("recalc_page"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
-                  XRefX = new_db_wu:refX_to_xrefX_create(RefX),
+                  XRefX = new_db_wu:refX_to_xrefX_createD(RefX),
                   Refs = new_db_wu:read_ref(XRefX, inside),
                   Refs2 = [X || {X, L} <- Refs, L =/= []],
-                  ok = new_db_wu:mark_these_dirty(Refs2, nil)
+                  ok = new_db_wu:mark_these_dirtyD(Refs2, nil)
           end,
     write_activity(RefX, Fun, "refresh", Report).
 
@@ -784,7 +733,6 @@ delete(#refX{obj = {column, _}} = RefX, Ar)  ->
 delete(#refX{obj = {row, {_Min, _Max}}} = RefX, Ar) ->
     move(RefX, delete, vertical, Ar, "delete", false);
 delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
-    ok = page_srv:page_deleted(S, P),
     % page deletes are too 'big' cause massive memory spikes
     % and dirty cell rushes and message queues to go through
     % the roof, so we don't do them atomically.
@@ -801,7 +749,8 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
                    new_db_wu:get_last_row(RefX)
            end,
     NoOfRows = mnesia_mon:log_act(transaction, Fun1, Report1),
-    delete_by_rows(NoOfRows, 0, RefX, Ar).
+    ok = delete_by_rows(NoOfRows, 0, RefX, Ar),
+    ok = page_srv:page_deleted(S, P).
 
 %% @doc deletes a reference.
 %%
@@ -841,15 +790,17 @@ clear_by_rows(N, Min, #refX{site = S} = RefX, Type, Ar) ->
 
 -spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> list().
 handle_dirty_cell(Site, Idx, Ar) ->
-    Report = mnesia_mon:get_stamp("handle_dirty_cell: " ++ integer_to_list(Idx)),
+    Report = mnesia_mon:get_stamp("handle_dirty_cell: "
+                                  ++ integer_to_list(Idx)),
     ok = init_front_end_notify(),
     Fun =
         fun() ->
                 mnesia_mon:report(Report),
-                Cell = new_db_wu:idx_to_xrefX(Site, Idx),
+                io:format("In handle_dirty_cell~n"),
+                Cell = new_db_wu:idx_to_xrefXD(Site, Idx),
                 Attrs = case new_db_wu:read_ref(Cell, inside, write) of
                             [{_, A}] -> A;
-                            _ -> orddict:new()
+                            _        -> orddict:new()
                         end,
                 case orddict:find("formula", Attrs) of
                     {ok, F} ->
@@ -858,7 +809,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
                                                       Ar),
                         % cells may have been written that now depend on this
                         % cell so it needs to report back dirty children
-                        [Rels] = new_db_wu:read_relations(Cell, read),
+                        [Rels] = new_db_wu:read_relationsD(Cell, read),
                         Rels#relation.children;
                     _ ->
                         []
@@ -911,14 +862,6 @@ write_attributes(List, PAr, VAr) ->
 %%% Internal Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-get_zinfs(List, CI) -> get_z2(List, CI, []).
-
-get_z2([], _CI, Acc) -> lists:sort(lists:flatten(Acc));
-get_z2([H | T], CI, Acc) ->
-    Zs = zinf_srv:expand_zrefs(H),
-    Zs2 = lists:merge([H], Zs),
-    NewAcc = [{X, CI} || X <- Zs2],
-    get_z2(T, CI, [NewAcc | Acc]).
 
 expand(List) ->
     {R, A} = lists:unzip(List),
@@ -939,12 +882,15 @@ write_attributes1(#xrefX{} = XRefX, List, PAr, VAr) ->
     new_db_wu:write_attrs(XRefX, List, PAr),
     % first up do the usual 'dirty' stuff - this cell is dirty
     case lists:keymember("formula", 1, List) of
-        true  -> new_db_wu:mark_these_dirty([XRefX], VAr);
+        true  -> new_db_wu:mark_these_dirtyD([XRefX], VAr);
         false -> ok
     end,
     % now do the include dirty stuff (ie this cell has had it's format updated)
     % so make any cells that use '=include(...)' on it redraw themselves
-    ok = new_db_wu:mark_dirty_for_incl([XRefX], VAr).
+    case lists:keymember("__hasincs", 1, List) of
+        true -> new_db_wu:mark_dirty_for_inclD([XRefX], VAr);
+        false -> ok
+    end.
 
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),
@@ -1026,10 +972,10 @@ move_tr(RefX, Type, Disp, Ar, LogChange) ->
         false -> ok
     end,
     ReWr = do_delete(Type, RefX, Disp, Ar),
-    ok = new_db_wu:shift_rows_and_columns(RefX, Type, Disp, Ar),
-    MoreDirty = new_db_wu:shift_cells(RefX, Type, Disp, ReWr, Ar),
-    ok = new_db_wu:mark_these_dirty(ReWr, Ar),
-    ok = new_db_wu:mark_these_dirty(MoreDirty, Ar).
+    ok = new_db_wu:shift_rows_and_columnsD(RefX, Type, Disp, Ar),
+    MoreDirty = new_db_wu:shift_cellsD(RefX, Type, Disp, ReWr, Ar),
+    ok = new_db_wu:mark_these_dirtyD(ReWr, Ar),
+    ok = new_db_wu:mark_these_dirtyD(MoreDirty, Ar).
 
 do_delete(insert, _RefX, _Disp, _UId) ->
     [];
@@ -1088,10 +1034,10 @@ cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
-            XFrom = new_db_wu:refX_to_xrefX_create(From),
-            XTo = new_db_wu:refX_to_xrefX_create(To),
+            XFrom = new_db_wu:refX_to_xrefX_createD(From),
+            XTo = new_db_wu:refX_to_xrefX_createD(To),
             ok = new_db_wu:copy_cell(XFrom, XTo, Incr, What, Ar),
-            ok = new_db_wu:mark_these_dirty([XTo], Ar);
+            ok = new_db_wu:mark_these_dirtyD([XTo], Ar);
         _ ->
             throw(auth_error)
     end.
@@ -1256,267 +1202,6 @@ filter_pages([], Tree) ->
 filter_pages([Path | T], Tree) ->
     filter_pages(T, dh_tree:add(Path, Tree)).
 
-shrink([])   -> [];
-shrink(List) -> List2 = lists:sort(List),
-                shrink2(List2, []).
-
-shrink2([#dirty_for_zinf{dirty = D}], Acc) -> [D | Acc];
-% if they are the same xrefX drop one
-shrink2([#dirty_for_zinf{dirty = D} = H,
-         #dirty_for_zinf{dirty = D} | T], Acc) ->
-    shrink2([H | T], Acc);
-shrink2([#dirty_for_zinf{dirty = D} | T], Acc) -> shrink2(T, [D | Acc]).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% Debug Functions
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-item_and_local_objs_DEBUG(Site) ->
-    F = fun() ->
-                new_db_wu:item_and_local_objs_DEBUG(Site)
-        end,
-    mnesia:transaction(F).
-
-dirty_for_zinf_DEBUG(Site) ->
-    F = fun() ->
-                new_db_wu:dirty_for_zinf_DEBUG(Site)
-        end,
-    mnesia:transaction(F).
-
-raw_url_DEBUG(Url) ->
-    Fun = fun() ->
-                  RefX = hn_util:url_to_refX(Url),
-                  #refX{site = S, path = P, obj = O} = RefX,
-                  Table = new_db_wu:trans(S, local_obj),
-                  RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-                  case mnesia:index_read(Table, term_to_binary(RevIdx),
-                                    #local_obj.revidx) of
-                      []  -> io:format("no object exists at ~p~n", [Url]);
-                      [R] -> io:format("~p has idx of ~p~n",
-                                       [Url, R#local_obj.idx]),
-                             io:format("The local_obj is for ~p on ~p and "
-                                       ++ " has a reverse index of ~p~n",
-                                       [R#local_obj.obj,
-                                        binary_to_term(R#local_obj.path),
-                                        binary_to_term(R#local_obj.revidx)])
-                             end
-          end,
-    {atomic, ok} = mnesia:transaction(Fun),
-    ok.
-
-raw_idx_DEBUG(Site, Idx) ->
-    Fun = fun() ->
-                  XRefX = new_db_wu:idx_to_xrefX(Site, Idx),
-                  io:format("XRefX is ~p~n", [XRefX]),
-                  Tab1 = new_db_wu:trans(Site, local_obj),
-                  [R1] = mnesia:read(Tab1, Idx, read),
-                  io:format("Raw local_obj is ~p~n", [R1]),
-                  io:format("local_obj: idx ~p~n type ~p~n path ~p~n "
-                            ++ "obj ~p~n revidx ~p~n",
-                            [R1#local_obj.idx, R1#local_obj.type,
-                            binary_to_term(R1#local_obj.path), R1#local_obj.obj,
-                            binary_to_term(R1#local_obj.revidx)]),
-                  Tab2 = new_db_wu:trans(Site, item),
-                  [R2] = mnesia:read(Tab2, Idx, read),
-                  io:format("Raw item is ~p~n", [R2]),
-                  io:format("item: idx ~p~n attrs ~p~n",
-                            [R2#item.idx, binary_to_term(R2#item.attrs)])
-          end,
-    mnesia:transaction(Fun).
-
-url_DEBUG(Url) -> url_DEBUG(Url, quiet).
-
-% use the atom 'verbose' for this mode to get everything
-% use 'log' to log the results
-url_DEBUG(Url, Mode) -> RefX = hn_util:url_to_refX(Url),
-                        Output = io_lib:format("Url ~p being debugged", [Url]),
-                        'DEBUG'(refX, RefX, Mode, [Output]).
-
-idx_DEBUG(Site, Idx) -> idx_DEBUG(Site, Idx, false).
-
-% use the atom 'verbose' for this mode to get everything
-% use 'log' to log the results
-idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
-
-'DEBUG'(Type, Payload, Mode, Output) ->
-
-    F = fun() ->
-
-                {XRefX, O2, Pt, Obj}
-                    = case Type of
-                          idx ->
-                              {Site, Idx} = Payload,
-                              O1 = io_lib:format("Debugging the Idx ~p "
-                                                 ++ "on site ~p",
-                                                 [Idx, Site]),
-                              NewRefX = new_db_wu:idx_to_xrefX(Site, Idx),
-                              #xrefX{path = P, obj = Ob} = NewRefX,
-                              O1a = pp(Site, Idx, NewRefX, Mode, O1),
-                              {NewRefX, [[O1a] | Output], P, Ob};
-                          refX ->
-                              NewX = new_db_wu:refX_to_xrefX(Payload),
-                              io:format("NewX is ~p~nPayload is ~p~n",
-                                        [NewX, Payload]),
-                              Path = Payload#refX.path,
-                              Ob   = Payload#refX.obj,
-                              {NewX, Output, Path, Ob}
-                      end,
-                P2 = hn_util:list_to_path(Pt),
-                case XRefX of
-                    false ->
-                        O2a = io_lib:format("The idx doesn't exist.~n", []),
-                        Cs = lists:sort(new_db_wu:read_ref(Payload, inside)),
-                        O3 = pretty_print(Cs, "The idx contains:", Mode,
-                                          [[O2a] | O2]),
-                        lists:reverse(O3);
-                    _     ->
-                        O2a  = io_lib:format("The idx points to ~p on page ~p",
-                                             [Obj, P2]),
-                        Cs = lists:sort(new_db_wu:read_ref(XRefX, inside)),
-                        O3 = pretty_print(Cs, "The idx contains:", Mode,
-                                          [[O2a] | O2]),
-                        lists:reverse(O3)
-                end
-        end,
-    {atomic, Msg} = mnesia:transaction(F),
-    case Mode of
-        log -> [log(X) || X <- Msg];
-        _   -> [io:format(X ++ "~n") || X <- Msg]
-    end,
-    ok.
-
-log(String) ->
-    log(String, "../logs/url.log.txt").
-
-log(String, File) ->
-    _Return=filelib:ensure_dir(File),
-
-    case file:open(File, [append]) of
-	{ok, Id} ->
-	    io:fwrite(Id, "~s~n", [String]),
-	    file:close(Id);
-	_ ->
-	    error
-    end.
-
-pretty_print(List, Slogan, Mode, Acc) ->
-    Marker = io_lib:format(" ", []),
-    Slogan2 = io_lib:format(Slogan, []),
-    Ret = pretty_p2(List, Mode, [Marker, Slogan2 | Acc]),
-    [Marker | Ret].
-
-pretty_p2([], _Mode, Acc) -> Acc;
-pretty_p2([{X, Vals} | T], Mode, Acc) when is_record(X, xrefX) ->
-    #xrefX{idx = Idx, path = P, obj = O} = X,
-    NewO = io_lib:format(" ~p (~p) on ~p:",
-                         [O, hn_util:obj_to_ref(O), P]),
-    NewOa = io_lib:format(" has the following idx ~p", [Idx]),
-    Keys = case Mode of
-               verbose -> all;
-               _       -> ["formula", "value", "__hasform"]
-           end,
-    NewO2 = pretty_p3(Keys, Vals, [NewOa, NewO | Acc]),
-    NO3 = case lists:keymember("__hasform", 1, Vals) of
-              true  -> print_form(X#xrefX{obj = {page, "/"}}, NewO2);
-              false -> NewO2
-          end,
-    NO4 = case lists:keymember("__hasincs", 1, Vals) of
-              true  -> print_incs(X, NO3);
-              false -> NO3
-          end,
-    NO5 = print_relations(X, NO4),
-    pretty_p2(T, Mode, NO5).
-
-print_relations(#xrefX{site = S} = XRefX, Acc) ->
-    case lists:sort(new_db_wu:read_relations(XRefX, read)) of
-        []  -> Acc;
-        [R] -> Ret = io_lib:format("....has the following relationships:", []),
-               print_rel2(S, R, [Ret | Acc])
-    end.
-
-print_rel2(S, R, Acc) ->
-    O1 = print_rel3(S, R#relation.children,   "children",         Acc),
-    O2 = print_rel3(S, R#relation.parents,    "parents",          O1),
-    O3 = print_rel3(S, R#relation.infparents, "infinite parents", O2),
-    O4 = print_rel3(S, R#relation.z_parents,  "z parents",        O3),
-    [io_lib:format("      is it an include? ~p", [R#relation.include]) | O4].
-
-print_rel3(_S, [], Type, Acc) -> [io_lib:format("      no " ++ Type, []) | Acc];
-print_rel3(S, OrdDict, Type, Acc) ->
-    NewAcc = io_lib:format("      " ++ Type ++ " are:", []),
-    print_rel4(S, OrdDict, [NewAcc | Acc]).
-
-print_rel4(_S, [], Acc) -> Acc;
-print_rel4(S, [H | T], Acc) ->
-    XRefX = new_db_wu:idx_to_xrefX(S, H),
-    NewAcc = [io_lib:format("        ~p on ~p",
-                            [XRefX#xrefX.obj, XRefX#xrefX.path]) | Acc],
-    print_rel4(S, T, NewAcc).
-
-pretty_p3([], _Vals, Acc) -> Acc;
-pretty_p3([K | T], Vals, Acc) ->
-    NewO = case lists:keysearch(K, 1, Vals) of
-               false ->
-                   Acc;
-               {value, {K1, V}} when is_list(V) ->
-                   [io_lib:format("~20s: ~p", [K1, esc(V)]) | Acc];
-               {value, {K1, V}} ->
-                       [io_lib:format("~20s: ~p", [K1, V]) | Acc]
-    end,
-    pretty_p3(T, Vals, NewO);
-% dump all attributes
-pretty_p3(all, Vals, Acc) ->
-    {Ks, _Vs} = lists:unzip(Vals),
-    pretty_p3(Ks, Vals, Acc).
-
-print_incs(XRefX, Acc) ->
-    io:format("XRefX is ~p~n", [XRefX]),
-    Incs = new_db_wu:read_incs(XRefX),
-    io:format("Incs is ~p~n", [Incs]),
-    NewAcc = [io_lib:format("....has the following include records:", [])
-              | Acc],
-    print_i2(XRefX#xrefX.site, Incs, NewAcc).
-
-print_i2(_Site, [], Acc) -> Acc;
-print_i2(Site, [H | T], Acc) ->
-    Msg = io_lib:format("      Javascript: ~p reloaded by: ~p~n"
-                        ++ "      CSS ~p~n",
-                        [H#include.js, H#include.js_reload, H#include.css]),
-    print_i2(Site, T, [Msg | Acc]).
-
-print_form(XRefX, Acc) ->
-    RefX = hn_util:xrefX_to_refX(XRefX),
-    Forms = new_db_wu:matching_forms(RefX, common),
-    NewAcc = [io_lib:format("....part of a form consisting of:", []) | Acc],
-    print_f2(RefX#refX.site, Forms, NewAcc).
-
-print_f2(_Site, [], Acc) -> Acc;
-print_f2(Site, [H | T], Acc) ->
-    #form{id={_, _, Lable}} = H,
-    XRefX = new_db_wu:idx_to_xrefX(Site, H#form.key),
-    NewAcc = [io_lib:format("      ~p on ~p of ~p called ~p",
-                            [XRefX#xrefX.obj,
-                             hn_util:list_to_path(XRefX#xrefX.path),
-                             H#form.kind, Lable]) | Acc],
-    print_f2(Site, T, NewAcc).
-
-pp(Site, Idx, XRefX, verbose, O) ->
-    [I] = new_db_wu:idx_DEBUG(Site, Idx),
-    O1 = io_lib:format("local_obj contains ~p ~p ~p~n",
-                       [binary_to_term(I#local_obj.path),
-                        I#local_obj.obj,
-                        binary_to_term(I#local_obj.revidx)]),
-    O2 = io_lib:format("XRefX contains ~p ~p~n",
-                       [XRefX#xrefX.path, XRefX#xrefX.obj]),
-
-    [[O1] | [[O2] | O]];
-pp(_, _, _, _, O) -> O.
-
-% fix up escaping!
-esc(X) -> X.
-
 unpack_incs(List) -> unpack_1(List, [], [], []).
 
 unpack_1([], Js, Js_r, CSS) -> {hslists:uniq(Js),
@@ -1537,15 +1222,3 @@ unpack_1([H | T], Js, Js_r, CSS) ->
                 _  -> lists:append([C, CSS])
             end,
     unpack_1(T, NewJ, NewR, NewC).
-
-%% mark_children_dirty(#xrefX{site = S} = XRefX, VAr) ->
-%%     [Rels] = new_db_wu:read_relations(XRefX, read),
-%%     case Rels#relation.children of
-%%         [] ->
-%%             ok;
-%%         Children ->
-%%             Ch2 = [new_db_wu:idx_to_xrefX(S, X)
-%%                    || X <- Children],
-%%             ok = new_db_wu:mark_these_dirty(Ch2, VAr)
-%%     end.
-

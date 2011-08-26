@@ -8,13 +8,15 @@
 -module(new_db_wu).
 
 -include("syslib.hrl").
+-include("keyvalues.hrl").
 
--define(to_xml_str, simplexml:to_xml_string).
 -define(to_refX, hn_util:refX_from_index).
 
 -define(lt, list_to_tuple).
 -define(lf, lists:flatten).
 -define(dict, orddict:orddict()).
+-define(TRANSFORMATIVE, true).
+-define(NONTRANSFORMATIVE, false).
 
 -include("spriki.hrl").
 -include("muin_records.hrl").
@@ -23,35 +25,40 @@
 -include_lib("stdlib/include/ms_transform.hrl").
 
 -export([
+         proc_dirties_for_zinfD/3,
+         proc_dirty_zinfsD/4,
+         maybe_write_zinftreeD/2,
+         reset_dirty_zinfsD/1,
+         read_timersD/1,
          has_forms/1,
-         read_incs/1,
+         read_incsD/1,
          xrefX_to_rti/3,
          trans/2,
-         delete_api/2,
-         write_api/2,
-         read_api/2,
-         get_api_keys/1,
-         delete_user_fn/2,
-         write_user_fn/2,
-         read_user_fn/2,
-         write_kv/3,
-         read_kv/2,
+         delete_apiD/2,
+         write_apiD/2,
+         read_apiD/2,
+         get_api_keysD/1,
+         delete_user_fnD/2,
+         write_user_fnD/2,
+         read_user_fnD/2,
+         write_kvD/3,
+         read_kvD/2,
          expand_ref/1,
-         matching_forms/2,
-         refX_to_xrefX/1,
+         matching_formsD/2,
+         refX_to_xrefXD/1,
          refXs_to_xrefXs_create/1,
-         refX_to_xrefX_create/1,
+         refX_to_xrefX_createD/1,
          write_attrs/2, write_attrs/3,
          read_ref/2, read_ref/3, read_ref_field/3,
-         read_relations/2,
-         mark_these_dirty/2,
-         mark_these_idxs_dirty/3,
-         mark_dirty_for_incl/2,
-         idx_to_xrefX/2,
+         read_relationsD/2,
+         mark_these_dirtyD/2,
+         mark_these_idxs_dirtyD/3,
+         mark_dirty_for_inclD/2,
+         idx_to_xrefXD/2,
          get_cell_for_muin/2,
          delete_cells/3,
-         shift_cells/5,
-         shift_rows_and_columns/4,
+         shift_cellsD/5,
+         shift_rows_and_columnsD/4,
          clear_cells/2, clear_cells/3,
          copy_cell/5
         ]).
@@ -60,15 +67,15 @@
 -export([
          log_page/3,
          log_move/4,
-         get_logs/1
+         get_logsD/1
         ]).
 
 -export([
-         load_dirty_since/2
+         load_dirty_sinceD/2
         ]).
 
 -export([
-         read_styles_IMPORT/1
+         read_styles_IMPORTD/1
         ]).
 
 %% Structural Query Exports
@@ -77,31 +84,81 @@
          get_last_col/1
         ]).
 
--export([
-         dirty_for_zinf_DEBUG/1,
-         item_and_local_objs_DEBUG/1,
-         idx_DEBUG/2
-        ]).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+proc_dirties_for_zinfD(Site, Tree, CheckFun) ->
+    Tbl = new_db_wu:trans(Site, dirty_for_zinf),
+    L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, write),
+    L2 = shrink(L),
+    Dirties = [CheckFun(Tree, X) || X <- L2],
+    D1 = hslists:uniq(lists:flatten(Dirties)),
+    ok = new_db_wu:mark_these_idxs_dirtyD(D1, Site, nil),
+    [ok = mnesia:delete(Tbl, Id, write)
+     || #dirty_for_zinf{id = Id} <- L].
+
+proc_dirty_zinfsD(Site, Tree, AddFun, DelFun) ->
+    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Fun = fun(DirtyZinf, Tr) ->
+                   #dirty_zinf{dirtycellidx = CI, old = OldP,
+                               new = NewP} = DirtyZinf,
+                   % expand the new and old parents
+                   NewP2 = get_zinfs(NewP, CI),
+                   OldP2 = get_zinfs(OldP, CI),
+                   Add = ordsets:subtract(NewP2, OldP2),
+                   Del = ordsets:subtract(OldP2, NewP2),
+                   NewTree = lists:foldl(AddFun, Tr, Add),
+                   NewTree2 = lists:foldl(DelFun, NewTree, Del),
+                   NewTree2
+           end,
+    Spec = #dirty_zinf{_='_', processed = false},
+    L = mnesia:match_object(Tbl, Spec, write),
+    % need to apply the dirty zinfs in the order
+    % they were added
+    L2 = lists:sort(L),
+    NewTree = lists:foldl(Fun, Tree, L2),
+    [ok = mnesia:write(Tbl, X#dirty_zinf{processed = true},
+                                      write) || X  <- L],
+    NewTree.
+
+maybe_write_zinftreeD(Site, Tree) ->
+    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    ok = new_db_wu:write_kv(Site, ?zinf_tree, Tree),
+    Spec = #dirty_zinf{_='_', processed = true},
+    L = mnesia:match_object(Tbl, Spec, write),
+    [ok = mnesia:delete(Tbl, Id, write)
+     || #dirty_zinf{id = Id} <- L],
+    ok.
+
+reset_dirty_zinfsD(Site) ->
+    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Spec = #dirty_zinf{_='_', processed = true},
+    L = mnesia:match_object(Tbl, Spec, write),
+    [ok = mnesia:write(Tbl, X#dirty_zinf{processed = false},
+                       write) || X  <- L],
+    ok.
+
+read_timersD(Site) ->
+    Tbl = new_db_wu:trans(Site, timer),
+    Spec = #timer{_ ='_'},
+    mnesia:match_object(Tbl, Spec, read).
+
 has_forms(#refX{} = RefX) ->
     XRefs = expand_ref(RefX),
-    check2(XRefs).
+    check2D(XRefs).
 
-check2([]) -> false;
-check2([#xrefX{site = S, idx = Idx} | T]) ->
+check2D([]) -> false;
+check2D([#xrefX{site = S, idx = Idx} | T]) ->
     Table = trans(S, form),
     case mnesia:read(Table, Idx, read) of
-        []   -> check2(T);
+        []   -> check2D(T);
         [_R] -> true
     end.
 
-get_logs(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
-    XRefX = refX_to_xrefX(RefX),
+get_logsD(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
+    XRefX = refX_to_xrefXD(RefX), % IGNORE
     Table = trans(S, logging),
     Logs1 = case XRefX of
                 false -> make_blank(RefX, false);
@@ -111,51 +168,51 @@ get_logs(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
     Logs3 = get_page_logs(Logs2),
     lists:merge(Logs1, Logs3).
 
-load_dirty_since(Since, QTbl) ->
+load_dirty_sinceD(Since, QTbl) ->
     M = ets:fun2ms(fun(#dirty_queue{id = T, dirty = D})
                          when Since < T -> {T, D}
                    end),
     mnesia:select(QTbl, M, read).
 
-delete_api(Site, PublicKey) ->
+delete_apiD(Site, PublicKey) ->
     Tbl = trans(Site, api),
     mnesia:delete(Tbl, PublicKey, write).
 
-write_api(Site, API) ->
+write_apiD(Site, API) ->
     Tbl = trans(Site, api),
     mnesia:write(Tbl, API, write).
 
-read_api(Site, PublicKey) ->
+read_apiD(Site, PublicKey) ->
     Tbl = trans(Site, api),
     mnesia:read(Tbl, PublicKey, read).
 
-get_api_keys(Site) ->
+get_api_keysD(Site) ->
     Tbl = trans(Site, api),
     Pattern = mnesia:table_info(Tbl, wild_pattern),
     mnesia:match_object(Tbl, Pattern, read).
 
-delete_user_fn(Site, Fn) ->
+delete_user_fnD(Site, Fn) ->
     Tbl = trans(Site, user_fns),
     mnesia:delete(Tbl, Fn, write).
 
-write_user_fn(Site, Fn) ->
+write_user_fnD(Site, Fn) ->
     Tbl = trans(Site, user_fns),
     mnesia:write(Tbl, Fn, write).
 
-read_user_fn(Site, Key) ->
+read_user_fnD(Site, Key) ->
     Tbl = trans(Site, user_fns),
     mnesia:read(Tbl, Key, read).
 
-write_kv(Site, Key, Value) ->
+write_kvD(Site, Key, Value) ->
     Tbl = trans(Site, kvstore),
     Rec = #kvstore{key = Key, value = Value},
     mnesia:write(Tbl, Rec, write).
 
-read_kv(Site, Key) ->
+read_kvD(Site, Key) ->
     Tbl = trans(Site, kvstore),
     mnesia:read(Tbl, Key, read).
 
-read_styles_IMPORT(#refX{site = Site}) ->
+read_styles_IMPORTD(#refX{site = Site}) ->
     Tbl = trans(Site, style),
     MS = ets:fun2ms(fun(X) -> X end),
     mnesia:select(Tbl, MS, write).
@@ -165,7 +222,7 @@ get_last_row(#refX{site = S, path = P}) ->
     SelX = #refX{site = S, path = P, obj = {page, "/"}},
     Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end,
                        [{Y, LO} || LO = #local_obj{obj = {cell,{_,Y}}}
-                                       <- read_objs(SelX, inside)]),
+                                       <- read_objsD(SelX, inside)]),
     largest_content(Desc, S).
 
 -spec get_last_col(#refX{}) -> integer().
@@ -173,11 +230,11 @@ get_last_col(#refX{site = S, path = P}) ->
     SelX = #refX{site = S, path = P, obj = {page, "/"}},
     Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end,
                        [{X, LO} || LO = #local_obj{obj = {cell,{X,_}}}
-                                       <- read_objs(SelX, inside)]),
+                                       <- read_objsD(SelX, inside)]),
     largest_content(Desc, S).
 
--spec matching_forms(#refX{}, common | string()) -> [#form{}].
-matching_forms(#refX{site = Site, path = Path}, Trans) ->
+-spec matching_formsD(#refX{}, common | string()) -> [#form{}].
+matching_formsD(#refX{site = Site, path = Path}, Trans) ->
     MS = [{#form{id = {Path, Trans, '_'}, _ = '_'}, [], ['$_']}],
     mnesia:select(trans(Site, form), MS).
 
@@ -194,7 +251,7 @@ copy_cell(From = #xrefX{obj = {cell, _}},
                   end,
         Op = fun(Attrs) -> {clean, copy_value(SourceAttrs, Attrs)}
          end,
-    apply_to_attrs(To, Op, copy, Uid),
+    apply_to_attrsD(To, Op, copy, Uid, ?NONTRANSFORMATIVE),
     ok;
 copy_cell(From = #xrefX{obj = {cell, _}},
           To = #xrefX{obj = {cell, _}},
@@ -204,7 +261,7 @@ copy_cell(From = #xrefX{obj = {cell, _}},
                       _         -> []
                   end,
     Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["style"])} end,
-    apply_to_attrs(To, Op, copy, Uid),
+    apply_to_attrsD(To, Op, copy, Uid, ?NONTRANSFORMATIVE),
     ok;
 copy_cell(#xrefX{obj = {cell, {FX,FY}}} = From,
           #xrefX{obj = {cell, {TX,TY}}} = To,
@@ -273,21 +330,26 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                  fun(Attrs) ->
                          case lists:keymember("formula", 1, Attrs) of
                              true ->
-                                 ok = set_relations(XRefX, [], [], false),
-                                 ok = unattach_form(XRefX),
-                                 ok = delete_incs(XRefX),
-                                 ok = mark_these_dirty([XRefX], nil);
-                             false -> ok
-                        end,
+                                 ok = set_relationsD(XRefX, [], [], false),
+                                 ok = unattach_formD(XRefX),
+                                 ok = delete_incsD(XRefX),
+                                 ok = mark_these_dirtyD([XRefX], nil);
+                             false ->
+                                 ok
+                         end,
+                         case lists:keymember("__hasincs", 1, Attrs) of
+                             true ->
+                                 mark_dirty_for_inclD([XRefX], nil);
+                             false ->
+                                 ok
+                         end,
                          {clean, del_attributes(Attrs, DelAttrs)}
                  end
          end,
     XRefs = expand_ref(Ref),
-    [apply_to_attrs(X, Op(X), Action, Uid) || X <- XRefs],
+    [apply_to_attrsD(X, Op(X), Action, Uid, ?NONTRANSFORMATIVE) || X <- XRefs],
     % now mark the refs dirty for zinfs
-    [ok = mark_dirty_for_zinf(X) || X <- XRefs],
-    % now mark dirty for includes
-    [ok = mark_dirty_for_incl([X], nil) || X <- XRefs],
+    [ok = mark_dirty_for_zinfD(X) || X <- XRefs],
     ok.
 
 %% @doc takes a reference to a
@@ -310,7 +372,7 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
         % there may be no cells to delete, but there may be rows or
         % columns widths to delete...
         []     ->
-            expunge_refs(S, expand_to_rows_or_cols(DelX)),
+            expunge_refsD(S, expand_to_rows_or_cols(DelX)),
             [];
         Cells  ->
             % update the children that point to the cell that is
@@ -318,7 +380,7 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             % children cells replacing the reference to this cell
             % with #ref!
             % THESE ARE NOW RETURN IDX's!
-            LocalChildren = [get_children(C) || C <- Cells],
+            LocalChildren = [get_childrenD(C) || C <- Cells],
             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
 
             % sometimes a cell will have local children that are also
@@ -327,22 +389,23 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
 
             % trash any includes that might pertain
-            [ok = delete_incs(X) || X <- Cells],
+            % TODO this contains a lot of reads...
+            [ok = delete_incsD(X) || X <- Cells],
 
             % Rewrite formulas
             Status = [deref_formula(X, DelX, Disp, Uid) || X <- LocalChildren3],
             Fun = fun({dirty, _Ref}) -> true; ({clean, _Ref}) -> false end,
             Dirty = [X || {dirty, X} <- lists:filter(Fun, Status)],
-            ok = mark_these_dirty(Dirty, nil),
+            ok = mark_these_dirtyD(Dirty, nil),
 
             % fix relations table.
-            [ok = delete_relation(X) || X <- Cells],
+            [ok = delete_relationD(X) || X <- Cells],
 
             % mark 'em dirty for zinf as well
-            [ok = mark_dirty_for_zinf(X) || X <- Cells],
+            [ok = mark_dirty_for_zinfD(X) || X <- Cells],
 
             % Delete the rows or columns and cells (and their indices)
-            expunge_refs(S, lists:append(expand_to_rows_or_cols(DelX), Cells)),
+            expunge_refsD(S, lists:append(expand_to_rows_or_cols(DelX), Cells)),
             LocalChildren3
     end.
 
@@ -354,12 +417,12 @@ refXs_to_xrefXs_create(List) when is_list(List) ->
 
 refXs2(#refX{obj = {range, _}} = RefX) ->
     [refXs2(X) || X <- hn_util:range_to_list(RefX)];
-refXs2(RefX) -> refX_to_xrefX_create(RefX).
+refXs2(RefX) -> refX_to_xrefX_createD(RefX).
 
 %% refX_to_xrefX reads the index of an object AND RETURNS 'false'
 %% IF IT DOESN'T EXIST
--spec refX_to_xrefX(#refX{}) -> #xrefX{} | false.
-refX_to_xrefX(#refX{site = S, path = P, obj = O}) ->
+-spec refX_to_xrefXD(#refX{}) -> #xrefX{} | false.
+refX_to_xrefXD(#refX{site = S, path = P, obj = O}) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
     case mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx) of
@@ -367,11 +430,11 @@ refX_to_xrefX(#refX{site = S, path = P, obj = O}) ->
         _   -> false
     end.
 
--spec refX_to_xrefX_create(#refX{}) -> #xrefX{}.
+-spec refX_to_xrefX_createD(#refX{}) -> #xrefX{}.
 %% @doc refX_to_xrefX_create refX_to_xrefX_create gets the index of an object
 %% AND CREATES IT IF IT DOESN'T EXIST
-refX_to_xrefX_create(#refX{site = S, type = Ty, path = P, obj = O} = RefX) ->
-    case refX_to_xrefX(RefX) of
+refX_to_xrefX_createD(#refX{site = S, type = Ty, path = P, obj = O} = RefX) ->
+    case refX_to_xrefXD(RefX) of
         false -> Idx = util2:get_timestamp(),
                  RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
                  Rec = #local_obj{path = term_to_binary(P), type = Ty, obj = O,
@@ -395,21 +458,21 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                               true ->
                                   A3 = case Has_Form of
                                            true ->
-                                               unattach_form(XRefX),
+                                               unattach_formD(XRefX),
                                                orddict:erase("__hasform", Attrs);
                                            false  ->
                                                Attrs
                                        end,
                                   A4 = case Has_Incs of
                                            true ->
-                                               delete_incs(XRefX),
+                                               delete_incsD(XRefX),
                                                orddict:erase("__hasincs", A3);
                                            false  ->
                                                A3
                                        end,
                                   case Has_Timer of
                                       true ->
-                                          delete_timer(XRefX),
+                                          delete_timerD(XRefX),
                                           orddict:erase("__hastimer", A4);
                                       false ->
                                           A4
@@ -418,20 +481,17 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                           end,
                  {clean, process_attrs(NewAs, XRefX, AReq, Attrs2)}
          end,
-    apply_to_attrs(XRefX, Op, write, AReq).
+    apply_to_attrsD(XRefX, Op, write, AReq, ?NONTRANSFORMATIVE).
 
--spec mark_these_idxs_dirty(list(), atom(),auth_srv:auth_spec()) -> ok.
-mark_these_idxs_dirty([], _Site, _) -> ok;
-mark_these_idxs_dirty(Idxs, Site, AReq) ->
-    case Idxs of
-        [] -> ok;
-        _  -> Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
-              mnesia:write(trans(Site, dirty_queue), Entry, write)
-    end.
+-spec mark_these_idxs_dirtyD(list(), atom(),auth_srv:auth_spec()) -> ok.
+mark_these_idxs_dirtyD([], _Site, _) -> ok;
+mark_these_idxs_dirtyD(Idxs, Site, AReq) ->
+    Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
+    mnesia:write(trans(Site, dirty_queue), Entry, write).
 
--spec mark_these_dirty([#xrefX{}], auth_srv:auth_spec()) -> ok.
-mark_these_dirty([], _) -> ok;
-mark_these_dirty(Refs = [#xrefX{site = Site}|_], AReq) ->
+-spec mark_these_dirtyD([#xrefX{}], auth_srv:auth_spec()) -> ok.
+mark_these_dirtyD([], _) -> ok;
+mark_these_dirtyD(Refs = [#xrefX{site = Site}|_], AReq) ->
     Idxs = lists:flatten([C#xrefX.idx || R <- Refs, C <- expand_ref(R)]),
     case Idxs of
         [] -> ok;
@@ -457,7 +517,7 @@ process_attrs([{"formula",Val} | Rest], XRefX, AReq, Attrs) ->
             [NVal, Align, Frmt] ->
                 write_formula2(XRefX, Val, NVal, Align, Frmt, Attrs)
         end,
-    ok = mark_dirty_for_zinf(XRefX),
+    ok = mark_dirty_for_zinfD(XRefX),
     process_attrs(Rest, XRefX, AReq, Attrs2);
 process_attrs([A = {Key, Val} | Rest], XRefX, AReq, Attrs) ->
     Attrs2  = case ms_util2:is_in_record(magic_style, Key) of
@@ -479,7 +539,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
         {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id = {XRefX#xrefX.path, Trans, Label}},
-            ok = attach_form(XRefX, Form),
+            ok = attach_formD(XRefX, Form),
             Label2 = case Label of
                          "_" -> "Submit Button";
                          _   -> Label
@@ -494,12 +554,12 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
               Parents, InfParents, Recompile}} ->
             {Trans, Label} = Payload#form.id,
             Form = Payload#form{id = {XRefX#xrefX.path, Trans, Label}},
-            ok = attach_form(XRefX, Form),
+            ok = attach_formD(XRefX, Form),
             Attrs2 = orddict:store("__hasform", t, Attrs),
             Blank = #incs{},
             Attrs3 = case Incs of
                          Blank -> Attrs2;
-                         _     -> ok = update_incs(XRefX, Incs),
+                         _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
             Attrs4 = orddict:store("preview", {Title, Wd, Ht}, Attrs3),
@@ -512,7 +572,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             Blank = #incs{},
             Attrs3 = case Incs of
                          Blank -> Attrs2;
-                         _     -> ok = update_incs(XRefX, Incs),
+                         _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
             Attrs4 = case {Ht, Wd} of
@@ -531,7 +591,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             Blank = #incs{},
             Attrs3 = case Incs of
                          Blank -> Attrs2;
-                         _     -> ok = update_incs(XRefX, Incs),
+                         _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
             % with include you might need to bring incs through from
@@ -555,7 +615,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             Blank = #incs{},
             Attrs3 = case Incs of
                          Blank -> Attrs2;
-                         _     -> ok = update_incs(XRefX, Incs),
+                         _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
             Attrs4 = case {Ht, Wd} of
@@ -571,7 +631,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             Attrs3 = orddict:store("__hastimer", t, Attrs2),
-            ok = update_timer(XRefX, Spec),
+            ok = update_timerD(XRefX, Spec),
             write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
         % bog standard function!
@@ -579,7 +639,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             % mebbies there was incs, nuke 'em
-            ok = update_incs(XRefX, #incs{}),
+            ok = update_incsD(XRefX, #incs{}),
             write_formula_attrs(Attrs2, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile)
     end.
@@ -592,9 +652,9 @@ write_formula2(XRefX, OrigVal, {Type, Val},
                   datetime -> OrigVal;
                   float    -> OrigVal;
                   int      -> OrigVal;
-                  _        -> hn_util:text(Val) end,
-    {NewLocPs, _NewRemotePs} = split_local_remote([]),
-    ok = set_relations(XRefX, NewLocPs, [], false),
+                  _        -> hn_util:text(Val)
+              end,
+    ok = set_relationsD(XRefX, [], [], false),
     Attrs2 = add_attributes(Attrs, [{"__default-align", Align},
                                     {"__rawvalue", Val},
                                     {"formula", Formula}]),
@@ -608,13 +668,13 @@ write_formula2(XRefX, OrigVal, {Type, Val},
     end.
 
 write_error_attrs(Attrs, XRefX, Formula, Error) ->
-    ok = set_relations(XRefX, [], [], false),
+    ok = set_relationsD(XRefX, [], [], false),
     add_attributes(Attrs, [{"formula", Formula},
                            {"__rawvalue", {errval, Error}},
                            {"__ast", []}]).
 
--spec set_relations(#xrefX{}, [#xrefX{}], [#xrefX{}], boolean()) -> ok.
-set_relations(#xrefX{idx = CellIdx, site = Site}, FiniteParents,
+-spec set_relationsD(#xrefX{}, [#xrefX{}], [#xrefX{}], boolean()) -> ok.
+set_relationsD(#xrefX{idx = CellIdx, site = Site}, FiniteParents,
               InfParents, IsIncl) ->
     Tbl = trans(Site, relation),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
@@ -624,8 +684,8 @@ set_relations(#xrefX{idx = CellIdx, site = Site}, FiniteParents,
     Rel2 = set_parents(Tbl, Site, Rel, FiniteParents, InfParents, IsIncl),
     mnesia:write(Tbl, Rel2, write).
 
--spec set_parents(atom(), list(), #relation{}, [#refX{}],
-                  [#refX{}], boolean()) -> #relation{}.
+-spec set_parents(atom(), list(), #relation{}, [#xrefX{}],
+                  [#xrefX{}], boolean()) -> #relation{}.
 set_parents(Tbl,
             Site,
             Rel = #relation{cellidx = CellIdx,
@@ -635,46 +695,47 @@ set_parents(Tbl,
             Parents,
             InfParents,
             IsIncl) ->
-    Fun = fun(X) ->
-                  X#xrefX.idx
-          end,
-    PIdxs = lists:map(Fun, Parents),
-    InfPIdxs = lists:map(Fun, InfParents),
+    Fun = fun({local, #xrefX{idx = Idx} = XRefX}) ->
+                     {Idx, XRefX}
+             end,
+    {PIdxs, _} = lists:unzip(lists:map(Fun, Parents)),
+    {InfPIdxs, InfPars} = lists:unzip(lists:map(Fun, InfParents)),
     NewParentIdxs = ordsets:from_list(PIdxs),
     LostParents = ordsets:subtract(CurParents, NewParentIdxs),
-    [del_child(P, CellIdx, Tbl) || P <- LostParents],
-    [ok = add_child(P, CellIdx, Tbl, IsIncl) || P <- NewParentIdxs],
+    [del_childD(P, CellIdx, Tbl) || P <- LostParents],
+    [ok = add_childD(P, CellIdx, Tbl, IsIncl) || P <- NewParentIdxs],
     NewInfParIdxs = ordsets:from_list(InfPIdxs),
-    XCurInfPars = [idx_to_xrefX(Site, X) || X <- CurInfPars],
-    ok = handle_infs(CellIdx, Site, InfParents, XCurInfPars),
+    XCurInfPars = [idx_to_xrefXD(Site, X) || X <- CurInfPars],
+    ok = handle_infsD(CellIdx, Site, InfPars, XCurInfPars),
     Rel#relation{parents = NewParentIdxs, infparents = NewInfParIdxs}.
 
 %% @doc Make a #muin_rti record out of an xrefX record and a flag that specifies
 %% whether to run formula in an array context.
-xrefX_to_rti(#xrefX{site = S, path = P, obj = {cell, {C, R}}}, AR, AC)
+xrefX_to_rti(#xrefX{idx = Idx, site = S, path = P,
+                    obj = {cell, {C, R}}}, AR, AC)
   when is_boolean(AC) ->
     #muin_rti{site = S, path = P,
-              col = C, row = R,
+              col = C, row = R, idx = Idx,
               array_context = AC,
               auth_req = AR};
-xrefX_to_rti(#xrefX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
+xrefX_to_rti(#xrefX{idx = Idx, site = S, path = P,
+                    obj = {range, {C, R, _, _}}}, AR, AC)
   when is_boolean(AC) ->
     #muin_rti{site = S, path = P,
-              col = C, row = R,
+              col = C, row = R, idx = Idx,
               array_context = AC,
               auth_req = AR}.
 
-
-delete_timer(#xrefX{idx = Idx, site = S}) ->
+delete_timerD(#xrefX{idx = Idx, site = S}) ->
     Tbl = trans(S, timer),
     mnesia:delete(Tbl, Idx, write).
 
-delete_incs(#xrefX{idx = Idx, site = S}) ->
+delete_incsD(#xrefX{idx = Idx, site = S}) ->
     Tbl = trans(S, include),
     mnesia:delete(Tbl, Idx, write).
 
--spec unattach_form(#xrefX{}) -> ok.
-unattach_form(#xrefX{site = Site, idx = Idx}) ->
+-spec unattach_formD(#xrefX{}) -> ok.
+unattach_formD(#xrefX{site = Site, idx = Idx}) ->
     Tbl = trans(Site, form),
     mnesia:delete(Tbl, Idx, write).
 
@@ -684,9 +745,12 @@ unattach_form(#xrefX{site = Site, idx = Idx}) ->
 %% applied, which sets formats and styles as necessary.
 %% the op function returns a tuple of {Status, Ref, Attrs} where
 %% Status is either 'clean' or 'dirty'
--spec apply_to_attrs(#xrefX{}, fun((?dict) -> ?dict),
-                                 atom(), auth_srv:uid()) -> ?dict.
-apply_to_attrs(#xrefX{idx = Idx, site = Site} = XRefX, Op, Action, Uid) ->
+%% some apply_to_attrsD operations are 'transformative' the cell
+%% may have moved.
+-spec apply_to_attrsD(#xrefX{}, fun((?dict) -> ?dict),
+                                   atom(), auth_srv:uid(), boolean) -> ?dict.
+apply_to_attrsD(#xrefX{idx = Idx, site = Site} = XRefX, Op, Action,
+                Uid, Transformative) ->
     Table = trans(Site, item),
     Attrs = case mnesia:read(Table, Idx, write) of
                 [#item{attrs = A}] -> binary_to_term(A);
@@ -696,7 +760,10 @@ apply_to_attrs(#xrefX{idx = Idx, site = Site} = XRefX, Op, Action, Uid) ->
     Attrs3 = post_process(XRefX, Attrs2),
     % the Op may have shifted the RefX that the Idx now points to, so look it
     % up again for the log
-    NewXRefX = idx_to_xrefX(Site, Idx),
+    NewXRefX = case Transformative of
+                   true  -> idx_to_xrefXD(Site, Idx);
+                   false -> XRefX
+               end,
     ok = log_write(NewXRefX, Attrs, Attrs2, Action, Uid),
     Item = #item{idx = Idx, attrs = term_to_binary(Attrs3)},
     case deleted_attrs(Attrs, Attrs3) of
@@ -727,7 +794,7 @@ tell_front_end1(Tuple) ->
     put('front_end_notify', [Tuple | List]),
     ok.
 
-idx_to_xrefX(S, Idx) ->
+idx_to_xrefXD(S, Idx) ->
     case mnesia:read(trans(S, local_obj), Idx, read) of
         [Rec] -> #local_obj{path = P,  obj = O} = Rec,
                  #xrefX{idx = Idx, site = S,
@@ -749,19 +816,19 @@ get_prefix("http://"++Site) ->
     [case S of $: -> $&; S  -> S end
      || S <- Site].
 
-mark_dirty_for_zinf(#xrefX{site = S, obj = {cell, _}} = XRefX) ->
+mark_dirty_for_zinfD(#xrefX{site = S, obj = {cell, _}} = XRefX) ->
     Tbl = trans(S, dirty_for_zinf),
     ok = mnesia:write(Tbl, #dirty_for_zinf{dirty = XRefX}, write),
     ok = zinf_srv:check_zinfs(S),
     ok;
 % any other refs ignore 'em
-mark_dirty_for_zinf(XRefX) when is_record(XRefX, xrefX) -> ok.
+mark_dirty_for_zinfD(XRefX) when is_record(XRefX, xrefX) -> ok.
 
 %% this function is called when a new attribute is set for a style
 -spec apply_style(#xrefX{}, {string(), term()}, ?dict) -> ?dict.
 apply_style(XRefX, {Name, Val}, Attrs) ->
     NewSIdx = case orddict:find("style", Attrs) of
-                  {ok, StyleIdx} -> based_style(XRefX, StyleIdx, Name, Val);
+                  {ok, StyleIdx} -> based_styleD(XRefX, StyleIdx, Name, Val);
                   _              -> fresh_style(XRefX, Name, Val)
               end,
     orddict:store("style", NewSIdx, Attrs).
@@ -771,31 +838,28 @@ fresh_style(#xrefX{site = Site} = Ref, Name, Val) ->
     FieldNo = ms_util2:get_index(magic_style, Name),
     Tbl = trans(Site, style),
     MStyle = setelement(FieldNo + 1, #magic_style{}, Val),
-    store_style(Ref, Tbl, MStyle).
+    store_styleD(Ref, Tbl, MStyle).
 
--spec based_style(#xrefX{}, integer(), string(), any()) -> integer().
-based_style(#xrefX{site = Site} = XRefX, BaseIdx, Name, Val) ->
+-spec based_styleD(#xrefX{}, integer(), string(), any()) -> integer().
+based_styleD(#xrefX{site = Site} = XRefX, BaseIdx, Name, Val) ->
     Tbl = trans(Site, style),
     case mnesia:index_read(Tbl, BaseIdx, #style.idx) of
         [#style{magic_style = MStyle1}] ->
             FieldNo = ms_util2:get_index(magic_style, Name),
             MStyle2 = setelement(FieldNo + 1, MStyle1, Val),
-            store_style(XRefX, Tbl, MStyle2);
+            store_styleD(XRefX, Tbl, MStyle2);
         _ ->
             BaseIdx %% <- strange..
     end.
 
--spec attach_form(#xrefX{}, #form{}) -> ok.
-attach_form(#xrefX{idx = Idx, site = Site}, Form) ->
+-spec attach_formD(#xrefX{}, #form{}) -> ok.
+attach_formD(#xrefX{idx = Idx, site = Site}, Form) ->
     Tbl = trans(Site, form),
     mnesia:write(Tbl, Form#form{key = Idx}, write).
 
 write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res, {Parents, IsIncl},
                     InfParents, Recompile) ->
-    Parxml = lists:map(fun muin_link_to_simplexml/1, Parents),
-    {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
-    XInf = [refX_to_xrefX_create(X) || X <- InfParents],
-    ok = set_relations(XRefX, NewLocPs, XInf, IsIncl),
+    ok = set_relationsD(XRefX, Parents, InfParents, IsIncl),
     Align = default_align(Res),
     add_attributes(Attrs, [{"formula", Formula},
                            {"__rawvalue", Res},
@@ -803,11 +867,11 @@ write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res, {Parents, IsIncl},
                            {"__default-align", Align},
                            {"__recompile", Recompile}]).
 
-update_timer(#xrefX{idx = Idx, site = S}, Spec) ->
+update_timerD(#xrefX{idx = Idx, site = S}, Spec) ->
     Tbl = trans(S, timer),
     mnesia:write(Tbl, #timer{idx = Idx, spec = Spec}, write).
 
-update_incs(XRefX, Incs) when is_record(XRefX, xrefX)
+update_incsD(XRefX, Incs) when is_record(XRefX, xrefX)
                             andalso is_record(Incs, incs) ->
     #xrefX{idx = Idx, site = S, path = P} = XRefX,
     #incs{js = Js, js_reload = Js_reload, css = CSS} = Incs,
@@ -824,40 +888,24 @@ update_incs(XRefX, Incs) when is_record(XRefX, xrefX)
     end.
 
 bring_through(Attrs, XRefX, Pars) ->
-    Fun  = fun({S, P, X, Y}) ->
-                   RefX = #refX{site = S, path = P, obj = {cell, {X, Y}}},
-                   refX_to_xrefX_create(RefX)
-           end,
-    Pars2 = [Fun(X) || {Type, X} <- Pars, Type ==  local],
+    Pars2 = [X || {Type, X} <- Pars, Type ==  local],
     Incs = get_incs(Pars2, [], [], []),
-    ok = update_incs(XRefX, Incs),
+    ok = update_incsD(XRefX, Incs),
     orddict:store("__hasincs", t, Attrs).
 
 get_incs([], Js, Js_R, CSS) -> #incs{js = hslists:uniq(Js),
                                      js_reload = hslists:uniq(Js_R),
                                      css = hslists:uniq(CSS)};
 get_incs([H | T], Js, Js_R, CSS) ->
-    {NewJ, NewJs_R, NewC} = case read_incs(H) of
+    {NewJ, NewJs_R, NewC} = case read_incsD(H) of
         []   -> {Js, Js_R, CSS};
         Incs -> process_incs(Incs, [], [], [])
     end,
     get_incs(T, NewJ, NewJs_R, NewC).
 
-read_incs(#xrefX{site = S, path = P}) ->
+read_incsD(#xrefX{site = S, path = P}) ->
     Table = trans(S, include),
     mnesia:index_read(Table, P, #include.path).
-
-split_local_remote(List) -> split_local_remote1(List, {[], []}).
-
-split_local_remote1([], Acc) -> Acc;
-split_local_remote1([{_, [{_, local}], [Url]} | T], {A, B})  ->
-    P2 = hn_util:url_to_refX(Url),
-    P3 = refX_to_xrefX_create(P2),
-    split_local_remote1(T, {[P3 | A], B});
-split_local_remote1([{_, [{_, remote}], [Url]} | T], {A, B}) ->
-    P2 = hn_util:url_to_refX(Url),
-    P3 = refX_to_xrefX_create(P2),
-    split_local_remote1(T, {A, [P3 | B]}).
 
 process_incs([], J, Js_R, CSS) -> {J, Js_R, CSS};
 process_incs([H | T], Js, Js_R, CSS) ->
@@ -876,8 +924,8 @@ del_attributes(D, [Key|T]) ->
     D2 = orddict:erase(Key, D),
     del_attributes(D2, T).
 
--spec del_child(cellidx(), cellidx(), atom()) -> ok.
-del_child(CellIdx, Child, Tbl) ->
+-spec del_childD(cellidx(), cellidx(), atom()) -> ok.
+del_childD(CellIdx, Child, Tbl) ->
     case mnesia:read(Tbl, CellIdx, write) of
         [R] ->
             Children = ordsets:del_element(Child, R#relation.children),
@@ -888,8 +936,8 @@ del_child(CellIdx, Child, Tbl) ->
     end.
 
 %% Adds a new child to a parent.
--spec add_child(cellidx(), cellidx(), atom(), boolean()) -> ok.
-add_child(CellIdx, Child, Tbl, IsIncl) ->
+-spec add_childD(cellidx(), cellidx(), atom(), boolean()) -> ok.
+add_childD(CellIdx, Child, Tbl, IsIncl) ->
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R#relation{include = IsIncl};
               []  -> #relation{cellidx = CellIdx, include = IsIncl}
@@ -897,9 +945,9 @@ add_child(CellIdx, Child, Tbl, IsIncl) ->
     Children = ordsets:add_element(Child, Rel#relation.children),
     mnesia:write(Tbl, Rel#relation{children = Children}, write).
 
-handle_infs(_CellIdx, _Site, Inf, Inf) ->
+handle_infsD(_CellIdx, _Site, Inf, Inf) ->
     ok;
-handle_infs(CellIdx, Site, NewInfParents, OldInfParents) ->
+handle_infsD(CellIdx, Site, NewInfParents, OldInfParents) ->
     Tbl = trans(Site, dirty_zinf),
     Rec = #dirty_zinf{type = infinite, dirtycellidx = CellIdx,
                       old = OldInfParents, new = NewInfParents},
@@ -963,9 +1011,9 @@ log_write(#xrefX{idx = Idx, site = S, path = P, obj = O}, Old, New, Action, Uid)
     Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = "",
                    type = cell, path = hn_util:list_to_path(P),
                    obj = O, log = L2},
-    write_log(S, Log).
+    write_logD(S, Log).
 
-write_log(Site, Log) ->
+write_logD(Site, Log) ->
     Tbl = trans(Site, logging),
     mnesia:write(Tbl, Log, write).
 
@@ -982,20 +1030,16 @@ del_a1([H | T], L, Acc)             ->
         false -> del_a1(T, L, [H | Acc])
     end.
 
-
 -spec get_cell_for_muin(#refX{}, [finite | infinite]) -> {any(), any(), any()}.
 %% @doc this function is called by muin during recalculation and should
 %%      not be used for any other purpose
 %% takes a  #refX{} and not an xrefX{} because it is spat out of the compiler
 %% and I don't know what the idx is, or if it exists yet
-get_cell_for_muin(#refX{site = S, path = P, obj = {cell, {XX, YY}}} = RefX,
-                  Type) ->
-    Attrs = case refX_to_xrefX(RefX) of
-                false -> orddict:new();
-                XRefX -> case read_ref(XRefX, inside, write) of
+get_cell_for_muin(#refX{} = RefX, Type) ->
+    XRefX = refX_to_xrefX_createD(RefX),
+    Attrs = case read_ref(XRefX, inside, write) of
                              [{XRefX, A}] -> A;
                              []           -> orddict:new()
-                         end
             end,
     Value = case orddict:find("__rawvalue", Attrs) of
                 {ok, {datetime, _, [N]}} ->
@@ -1005,9 +1049,9 @@ get_cell_for_muin(#refX{site = S, path = P, obj = {cell, {XX, YY}}} = RefX,
                 _ ->
                     blank
             end,
-    {Value, [], [{local, Type, {S, P, XX, YY}}]}.
+    {Value, [], [{local, Type, XRefX}]}.
 
-read_relations(#xrefX{site = S, idx = Idx}, Lock) ->
+read_relationsD(#xrefX{site = S, idx = Idx}, Lock) ->
     Tbl = trans(S, relation),
     mnesia:read(Tbl, Idx, Lock).
 
@@ -1016,25 +1060,25 @@ read_ref(Ref , Relation) -> read_ref(Ref, Relation, read).
 -spec read_ref([#xrefX{} | #refX{}], inside | intersect, read | write)
 -> [{#xrefX{}, ?dict}].
 read_ref(#refX{site = S} = RefX, Relation, Lock) ->
-    read_attrs(S, read_objs(RefX, Relation), Lock);
+    read_attrs(S, read_objsD(RefX, Relation), Lock);
 read_ref(#xrefX{site = S} = XRefX, Relation, Lock) ->
-    read_attrs(S, read_objs(XRefX, Relation), Lock).
+    read_attrs(S, read_objsD(XRefX, Relation), Lock).
 
 -spec read_attrs(string(), [#local_obj{}], read|write)
 -> [{#xrefX{}, ?dict}].
 read_attrs(S, LocObjs, Lock) ->
     Tbl = trans(S, item),
-    read_attrs_(LocObjs, S, Tbl, Lock, []).
+    read_attrs_D(LocObjs, S, Tbl, Lock, []).
 
-read_attrs_([], _S, _Tbl, _Lock, Acc) ->
+read_attrs_D([], _S, _Tbl, _Lock, Acc) ->
     lists:reverse(Acc);
-read_attrs_([LO|Tail], S, Tbl, Lock, Acc) ->
+read_attrs_D([LO|Tail], S, Tbl, Lock, Acc) ->
     Acc2 = case mnesia:read(Tbl, LO#local_obj.idx, Lock) of
                [#item{attrs = Attrs}] ->
                    [{lobj_to_xrefX(S, LO), binary_to_term(Attrs)} | Acc];
                []                   ->
                    Acc end,
-    read_attrs_(Tail, S, Tbl, Lock, Acc2).
+    read_attrs_D(Tail, S, Tbl, Lock, Acc2).
 
 -spec read_ref_field(#xrefX{}, string(), read|write)
 -> [{#xrefX{}, term()}].
@@ -1052,26 +1096,28 @@ extract_field([{XRefX, Attrs}|T], Field, Acc) ->
                _       -> Acc end,
     extract_field(T, Field, Acc2).
 
--spec read_objs(#xrefX{} | #refX{}, inside | intersect | direct) ->
+
+
+-spec read_objsD(#xrefX{} | #refX{}, inside | intersect | direct) ->
     [#local_obj{}] | [].
 % if its a cell then just the local obj
-read_objs(#refX{site = S, path = P, obj = {cell, _} = O}, inside) ->
+read_objsD(#refX{site = S, path = P, obj = {cell, _} = O}, inside) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
     mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx);
-% if it a refX then we already know the idx so just return it
-read_objs(#xrefX{idx = I, path = P, obj = {cell, _} = O}, _Any) ->
+% if it a xrefX then we already know the idx so just return it
+read_objsD(#xrefX{idx = I, path = P, obj = {cell, _} = O}, _Any) ->
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
     [#local_obj{idx = I, path = term_to_binary(P), obj = O, type = url,
                 revidx = term_to_binary(RevIdx)}];
-read_objs(#xrefX{site = S, path = P, obj = {page, "/"}}, inside) ->
-    read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside);
-read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside) ->
+read_objsD(#xrefX{site = S, path = P, obj = {page, "/"}}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, inside);
+read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, inside) ->
     Table = trans(S, local_obj),
     mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
-read_objs(#xrefX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
-    read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside);
-read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
+read_objsD(#xrefX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside);
+read_objsD(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
     Table = trans(S, local_obj),
     Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Fun = fun(#local_obj{obj = {cell, {MX, _MY}}}) ->
@@ -1082,9 +1128,9 @@ read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
              (_LO) -> false
           end,
     lists:filter(Fun, Page);
-read_objs(#xrefX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
-    read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside);
-read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
+read_objsD(#xrefX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside);
+read_objsD(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
     Table = trans(S, local_obj),
     Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Fun = fun(#local_obj{obj = {cell, {_MX, MY}}}) ->
@@ -1096,9 +1142,9 @@ read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
                   false
           end,
     lists:filter(Fun, Page);
-read_objs(#xrefX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
-    read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside);
-read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
+read_objsD(#xrefX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside);
+read_objsD(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
     Table = trans(S, local_obj),
     Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Fun = fun(#local_obj{obj = {cell, {MX, MY}}}) ->
@@ -1111,19 +1157,19 @@ read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
           end,
     lists:filter(Fun, Page);
 % if the intersect is a page then just read the page
-read_objs(#xrefX{site = S, path = P, obj = {page, "/"}}, intersect) ->
-    read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect);
-read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
+read_objsD(#xrefX{site = S, path = P, obj = {page, "/"}}, intersect) ->
+    read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, intersect);
+read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     Table = trans(S, local_obj),
     mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
-read_objs(#xrefX{site = S, path = P, obj = O}, intersect) ->
-    read_objs(#refX{site = S, path = P, obj = O}, intersect);
-read_objs(#refX{site = Site} = Ref, intersect) ->
+read_objsD(#xrefX{site = S, path = P, obj = O}, intersect) ->
+    read_objsD(#refX{site = S, path = P, obj = O}, intersect);
+read_objsD(#refX{site = Site} = Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
     mnesia:select(trans(Site, local_obj), MS);
-read_objs(#xrefX{site = S, path = P, obj = O}, direct) ->
-    read_objs(#refX{site = S, path = P, obj = O}, direct);
-read_objs(#refX{site = S, path = P, obj = O}, direct) ->
+read_objsD(#xrefX{site = S, path = P, obj = O}, direct) ->
+    read_objsD(#refX{site = S, path = P, obj = O}, direct);
+read_objsD(#refX{site = S, path = P, obj = O}, direct) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
     mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx).
@@ -1192,8 +1238,8 @@ extract(List) ->
 lobj_to_xrefX(Site, #local_obj{idx = I, path = P, obj = O}) ->
     #xrefX{idx = I, site = Site, path = binary_to_term(P), obj = O}.
 
--spec store_style(#xrefX{}, atom(), #magic_style{}) -> integer().
-store_style(XRefX, Tbl, MStyle) ->
+-spec store_styleD(#xrefX{}, atom(), #magic_style{}) -> integer().
+store_styleD(XRefX, Tbl, MStyle) ->
     case mnesia:read(Tbl, MStyle, read) of
         [#style{idx = I}] ->
             I;
@@ -1205,20 +1251,14 @@ store_style(XRefX, Tbl, MStyle) ->
             I
     end.
 
-%% @doc Convert Parents and DependencyTree tuples as returned by
-%% Muin into SimpleXML.
-muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
-    Url = hn_util:index_to_url({index, S, P, X1, Y1}),
-    {url, [{type, Type}], [Url]}.
-
 default_align(Res) when is_number(Res) -> "right";
 default_align(Res) when is_list(Res)   -> "left";
 default_align(_Res)                    -> "center".
 
 expand_ref(#refX{site = S} = RefX) ->
-    [lobj_to_xrefX(S, LO) || LO <- read_objs(RefX, inside)];
+    [lobj_to_xrefX(S, LO) || LO <- read_objsD(RefX, inside)];
 expand_ref(#xrefX{site = S} = XRefX) ->
-    [lobj_to_xrefX(S, LO) || LO <- read_objs(XRefX, inside)].
+    [lobj_to_xrefX(S, LO) || LO <- read_objsD(XRefX, inside)].
 
 expand_to_rows_or_cols(#refX{obj = {RC, {I, J}}} = Ref)
   when RC ==  row; RC ==  column ->
@@ -1230,34 +1270,36 @@ expand_to_2(#refX{obj = {Type, _}} = Ref, I, I, A) ->
 expand_to_2(#refX{obj = {Type, _}} = Ref, I, J, A) ->
     expand_to_2(Ref, I + 1, J, [Ref#refX{obj = {Type, {I, I}}} | A]).
 
--spec expunge_refs(string(), [#refX{}]) -> ok.
-expunge_refs(S, Refs) ->
+-spec expunge_refsD(string(), [#refX{}]) -> ok.
+expunge_refsD(S, Refs) ->
     ItemT = trans(S, item),
     ObjT = trans(S, local_obj),
     [begin
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete(ObjT, Idx, write),
          case O of
-             {cell, _} -> unattach_form(Ref);
+             {cell, _} -> unattach_formD(Ref);
              _         -> ok
          end
      end || Ref <- Refs,
-            #local_obj{idx = Idx, obj = O} <- read_objs(Ref, direct)],
+            #local_obj{idx = Idx, obj = O} <- read_objsD(Ref, direct)],
     ok.
 
--spec mark_dirty_for_incl([#xrefX{}], auth_srv:auth_spec()) -> ok.
-mark_dirty_for_incl([], _) -> ok;
-mark_dirty_for_incl(Refs = [#xrefX{site = Site}|_], AReq) ->
+-spec mark_dirty_for_inclD([#xrefX{}], auth_srv:auth_spec()) -> ok.
+mark_dirty_for_inclD([], _) -> ok;
+mark_dirty_for_inclD(Refs = [#xrefX{site = Site}|_], AReq) ->
+    %% TODO check out this stuff
+    %% not sure all the has inlude stuff is needed...
     Idxs = lists:flatten([C#xrefX.idx || R <- Refs, C <- expand_ref(R)]),
-    Dirties = [Idx || Idx <- Idxs, has_include(Site, Idx)],
+    Dirties = [Idx || Idx <- Idxs, has_includeD(Site, Idx)],
     case Dirties of
         [] -> ok;
         _  -> Entry = #dirty_queue{dirty = Dirties, auth_req = AReq},
               mnesia:write(trans(Site, dirty_queue), Entry, write)
     end.
 
--spec has_include(string(), cellidx()) -> boolean().
-has_include(Site, CellIdx) ->
+-spec has_includeD(string(), cellidx()) -> boolean().
+has_includeD(Site, CellIdx) ->
     Tbl = trans(Site, relation),
     case mnesia:read(Tbl, CellIdx, write) of
         []  -> false;
@@ -1269,7 +1311,7 @@ log_page(#refX{site = S, path = P, obj = {page, "/"} = O}, Action, Uid) ->
                    action = Action, actiontype = "",
                    type = page, path = hn_util:list_to_path(P),
                    obj = O, log = ""},
-    write_log(S, Log),
+    write_logD(S, Log),
     ok.
 
 log_move(#refX{site = S, path = P, obj = {Type, _} = O}, Action, Disp, Uid)
@@ -1278,10 +1320,10 @@ log_move(#refX{site = S, path = P, obj = {Type, _} = O}, Action, Disp, Uid)
                    action = Action, actiontype = Disp,
                    type = page, path = hn_util:list_to_path(P),
                    obj = O, log = ""},
-    write_log(S, Log),
+    write_logD(S, Log),
     ok.
 
-shift_rows_and_columns(#refX{site = S, path = P, obj = {column, {X1, X2}}},
+shift_rows_and_columnsD(#refX{site = S, path = P, obj = {column, {X1, X2}}},
                        Type, horizontal, _Ar) ->
     Table = trans(S, local_obj),
     Objs = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
@@ -1289,7 +1331,7 @@ shift_rows_and_columns(#refX{site = S, path = P, obj = {column, {X1, X2}}},
     Objs2 = shift_cols(Objs, X2, Offset, []),
     [mnesia:write(Table, Rec, write) || Rec <- Objs2],
     ok;
-shift_rows_and_columns(#refX{site = S, path = P, obj = {row, {Y1, Y2}}},
+shift_rows_and_columnsD(#refX{site = S, path = P, obj = {row, {Y1, Y2}}},
                        Type, vertical, _Ar) ->
     Table = trans(S, local_obj),
     Objs = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
@@ -1298,7 +1340,7 @@ shift_rows_and_columns(#refX{site = S, path = P, obj = {row, {Y1, Y2}}},
     [mnesia:write(Table, Rec, write) || Rec <- Objs2],
     ok;
 %% all other shifts don't move rows and columns
-shift_rows_and_columns(_, _, _, _) ->
+shift_rows_and_columnsD(_, _, _, _) ->
     ok.
 
 get_offset(delete, N1, N2) -> N1 - N2 - 1;
@@ -1320,19 +1362,19 @@ shift_cols([#local_obj{obj = {column, {MX1, MX2}}} = H | T], X2, Offset, Acc)
 shift_cols([_H | T], X2, Offset, Acc) ->
     shift_cols(T, X2, Offset, Acc).
 
-shift_cells(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
+shift_cellsD(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
   when (Type ==  insert orelse Type ==  delete) andalso
        (Disp ==  vertical orelse Disp ==  horizontal) ->
     {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
     RefXSel = shift_pattern(From, Disp),
     % mark the refs dirty for zinfs to force recalc
-    [ok = mark_dirty_for_zinf(X) || X <- expand_ref(From)],
-    case read_objs(RefXSel, inside) of
+    [ok = mark_dirty_for_zinfD(X) || X <- expand_ref(From)],
+    case read_objsD(RefXSel, inside) of
         [] -> [];
         ObjsList ->
             % Rewrite the formulas of all the child cells
             RefXList = [lobj_to_xrefX(Site, O) || O <- ObjsList],
-            ChildCells = lists:flatten([get_children(X) || X <- RefXList]),
+            ChildCells = lists:flatten([get_childrenD(X) || X <- RefXList]),
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
             Formulas = [F || X <- DedupedChildren,
@@ -1344,7 +1386,8 @@ shift_cells(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
                         Op = fun(Attrs) ->
                                      {St, orddict:store("formula", F2, Attrs)}
                              end,
-                        apply_to_attrs(ChildRef, Op, rewrite, Uid),
+                        apply_to_attrsD(ChildRef, Op, rewrite, Uid,
+                                        ?TRANSFORMATIVE),
                         % you need to switch the ref to an idx because later on
                         % you are going to move the cells and you need to know
                         % the ref of the shifted cell
@@ -1390,15 +1433,15 @@ shift_obj(#local_obj{path = P, obj = {row, {Y1, Y2}}} = LO, _XOff, YOff) ->
     LO#local_obj{obj = O2, revidx = term_to_binary(RevIdx2)};
 shift_obj(LO, _, _) -> LO.
 
--spec get_children(#xrefX{}) -> [cellidx()].
-get_children(#xrefX{site = Site, obj = {cell, _}} = XRefX) ->
+-spec get_childrenD(#xrefX{}) -> [cellidx()].
+get_childrenD(#xrefX{site = Site, obj = {cell, _}} = XRefX) ->
     Table = trans(Site, relation),
     Idxs = case mnesia:read(Table, XRefX#xrefX.idx, read) of
                [R] -> R#relation.children;
                _   -> []
            end,
-    [idx_to_xrefX(Site, X) || X <- Idxs];
-get_children(#xrefX{obj = {Type, _}} = Ref)
+    [idx_to_xrefXD(Site, X) || X <- Idxs];
+get_childrenD(#xrefX{obj = {Type, _}} = Ref)
   when (Type ==  row) orelse (Type ==  column) orelse
        (Type ==  range) orelse (Type ==  page) ->
         lists:flatten(expand_ref(Ref)).
@@ -1415,7 +1458,7 @@ deref_formula(XRefX, DelRef, Disp, Uid) ->
                          {clean, Attrs}
                  end
          end,
-    {Status, _} = apply_to_attrs(XRefX, Op, deref, Uid),
+    {Status, _} = apply_to_attrsD(XRefX, Op, deref, Uid, ?NONTRANSFORMATIVE),
     {Status, XRefX}.
 
 %% dereferences a formula
@@ -1676,28 +1719,37 @@ recheck_overlay(Text, {cell, _}, {Type, _}, _Disp)
 % different behaviours with a cell/range depending on if the range is
 % a single row or a single col range
 % single row
-recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY1}}, vertical) ->
+recheck_overlay(Text, {cell, {X1, Y1}},
+                {range, {XX1, YY1, XX2, YY1}}, vertical) ->
     recheck2(Text, X1, Y1, XX1, YY1, XX2, YY1);
 % single row
-recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY1}}, horizontal) ->
+recheck_overlay(Text, {cell, {X1, Y1}},
+                {range, {XX1, YY1, XX2, YY1}}, horizontal) ->
     if
-        (XX1 < X1), (XX2 > X1), (YY1 ==  Y1) -> C1 = make_cell(false, XX1, 0, false, YY1, 0),
-                                               C2 = make_cell(false, XX2, -1, false, YY1,  0),
-                                               {recalc,  C1 ++ ":" ++ C2};
-        true                                -> {formula, Text}
+        (XX1 < X1), (XX2 > X1), (YY1 ==  Y1) ->
+            C1 = make_cell(false, XX1, 0, false, YY1, 0),
+            C2 = make_cell(false, XX2, -1, false, YY1,  0),
+            {recalc,  C1 ++ ":" ++ C2};
+        true                                ->
+            {formula, Text}
     end;
 % single col
-recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX1, YY2}}, vertical) ->
+recheck_overlay(Text, {cell, {X1, Y1}},
+                {range, {XX1, YY1, XX1, YY2}}, vertical) ->
     if
-        (XX1 ==  X1), (YY1 < Y1), (YY2 > Y1) -> C1 = make_cell(false, XX1, 0, false, YY1, 0),
-                                               C2 = make_cell(false, XX1, 0, false, YY2,  -1),
-                                               {recalc,  C1 ++ ":" ++ C2};
-        true                                -> {formula, Text}
+        (XX1 ==  X1), (YY1 < Y1), (YY2 > Y1) ->
+            C1 = make_cell(false, XX1, 0, false, YY1, 0),
+            C2 = make_cell(false, XX1, 0, false, YY2,  -1),
+            {recalc,  C1 ++ ":" ++ C2};
+        true                                ->
+            {formula, Text}
     end;
 % single col
-recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX1, YY2}}, horizontal) ->
+recheck_overlay(Text, {cell, {X1, Y1}},
+                {range, {XX1, YY1, XX1, YY2}}, horizontal) ->
     recheck2(Text, X1, Y1, XX1, YY1, XX1, YY2);
-recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY2}}, _Disp) ->
+recheck_overlay(Text, {cell, {X1, Y1}},
+                {range, {XX1, YY1, XX2, YY2}}, _Disp) ->
     recheck2(Text, X1, Y1, XX1, YY1, XX2, YY2);
 % cols/rows cols/range comparisons always fail
 recheck_overlay(Text, {Type, _}, {column, _}, _Disp)
@@ -1708,7 +1760,8 @@ recheck_overlay(Text, {Type, _}, {row, _}, _Disp)
   when ((Type ==  column) orelse (Type ==  range)) ->
     {formula, Text};
 %% check a row/row
-recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt, Disp) ->
+recheck_overlay(Text, {row, {X1, X2}},
+                {row, {XX1, XX2}} = Tgt, Disp) ->
     if
         (X1 >=  XX1), (X1  =< XX2), (X2 >=  XX1), (X2  =< XX2) ->
             rewrite((X2 - X1 + 1), Tgt, Text, middle, Disp);
@@ -1724,7 +1777,8 @@ recheck_overlay(Text, {column, {Y1, Y2}}, {column, {YY1, YY2}} = Tgt, Disp) ->
             {formula, Text}
     end;
 %% check range/range
-recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} = R, horizontal) ->
+recheck_overlay(Text, {range, {X1, Y1, X2, Y2}},
+                {range, {XX1, YY1, XX2, YY2}} = R, horizontal) ->
     if
         (X1 >=  XX1), (X1  =< XX2), (X2 >=  XX1), (X2  =< XX2),
         (Y1  =< YY1), (Y2 >=  YY1), (Y2  =< YY2) ->
@@ -1738,10 +1792,13 @@ recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} =
         ((X1 >=  XX1) andalso (X1  =< XX2))
         orelse ((X2 >=  XX1) andalso  (X2  =< XX2))
         orelse ((Y1 >=  YY1) andalso (Y1  =< YY2))
-        orelse ((Y2 >=  YY1) andalso (Y2  =< YY2)) -> {recalc, Text};
-        true                                               -> {formula, Text}
+        orelse ((Y2 >=  YY1) andalso (Y2  =< YY2)) ->
+            {recalc, Text};
+        true                                               ->
+            {formula, Text}
     end;
-recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} = R, vertical) ->
+recheck_overlay(Text, {range, {X1, Y1, X2, Y2}},
+                {range, {XX1, YY1, XX2, YY2}} = R, vertical) ->
     if
         (X1  =< XX1), (X2 >=  XX1), (X2  =< XX2),
         (Y1 >=  YY1), (Y1  =< YY2), (Y2 >=  YY1), (Y2  =< YY2) ->
@@ -1755,8 +1812,10 @@ recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} =
         ((X1 >=  XX1) andalso (X1  =< XX2))
         orelse ((X2 >=  XX1) andalso (X2  =< XX2))
         orelse ((Y1 >=  YY1) andalso (Y1  =< YY2))
-        orelse ((Y2 >=  YY1) andalso (Y2  =< YY2)) -> {recalc, Text};
-        true                                               -> {formula, Text}
+        orelse ((Y2 >=  YY1) andalso (Y2  =< YY2)) ->
+            {recalc, Text};
+        true                                               ->
+            {formula, Text}
     end;
 %% check range/column
 recheck_overlay(Text, {column, {range, {X1, zero, X2, inf}}},
@@ -1809,15 +1868,15 @@ expand({column, {X1, X2}})                  -> {X1, zero, X2, inf}; % short for 
 expand({row, {Y1, Y2}})                     -> {zero, Y1, inf, Y2}; % short for infinity
 expand({page, "/"})                         -> {zero, inf, zero, inf}.
 
--spec delete_relation(#xrefX{}) -> ok.
-delete_relation(#xrefX{site = Site} = Cell) ->
+-spec delete_relationD(#xrefX{}) -> ok.
+delete_relationD(#xrefX{site = Site} = Cell) ->
     Tbl = trans(Site, relation),
     case mnesia:read(Tbl, Cell#xrefX.idx, write) of
         [R] ->
             % delete infinite relations and stuff
-            OldInfPs = [idx_to_xrefX(Site, X) || X <- R#relation.infparents],
-            ok = handle_infs(Cell#xrefX.idx, Site, [], OldInfPs),
-            [del_child(P, Cell#xrefX.idx, Tbl) ||
+            OldInfPs = [idx_to_xrefXD(Site, X) || X <- R#relation.infparents],
+            ok = handle_infsD(Cell#xrefX.idx, Site, [], OldInfPs),
+            [del_childD(P, Cell#xrefX.idx, Tbl) ||
                 P <- R#relation.parents],
             ok = mnesia:delete(Tbl, Cell#xrefX.idx, write);
         _ -> ok
@@ -1859,7 +1918,8 @@ offset_with_ranges1([], _XCell, _From, _Offset, Status, Acc) ->
     {Status, lists:reverse(Acc)};
 offset_with_ranges1([{rangeref, LineNo,
                       #rangeref{path = Path, text = Text} = H} | T],
-                    XCell, #refX{path = FromPath} = From, Offset, Status, Acc) ->
+                    XCell, #refX{path = FromPath} = From,
+                    Offset, Status, Acc) ->
     #xrefX{path = CPath} = XCell,
     PathCompare = muin_util:walk_path(CPath, Path),
     Range = muin_util:just_ref(Text),
@@ -2004,11 +2064,15 @@ make_new_range(Prefix, Cell1, Cell2,
                {X2D, X2, Y2D, Y2},
                #refX{obj = {row, {Top, _Bottom}}},
                {0 = _XOffset, YOffset}) ->
-    {St1, NC1} = if Top  =< Y1 -> {dirty, make_cell(X1D, X1, 0, Y1D, Y1, YOffset)};
-                    true      -> {clean, Cell1}
+    {St1, NC1} = if Top  =< Y1 ->
+                         {dirty, make_cell(X1D, X1, 0, Y1D, Y1, YOffset)};
+                    true      ->
+                         {clean, Cell1}
                  end,
-    {St2, NC2} = if Top  =< Y2 -> {dirty, make_cell(X2D, X2, 0, Y2D, Y2, YOffset)};
-                    true      -> {clean, Cell2}
+    {St2, NC2} = if Top  =< Y2 ->
+                         {dirty, make_cell(X2D, X2, 0, Y2D, Y2, YOffset)};
+                    true      ->
+                         {clean, Cell2}
                  end,
     Ret = Prefix ++ NC1 ++ ":" ++ NC2,
     case {St1, St2} of
@@ -2021,11 +2085,15 @@ make_new_range(Prefix, Cell1, Cell2,
                {X2D, X2, Y2D, Y2},
                #refX{obj = {column, {Left, _Right}}},
                {XOffset, 0 = _YOffset}) ->
-    {St1, NC1} = if Left  =< X1 -> {dirty, make_cell(X1D, X1, XOffset, Y1D, Y1, 0)};
-                    true       -> {clean, Cell1}
+    {St1, NC1} = if Left  =< X1 ->
+                         {dirty, make_cell(X1D, X1, XOffset, Y1D, Y1, 0)};
+                    true       ->
+                         {clean, Cell1}
                  end,
-    {St2, NC2} = if Left  =< X2 -> {dirty, make_cell(X2D, X2, XOffset, Y2D, Y2, 0)};
-                    true       -> {clean, Cell2}
+    {St2, NC2} = if Left  =< X2 ->
+                         {dirty, make_cell(X2D, X2, XOffset, Y2D, Y2, 0)};
+                    true       ->
+                         {clean, Cell2}
                  end,
     Ret = Prefix ++ NC1 ++ ":" ++ NC2,
     case {St1, St2} of
@@ -2220,39 +2288,23 @@ merge_incs([#include{js = JS1, js_reload = JSR1, css = CSS1} = Inc | T],
                           css = hslists:uniq(lists:merge(CSS1, CSS2))},
     merge_incs(T, NewIncs).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% Debug Functions
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-dirty_for_zinf_DEBUG(Site) ->
-    Tab1 = trans(Site, dirty_for_zinf),
-    io:format("Dumping dirty_for_zinf table:~n"),
-    Fun1 = fun(X, []) ->
-                   io:format("Id ~p RefX is dirty: ~p~n",
-                             [X#dirty_for_zinf.id, X#dirty_for_zinf.dirty]),
-                   []
-           end,
-    mnesia:foldl(Fun1, [], Tab1).
+shrink([])   -> [];
+shrink(List) -> List2 = lists:sort(List),
+                shrink2(List2, []).
 
+shrink2([#dirty_for_zinf{dirty = D}], Acc) -> [D | Acc];
+% if they are the same xrefX drop one
+shrink2([#dirty_for_zinf{dirty = D} = H,
+         #dirty_for_zinf{dirty = D} | T], Acc) ->
+    shrink2([H | T], Acc);
+shrink2([#dirty_for_zinf{dirty = D} | T], Acc) -> shrink2(T, [D | Acc]).
 
-item_and_local_objs_DEBUG(Site) ->
-    Tab1 = trans(Site, item),
-    io:format("Dumping item table:~n"),
-    Fun1 = fun(X, []) ->
-                   io:format("Record ~p has Attrs ~p~n",
-                             [X#item.idx, binary_to_term(X#item.attrs)]),
-                   []
-           end,
-    mnesia:foldl(Fun1, [], Tab1),
-    Tab2 = trans(Site, local_obj),
-    io:format("Dumping local_obj table:~n"),
-    Fun2 = fun(X, []) ->
-                   io:format("Record ~p is ~p ~p with a reverse index of ~p~n",
-                             [X#local_obj.idx, binary_to_term(X#local_obj.path),
-                              X#local_obj.obj, binary_to_term(X#local_obj.revidx)]),
-                   []
-           end,
-    mnesia:foldl(Fun2, [], Tab2).
+get_zinfs(List, CI) -> get_z2(List, CI, []).
 
-idx_DEBUG(S, Idx) -> mnesia:read(trans(S, local_obj), Idx, read).
+get_z2([], _CI, Acc) -> lists:sort(lists:flatten(Acc));
+get_z2([H | T], CI, Acc) ->
+    Zs = zinf_srv:expand_zrefs(H),
+    Zs2 = lists:merge([H], Zs),
+    NewAcc = [{X, CI} || X <- Zs2],
+    get_z2(T, CI, [NewAcc | Acc]).
+
