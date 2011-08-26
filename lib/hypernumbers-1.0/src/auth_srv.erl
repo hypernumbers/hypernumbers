@@ -241,7 +241,7 @@ handle_cast(Request, State) ->
                    {NewTree, true} ->
                        ok = save_tree(Site, NewTree),
                        State#state{tree = NewTree};
-                   {Reply, _} ->
+                   {_Reply, _} ->
                        State
                end,
 
