@@ -290,7 +290,7 @@ timer_debugD(Site) ->
     Tab = new_db_wu:trans(Site, timer),
     Fun = fun(#timer{idx = Idx, spec = Spec}, []) ->
                    io:format("Debugging timer for ~p with ~p~n", [Idx, Spec]),
-                   raw_idx_DEBUG(Site, Idx),
+                   idx_DEBUG(Site, Idx),
                    []
            end,
     mnesia:foldl(Fun, [], Tab).
