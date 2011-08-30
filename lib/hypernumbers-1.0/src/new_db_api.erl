@@ -98,8 +98,8 @@ mark_idx_dirty(Site, Idx) ->
     XRefX = mnesia_mon:log_act(transaction, Fun1, Report1),
     Report2 = mnesia_mon:get_stamp("mark_idx_dirty (2)"),
     Fun2 = fun() ->
-                  mnesia_mon:report(Report1),
-                  ok = new_db_wu:mark_these_dirtyD([XRefX], nil)
+                   mnesia_mon:report(Report1),
+                   ok = new_db_wu:mark_these_dirtyD([XRefX], nil)
           end,
     RefX = hn_util:xrefX_to_refX(XRefX),
     write_activity(RefX, Fun2, "quiet", Report2).
@@ -796,7 +796,6 @@ handle_dirty_cell(Site, Idx, Ar) ->
     Fun =
         fun() ->
                 mnesia_mon:report(Report),
-                io:format("In handle_dirty_cell~n"),
                 Cell = new_db_wu:idx_to_xrefXD(Site, Idx),
                 Attrs = case new_db_wu:read_ref(Cell, inside, write) of
                             [{_, A}] -> A;
@@ -809,7 +808,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
                                                       Ar),
                         % cells may have been written that now depend on this
                         % cell so it needs to report back dirty children
-                        [Rels] = new_db_wu:read_relationsD(Cell, read),
+                        [Rels] = new_db_wu:read_relations(Cell, read),
                         Rels#relation.children;
                     _ ->
                         []

@@ -50,7 +50,8 @@
          refX_to_xrefX_createD/1,
          write_attrs/2, write_attrs/3,
          read_ref/2, read_ref/3, read_ref_field/3,
-         read_relationsD/2,
+         read_relations/2,
+         read_relationsD/3,
          mark_these_dirtyD/2,
          mark_these_idxs_dirtyD/3,
          mark_dirty_for_inclD/2,
@@ -128,7 +129,7 @@ proc_dirty_zinfsD(Site, Tree, AddFun, DelFun) ->
 
 maybe_write_zinftreeD(Site, Tree) ->
     Tbl = new_db_wu:trans(Site, dirty_zinf),
-    ok = new_db_wu:write_kv(Site, ?zinf_tree, Tree),
+    ok = new_db_wu:write_kvD(Site, ?zinf_tree, Tree),
     Spec = #dirty_zinf{_='_', processed = true},
     L = mnesia:match_object(Tbl, Spec, write),
     [ok = mnesia:delete(Tbl, Id, write)
@@ -225,7 +226,7 @@ get_last_row(#refX{site = S, path = P}) ->
     SelX = #refX{site = S, path = P, obj = {page, "/"}},
     Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end,
                        [{Y, LO} || LO = #local_obj{obj = {cell,{_,Y}}}
-                                       <- read_objsD(SelX, inside)]),
+                                       <- read_objs(SelX, inside)]),
     largest_content(Desc, S).
 
 -spec get_last_col(#refX{}) -> integer().
@@ -233,7 +234,7 @@ get_last_col(#refX{site = S, path = P}) ->
     SelX = #refX{site = S, path = P, obj = {page, "/"}},
     Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end,
                        [{X, LO} || LO = #local_obj{obj = {cell,{X,_}}}
-                                       <- read_objsD(SelX, inside)]),
+                                       <- read_objs(SelX, inside)]),
     largest_content(Desc, S).
 
 -spec matching_formsD(#refX{}, common | string()) -> [#form{}].
@@ -429,7 +430,8 @@ refX_to_xrefXD(#refX{site = S, path = P, obj = O}) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
     case mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx) of
-        [I] -> #xrefX{idx = I#local_obj.idx, site = S, path = P, obj = O};
+        [I] -> #xrefX{idx = I#local_obj.idx, site = S, path = P,
+                      obj = O};
         _   -> false
     end.
 
@@ -709,7 +711,12 @@ set_parents(Tbl,
     [ok = add_childD(P, CellIdx, Tbl, IsIncl) || P <- NewParentIdxs],
     NewInfParIdxs = ordsets:from_list(InfPIdxs),
     XCurInfPars = [idx_to_xrefXD(Site, X) || X <- CurInfPars],
-    ok = handle_infsD(CellIdx, Site, InfPars, XCurInfPars),
+    case InfPars of
+        XCurInfPars ->
+            ok;
+        _           ->
+            ok = handle_infsD(CellIdx, Site, InfPars, XCurInfPars)
+    end,
     Rel#relation{parents = NewParentIdxs, infparents = NewInfParIdxs}.
 
 %% @doc Make a #muin_rti record out of an xrefX record and a flag that specifies
@@ -1054,8 +1061,11 @@ get_cell_for_muin(#refX{} = RefX, Type) ->
             end,
     {Value, [], [{local, Type, XRefX}]}.
 
-read_relationsD(#xrefX{site = S, idx = Idx}, Lock) ->
-    Tbl = trans(S, relation),
+read_relations(#xrefX{site = S, idx = Idx}, Lock) ->
+    read_relationsD(S, Idx, Lock).
+
+read_relationsD(Site, Idx, Lock) ->
+    Tbl = trans(Site, relation),
     mnesia:read(Tbl, Idx, Lock).
 
 read_ref(Ref , Relation) -> read_ref(Ref, Relation, read).
@@ -1063,9 +1073,9 @@ read_ref(Ref , Relation) -> read_ref(Ref, Relation, read).
 -spec read_ref([#xrefX{} | #refX{}], inside | intersect, read | write)
 -> [{#xrefX{}, ?dict}].
 read_ref(#refX{site = S} = RefX, Relation, Lock) ->
-    read_attrs(S, read_objsD(RefX, Relation), Lock);
+    read_attrs(S, read_objs(RefX, Relation), Lock);
 read_ref(#xrefX{site = S} = XRefX, Relation, Lock) ->
-    read_attrs(S, read_objsD(XRefX, Relation), Lock).
+    read_attrs(S, read_objs(XRefX, Relation), Lock).
 
 -spec read_attrs(string(), [#local_obj{}], read|write)
 -> [{#xrefX{}, ?dict}].
@@ -1099,27 +1109,60 @@ extract_field([{XRefX, Attrs}|T], Field, Acc) ->
                _       -> Acc end,
     extract_field(T, Field, Acc2).
 
+-spec read_objs(#xrefX{} | #refX{}, inside | intersect | direct) ->
+    [#local_obj{}] | [].
+% if its a cell then just the local obj
+read_objs(#refX{site = S, path = P, obj = {cell, _} = O}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {cell, _} = O}, inside);
+% if it a xrefX then we already know the idx so just return it
+read_objs(#xrefX{idx = I, path = P, obj = {cell, _} = O}, _Any) ->
+    RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
+    [#local_obj{idx = I, path = term_to_binary(P), obj = O, type = url,
+                revidx = term_to_binary(RevIdx)}];
+read_objs(#xrefX{site = S, path = P, obj = {page, "/"}}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, inside);
+read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, inside);
+read_objs(#xrefX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside);
+read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside);
+read_objs(#xrefX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
+    read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside);
+read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
+    read_objsD(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside);
+read_objs(#xrefX{site = S, path = P,
+                 obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
+    read_objsD(#refX{site = S, path = P,
+                     obj = {range, {X1, Y1, X2, Y2}}}, inside);
+read_objs(#refX{site = S, path = P,
+                obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
+    read_objsD(#refX{site = S, path = P,
+                     obj = {range, {X1, Y1, X2, Y2}}}, inside);
+% if the intersect is a page then just read the page
+read_objs(#xrefX{site = S, path = P, obj = {page, "/"}}, intersect) ->
+    read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect);
+read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
+    read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, intersect);
+read_objs(#xrefX{site = S, path = P, obj = O}, intersect) ->
+    read_objsD(#refX{site = S, path = P, obj = O}, intersect);
+read_objs(#refX{site = Site} = Ref, intersect) ->
+    read_objsD(#refX{site = Site} = Ref, intersect);
+read_objs(#xrefX{site = S, path = P, obj = O}, direct) ->
+    read_objsD(#refX{site = S, path = P, obj = O}, direct);
+read_objs(#refX{site = S, path = P, obj = O}, direct) ->
+    read_objsD(#refX{site = S, path = P, obj = O}, direct).
 
-
--spec read_objsD(#xrefX{} | #refX{}, inside | intersect | direct) ->
+-spec read_objsD(#refX{} | #refX{}, inside | intersect | direct) ->
     [#local_obj{}] | [].
 % if its a cell then just the local obj
 read_objsD(#refX{site = S, path = P, obj = {cell, _} = O}, inside) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
     mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx);
-% if it a xrefX then we already know the idx so just return it
-read_objsD(#xrefX{idx = I, path = P, obj = {cell, _} = O}, _Any) ->
-    RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    [#local_obj{idx = I, path = term_to_binary(P), obj = O, type = url,
-                revidx = term_to_binary(RevIdx)}];
-read_objsD(#xrefX{site = S, path = P, obj = {page, "/"}}, inside) ->
-    read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, inside);
 read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, inside) ->
     Table = trans(S, local_obj),
     mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
-read_objsD(#xrefX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
-    read_objsD(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside);
 read_objsD(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
     Table = trans(S, local_obj),
     Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
@@ -1131,8 +1174,6 @@ read_objsD(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
              (_LO) -> false
           end,
     lists:filter(Fun, Page);
-read_objsD(#xrefX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
-    read_objsD(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside);
 read_objsD(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
     Table = trans(S, local_obj),
     Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
@@ -1145,8 +1186,6 @@ read_objsD(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
                   false
           end,
     lists:filter(Fun, Page);
-read_objsD(#xrefX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
-    read_objsD(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside);
 read_objsD(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
     Table = trans(S, local_obj),
     Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
@@ -1160,18 +1199,12 @@ read_objsD(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) -
           end,
     lists:filter(Fun, Page);
 % if the intersect is a page then just read the page
-read_objsD(#xrefX{site = S, path = P, obj = {page, "/"}}, intersect) ->
-    read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, intersect);
 read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     Table = trans(S, local_obj),
     mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
-read_objsD(#xrefX{site = S, path = P, obj = O}, intersect) ->
-    read_objsD(#refX{site = S, path = P, obj = O}, intersect);
 read_objsD(#refX{site = Site} = Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
     mnesia:select(trans(Site, local_obj), MS);
-read_objsD(#xrefX{site = S, path = P, obj = O}, direct) ->
-    read_objsD(#refX{site = S, path = P, obj = O}, direct);
 read_objsD(#refX{site = S, path = P, obj = O}, direct) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
@@ -1259,9 +1292,9 @@ default_align(Res) when is_list(Res)   -> "left";
 default_align(_Res)                    -> "center".
 
 expand_ref(#refX{site = S} = RefX) ->
-    [lobj_to_xrefX(S, LO) || LO <- read_objsD(RefX, inside)];
+    [lobj_to_xrefX(S, LO) || LO <- read_objs(RefX, inside)];
 expand_ref(#xrefX{site = S} = XRefX) ->
-    [lobj_to_xrefX(S, LO) || LO <- read_objsD(XRefX, inside)].
+    [lobj_to_xrefX(S, LO) || LO <- read_objs(XRefX, inside)].
 
 expand_to_rows_or_cols(#refX{obj = {RC, {I, J}}} = Ref)
   when RC ==  row; RC ==  column ->
@@ -1285,7 +1318,7 @@ expunge_refsD(S, Refs) ->
              _         -> ok
          end
      end || Ref <- Refs,
-            #local_obj{idx = Idx, obj = O} <- read_objsD(Ref, direct)],
+            #local_obj{idx = Idx, obj = O} <- read_objs(Ref, direct)],
     ok.
 
 -spec mark_dirty_for_inclD([#xrefX{}], auth_srv:auth_spec()) -> ok.
@@ -1372,7 +1405,7 @@ shift_cellsD(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
     RefXSel = shift_pattern(From, Disp),
     % mark the refs dirty for zinfs to force recalc
     [ok = mark_dirty_for_zinfD(X) || X <- expand_ref(From)],
-    case read_objsD(RefXSel, inside) of
+    case read_objs(RefXSel, inside) of
         [] -> [];
         ObjsList ->
             % Rewrite the formulas of all the child cells

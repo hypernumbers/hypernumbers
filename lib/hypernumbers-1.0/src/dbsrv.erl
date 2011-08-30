@@ -168,14 +168,13 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 
 -spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()].
 build_workplan(Site, Dirty, Graph) ->
-    RTbl = new_db_wu:trans(Site, relation),
     Report = mnesia_mon:get_stamp("build_workplan"),
     Trans = fun() ->
                     mnesia_mon:report(Report),
-                    update_recalc_graph(Dirty, RTbl, Graph),
+                    update_recalc_graph(Dirty, Site, Graph),
                     [digraph:add_edge(Graph, P, D)
                      || D <- Dirty,
-                        P <- check_interference(D, RTbl, Graph)],
+                        P <- check_interference(D, Site, Graph)],
                     ok
             end,
     ok = mnesia_mon:log_act(transaction, Trans, Report),
@@ -189,8 +188,8 @@ build_workplan(Site, Dirty, Graph) ->
 %% dependency edges must be added from these parents to the new
 %% formula.
 -spec check_interference(cellidx(), atom(), digraph()) -> [cellidx()].
-check_interference(Cell, RTbl, Graph) ->
-    case mnesia:read(RTbl, Cell, read) of
+check_interference(Cell, Site, Graph) ->
+    case new_db_wu:read_relationsD(Site, Cell, read) of
         [R] ->
             Parents = ordsets:to_list(R#relation.parents),
             [P || P <- Parents, false /= digraph:vertex(Graph, P)];
@@ -201,17 +200,16 @@ check_interference(Cell, RTbl, Graph) ->
 %% Recursively walk child relation, adding entries into the work
 %% queue.
 -spec update_recalc_graph([cellidx()], atom(), digraph()) -> ok.
-update_recalc_graph([], _RTbl, _Graph) ->
+update_recalc_graph([], _Site, _Graph) ->
     ok;
-update_recalc_graph([Idx|Rest], RTbl, Graph) ->
+update_recalc_graph([Idx|Rest], Site, Graph) ->
     case digraph:vertex(Graph, Idx) of
         false ->
-            case mnesia:read(RTbl, Idx, read) of
+            case new_db_wu:read_relationsD(Site, Idx, read) of
                 [R] ->
                     digraph:add_vertex(Graph, Idx),
                     Children = ordsets:to_list(R#relation.children),
-                    %log_children(Children, R#relation.cellidx),
-                    update_recalc_graph(Children, RTbl, Graph),
+                    update_recalc_graph(Children, Site, Graph),
                     [digraph:add_edge(Graph, Idx, C) || C <- Children];
                 _ ->
                     ok
@@ -219,7 +217,7 @@ update_recalc_graph([Idx|Rest], RTbl, Graph) ->
         _ ->
             ok
     end,
-    update_recalc_graph(Rest, RTbl, Graph).
+    update_recalc_graph(Rest, Site, Graph).
 
 %% A circular reference involving the Site, and Graph has been
 %% detected. A non-empty subset of the given dirty cells are

@@ -90,11 +90,13 @@ run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
 %% @doc Runs compiled formula.
 run_code(Pcode, #muin_rti{site=Site, path=Path,
                           col=Col,   row=Row,
+                          idx = Idx,
                           array_context=AryCtx,
                           auth_req=AuthReq}) ->
 %% Populate the process dictionary.
     lists:map(fun({K,V}) -> put(K, V) end,
               [{site, Site}, {path, Path}, {x, Col}, {y, Row},
+               {idx, Idx},
                {array_context, AryCtx}, {infinite, []},
                {retvals, {[], []}}, {recompile, false},
                {auth_req, AuthReq}]),
@@ -102,12 +104,12 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                 true -> loopify(Pcode);
                 false -> Pcode
             end,
-    [Fname | Args] = Fcode, 
+    [Fname | Args] = Fcode,
     case atom_to_list(Fname) of
-		"user." ++ _Rest	->	Fcode2 = [Fname, Site | Args],
-								Result = eval_formula(Fcode2);
-		_				->	Result = eval_formula(Fcode)
-	end,
+        "user." ++ _Rest  ->  Fcode2 = [Fname, Site | Args],
+                              Result = eval_formula(Fcode2);
+        _        ->  Result = eval_formula(Fcode)
+ 	  end,
     {_Errors, References} = get(retvals),
     FiniteRefs = [{X, L} || {X, finite, L} <- References],
     InfiniteRefs = get(infinite),
@@ -123,10 +125,11 @@ external_eval_formula(X) ->
 %% evaluates a formula rather than a piece of AST, i.e. will do implicit
 %% intersection, resolve a final cellref &c.
 eval_formula(Fcode) ->
-	case eval(Fcode) of
-        ?error_in_formula ->	?ERRVAL_FORM;
+    case eval(Fcode) of
+        ?error_in_formula ->
+            ?ERRVAL_FORM;
         Value ->
-	        case Value of
+            case Value of
                 R when ?is_cellref(R) ->
                     case muin_util:attempt(?MODULE, fetch, [R]) of
                         {ok,    blank}              -> 0;
@@ -197,8 +200,8 @@ eval(Value) ->
 
 % I know it is fugly but you try and get it to work with guards and
 % it won't - so stick it up yes
-transform("user." ++ R, Args)	->
-	{user_defined_function, [list_to_atom("user." ++ R) | Args]};
+transform("user." ++ R, Args)  ->
+    {user_defined_function, [list_to_atom("user." ++ R) | Args]};
 transform("tim.alert." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("tim.alert."), [W, H | Args]};
@@ -346,25 +349,33 @@ funcall(pair_up, [A, V]) when ?is_area(A) andalso not(?is_area(V)) ->
     end;
 funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
     funcall(pair_up, [A, V]);
-%~ curie
-funcall(user_defined_function, [Function_Name, Site | Args])	->
-	case curie:read_user_fn(Site, atom_to_list(Function_Name)) of
-		{ok, DB_Entry}	->	[{user_fns, _name, AST, _page, _wizard}] = DB_Entry,
-							Params_in_AST = curie_arity:walk_AST(lists:flatten(AST), []),
-							case length(Params_in_AST) =:= length(Args) of
-								true	->	Applied_AST = curie_arity:apply_function(Params_in_AST, Args, AST),
-											external_eval(Applied_AST);
-								false	->	?ERRVAL_VAL
-							end;
-		{error, _Message}	->	?ERRVAL_NAME
-	end;
-	
+
+% fun user-defined curie fns
+funcall(user_defined_function, [Function_Name, Site | Args])  ->
+    case curie:read_user_fn(Site, atom_to_list(Function_Name)) of
+        {ok, DB_Entry}  ->
+            [{user_fns, _name, AST, _page, _wizard}] = DB_Entry,
+            Params_in_AST = length(curie_arity:walk_AST(lists:flatten(AST), [])),
+            case Params_in_AST =:= length(Args) of
+                true  ->  io:format("TRUE~n~p~n", [AST]);
+                % TODO
+                % Now need to swap AST for function parameters.
+                % Walk through the AST and for each cellref grab its cell
+                % Address,
+                % than compare it with walk_AST result (get its position) and
+                % grab argument with the same position from Args.
+                % TODO
+                false  ->  ?ERRVAL_VAL
+            end;
+        {error, _Message}  ->  ?ERRVAL_NAME
+    end;
 
 %% Formula function call (built-in or user-defined).
 %% TODO: If a function exists in one of the modules, but calling it returns
 %%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
 funcall(Fname, Args0) ->
-	% TODO, this should be taken out, no reason to strictly
+
+    % TODO, this should be taken out, no reason to strictly
     % evaluate arguments -- hahaha
     Funs = [ '+', '^^',
              abs, acos, 'and', asin, asinh, atan, atan2, atanh, avedev,
@@ -583,9 +594,10 @@ fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     ORow = C#cellref.row,
     Vals = fetch_vals(MPaths, ORow, OCol),
     % build the refX that describes the infinite reference
-    RefX = make_inf_refX(C#cellref.path, C#cellref.text),
+    XRefX = make_inf_xrefX(C#cellref.path, C#cellref.text),
     Infinites = get(infinite),
-    put(infinite, ordsets:add_element(RefX, Infinites)),
+    NewInfinites = ordsets:add_element({local, XRefX}, Infinites),
+    put(infinite, NewInfinites),
     {zeds, Vals, NoMatch, Err};
 % pinch it off from working
 % error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
@@ -950,12 +962,13 @@ fetch_v1([H | T], Row, Col, Acc) ->
     NewAcc = do_cell(Path, RowIndex, ColIndex, infinite),
     fetch_v1(T, Row, Col, [{URL, NewAcc} | Acc]).
 
-make_inf_refX(Path, Text) ->
+make_inf_xrefX(Path, Text) ->
     NewPath = muin_util:walk_path(?mpath, Path),
     Segs = hn_util:path_tokens(Text),
     {_, Ref} = lists:split(length(Segs) - 1, Segs),
     Obj = hn_util:parse_ref(Ref),
-    #refX{site = ?msite, path = NewPath, type = gurl, obj = Obj}.
+    RefX = #refX{site = ?msite, path = NewPath, obj = Obj},
+    new_db_wu:refX_to_xrefX_createD(RefX).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Test Functions

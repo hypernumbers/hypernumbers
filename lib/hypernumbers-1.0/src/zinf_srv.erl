@@ -36,7 +36,9 @@
 % perf testing API
 -export([
          start_fprof/1,
-         stop_fprof/2
+         stop_fprof/2,
+         start_cprof/1,
+         stop_cprof/1
         ]).
 
 %% API for fns used in new_db_api
@@ -79,11 +81,14 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
-
+% you process a zinf when you have know it is dirty because a cell whose
+% path matches the pattern has been changed
 process_zinfs(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:cast({global, Id}, process_zinfs).
 
+% you check zinfs when a new cell is written and you want to find out
+% if its path matches that specified in a zinf
 check_zinfs(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:cast({global, Id}, check_zinfs).
@@ -102,6 +107,14 @@ start_fprof(Site) ->
 stop_fprof(Site, TraceFile) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:cast({global, Id}, {stop_fprof, TraceFile}).
+
+start_cprof(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:cast({global, Id}, start_cprof).
+
+stop_cprof(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:cast({global, Id}, stop_cprof).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -168,8 +181,7 @@ handle_call(start_fprof, _From, State) ->
     fprof:trace(start, TraceFile),
     io:format("TraceFile is ~p~n", [TraceFile]),
     {reply, TraceFile, State};
-handle_call(Request, _From, State) ->
-    io:format("Request is ~p~n", [Request]),
+handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
 %%--------------------------------------------------------------------
@@ -182,6 +194,18 @@ handle_call(Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_cast(start_cprof, State) ->
+    cprof:start(),
+    {noreply, State};
+handle_cast(stop_cprof, State) ->
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    cprof:pause(),
+    {_Total, Log} = cprof:analyse(),
+    File = "cprof" ++ Stamp ++ ".output",
+    Msg = io_lib:format("~w", [Log]),
+    log(Msg, File),
+    io:format("cprof written to ~p~n", [File]),
+    {noreply, State};
 handle_cast({stop_fprof, TraceFile}, State) ->
     fprof:trace(stop),
     fprof:profile(file, TraceFile),
