@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         clean_up_timer_table/0,
          add_api_table_2011_07_23/0,
          blip/0,
          unmigrate_page_srv_2011_07_11/0,
@@ -48,6 +49,35 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+clean_up_timer_table() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(#timer{idx = Idx}, Acc) ->
+                   [Idx | Acc]
+           end,
+    Fun2 = fun(Site) ->
+                   io:format("Site is ~p~n", [Site]),
+                   Fun3 = fun() ->
+                                  Tbl = new_db_wu:trans(Site, timer),
+                                  Idxs = mnesia:foldl(Fun1, [], Tbl),
+                                  Tbl4 = new_db_wu:trans(Site, local_obj),
+                                  Fun4 = fun(Idx) ->
+                                                 case mnesia:read(Tbl4, Idx, read) of
+                                                     [#local_obj{}] ->
+                                                         ok;
+                                                     [] ->
+                                                         io:format("Idx ~p NOT found~n", [Idx]),
+                                                         mnesia:delete(Tbl, Idx, write)
+                                                 end
+                                         end,
+                                  [Fun4(X) || X <- Idxs],
+                                  ok
+                          end,
+                   mnesia:activity(transaction, Fun3)
+           end,
+    lists:foreach(Fun2, Sites),
+    ok.
+
 
 add_api_table_2011_07_23() ->
     Sites = hn_setup:get_sites(),
