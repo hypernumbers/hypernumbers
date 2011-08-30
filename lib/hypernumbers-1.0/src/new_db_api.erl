@@ -165,7 +165,7 @@ reset_dirty_zinfs(Site) ->
     Report = mnesia_mon:get_stamp("reset_dirty_zinfs"),
     Fun  = fun() ->
                    mnesia_mon:report(Report),
-                   new_db_wu:reset_dirty_zinfs(Site)
+                   new_db_wu:reset_dirty_zinfsD(Site)
            end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
