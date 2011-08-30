@@ -171,6 +171,9 @@ chunk_spark([Lines | List]) ->
     Data3 = "t:"++conv_data2(Data2),
     {Data3, Colours}.
 
+% avoid a #DIV/0! error
+normalize_sp(List, Min, Min) ->
+    lists:duplicate(length(List), 100);
 normalize_sp(List, Min, Max) ->
     Diff = Max - Min,
     Fun = fun(blank) -> blank;
@@ -210,7 +213,7 @@ spark1(Size, Data, Colours) ->
               end,
     {resize, {Width, Height, #incs{}},
      sparkbar1(Type, make_size(Width, Height), DataY, MinY, MaxY,
-              Colours, BarSize, Rest, [], ?NOMARGIN)}.
+              Colours, BarSize, Rest, [])}.
 
 'histogram.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -219,7 +222,7 @@ spark1(Size, Data, Colours) ->
     {DataX, DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
     {resize, {Width, Height, #incs{}},
      eq_hist1(Type, make_size(Width, Height), DataX, DataY, MinY, MaxY,
-                            Colours, Rest, [], ?NOMARGIN)}.
+                            Colours, Rest, [])}.
 
 'equigraph.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -228,7 +231,7 @@ spark1(Size, Data, Colours) ->
     {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
     {resize, {Width, Height, #incs{}},
      eq_hist1(equi, make_size(Width, Height), DataX, DataY, MinY, MaxY, Colours,
-                            Rest, [{?tickmarks, ?BOTHAXES}], ?MARGIN)}.
+                            Rest, [{?tickmarks, ?BOTHAXES}])}.
 
 'dategraph.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -318,7 +321,7 @@ chunk_dategraph([X, Lines | List], LabType) ->
     StartDate = cast_date(MinX),
     EndDate = cast_date(MaxX),
     AxesLabPos = make_axes_lab_pos_date(MinX, MaxX, MaxY),
-    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY, ?MARGIN),
+    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest,
      StartDate, EndDate}.
 
@@ -326,10 +329,11 @@ chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
     [Lines2] = typechecks:throw_std_ints([Lines]),
     {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List, ?MARGIN),
+    io:format("MinY is ~p MaxY is ~p~n", [MinY, MaxY]),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
-    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY, ?MARGIN),
+    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
 
 chunk_hist(Aggregate, Lines, List, Margin) ->
@@ -394,65 +398,65 @@ chunk_xy([Lines | List], LabType) ->
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines1, List),
     {MinX, MaxX, MinY, MaxY, Data1} = process_data_xy(Data, ?MARGIN),
-    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY, ?MARGIN),
+    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
     {Data1, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
 
-sparkbar1(Type, Size, DataY, MinY, MaxY, Colours, BarSize, [], Opts, Margin) ->
-    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
+sparkbar1(Type, Size, DataY, MinY, MaxY, Colours, BarSize, [], Opts) ->
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[BarSize, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts).
 
-eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [], Opts, Margin) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [], Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, "", ""),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Axes, AxesLables, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts, Margin) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, "", ""),
     Title = make_title(Tt),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Title, Axes, AxesLables, Scale, Colours],
                             Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl | []],
-         Opts, Margin) ->
+         Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, Xl, ""),
     Title = make_title(Tt),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl | []],
-         Opts, Margin) ->
+         Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
     Title = make_title(Tt),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []],
-         Opts, Margin) ->
+         Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
     Title = make_title(Tt),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     Series = make_series(Srs),
     AddOpts = lists:concat([[Title, Series, Axes, AxesLables,
                              {?legendpos, ?TOPHORIZ}, Scale, Colours], Opts]),
@@ -461,13 +465,13 @@ eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []],
 
 % barwidth is only an option for histograms
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours,
-         [Tt, Xl, Yl, Srs, BarWidth | []], Opts, Margin)
+         [Tt, Xl, Yl, Srs, BarWidth | []], Opts)
   when Type == ?HIST_VGROUP orelse Type == ?HIST_VSTACK
        orelse Type == ?HIST_HGROUP orelse Type == ?HIST_HSTACK->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
     Title = make_title(Tt),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     Series = make_series(Srs),
     [BarW2] = typechecks:std_pos_ints([BarWidth]),
     BarOpts = {?barwidths, make_list(BarW2, ?SPKBARSPACE,
@@ -577,15 +581,15 @@ make_series(Srs) ->
     Srs2 = lists:reverse(typechecks:throw_flat_strs([Srs])),
     {?datalables, string:join(Srs2, "|")}.
 
-make_eq_hist_scale(Type, MinY, MaxY, Margin)
+make_eq_hist_scale(Type, MinY, MaxY)
   when Type == equi
        orelse Type == ?HIST_VGROUP
        orelse Type == ?HIST_VSTACK ->
-    {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY, Margin)};
-make_eq_hist_scale(Type, MinY, MaxY, Margin)
+    {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)};
+make_eq_hist_scale(Type, MinY, MaxY)
   when Type == ?HIST_HGROUP
        orelse Type == ?HIST_HSTACK ->
-    {?axesrange, make_scale(single, auto, MinY, MaxY, 0, 100, Margin)}.
+    {?axesrange, make_scale(single, auto, MinY, MaxY, 0, 100)}.
 
 make_eq_hist_labs(Type, XAxis, XTitle, YTitle)
   when Type == equi
@@ -620,18 +624,11 @@ make_axes_lab_pos_date(MinX, MaxX, MaxY) ->
 make_axes_lab_pos(MaxX, MaxY) ->
     "1,"++tconv:to_s(MaxX)++"|3,"++tconv:to_s(MaxY).
 
-make_scale(null, _, _, _, _, _, _) -> "";
-make_scale(Type, auto, MinX, MaxX, MinY, MaxY, Margin) ->
-    DiffY = MaxY - MinY,
-    make_s1(Type, MinX, MaxX, MinY - Margin * DiffY, MaxY + Margin * DiffY).
-% make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
-%     [X1a, X2a] = typechecks:throw_std_nums([X1, X2]),
-%     make_s1(Type, X1a, X2a, MinY, MaxY).
-
-make_s1(single, MinX, MaxX, MinY, MaxY) ->
+make_scale(null, _, _, _, _, _) -> "";
+make_scale(single, auto, MinX, MaxX, MinY, MaxY) ->
     "0,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)
         ++"|2,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY);
-make_s1(double, MinX, MaxX, MinY, MaxY) ->
+make_scale(double, auto, MinX, MaxX, MinY, MaxY) ->
     "0,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)
         ++"|1,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)
         ++"|2,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY)
