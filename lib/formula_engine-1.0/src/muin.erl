@@ -104,12 +104,14 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                 true -> loopify(Pcode);
                 false -> Pcode
             end,
-    [Fname | Args] = Fcode,
-    case atom_to_list(Fname) of
-        "user." ++ _Rest  ->  Fcode2 = [Fname, Site | Args],
-                              Result = eval_formula(Fcode2);
-        _        ->  Result = eval_formula(Fcode)
- 	  end,
+    Result = eval_formula(Fcode),
+    % this code borks NEED TO FIX
+    % [Fname | Args] = Fcode,
+    %case atom_to_list(Fname) of
+    %    "user." ++ _Rest  ->  Fcode2 = [Fname, Site | Args],
+    %                          Result = eval_formula(Fcode2);
+    %    _        ->  Result = eval_formula(Fcode)
+ 	  %end,
     {_Errors, References} = get(retvals),
     FiniteRefs = [{X, L} || {X, finite, L} <- References],
     InfiniteRefs = get(infinite),
