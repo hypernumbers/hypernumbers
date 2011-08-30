@@ -321,7 +321,7 @@ clear_cells(RefX, Uid) -> clear_cells(RefX, contents, Uid).
 
 -spec clear_cells(#refX{}, all | style | contents | tuple(), auth_srv:uid()) -> ok.
 clear_cells(Ref, contents, Uid) ->
-    do_clear_cells(Ref, ["input" | content_attrs()], clear, Uid);
+    do_clear_cells(Ref, content_attrs(), clear, Uid);
 clear_cells(Ref, all, Uid) ->
     do_clear_cells(Ref, ["style", "merge", "input" | content_attrs()], clear, Uid);
 clear_cells(Ref, style, Uid) ->
@@ -397,7 +397,7 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             [ok = delete_incsD(X) || X <- Cells],
 
             % trash any timers that might pertain
-            % TODO this contains a lot of reads
+            % TODO this contains lot of reads
             [ok = delete_timerD(X) || X <- Cells],
 
             % Rewrite formulas
