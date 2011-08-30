@@ -264,14 +264,3 @@ clear_dirty_queue(Since, QTbl) ->
 -spec new_graph() -> digraph().
 new_graph() -> digraph:new([private]).
 
-%% log_children([], _Idx) -> ok;
-%% log_children([H | T], Idx) ->
-%%     Cell = new_db_wu:idx_to_xrefX("http://hypernumbers.dev:9000", Idx),
-%%     XRefX = new_db_wu:idx_to_xrefX("http://hypernumbers.dev:9000", H),
-%%     Msg = io_lib:format("for ~p ~p adding child ~p",
-%%                         [Cell#xrefX.path,
-%%                          hn_util:obj_to_ref(Cell#xrefX.obj),
-%%                          hn_util:obj_to_ref(XRefX#xrefX.obj)]),
-%%     syslib:log(Msg, ?recalc),
-%%     log_children(T, Idx).
-

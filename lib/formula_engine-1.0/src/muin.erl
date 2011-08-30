@@ -102,7 +102,12 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                 true -> loopify(Pcode);
                 false -> Pcode
             end,
-    Result = eval_formula(Fcode),
+    [Fname | Args] = Fcode, 
+    case atom_to_list(Fname) of
+		"user." ++ _Rest	->	Fcode2 = [Fname, Site | Args],
+								Result = eval_formula(Fcode2);
+		_				->	Result = eval_formula(Fcode)
+	end,
     {_Errors, References} = get(retvals),
     FiniteRefs = [{X, L} || {X, finite, L} <- References],
     InfiniteRefs = get(infinite),
@@ -118,11 +123,10 @@ external_eval_formula(X) ->
 %% evaluates a formula rather than a piece of AST, i.e. will do implicit
 %% intersection, resolve a final cellref &c.
 eval_formula(Fcode) ->
-    case eval(Fcode) of
-        ?error_in_formula ->
-            ?ERRVAL_FORM;
+	case eval(Fcode) of
+        ?error_in_formula ->	?ERRVAL_FORM;
         Value ->
-            case Value of
+	        case Value of
                 R when ?is_cellref(R) ->
                     case muin_util:attempt(?MODULE, fetch, [R]) of
                         {ok,    blank}              -> 0;
@@ -193,6 +197,8 @@ eval(Value) ->
 
 % I know it is fugly but you try and get it to work with guards and
 % it won't - so stick it up yes
+transform("user." ++ R, Args)	->
+	{user_defined_function, [list_to_atom("user." ++ R) | Args]};
 transform("tim.alert." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("tim.alert."), [W, H | Args]};
@@ -340,13 +346,25 @@ funcall(pair_up, [A, V]) when ?is_area(A) andalso not(?is_area(V)) ->
     end;
 funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
     funcall(pair_up, [A, V]);
+%~ curie
+funcall(user_defined_function, [Function_Name, Site | Args])	->
+	case curie:read_user_fn(Site, atom_to_list(Function_Name)) of
+		{ok, DB_Entry}	->	[{user_fns, _name, AST, _page, _wizard}] = DB_Entry,
+							Params_in_AST = curie_arity:walk_AST(lists:flatten(AST), []),
+							case length(Params_in_AST) =:= length(Args) of
+								true	->	Applied_AST = curie_arity:apply_function(Params_in_AST, Args, AST),
+											external_eval(Applied_AST);
+								false	->	?ERRVAL_VAL
+							end;
+		{error, _Message}	->	?ERRVAL_NAME
+	end;
+	
 
 %% Formula function call (built-in or user-defined).
 %% TODO: If a function exists in one of the modules, but calling it returns
 %%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
 funcall(Fname, Args0) ->
-
-    % TODO, this should be taken out, no reason to strictly
+	% TODO, this should be taken out, no reason to strictly
     % evaluate arguments -- hahaha
     Funs = [ '+', '^^',
              abs, acos, 'and', asin, asinh, atan, atan2, atanh, avedev,

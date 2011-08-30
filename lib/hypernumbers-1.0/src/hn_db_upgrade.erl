@@ -153,11 +153,11 @@ mark_dirty(_, [], _) -> ok;
 mark_dirty(Site, [H | T], Obj) ->
     RefX = #refX{site = Site, path = H, obj = Obj},
     Fun  = fun() ->
-                   case new_db_wu:refX_to_xrefX(RefX) of
+                   case new_db_wu:refX_to_xrefXD(RefX) of
                        false -> ok;
                        XRefX ->
                            io:format("~p exists - marking dirty~n", [XRefX]),
-                           new_db_wu:mark_these_dirty([XRefX], nil)
+                           new_db_wu:mark_these_dirtyD([XRefX], nil)
                    end
            end,
     mnesia:transaction(Fun),
@@ -181,7 +181,7 @@ bug_fix_dirty_for_zinf_2011_05_14() ->
                    io:format("about to check ~p~n", [Tbl]),
                    Fun2 = fun(#dirty_for_zinf{dirty = #refX{}} = Rec) ->
                                   RefX = Rec#dirty_for_zinf.dirty,
-                                  XRefX = new_db_wu:refX_to_xrefX(RefX),
+                                  XRefX = new_db_wu:refX_to_xrefXD(RefX),
                                   NewRec = Rec#dirty_for_zinf{dirty = XRefX},
                                   io:format("found a refX ~p~n", [Rec]),
                                   io:format("NewRec is ~p~n", [NewRec]),

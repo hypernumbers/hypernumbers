@@ -103,8 +103,10 @@ get_page_s_json(Site, Path) ->
 
 read_user_fn(Site, Name)	->
 	Result = new_db_api:read_user_fn(Site, Name),
-	io:format("Read User Fn, Result is: ~p~n", [Result]),
-	{ok, "read_user_fn"}.
+	case Result of
+		[]	->	{error, no_entry_in_DB};
+		_	->	{ok, Result}
+	end.
 	
 delete_user_fn(Site, Name)	->
 	new_db_api:delete_user_fn(Site, Name),
@@ -165,7 +167,9 @@ walk2([{cellref, _OffsetX, _OffsetY, _Page, Cell} = H | T], Ref, Params, Acc, Si
 	end;
 %Translates range to list of cell names ("b1:b3" = ["b1","b2","b3"])
 walk2([{rangeref, finite, _, {{offset, StartX}, {offset, StartY}}, {{offset, StopX}, {offset, StopY}}, _, _, _RangeString} | T], Ref, Params, Acc, Site, Page, FinalRetRef)	->
-	walk2([walk_helper_rangeref(Ref, FinalRetRef,hn_util:range_to_list(#refX{site = Site, path = Page,obj = {range, {StartX, StartY, StopX, StopY}}})) |T], Ref, Params, Acc, Site, Page, FinalRetRef);
+	Cellref_List = walk_helper_rangeref(Ref, FinalRetRef,hn_util:range_to_list(#refX{site = Site, path = Page,obj = {range, {StartX, StartY, StopX, StopY}}})),
+	Merged_AST = lists:merge(Cellref_List, T),
+	walk2(Merged_AST, Ref, Params, Acc, Site, Page, FinalRetRef);
 walk2([H | T], Ref, Params, Acc, Site, Page, _FinalRetRef)	when is_list(H)	->
 	walk2(T, Ref, Params, [walk2(H, Ref, Params, [], Site, Page, _FinalRetRef) | Acc], Site, Page, _FinalRetRef);
 walk2([H | T], Ref, Params, Acc, Site, Page, _FinalRetRef) ->
