@@ -396,6 +396,10 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             % TODO this contains a lot of reads...
             [ok = delete_incsD(X) || X <- Cells],
 
+            % trash any timers that might pertain
+            % TODO this contains a lot of reads
+            [ok = delete_timerD(X) || X <- Cells],
+
             % Rewrite formulas
             Status = [deref_formula(X, DelX, Disp, Uid) || X <- LocalChildren3],
             Fun = fun({dirty, _Ref}) -> true; ({clean, _Ref}) -> false end,
