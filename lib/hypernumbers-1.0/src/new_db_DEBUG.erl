@@ -189,7 +189,7 @@ pretty_p2([{X, Vals} | T], Mode, Acc) when is_record(X, xrefX) ->
     pretty_p2(T, Mode, NO5).
 
 print_relations(#xrefX{site = S} = XRefX, Acc) ->
-    case lists:sort(new_db_wu:read_relationsD(XRefX, read)) of
+    case lists:sort(new_db_wu:read_relations(XRefX, read)) of
         []  -> Acc;
         [R] -> Ret = io_lib:format("....has the following relationships:", []),
                print_rel2(S, R, [Ret | Acc])
