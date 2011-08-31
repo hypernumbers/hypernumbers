@@ -187,36 +187,14 @@ div.hn_sld_vertline { width: 2px; background-color: #3f3f3f; min-height: 100px; 
 Table
 
 **********************************************/
-table.tablesorter {
-	border-collapse:collapse;
-	border: 1px solid #3f3f3f;}
+/*****************
 
-table.tablesorter thead tr th, table.tablesorter tfoot tr th { background-color: #3f3f3f; color: #dedede;}
+Fixes for underline
 
-thead { background-color: #F6F6F6; padding: 14px;}
+****************************/
 
-table.tablesorter thead tr .header {
-	font-size: 1.5em;
-	padding: 12px;
-}
+#ctrlpanel a:link, #ctrlpanel a:visited { border-bottom: none }
 
-table.tablesorter tbody tr.odd td {
-    background-color: #EbEbEb;
-}
-table.tablesorter tbody td  { border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 6px 6px 6px 12px}
-
-table.tablesorter thead tr th, table.tablesorter tfoot tr th { border: 1px solid #999;}
-table.tablesorter tbody tr.even td {
-    background-color: #f6f6f6;
-}
-table.tablesorter thead tr .header { background-image:url(../images/tablesorterbg.png);}
-
-table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
-    background-color: #999;
-	color:#f3f3f3;
-}
-table.tablesorter thead tr .headerSortDown { background-image: url(../images/tablesortdown.png)}
-table.tablesorter thead tr .headerSortUp { background-image: url(../images/tablesortup.png)}
 
 /**********************************************
 

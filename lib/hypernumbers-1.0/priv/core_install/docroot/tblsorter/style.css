@@ -1,58 +1,55 @@
 /* tables */
 table.tablesorter {
-	font-family:arial;
-	background-color: #CDCDCD;
-	margin:0;
-	font-size: 8pt;
-	width: 100%;
-	text-align: left;
+	border-collapse:collapse;
+	border: 1px solid #3f3f3f;
 }
-table.tablesorter thead tr th, table.tablesorter tfoot tr th {
-	background-color: #e6EEEE;
-	border: 1px solid #FFF;
-	font-size: 8pt;
-	padding: 4px;
+
+table.tablesorter thead tr th, table.tablesorter tfoot tr th { background-color: #3f3f3f; color: #dedede;}
+
+.tablesorter thead { background-color: #F6F6F6; }
+
+table.tablesorter tbody tr.odd td {
+    background-color: #f9f9f9;
+}
+table.tablesorter tbody td  { border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;}
+
+table.tablesorter thead tr th, table.tablesorter tfoot tr th { border: 1px solid #999;}
+table.tablesorter tbody tr.even td {
+    background-color: #ffffff;
 }
 table.tablesorter thead tr .header {
-	background-image: url(/tblsorter/bg.gif);
-	background-repeat: no-repeat;
-	background-position: center right;
-	cursor: pointer;
+       background-repeat: no-repeat;
+       background-position: center right;
+       cursor: pointer;
+       background-image:url(/tblsorter/bg.gif)
 }
-table.tablesorter tbody td {
-	color: #3D3D3D;
-	padding: 4px;
-	background-color: #FFF;
-	vertical-align: top;
-}
-table.tablesorter tbody tr.odd td {
-	background-color:#F0F0F6;
-}
-table.tablesorter thead tr .headerSortUp {
-	background-image: url(/tblsorter/asc.gif);
-}
-table.tablesorter thead tr .headerSortDown {
-	background-image: url(/tblsorter/desc.gif);
-}
+
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
-background-color: #8dbdd8;
+       background-repeat: no-repeat;
+       background-position: center right;
+       cursor: pointer;
+       background-color: #999;
+     	 color:#f3f3f3;
 }
+
+table.tablesorter thead tr .headerSortDown { background-image: url(/tblsorter/desc.gif)}
+table.tablesorter thead tr .headerSortUp { background-image: url(/tblsorter/asc.gif)}
 
 #table, #table table { margin:0px; padding:0px;}
 
-#tablelogo {     
+#tablelogo {
     font            : normal 16px georgia,garamond, serif;
     color           : #000;
     text-decoration : none;
 }
 
-#tablelogo span { 
+#tablelogo span {
     font            : bold 14px sans-serif;
     text-decoration : underline;
     color           : orange;
 }
 
-small { 
+small {
     color:#999;
 }
 

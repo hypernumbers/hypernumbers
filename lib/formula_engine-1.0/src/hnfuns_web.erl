@@ -346,12 +346,15 @@ table_(W, H, [THead | Range], Sort) ->
     Rows = [ ["<tr>", [ ["<td>", Cell,"</td>"] || Cell <- Row ],"</tr>"]
               || Row <- Range ],
 
-    Script = ["<script type='text/javascript'>$(\"#", Id,
-              "\").tablesorter({headers: { 1: { sorter:'digit' }}, sortList:[[",
-              integer_to_list(Sort), ",0]]});</script>"],
+    Script = ["$(\"#", Id,
+              "\").tablesorter({headers: { sortList:[[",
+              integer_to_list(Sort), ",0]]}});"],
+    Js = "/hypernumbers/jquery.tablesorter.min.js",
+    Script2 = lists:flatten(Script),
+    Incs = #incs{js = [Js], js_reload = [Script2]},
     HTML = lists:flatten(["<table id='", Id,"' class='tablesorter'>",
-                          Head, Rows, "</table>", Script]),
-    {include, {"Table ", W, H, #incs{}}, HTML}.
+                          Head, Rows, "</table>"]),
+    {include, {"Table ", W, H, Incs}, HTML}.
 
 make_ref3([], _SubLen, Acc) -> lists:reverse(Acc);
 make_ref3(List, SubLen, Acc) ->
