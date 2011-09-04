@@ -27,7 +27,7 @@
 -record(state, {table :: atom(),
                 pid :: pid()}).
 
--define(HEAP_SIZE, 250000).
+-define(HEAP_SIZE, 400000).
 
 %%====================================================================
 %% API
@@ -131,14 +131,14 @@ cleanup(_, _, _, Graph) -> Graph.
                -> {term(), [cellidx()]}.
 check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
     % check the state of memory usage and maybe run a garbage collect
-    %{heap_size, HSZ} = process_info(self(), heap_size),
-    %true = if
-    %           HSZ >  ?HEAP_SIZE -> garbage_collect(self());
-    %           HSZ =< ?HEAP_SIZE -> true
-    %       end,
+    {heap_size, HSZ} = process_info(self(), heap_size),
+    true = if
+               HSZ >  ?HEAP_SIZE -> garbage_collect(self());
+               HSZ =< ?HEAP_SIZE -> true
+           end,
     Wait = case WorkPlan of
                [] -> infinity;
-               _ -> 0
+               _  -> 0
            end,
     receive
         {From, read_only_activity, Activity} ->
