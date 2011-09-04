@@ -131,11 +131,11 @@ cleanup(_, _, _, Graph) -> Graph.
                -> {term(), [cellidx()]}.
 check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
     % check the state of memory usage and maybe run a garbage collect
-    {heap_size, HSZ} = process_info(self(), heap_size),
-    true = if
-               HSZ >  ?HEAP_SIZE -> garbage_collect(self());
-               HSZ =< ?HEAP_SIZE -> true
-           end,
+    %{heap_size, HSZ} = process_info(self(), heap_size),
+    %true = if
+    %           HSZ >  ?HEAP_SIZE -> garbage_collect(self());
+    %           HSZ =< ?HEAP_SIZE -> true
+    %       end,
     Wait = case WorkPlan of
                [] -> infinity;
                _ -> 0
