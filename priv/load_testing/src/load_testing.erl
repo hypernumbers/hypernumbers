@@ -10,14 +10,37 @@
 -include("spriki.hrl").
 -include("load_testing.hrl").
 
+% note that the names service 'site_dbsrv' looks like  global name
+% but is infact a local one and is handled by a special case in get_pid/1
+-define(globalnames, [
+                      status,
+                      auth,
+                      tick,
+                      remoting,
+                      dbsrv_sup,
+                      pages,
+                      sup,
+                      zinf,
+                      dbsrv
+                     ]).
+-define(localnames, [
+                     sitemaster_sup,
+                     service_sup,
+                     hypernumbers_sup,
+                     hn_mochi
+                    ]).
+
+-export([
+         test/0,
+         test_SPAWN/0
+        ]).
+
 -export([
          profile_zinf_srv/0,
          profile_zs/0,
          test_zs/0,
-         load_only/0,
-         load_only/1,
-         load_test/0,
-         load_test/1
+         load/0,
+         load/2
         ]).
 
 % exports for spawning
@@ -26,23 +49,51 @@
          log_memory_LOOP/2
          ]).
 
+test() -> spawn(load_testing, test_SPAWN, []).
+
+test_SPAWN() ->
+    load_testing:load(disc_only,
+                               [{run, [
+                                       trash_db,
+                                       load_data,
+                                       load_calcs,
+                                       load_zs,
+                                       afterz_data,
+                                       afterz_calcs
+                                      ]}]).
+    %% load_testing:load(disc_only,
+    %%                            [{run, [
+    %%                                    afterz_data
+    %%                                   ]},
+    %%                             {fprof, [
+    %%                                      dbsrv,
+    %%                                      zinf
+    %%                                     ]}]).
+
 profile_zinf_srv() ->
     TraceFile = zinf_srv:start_fprof(?site),
-    load_only(),
+    load(),
     zinf_srv:stop_fprof(?site, TraceFile).
 
-load_only() -> load_2(disc_only, load_only).
+load() -> load_2(disc_only, [{run, [
+                                    trash_db,
+                                    bulk_pages,
+                                    load_data,
+                                    load_calcs,
+                                    load_zs,
+                                    afterz_data,
+                                    afterz_calcs,
+                                    tests
+                                   ]}
+                            ]).
 
-load_only(Type) -> load_2(Type, load_only).
 
-load_test() -> load_2(disc_only, all).
-
-load_test(Type) -> load_2(Type, all).
+load(Type, Spec) -> load_2(Type, Spec).
 
 profile_zs() ->
-    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
-    TraceFile = Dir ++ "profile_zs" ++ Stamp ++ ".trace",
+    %Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    %Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    %TraceFile = Dir ++ "profile_zs" ++ Stamp ++ ".trace",
     %fprof:trace(start, TraceFile),
     Path = ["profile_zs"],
     RefX = #refX{site = ?site, path = Path, obj = {page, "/"}},
@@ -53,9 +104,9 @@ profile_zs() ->
     %fprof:analyse([{dest, Dir ++ "profile_zs" ++ Stamp ++ ".analysis"}]).
 
 test_zs() ->
-    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
-    TraceFile = Dir ++ "test_zs" ++ Stamp ++ ".trace",
+    %Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    %Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    %TraceFile = Dir ++ "test_zs" ++ Stamp ++ ".trace",
     %%fprof:trace(start, TraceFile),
     test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles).
     %%fprof:trace(stop),
@@ -77,103 +128,62 @@ test_z2(Max, N) ->
     log(Msg, ?zquery_profile_page ++ ".csv"),
     test_z2(Max, N - 1).
 
-load_2(Type, Extent) ->
+load_2(Type, Spec) when Type == disc_only orelse Type == disc_and_mem ->
+    load_3(Type, Spec);
+load_2(Type, _Spec) ->
+    io:format("Invalid parameter. Type is ~p and it should "
+                 ++ "be one of 'disc_only' or 'disc_and_mem'~n",
+                 [Type]).
 
-    % check the type
-    case Type of
-        disc_only    -> load_3(Type, Extent);
-        disc_and_mem -> load_3(Type, Extent);
-        Other     -> io:format("Invalid parameter. Type is ~p and it should "
-                               ++ "be one of 'disc_only' or 'disc_and_mem'~n",
-                              [Other])
-    end.
+load_3(Type, Spec) ->
 
-load_3(Type, Extent) ->
+    RSpc = get_spec(run, Spec),
+    CSpc = get_spec(cprof, Spec),
+    FSpc = get_spec(fprof, Spec),
+
+    io:format("Running load tests~nRunSpec is   ~p~nCProfSpec is ~p~n"
+              ++ "FprofSpec is ~p~n", [RSpc, CSpc, FSpc]),
 
     % first get a filestamp
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
 
-    % trash the load database if it exists
-    case hn_setup:site_exists(?site) of
-        true  -> io:format("Deleting ~p~n", [?site]),
-                 hn_setup:delete_site(?site);
-        false -> ok
-    end,
-    hn_setup:site(?site, load_testing, []),
-    case Type of
-        disc_only    -> io:format("~nSetting the site to run from disc only~n"),
-                        hn_db_admin:disc_only(?site);
-        disc_and_mem -> ok
-    end,
+    % trash_db will delete all running processes so need to only
+    % start fprof and stuff after it has fun
+    run(RSpc, [],   trash_db,      Type,           fun trash_db/1),
 
-    % bulk up on pages
-    io:format("~nabout to bulk up pages...~n"),
-    % put the auth_srv into memory first
-    ok = hn_db_admin:mem_only(?site, "kvstore"),
-    ok = bulk_pages(?pageload, ?pageload, ?pageload, ?pageload, ?pageload),
-    % now put the auth_srv back in place
-    ok = hn_db_admin:disc_only(?site, "kvstore"),
+    start_fprof(FSpc, Stamp),
 
-    spawn(load_testing, log_memory, [Stamp]),
+    run(RSpc, [],   bulk_pages,    [],             fun bulk_pages/1),
+    run(RSpc, CSpc, log_memory,    Stamp,          fun log_memory/1),
+    run(RSpc, CSpc, load_data,     Stamp,          fun load_data/1),
+    run(RSpc, CSpc, load_calcs,    Stamp,          fun load_calcs/1),
+    run(RSpc, CSpc, load_zs,       Stamp,          fun load_zs/1),
+    run(RSpc, CSpc, load_zs_cprof, {?site, Stamp}, fun load_zs_cprof/1),
+    run(RSpc, CSpc, afterz_data,   Stamp,          fun afterz_data/1),
+    run(RSpc, CSpc, afterz_calcs,  Stamp,          fun afterz_calcs/1),
+    run(RSpc, CSpc, tests,         Stamp,          fun run_tests/1),
 
-    % load datapoints
-    io:format("~nabout to load data pages...~n"),
-    ok = load_pages("data" ++ Stamp, ?datapage, ?dataprefix,
-                    ?no_of_datapages, ?no_of_datapages),
+    stop_fprof(FSpc, Stamp).
 
-    % load calculations
-    io:format("~nabout to load calculation pages...~n"),
-    ok = load_pages("calculations" ++ Stamp, ?calcspage, ?calcsprefix,
-                    ?no_of_calcpages, ?no_of_calcpages),
+run_tests(Stamp) ->
+    % create a page, delete it and then create it again
+    io:format("~nabout to test page deletes...~n"),
+    ok = force_page_del_test("delete_with_calcs" ++ Stamp,
+                             "delete_page_with_calcs", ?calcspage,
+                             ?no_of_deletes, ?no_of_deletes),
+    ok = force_page_del_test("delete_with_data" ++ Stamp,
+                             "delete_page_with_data", ?datapage,
+                             ?no_of_deletes, ?no_of_deletes),
 
-    % load zqueries
-    io:format("~nabout to load zquery pages...~n"),
-    ok = load_pages("zqueries" ++ Stamp, ?zquerypage, ?zqueryprefix,
-                    ?no_of_zquerypages, ?no_of_zquerypages),
+    % force a recalc on a calcs page by updating cell A1
+    io:format("~nabout to force recalcs...~n"),
+    ok = force_recalc_test("force_recalc" ++ Stamp, ?calcsprefix,
+                           ?no_of_recalcs, ?no_of_recalcs),
 
-    % test impact of zqueries on load
-    % load datapoints
-    io:format("~nabout to load post-z data pages...~n"),
-    ok = load_pages("data" ++ Stamp, ?datapage, ?additionaldata,
-                    ?no_of_additional_data, ?no_of_additional_data),
-
-    % load calculations
-    io:format("~nabout to load post-z calculation pages...~n"),
-    ok = load_pages("calculations" ++ Stamp, ?calcspage,
-                    ?additionalcalcs,
-                    ?no_of_additional_calcs, ?no_of_additional_calcs),
-
-    % now start some tests
-    case Extent of
-        load_only ->
-
-            % just stop
-            io:format("Site loaded. Over and out...~n");
-
-        all ->
-
-            % create a page, delete it and then create it again
-            io:format("~nabout to test page deletes...~n"),
-            ok = force_page_del_test("delete_with_calcs" ++ Stamp,
-                                     "delete_page_with_calcs", ?calcspage,
-                                     ?no_of_deletes, ?no_of_deletes),
-            ok = force_page_del_test("delete_with_data" ++ Stamp,
-                                     "delete_page_with_data", ?datapage,
-                                     ?no_of_deletes, ?no_of_deletes),
-
-            % force a recalc on a calcs page by updating cell A1
-            io:format("~nabout to force recalcs...~n"),
-            ok = force_recalc_test("force_recalc" ++ Stamp, ?calcsprefix,
-                                   ?no_of_recalcs, ?no_of_recalcs),
-
-            % force the zqueries to recalc by updating a data page
-            io:format("~nabout to test zqueries...~n"),
-            ok = force_zquery_test("force_zquery" ++ Stamp, ?dataprefix,
-                                   ?no_of_forcedzs, ?no_of_forcedzs),
-
-            io:format("Over and out...~n"),
-            ok
-    end.
+    % force the zqueries to recalc by updating a data page
+    io:format("~nabout to test zqueries...~n"),
+    ok = force_zquery_test("force_zquery" ++ Stamp, ?dataprefix,
+                           ?no_of_forcedzs, ?no_of_forcedzs).
 
 bulk_pages(_Max, 0, 0, 0, 0) -> ok;
 bulk_pages(Max, I, 0, 0, 0) -> bulk_pages(Max, I - 1, Max, Max, Max);
@@ -268,10 +278,6 @@ log(String, File) ->
             error
     end.
 
-log_memory(Stamp) ->
-    Names = get_names(),
-    log_memory_LOOP(Stamp, Names).
-
 log_memory_LOOP(Stamp, Names) ->
     Msg = io_lib:format("~w", [top5(Names)]),
     log(lists:flatten(Msg), "memory_log" ++ Stamp),
@@ -316,7 +322,136 @@ subst([{Pid, A, B, C, D} | T], Names, Acc) ->
            end,
     subst(T, Names, [{Pid2, A, B, C, D} | Acc]).
 
-get_names() ->
-    Global = [{global:whereis_name(X), X} || X <- global:registered_names()],
-    Local  = [{whereis(X), X}             || X <- registered()],
-    lists:merge([Global, Local]).
+%% get_names() ->
+%%     Global = [{global:whereis_name(X), X} || X <- global:registered_names()],
+%%     Local  = [{whereis(X), X}             || X <- registered()],
+%%     lists:merge([Global, Local]).
+
+run(Spec, CProf, Test, Stamp, Fun) ->
+    RunCProf = lists:member(Test, CProf),
+    case  RunCProf of
+        true  -> cprof:start();
+        false -> ok
+    end,
+    case {lists:member(Test, Spec), lists:member(all, Spec)} of
+        {true, _}     -> Fun(Stamp);
+        {false, true} -> Fun(Stamp);
+        _             -> ok
+    end,
+    case  RunCProf of
+        true  -> io:format("Starting cprof analysis...~n"),
+                 cprof:pause(),
+                 {_Total, Log} = cprof:analyse(),
+                 File = "cprof" ++ "." ++ atom_to_list(Test)
+                     ++ "." ++ Stamp ++ ".output",
+                 Msg = io_lib:format("~w", [Log]),
+                 log(Msg, File),
+                 io:format("cprof written.~n");
+        false -> ok
+    end.
+
+load_zs_cprof({Site, Stamp}) ->
+    zinf_srv:start_cprof(Site),
+    load_zs(Stamp),
+    zinf_srv:stop_cprof(Site).
+
+load_zs(Stamp) ->
+    io:format("~nabout to load zquery pages...~n"),
+    ok = load_pages("zqueries" ++ Stamp, ?zquerypage, ?zqueryprefix,
+                    ?no_of_zquerypages, ?no_of_zquerypages).
+
+load_calcs(Stamp) ->
+    load_calcs2(Stamp, ?calcsprefix, ?no_of_calcpages).
+
+afterz_calcs(Stamp) ->
+    load_calcs2(Stamp, ?additionalcalcs, ?no_of_additional_calcs).
+
+load_calcs2(Stamp, Prefix, NoOfPages) ->
+    io:format("~nabout to load calculation pages...~n"),
+    ok = load_pages("calculations" ++ Stamp, ?calcspage, Prefix,
+                    NoOfPages, NoOfPages).
+
+load_data(Stamp) ->
+    load_data2(Stamp, ?dataprefix, ?no_of_datapages).
+
+afterz_data(Stamp) ->
+    load_data2(Stamp, ?additionaldata, ?no_of_additional_data).
+
+load_data2(Stamp, Prefix, NoOfPages) ->
+    io:format("~nabout to load data pages...~n"),
+    ok = load_pages("data" ++ Stamp, ?datapage, Prefix,
+                    NoOfPages, NoOfPages).
+
+log_memory(Stamp) -> spawn(load_testing, log_memory2, [Stamp]).
+
+trash_db(Type) ->
+    % trash the load database if it exists
+    case hn_setup:site_exists(?site) of
+        true  -> io:format("Deleting ~p~n", [?site]),
+                 hn_setup:delete_site(?site);
+        false -> ok
+    end,
+    hn_setup:site(?site, load_testing, []),
+    case Type of
+        disc_only    -> io:format("~nSetting the site to run from disc only~n"),
+                        hn_db_admin:disc_only(?site);
+        disc_and_mem -> ok
+    end.
+
+bulk_pages([]) ->
+        % bulk up on pages
+    io:format("~nabout to bulk up pages...~n"),
+    % put the auth_srv into memory first
+    ok = hn_db_admin:mem_only(?site, "kvstore"),
+    ok = bulk_pages(?pageload, ?pageload, ?pageload, ?pageload, ?pageload),
+    % now put the auth_srv back in place
+    ok = hn_db_admin:disc_only(?site, "kvstore").
+
+get_spec(Type, Spec) ->
+    case lists:keyfind(Type, 1, Spec) of
+        {Type, TypeSpec} -> TypeSpec;
+        false            -> []
+    end.
+
+start_fprof([], _Stamp)   -> ok;
+start_fprof(all, Stamp) ->
+    Dir = get_dir(),
+    File = make_fprof_file(Stamp) ++ ".trace",
+    fprof:trace([start, {file, Dir ++ File}, {procs, all}]);
+start_fprof(Spec, Stamp) ->
+    Dir = get_dir(),
+    Spec2 = [get_pid(X) || X <- Spec],
+    io:format("In start_fprof Spec is ~p Spec2 is ~p~n", [Spec, Spec2]),
+    File = make_fprof_file(Stamp) ++ ".trace",
+    io:format("File is ~p~n", [File]),
+    fprof:trace([start, {file, Dir ++ File}, {procs, Spec2}]).
+
+stop_fprof([], _Stamp) -> ok;
+stop_fprof(Spec, Stamp)  ->
+    FileRoot = make_fprof_file(Stamp),
+    Dir = get_dir(),
+    io:format("Spec is ~p FileRoot is ~p~n", [Spec, FileRoot]),
+    fprof:profile([{file, Dir ++ FileRoot ++ ".trace"}]),
+    fprof:analyse([{dest, Dir ++ FileRoot ++ ".analysis"}]),
+    ok.
+
+get_pid(X) when is_pid(X) ->
+    X;
+get_pid(dbsrv) ->
+    Name = hn_util:site_to_atom(?site, "_dbsrv"),
+    whereis(Name);
+get_pid(X) when is_atom(X) ->
+    case lists:member(X, ?globalnames) of
+        true -> Name = hn_util:site_to_atom(?site, "_" ++ atom_to_list(X)),
+                io:format("Name is ~p~n", [Name]),
+                global:whereis_name(Name);
+        false -> whereis(X)
+    end.
+
+make_fprof_file(Stamp) -> "fprof" ++ Stamp.
+
+get_dir() ->
+    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    _Return = filelib:ensure_dir(Dir),
+    Dir.
+
