@@ -50,7 +50,7 @@ init([]) ->
 
 handle_call(_Req, _From, State) -> {reply,invalid_message, State}.
 
-%% @doc  Handle incoming update mesage
+%% @doc  Handle incoming update message
 handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
     Packet   = {msg, Site, Path, Msg, timestamp()},
     {heap_size, HSZ} = process_info(self(), heap_size),
