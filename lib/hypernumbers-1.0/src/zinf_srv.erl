@@ -81,7 +81,7 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
-% you process a zinf when you have know it is dirty because a cell whose
+% you process a zinf when you know it is dirty because a cell whose
 % path matches the pattern has been changed
 process_zinfs(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
