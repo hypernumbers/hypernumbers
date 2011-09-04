@@ -53,9 +53,8 @@ send1(new_site_existing, Email, CC, Name, Site, _URL, _Args) ->
                    "We've built it for you, and it's located here:\n\n ",
                    hn_util:strip80(Site), "\n\n",
                    "Just use your existing account to login.\n\n"
-                   "Cheers,\n\n"
-                   "Gordon Guthre\n\nCEO hypernumbers.com\n+44 7776 251669\n\n"
-                   "askswift.com, tiny.hn and uses.hn are all trading "
+                   ?SIG,
+                   "tiny.hn and uses.hn are all trading "
                    "names of hypernumbers.com"
                   ]),
     ok = send_email(Email, CC, ?FROM, Subject, EmailBody);
@@ -69,17 +68,15 @@ send1(new_site_validate, Email, CC, Name, Site, _URL, Args) ->
        "We hope you're having a fun time "
        "building your new site:\n\n ",
        SiteURL, "\n\n"
-       "Here's a few things to get you started:"
-       "- set your password ", SiteURL ++ "#panel=settings\n\n"
+       "\n\nThis is your e-mail verification URL. "
+       "Click or paste the following into your browser:\n\n",
+       Hypertag,"\n\n",
+       "Once you have verified your e-mail you should ",
+       "set your password ", SiteURL ++ "#settings\n\n"
        "If you have any problems just tell us "
        "and we will do our best to help "
        "http://hypernumbers.com/support/\n\n"
-       "Cheers,\n\n"
-       "Gordon Guthrie\n\nCEO hypernumbers.com\n+44 7776 251669\n\n"
-       "\n\nPS This is your autologin URL. "
-       "It will work until you set your password. "
-       "Click or paste the following into your browser:\n\n",
-       Hypertag,"\n\n",
+       ?SIG,
        "tiny.hn and uses.hn are all trading "
        "names of hypernumbers.com"
       ]),
