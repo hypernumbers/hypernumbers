@@ -33,6 +33,8 @@
          timestamp/0
         ]).
 
+-record(state, {updates = [], waiting = []}).
+
 %%
 %% Gen Server API
 %%
@@ -42,16 +44,17 @@ start_link(Site) ->
     gen_server:start_link({global, Id}, ?MODULE, [], []).
 
 init([]) ->
-    {ok, {[], []}}.
+    {ok, #state{}}.
 
 %%
 %% Handle messages
 %%
 
-handle_call(_Req, _From, State) -> {reply,invalid_message, State}.
+handle_call(_Req, _From, State) -> {reply, invalid_message, State}.
 
 %% @doc  Handle incoming update message
-handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
+handle_cast({msg, Site, Path, Msg}, State) ->
+    #state{updates = Updates} = State,
     Packet   = {msg, Site, Path, Msg, timestamp()},
     {heap_size, HSZ} = process_info(self(), heap_size),
     true = if
@@ -59,11 +62,12 @@ handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
                HSZ =< ?HEAP_SIZE -> true
            end,
         NUpdates = [Packet | Updates],
-    {noreply, send_to_waiting(NUpdates, Waiting)};
+    {noreply, send_to_waiting(State#state{updates = NUpdates})};
 %% @doc  Handle incoming request for updates
-handle_cast({fetch, Site, Path, Time, Pid}, {Updates, Waiting}) ->
+handle_cast({fetch, Site, Path, Time, Pid}, State) ->
+    #state{waiting = Waiting} = State,
     NWaiting = [{Site, Path, Time, Pid} | Waiting],
-    {noreply, send_queued(Updates, NWaiting)};
+    {noreply, send_queued(State#state{waiting = NWaiting})};
 handle_cast(_Msg, State) ->
     error_logger:error_msg("Invalid Cast in remoting_reg ~p", [_Msg]),
     {noreply, State}.
@@ -72,9 +76,11 @@ handle_info(_Info, State)    -> {noreply, State}.
 terminate(_Reason, _State)   -> ok.
 code_change(_Old, State, _E) -> {ok, State}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %% API Calls
 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 request_update(Site, Path, Time, Pid) ->
     Id = hn_util:site_to_atom(Site, "_remoting"),
@@ -157,10 +163,11 @@ notify_error(Site, Path, Ref, error_in_formula, Value) ->
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast({global, Id}, {msg, Site, term_to_binary(Path),
                                    term_to_binary(Msg)}).
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %% Internal Functions
 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% @doc  Send an update to the comet server to forward to client
 send_to_server(Server, Time, Msgs) ->
@@ -169,8 +176,8 @@ send_to_server(Server, Time, Msgs) ->
 
 %% @doc  When a client requests data, send any message that are older
 %%       than the time the client reports (and on the same site)
-send_queued(Updates, Waiting) ->
-
+send_queued(State) ->
+    #state{updates = Updates, waiting = Waiting} = State,
     [{_Site, Path, Time, Pid} | OldWaiting ] = Waiting,
 
     F = fun({msg, _Site1, Path1, Msg, Time1}) ->
@@ -182,17 +189,17 @@ send_queued(Updates, Waiting) ->
 
     Wait = case Match of
                []   -> Waiting;
-               List ->
-                   send_to_server(Pid, timestamp(),
-                                  [ Msg || {msg, _, _, Msg, _} <- List ]),
+               List -> send_to_server(Pid, timestamp(),
+                                      [ Msg || {msg, _, _, Msg, _} <- List ]),
                    OldWaiting
            end,
-    {expire_updates(Updates), Wait}.
+    NewUpdates = expire_updates(Updates),
+    State#state{updates = NewUpdates, waiting = Wait}.
 
 %% @doc  When an update is received, automatically send the update to
 %%       any clients waiting on the same page
-send_to_waiting(Updates, Waiting) ->
-
+send_to_waiting(State) ->
+    #state{updates = Updates, waiting = Waiting} = State,
     [{msg, _MsgSite, MsgPath, Msg, Time}  | _Rest ] = Updates,
 
     F = case is_site(Msg) of
@@ -204,8 +211,7 @@ send_to_waiting(Updates, Waiting) ->
 
     {Match, Rest} = lists:partition(F, Waiting),
     [ send_to_server(Pid, Time, [Msg]) || {_S, _P, _T, Pid} <- Match ],
-    {expire_updates(Updates), Rest}.
-
+    State#state{updates = expire_updates(Updates), waiting = Rest}.
 
 has_path(MsgPath, ClientPath) ->
     lists:member(binary_to_term(MsgPath), ClientPath).
@@ -228,7 +234,8 @@ microsecs({MegaSecs,Secs,MicroSecs}) ->
 %% Expires any messages older than one minute
 expire_updates(Old) ->
     FifteenSecsAgo = timestamp() - 15000000,
-    [ Msg || Msg = {msg, _Site, _Path, _Msg, Time} <- Old, Time > FifteenSecsAgo].
+    [ Msg || Msg = {msg, _Site, _Path, _Msg, Time} <- Old,
+             Time > FifteenSecsAgo].
 
 %%
 %% Tests
