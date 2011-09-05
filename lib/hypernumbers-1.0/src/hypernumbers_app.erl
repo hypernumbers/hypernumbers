@@ -28,7 +28,7 @@ basic_start() ->
     ok = ensure_dirs(),
     io:format("Hypernumbers Startup: directories inited...~n"),
     ok = init_tables(),
-    io:format("Hypernumbers Debug Started: all good!, over and out~n"),
+    io:format("Hypernumbers Debug Started: all good!~n"),
     ok.
 
 normal_start() ->
@@ -116,7 +116,7 @@ local_hypernumbers() ->
             passport:set_password(Uid2, "i!am!secure"),
             ok = hn_db_admin:disc_only(Site);
         {error, site_exists} ->
-            io:format("Site exists..."),
+            io:format("Hypernumbers Local: Site ~p exists~n", [Site]),
             ok
     end.
 
