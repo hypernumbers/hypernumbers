@@ -1,3 +1,11 @@
+%%%-------------------------------------------------------------------
+%%% @author    Gordon Guthrie
+%%% @copyright (C) 2011, Hypernumbers Ltd
+%%% @doc       This supervisor manages the individual sites
+%%%
+%%% @end
+%%% Created :  5 Sep 2011 by gordon@hypernumbers.com
+%%%-------------------------------------------------------------------
 -module(sitemaster_sup).
 
 -behaviour(supervisor).
@@ -62,4 +70,3 @@ init([]) ->
 gen_child_spec(S) ->
     {S, {site_sup, start_link, [S]},
      permanent, infinity, supervisor, [site_sup]}.
-
