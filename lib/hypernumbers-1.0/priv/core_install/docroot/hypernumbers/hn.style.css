@@ -715,3 +715,5 @@ label {
                    height: 20px;
                    font-size: 95%;
                    }
+
+#ctrlpanel a:link, #ctrlpanel a:visited { border-bottom: none }
