@@ -365,7 +365,9 @@ trim(Args) ->
         fun trim_/1).
 
 trim_([S]) ->
-    NewS = re:replace(S, "\\s+", " ", [global, {return, list}]),
+    % first fix up duff double spaces from $nbsp; in the html
+    S1 = re:replace(S, [194, 160], [32], [global, {return, list}, unicode]),
+    NewS = re:replace(S1, "\\s+", " ", [global, {return, list}]),
     string:strip(NewS).
 
 %%% ----------------- %%%
