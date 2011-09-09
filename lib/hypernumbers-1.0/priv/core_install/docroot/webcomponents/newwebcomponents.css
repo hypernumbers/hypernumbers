@@ -256,6 +256,11 @@ div.hn_sld_tabs div ul
   border: none;
   }
 
+div.hn_sld_tabs div li
+{
+  float: none;
+  }
+
 // Generic boxes
 .hn_box_height_1 {height: 16px; }
 .hn_box_height_2 {height: 38px; }
