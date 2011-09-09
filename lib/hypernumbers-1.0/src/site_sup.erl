@@ -32,8 +32,7 @@ start_link(Site) ->
 %% specifications.
 %%--------------------------------------------------------------------
 init([Site]) ->
-
-    {ok, { {one_for_one,1,10},
+   {ok, { {one_for_one,1,10},
            [ {dbsrv,
               {dbsrv, start_link, [Site]},
               permanent,
@@ -47,6 +46,13 @@ init([Site]) ->
               2000,
               worker,
               [remoting_reg]},
+
+             {remoting_sup,
+              {remoting_sup, start_link, [Site]},
+              permanent,
+              infinity,
+              supervisor,
+              [remoting_sup]},
 
              {auth_srv,
               {auth_srv, start_link, [Site]},

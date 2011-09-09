@@ -1270,7 +1270,7 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
     after
 %% TODO : Fix, should be controlled by remoting_reg
         600000 ->
-            json(Env, {struct, [{"time", remoting_reg:timestamp()},
+            json(Env, {struct, [{"time", remoting_srv:timestamp()},
                                 {"timeout", "true"}]})
     end.
 
@@ -1283,7 +1283,7 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Styles  = extract_styles(S),
     NTree   = add_styles(Styles, Tree),
     Dict    = to_dict(Content, NTree),
-    Time    = {"time", remoting_reg:timestamp()},
+    Time    = {"time", remoting_srv:timestamp()},
     Usr     = {"user", Env#env.email},
     Host    = {"host", S},
     Views   = {"views", {array, auth_srv:get_views(S, P, UID)}},
