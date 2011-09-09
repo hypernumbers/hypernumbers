@@ -16,26 +16,6 @@ h1, h2, h3, h4, h5, h6 { font-weight: normal; font-size: 1em;}
 
 /*----------------------------------------------------------------*/
 
-/* First Generic style for list
------------------------------------------
-
-.sld_menu1, .sld_menu1 ul {padding:0; margin:0; list-style: none; position:absolute; font-family: verdana }
-
-.sld_menu1 ul {left:-9999px; width:160px; padding:0 20px 20px 20px; top:30;}
-.sld_menu1 ul ul {padding:20px 20px 20px 0;}
-.sld_menu1 li {float:left; padding: 10px; background: #444 url(http://www.soundslikedesign.co.uk/HyperNumbers/media/images/bg_menu_gen0_list.png) no-repeat left center;  }
-.sld_menu1 li:first-child { background-image: none;}
-.sld_menu1 a {display:block; width:auto ; padding: 0 33px 0 25px; color:#999; text-decoration:none; border: 1px solid #444; margin:0 -1px -1px 0; background:#444 url(http://www.soundslikedesign.co.uk/HyperNumbers/media/images/bg_menu_gen02.png) no-repeat 10px center; line-height: 1.2em;}
-
-.sld_menu1 li:hover {position:relative; z-index:100; border-bottom: 2px solid #fff;}
-.sld_menu1 li:hover > a {  color:#fff; }
-.sld_menu1 li:hover > ul {top:37px; left:-20px; z-index:-1; opacity:1;}
-.sld_menu1 li:hover li:hover > ul {left:145px; top:-20px; z-index:100; opacity:1;}
-.sld_menu1 li.right:hover li:hover > ul {left:-165px; top:-20px; z-index:100; padding:20px 0 20px 20px; opacity:1;}
-.sld_menu1 ul.first_level li { width:100%; border-bottom: 1px solid #fff; }
-.sld_menu1 ul.first_level li a { background-image: url(http://www.soundslikedesign.co.uk/HyperNumbers/media/images/bg_menu_gen1b.png); border: none;  }
-*/
-
 /**********************************************
 
 Style 1 (generic)
@@ -268,6 +248,13 @@ div.hn_sld_alert h4, div.hn_sld_plainbox h4, div.hn_sld_ruledbox h4 {margin: 0; 
 div.hn_sld_alert div, div.hn_sld_box div, div.hn_sld_plainbox div, div.hn_sld_ruledbox div { overflow: auto;}
 
 .hn_sld_footer { height: 11px; }
+
+/* Fix up for ordered lists */
+div.hn_sld_tabs div ul
+{
+  list-style: inside disc;
+  border: none;
+  }
 
 // Generic boxes
 .hn_box_height_1 {height: 16px; }
