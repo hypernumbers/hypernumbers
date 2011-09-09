@@ -3,6 +3,7 @@
 -module(hnfuns_web).
 
 -export([
+         bullets/1,
          'horizontal.line.'/1,
          'vertical.line.'/1,
          include/1,
@@ -40,6 +41,20 @@
 -define(lorem3, "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ").
 -define(lorem4, "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ").
 -define(lorem_length, 447).
+
+% a wee fun for stevie - not official or supported
+bullets(List) ->
+    Rules = [eval_funs, fetch, flatten, {cast, str}],
+    Passes = [return_errors,
+              {all, fun muin_collect:is_string/1}],
+    List2 = muin_collect:col(List, Rules, Passes),
+    bullets2(List2, []).
+
+bullets2([], Acc)       -> List = lists:reverse(Acc),
+                           lists:flatten("<ul>" ++ List ++ "</ul>");
+bullets2([[] | T], Acc) -> bullets2(T, Acc);
+bullets2([H | T], Acc)  -> bullets2(T, ["<li>" ++ H ++ "</li>" | Acc]).
+
 
 'vertical.line.'([H, N, M, Colour]) ->
     vline1(H, N, M, Colour);
