@@ -3686,12 +3686,13 @@
              {
                 "name": "No Of Ranges",
                 "desc": "An integer.",
-                "type": "finite"
-             },
-             {
-                "name": "Range",
-                "desc": "The range of data and values to display.",
-                "type": "finite"
+                 "type": "variable",
+                 "attr":
+                 {
+                     "name": "Range",
+                     "desc": "The range of data and values to display.",
+                     "type": "finite"
+                 },
              },
              {
                 "name": "Title",
