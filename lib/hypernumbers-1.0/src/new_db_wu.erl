@@ -965,8 +965,8 @@ handle_infsD(CellIdx, Site, NewInfParents, OldInfParents) ->
     Tbl = trans(Site, dirty_zinf),
     Rec = #dirty_zinf{type = infinite, dirtycellidx = CellIdx,
                       old = OldInfParents, new = NewInfParents},
-    ok = zinf_srv:process_zinfs(Site),
-    mnesia:write(Tbl, Rec, write).
+    ok = mnesia:write(Tbl, Rec, write),
+    ok = zinf_srv:process_zinfs(Site).
 
 %% Last chance to apply any default styles and formats.
 -spec post_process(#xrefX{}, ?dict) -> ?dict.
