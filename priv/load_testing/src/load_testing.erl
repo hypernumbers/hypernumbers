@@ -31,6 +31,7 @@
                     ]).
 
 -export([
+         percept/0,
          test/0,
          test_SPAWN/0
         ]).
@@ -40,7 +41,9 @@
          profile_zs/0,
          test_zs/0,
          load/0,
-         load/2
+         load/1,
+         load/2,
+         load/3
         ]).
 
 % exports for spawning
@@ -49,46 +52,94 @@
          log_memory_LOOP/2
          ]).
 
+percept() ->
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    % Dir = get_dir(),
+    File = "percept" ++ Stamp ++ ".trace",
+    PerceptSpec = {load_testing, load, [disc_only,
+                                        [
+                                         {run, [
+                                                trash_db,
+                                                load_data
+                                                %load_calcs,
+                                                %load_zs,
+                                                %afterz_data,
+                                                %afterz_calcs
+                                               ]
+                                         }
+                                        ]
+                                       ]
+                  },
+    Ret1 = percept:profile(File, PerceptSpec, [procs]),
+    io:format("Ret1 is ~p~n", [Ret1]),
+    Ret2 = percept:analyze(File),
+    io:format("Ret2 is ~p~n", [Ret2]),
+    Ret3 = percept:start_webserver(8888),
+    io:format("Ret3 is ~p~n", [Ret3]).
+
 test() -> spawn(load_testing, test_SPAWN, []).
 
 test_SPAWN() ->
-    load_testing:load(disc_only,
-                               [{run, [
-                                       trash_db,
-                                       load_data,
-                                       load_calcs,
-                                       load_zs,
-                                       afterz_data,
-                                       afterz_calcs
-                                      ]}]).
-    %% load_testing:load(disc_only,
-    %%                            [{run, [
-    %%                                    afterz_data
-    %%                                   ]},
-    %%                             {fprof, [
-    %%                                      dbsrv,
-    %%                                      zinf
-    %%                                     ]}]).
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    load_testing:load(Stamp, disc_only,
+                      [{run, [
+                              trash_db,
+                              load_data,
+                              load_calcs,
+                              load_zs,
+                              afterz_data,
+                              afterz_calcs
+                             ]}
+                      ]).
+%% load_testing:load(disc_only,
+%%                            [{run, [
+%%                                    afterz_data
+%%                                   ]},
+%%                             {fprof, [
+%%                                      dbsrv,
+%%                                      zinf
+%%                                     ]}]).
 
 profile_zinf_srv() ->
     TraceFile = zinf_srv:start_fprof(?site),
     load(),
     zinf_srv:stop_fprof(?site, TraceFile).
 
-load() -> load_2(disc_only, [{run, [
-                                    trash_db,
-                                    bulk_pages,
-                                    load_data,
-                                    load_calcs,
-                                    load_zs,
-                                    afterz_data,
-                                    afterz_calcs,
-                                    tests
-                                   ]}
-                            ]).
+
+load() ->
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    load_2(Stamp, disc_only, [{run, [
+                                     trash_db,
+                                     bulk_pages,
+                                     load_data,
+                                     load_calcs,
+                                     load_zs,
+                                     afterz_data,
+                                     afterz_calcs,
+                                     tests
+                                    ]}
+                             ]).
+
+load(Stamp) ->
+    load_2(Stamp, disc_only, [{run, [
+                                     trash_db,
+                                     bulk_pages,
+                                     load_data,
+                                     load_calcs,
+                                     load_zs,
+                                     afterz_data,
+                                     afterz_calcs,
+                                     tests
+                                    ]}
+                             ]).
 
 
-load(Type, Spec) -> load_2(Type, Spec).
+load(Type, Spec) ->
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    load_2(Stamp, Type, Spec).
+
+load(Stamp, Type, Spec) ->
+    load_2(Stamp, Type, Spec).
 
 profile_zs() ->
     %Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
@@ -128,14 +179,14 @@ test_z2(Max, N) ->
     log(Msg, ?zquery_profile_page ++ ".csv"),
     test_z2(Max, N - 1).
 
-load_2(Type, Spec) when Type == disc_only orelse Type == disc_and_mem ->
-    load_3(Type, Spec);
-load_2(Type, _Spec) ->
+load_2(Stamp, Type, Spec) when Type == disc_only orelse Type == disc_and_mem ->
+    load_3(Stamp, Type, Spec);
+load_2(_Stamp, Type, _Spec) ->
     io:format("Invalid parameter. Type is ~p and it should "
                  ++ "be one of 'disc_only' or 'disc_and_mem'~n",
                  [Type]).
 
-load_3(Type, Spec) ->
+load_3(Stamp, Type, Spec) ->
 
     RSpc = get_spec(run, Spec),
     CSpc = get_spec(cprof, Spec),
@@ -143,9 +194,6 @@ load_3(Type, Spec) ->
 
     io:format("Running load tests~nRunSpec is   ~p~nCProfSpec is ~p~n"
               ++ "FprofSpec is ~p~n", [RSpc, CSpc, FSpc]),
-
-    % first get a filestamp
-    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
 
     % trash_db will delete all running processes so need to only
     % start fprof and stuff after it has fun
@@ -163,7 +211,8 @@ load_3(Type, Spec) ->
     run(RSpc, CSpc, afterz_calcs,  Stamp,          fun afterz_calcs/1),
     run(RSpc, CSpc, tests,         Stamp,          fun run_tests/1),
 
-    stop_fprof(FSpc, Stamp).
+    stop_fprof(FSpc, Stamp),
+    io:format("over and out...~n").
 
 run_tests(Stamp) ->
     % create a page, delete it and then create it again
@@ -454,4 +503,3 @@ get_dir() ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
     _Return = filelib:ensure_dir(Dir),
     Dir.
-

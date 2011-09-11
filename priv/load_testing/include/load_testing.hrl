@@ -11,7 +11,6 @@
 -define(datapage, "400datapoints").
 -define(calcsprefix, "calcspages").
 -define(calcspage, "400calcs").
--define(zqueryprefix, "zquerypages").
 -define(zquerypage, "400zqueries").
 -define(additionaldata, "additionaldata").
 -define(no_of_additional_data, 20).
