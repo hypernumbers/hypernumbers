@@ -14,6 +14,7 @@
          'status.bar'/1,
          'sparkline.'/1,
          'sparkbar.'/1,
+         'sparkhist.'/1,
          'xy.'/1,
          'speedo.'/1,
          'histogram.'/1,
@@ -154,7 +155,7 @@
     [Height] = typechecks:throw_std_ints([H]),
     {Data, Colours} = chunk_spark(List),
     {resize, {Width, Height, #incs{}},
-     spark1(make_size(Width, Height), Data, Colours)}.
+     spark1(make_sparksize(Width, Height), Data, Colours)}.
 
 chunk_spark([Lines | List]) ->
     [Lines1] = typechecks:throw_std_ints([Lines]),
@@ -212,7 +213,22 @@ spark1(Size, Data, Colours) ->
                       make_barsize(Height, Orientation, NoBars, NoGroups)
               end,
     {resize, {Width, Height, #incs{}},
-     sparkbar1(Type, make_size(Width, Height), DataY, MinY, MaxY,
+     sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
+              Colours, BarSize, Rest, [])}.
+
+'sparkhist.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    Ret = chunk_sparkhist(List),
+    {DataY, NoBars, NoGroups, Orientation, MinY, MaxY, Type, Colours, Rest} = Ret,
+    BarSize = case Orientation of
+                  vertical ->
+                      make_barsize(Width, Orientation, NoBars, NoGroups);
+                  horizontal ->
+                      make_barsize(Height, Orientation, NoBars, NoGroups)
+              end,
+    {resize, {Width, Height, #incs{}},
+     sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
               Colours, BarSize, Rest, [])}.
 
 'histogram.'([W, H | List]) ->
@@ -259,6 +275,25 @@ spark1(Size, Data, Colours) ->
         [{?tickmarks, ?BOTHAXES}])}.
 
 chunk_sparkbar([Type, Lines| List]) ->
+    [Type2, Lines2] = typechecks:throw_std_ints([Type, Lines]),
+    SeriesLength = get_series_length(List),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
+    {Orientation, MaxType, Type3, NoBars} = case Type2 of
+        0 -> {vertical,   group, ?HIST_VGROUP, Lines2 * SeriesLength};
+        1 -> {horizontal, group, ?HIST_HGROUP, Lines2 * SeriesLength};
+        _ -> ?ERR_VAL
+    end,
+    NoGroups = NoBars/Lines2,
+    {MinY, MaxY, DataY, Cols, Rest}
+        = case {Orientation, MaxType} of
+              {vertical,   group} -> chunk_sbar(Lines2, List);
+              {horizontal, group} -> chunk_sbar(Lines2, List);
+              _                   -> ?ERR_VAL
+          end,
+    DataY2 = "t:" ++ conv_data_rev(DataY),
+    {DataY2, NoBars, NoGroups, Orientation, MinY, MaxY, Type3, Cols, Rest}.
+
+chunk_sparkhist([Type, Lines| List]) ->
     [Type2, Lines2] = typechecks:throw_std_ints([Type, Lines]),
     SeriesLength = get_series_length(List),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
@@ -329,12 +364,20 @@ chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
     [Lines2] = typechecks:throw_std_ints([Lines]),
     {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List, ?MARGIN),
-    io:format("MinY is ~p MaxY is ~p~n", [MinY, MaxY]),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
+
+chunk_sbar(Lines, List) ->
+    [Lines2] = typechecks:throw_std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
+    {Data, Rest} = lists:split(Lines2, List),
+    {MinY, MaxY, DataY} = process_data_sbar(Data),
+    % now make the colours
+    Colours = allocate_colours(Lines, ?XYCOLOURS),
+    {MinY, MaxY, DataY, {?colours, Colours}, Rest}.
 
 chunk_hist(Aggregate, Lines, List, Margin) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
@@ -405,7 +448,7 @@ chunk_xy([Lines | List], LabType) ->
     {Data1, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
 
-sparkbar1(Type, Size, DataY, MinY, MaxY, Colours, BarSize, [], Opts) ->
+sparkhist1(Type, Size, DataY, MinY, MaxY, Colours, BarSize, [], Opts) ->
     Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[BarSize, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
@@ -813,6 +856,25 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %%
 %% Internal Functions
 %%
+process_data_sbar(Data) ->
+    Prefetched = cast_prefetch(Data),
+    Data1 = [proc_dxy1(X) || X <- Prefetched],
+    Data2 = [X || {X, _NoR, _NoC} <- Data1],
+    Data3 = [lists:flatten([cast_linegraph_data(X) || X <- X1])
+             || X1 <- Data2],
+    {MinY, MaxY} = get_maxes_lg(Data3),
+    % we need the real mins/maxes to normalise the data
+    % if its a stacker we need the aggregate mins/maxs
+    BottomMargin = case MinY of
+                       0 -> ?NOMARGIN;
+                       _ -> ?MARGIN
+                   end,
+    Diff = MaxY - MinY,
+    MinY2 = MinY - BottomMargin * Diff,
+    MaxY2 = MaxY + ?MARGIN * Diff,
+    Data4 = normalize_linegraph(Data3, MinY2, MaxY2, []),
+    {MinY2, MaxY2, Data4}.
+
 process_data_hist(Aggregate, Data, Margin) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
@@ -1210,9 +1272,15 @@ colours() -> [
               {"yellow"  , "FFFF00"}
              ].
 
+make_sparksize(W, H) -> make_width(W) ++ "x" ++ make_sparkheight(H).
+
 make_size(W, H) -> make_width(W) ++ "x" ++ make_height(H).
-make_height(N)  -> integer_to_list(N * 22 - 1).
-make_width(N)   -> integer_to_list(N * 80 - 14).
+
+make_sparkheight(N) -> integer_to_list(N * 22 - 1 - 1).
+
+make_height(N) -> integer_to_list(N * 22 - 1).
+
+make_width(N) -> integer_to_list(N * 80 - 14).
 
 get_series_length(List) ->
     case hd(List) of

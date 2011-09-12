@@ -246,6 +246,9 @@ transform("sparkline." ++ R, Args) ->
 transform("sparkbar." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("sparkbar."), [W , H | Args]};
+transform("sparkhist." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("sparkhist."), [W , H | Args]};
 transform("xy." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("xy."), [W , H | Args]};
