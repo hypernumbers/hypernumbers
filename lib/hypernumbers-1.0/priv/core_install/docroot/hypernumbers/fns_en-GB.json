@@ -3692,7 +3692,7 @@
                      "name": "Range",
                      "desc": "The range of data and values to display.",
                      "type": "finite"
-                 },
+                 }
              },
              {
                 "name": "Title",
@@ -3743,7 +3743,7 @@
         "resize_rows_default": 1,
         "resize_cols_default": 1,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/sparkbar.html",
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/graphs/sparkhist.html",
          "args": [
              {
                 "name": "Type",
