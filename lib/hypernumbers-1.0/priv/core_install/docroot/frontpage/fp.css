@@ -1,0 +1,60 @@
+@import url(http://fonts.googleapis.com/css?family=Amaranth:400italic);
+
+#hn_text {
+  width: 550px;
+  padding: 2px 2px 2px 2px;
+  height: 426px;
+  border             : 2px solid #999;
+  -moz-border-radius : 8px 8px 8px 8px;
+  -moz-box-shadow    : 2px 2px 4px #aaa;
+  -webkit-border-radius : 8px 8px 8px 8px;
+  -webkit-box-shadow    : 2px 2px 4px #aaa;
+}
+
+#hn_msg {
+          width: 420px;
+          height: 400px;
+          background: url(/drawing.png) no-repeat;
+          padding: 60px 10px 0px 120px;
+          font-family: 'Amaranth', sans-serif;
+          font-size : 32px;
+          color: #d45500;
+          line-height: 115%;
+          text-align: center;
+}
+
+#hn_msg p {
+           margin: 0px 0px 10px 0px;
+           }
+
+#hn_watch {
+            position: relative;
+            left: 70px;
+            width: 300px;
+            background-color: #000;
+            border             : 3px solid #d45500;
+  -moz-border-radius : 8px 8px 8px 8px;
+  -moz-box-shadow    : 2px 2px 4px #aaa;
+  -webkit-border-radius : 8px 8px 8px 8px;
+  -webkit-box-shadow    : 2px 2px 4px #aaa;
+            }
+
+#hn_blurb {
+            padding: 4px 0px 0px 0px;
+            font-size: 10px;
+            color: #777;
+ }
+
+.hninput[type=input]  {
+           }
+
+.hninput[type=submit]  {
+                         color: #222;
+                         font-size: 120%;
+                         background-color: orange;
+                         border             : 3px solid darkorange;
+  -moz-border-radius : 8px 8px 8px 8px;
+  -moz-box-shadow    : 2px 2px 4px #aaa;
+  -webkit-border-radius : 8px 8px 8px 8px;
+  -webkit-box-shadow    : 2px 2px 4px #aaa;
+           }
