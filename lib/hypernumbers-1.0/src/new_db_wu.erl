@@ -2017,10 +2017,11 @@ offset_with_ranges1([{cellref, LineNo,
             PathCompare = muin_util:walk_path(CPath, Path),
             NewCell  =
                 case PathCompare of
-                    FromPath -> make_cell(XDollar, X, XO, YDollar, Y, YO);
+                    FromPath -> Prefix ++ make_cell(XDollar, X, XO,
+                                                    YDollar, Y, YO);
                     _        -> Text
                 end,
-            NewAcc = {cellref, LineNo, C#cellref{text = Prefix ++ NewCell}},
+            NewAcc = {cellref, LineNo, C#cellref{text = NewCell}},
             offset_with_ranges1(T, XCell, From, {XO, YO}, Status, [NewAcc | Acc])
     end;
 offset_with_ranges1([H | T], XCell, From, Offset, Status, Acc) ->
