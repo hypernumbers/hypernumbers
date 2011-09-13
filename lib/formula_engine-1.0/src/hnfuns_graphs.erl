@@ -173,6 +173,8 @@ chunk_spark([Lines | List]) ->
     {Data3, Colours}.
 
 % avoid a #DIV/0! error
+normalize_sp(List, Min, Min)  when Min == 0 ->
+    lists:duplicate(length(List), 0);
 normalize_sp(List, Min, Min) ->
     lists:duplicate(length(List), 100);
 normalize_sp(List, Min, Max) ->
@@ -212,9 +214,10 @@ spark1(Size, Data, Colours) ->
                   horizontal ->
                       make_barsize(Height, Orientation, NoBars, NoGroups)
               end,
-    {resize, {Width, Height, #incs{}},
-     sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
-              Colours, BarSize, Rest, [])}.
+     Img = sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
+                      Colours, BarSize, Rest, []),
+    Img2 = "<div class='hn_sparkS'>" ++ Img ++ "</div>",
+    {resize, {Width, Height, #incs{}}, Img2}.
 
 'sparkhist.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -227,9 +230,10 @@ spark1(Size, Data, Colours) ->
                   horizontal ->
                       make_barsize(Height, Orientation, NoBars, NoGroups)
               end,
-    {resize, {Width, Height, #incs{}},
-     sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
-              Colours, BarSize, Rest, [])}.
+    Img = sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
+                     Colours, BarSize, Rest, []),
+    Img2 = "<div class='hn_spark'>" ++ Img ++ "</div>",
+    {resize, {Width, Height, #incs{}}, Img2}.
 
 'histogram.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -1274,9 +1278,11 @@ colours() -> [
 
 make_sparksize(W, H) -> make_width(W) ++ "x" ++ make_sparkheight(H).
 
-make_size(W, H) -> make_width(W) ++ "x" ++ make_height(H).
+make_size(W, H) -> make_sparkwidth(W) ++ "x" ++ make_height(H).
 
-make_sparkheight(N) -> integer_to_list(N * 22 - 1 - 1).
+make_sparkheight(N) -> integer_to_list(N * 22 - 1 - 4).
+
+make_sparkwidth(N) -> integer_to_list(N * 80 - 10).
 
 make_height(N) -> integer_to_list(N * 22 - 1).
 

@@ -717,3 +717,7 @@ label {
                    }
 
 #ctrlpanel a:link, #ctrlpanel a:visited { border-bottom: none }
+
+.hn_spark {
+            padding: 2px 0px 0px 0px
+            }
