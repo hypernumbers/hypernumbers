@@ -47,13 +47,6 @@ init([Site]) ->
               worker,
               [remoting_reg]},
 
-             {remoting_sup,
-              {remoting_sup, start_link, [Site]},
-              permanent,
-              infinity,
-              supervisor,
-              [remoting_sup]},
-
              {auth_srv,
               {auth_srv, start_link, [Site]},
               permanent,
