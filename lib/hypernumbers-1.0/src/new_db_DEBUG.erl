@@ -10,6 +10,8 @@
 -include("spriki.hrl").
 
 -export([
+         dump_lost_idxs/1,
+         tick/0,
          timer_DEBUG/1,
          dirty_for_zinf_DEBUG/1,
          item_and_local_objs_DEBUG/1,
@@ -26,6 +28,48 @@
 %%% Debug Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+dump_lost_idxs(Site) ->
+    io:format("looking through all idxs for ~p~n", [Site]),
+    % first up basic tables
+    Tables = [form, include, item, logging, timer],
+    [dump(Site, X) || X <- Tables],
+    ok.
+
+dump(Site, Table) ->
+    io:format("Dumping ~p on ~p~n", [Table, Site]),
+    Tab2 = new_db_wu:trans(Site, Table),
+    Fun = fun() ->
+                  mnesia:all_keys(Tab2)
+          end,
+    Keys = mnesia:activity(transaction, Fun),
+    dump_keys(Site, Tab2, Keys),
+    ok.
+
+dump_keys(Site, Table, Keys) ->
+    Fun = fun(X) ->
+                  case new_db_wu:idx_to_xrefXD(Site, X) of
+                      {error, id_not_found, X} ->
+                          io:format("Idx ~p not found in ~p on ~p~n",
+                                    [X, Site, Table]);
+                      _ -> io:format(".")
+                  end
+          end,
+    Fun2 = fun() ->
+                   [Fun(X) || X <- Keys]
+           end,
+    mnesia:activity(transaction, Fun2),
+    io:format("~n").
+
+
+tick() ->
+    S = "http://hypernumbers.dev:9000",
+    P = ["tick"],
+    O = {cell, {1, 1}},
+    F = integer_to_list(remoting_reg:timestamp()),
+    RefX = #refX{site = S, path = P, obj = O},
+    ok = new_db_api:write_attributes([{RefX, [{"formula", F}]}]),
+    timer:apply_after(1000, new_db_DEBUG, tick, []).
+
 timer_DEBUG(Site) ->
     F = fun() ->
                 timer_debugD(Site)
@@ -67,21 +111,27 @@ raw_url_DEBUG(Url) ->
 
 raw_idx_DEBUG(Site, Idx) ->
     Fun = fun() ->
-                  XRefX = new_db_wu:idx_to_xrefXD(Site, Idx),
-                  io:format("XRefX is ~p~n", [XRefX]),
-                  Tab1 = new_db_wu:trans(Site, local_obj),
-                  [R1] = mnesia:read(Tab1, Idx, read),
-                  io:format("Raw local_obj is ~p~n", [R1]),
-                  io:format("local_obj: idx ~p~n type ~p~n path ~p~n "
-                            ++ "obj ~p~n revidx ~p~n",
-                            [R1#local_obj.idx, R1#local_obj.type,
+                  case new_db_wu:idx_to_xrefXD(Site, Idx) of
+                      {error, _, _} ->
+                          io:format("Idx does not exist~n"),
+                          dump_logs(Site, Idx);
+                      XRefX ->
+                          io:format("XRefX is ~p~n", [XRefX]),
+                          Tab1 = new_db_wu:trans(Site, local_obj),
+                          [R1] = mnesia:read(Tab1, Idx, read),
+                          io:format("Raw local_obj is ~p~n", [R1]),
+                          io:format("local_obj: idx ~p~n type ~p~n path ~p~n "
+                                    ++ "obj ~p~n revidx ~p~n",
+                                    [R1#local_obj.idx, R1#local_obj.type,
                             binary_to_term(R1#local_obj.path), R1#local_obj.obj,
-                            binary_to_term(R1#local_obj.revidx)]),
-                  Tab2 = new_db_wu:trans(Site, item),
-                  [R2] = mnesia:read(Tab2, Idx, read),
-                  io:format("Raw item is ~p~n", [R2]),
-                  io:format("item: idx ~p~n attrs ~p~n",
-                            [R2#item.idx, binary_to_term(R2#item.attrs)])
+                                     binary_to_term(R1#local_obj.revidx)]),
+                          Tab2 = new_db_wu:trans(Site, item),
+                          [R2] = mnesia:read(Tab2, Idx, read),
+                          io:format("Raw item is ~p~n", [R2]),
+                          Attrs2 = binary_to_term(R2#item.attrs),
+                          io:format("item: idx ~p~n attrs ~p~n",
+                                    [R2#item.idx, Attrs2])
+                  end
           end,
     mnesia:transaction(Fun).
 
@@ -325,3 +375,14 @@ item_and_local_objs_DEBUGD(Site) ->
     mnesia:foldl(Fun2, [], Tab2).
 
 %idx_DEBUG(S, Idx) -> mnesia:read(trans(S, local_obj), Idx, read).
+
+dump_logs(Site, Idx) ->
+    Table = new_db_wu:trans(Site, logging),
+    Records = mnesia:read(Table, Idx, read),
+    io:format("dumping logs for ~p on ~p~n", [Idx, Site]),
+    Fun = fun({logging, I, Ts, Uid, Ac, AcT, Ty, P, O, L}) ->
+                  L2 = lists:flatten(binary_to_term(L)),
+           io:format("Log: ~p ~p ~p ~p~n> ~p ~p ~p ~p~n> ~p~n",
+                     [I, Ts, Uid, Ac, AcT, Ty, P, O, L2])
+          end,
+    [Fun(X) || X <- Records].
