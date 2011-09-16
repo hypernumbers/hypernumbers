@@ -51,7 +51,7 @@ dump_keys(Site, Table, Keys) ->
                       {error, id_not_found, X} ->
                           io:format("Idx ~p not found in ~p on ~p~n",
                                     [X, Site, Table]);
-                      _ -> io:format(".")
+                      _ -> ok %io:format(".")
                   end
           end,
     Fun2 = fun() ->
