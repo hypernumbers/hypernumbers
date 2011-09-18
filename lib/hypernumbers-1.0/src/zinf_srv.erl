@@ -411,8 +411,11 @@ dump_t2(Iter, Htap) ->
     end.
 
 dump_p([], _Path)     -> ok;
-dump_p([H | T], Path) -> {_, List} = H,
-                         io:format("at ~p Idx's are ~p~n", [Path, List]),
+dump_p([H | T], Path) -> {Obj, List} = H,
+                         P2 = hn_util:list_to_path(Path),
+                         Ref = hn_util:obj_to_ref(Obj),
+                         io:format("at ~p Idx's are~n ~p~n",
+                                   [P2 ++ Ref, List]),
                          dump_p(T, Path).
 
 match_tree(Tree, S, List, Fun, Htap) ->
