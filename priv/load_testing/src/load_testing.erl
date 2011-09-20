@@ -46,6 +46,12 @@
          load/3
         ]).
 
+% exports for stuff
+-export([
+         log/2,
+         get_time/0
+         ]).
+
 % exports for spawning
 -export([
          log_memory/1,
@@ -84,21 +90,25 @@ test_SPAWN() ->
     load_testing:load(Stamp, disc_only,
                       [{run, [
                               trash_db,
-                              load_data,
-                              load_calcs,
-                              load_zs,
-                              afterz_data,
-                              afterz_calcs
-                             ]}
+                              %load_data,
+                              %load_calcs,
+                              %load_zs,
+                              afterz_data
+                              %afterz_calcs
+                             ]},
+                       {cprof, [
+                                afterz_data
+                               ]}
                       ]).
-%% load_testing:load(disc_only,
-%%                            [{run, [
-%%                                    afterz_data
-%%                                   ]},
-%%                             {fprof, [
-%%                                      dbsrv,
-%%                                      zinf
-%%                                     ]}]).
+    %% load_testing:load(disc_only,
+    %%                   [{run, [
+    %%                           afterz_data
+    %%                          ]},
+    %%                    {fprof, [
+    %%                             dbsrv,
+    %%                             zinf
+    %%                            ]}
+    %%                    ]).
 
 profile_zinf_srv() ->
     TraceFile = zinf_srv:start_fprof(?site),
@@ -392,7 +402,7 @@ run(Spec, CProf, Test, Stamp, Fun) ->
                  cprof:pause(),
                  {_Total, Log} = cprof:analyse(),
                  File = "cprof" ++ "." ++ atom_to_list(Test)
-                     ++ "." ++ Stamp ++ ".output",
+                     ++ Stamp ++ ".output",
                  Msg = io_lib:format("~w", [Log]),
                  log(Msg, File),
                  io:format("cprof written.~n");

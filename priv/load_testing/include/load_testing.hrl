@@ -12,6 +12,7 @@
 -define(calcsprefix, "calcspages").
 -define(calcspage, "400calcs").
 -define(zquerypage, "400zqueries").
+-define(zqueryprefix, "zqueries").
 -define(additionaldata, "additionaldata").
 -define(no_of_additional_data, 20).
 -define(additionalcalcs, "additionalcalcs").
