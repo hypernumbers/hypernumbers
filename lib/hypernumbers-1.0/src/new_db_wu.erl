@@ -1313,10 +1313,8 @@ expand_to_2(#refX{obj = {Type, _}} = Ref, I, J, A) ->
 -spec expunge_refsD(string(), [#refX{}]) -> ok.
 expunge_refsD(S, Refs) ->
     ItemT = trans(S, item),
-    ObjT = trans(S, local_obj),
     [begin
          mnesia:delete(ItemT, Idx, write),
-         mnesia:delete(ObjT, Idx, write),
          case O of
              {cell, _} -> unattach_formD(Ref);
              _         -> ok
