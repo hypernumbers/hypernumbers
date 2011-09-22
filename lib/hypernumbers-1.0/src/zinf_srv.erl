@@ -49,7 +49,7 @@
         ]).
 
 -export([
-         perf_testing/0
+         perf_testing/1
         ]).
 
 -export([
@@ -100,6 +100,10 @@ dump(Site) ->
 %%%===================================================================
 %%% Profiling
 %%%===================================================================
+perf_testing(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:cast({global, Id}, perf_testing).
+
 start_fprof(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:call({global, Id}, start_fprof).
@@ -153,9 +157,7 @@ init([Site]) ->
     Size = mnesia:table_info(Tbl, size),
     if
         Size == 0 -> ok;
-        Size >  0 -> io:format("zinf_srv resetting ~p records in dirty_zinf~n",
-                               [Size]),
-                     ok = new_db_api:reset_dirty_zinfs(Site),
+        Size >  0 -> ok = new_db_api:reset_dirty_zinfs(Site),
                      ok = process_zinfs(Site)
     end,
     {ok, #state{site = Site, zinf_tree = Zinf_tree}}.
@@ -194,6 +196,9 @@ handle_call(_Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_cast(perf_testing, State) ->
+    run_perf_test(),
+    {noreply, State};
 handle_cast(start_cprof, State) ->
     cprof:start(),
     {noreply, State};
@@ -457,7 +462,8 @@ run_zeval(Site, Path, Z) ->
     % {cell, {0, 0}} is 1 up and 1 left of the cell 'A1'
     {ok, Toks} = xfl_lexer:lex(Z2, {0, 0}),
     % need to set up the process dictionary
-    Fun = fun() -> try
+    Fun = fun() -> io:format("speaking to the database in the zinf server~n"),
+                   try
                        muin:zeval_from_zinf(Site, Path, Toks)
                    catch
                        error:
@@ -1366,33 +1372,44 @@ unit_test_() ->
      {setup, Setup, [{with, [], SeriesA}]}.
 
 % test the performance of the zinf server
-perf_testing() -> Tree = gb_trees:empty(),
-               perf2(Tree, 1, 100, 20, 20, 20, 20).
+run_perf_test() -> Tree = gb_trees:empty(),
+                  Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+                  perf2(Stamp, Tree, 1, 100, 20, 20, 20, 20).
 
-perf2(_Tree, _Idx, 0, _, 0, _,  0) -> ok;
+perf2(_Stamp, _Tree, _Idx, 0, _, 0, _,  0) -> ok;
 % order matters!
-perf2(Tree, Idx, NPages, MaxXs, 0, MaxYs, 0) ->
+perf2(Stamp, Tree, Idx, NPages, MaxXs, 0, MaxYs, 0) ->
     io:format("Page: ~p~n", [NPages]),
-    perf2(Tree, Idx, NPages - 1, MaxXs, MaxXs, MaxYs, MaxYs);
-perf2(Tree, Idx, NPages, MaxXs, NXs, MaxYs, 0) ->
-    perf2(Tree, Idx, NPages, MaxXs, NXs - 1, MaxYs, MaxYs);
-perf2(Tree, Idx, NPages, MaxXs, NXs, MaxYs, NYs) ->
+    S = "http://example.com",
+    P = [integer_to_list(NPages)],
+    Obj = {cell, {1,1}},
+    XRefX = #xrefX{site = S, path = P, obj = Obj},
+    %CheckStart = get_time(),
+    %check(Tree, XRefX),
+    %CheckEnd = get_time(),
+    %CheckMsg = io_lib:format("~p", [CheckEnd - CheckStart]),
+    %log(CheckMsg, "zinf_checking" ++ Stamp ++ ".csv"),
+    perf2(Stamp, Tree, Idx, NPages - 1, MaxXs, MaxXs, MaxYs, MaxYs);
+perf2(Stamp, Tree, Idx, NPages, MaxXs, NXs, MaxYs, 0) ->
+    perf2(Stamp, Tree, Idx, NPages, MaxXs, NXs - 1, MaxYs, MaxYs);
+perf2(Stamp, Tree, Idx, NPages, MaxXs, NXs, MaxYs, NYs) ->
     S = "http://example.com",
     P = [integer_to_list(NPages)],
     Obj = {cell, {NXs, NYs}},
-    {NewIdx, NewTree} = perf3(100, Tree, Idx, S, P, Obj),
-    perf2(NewTree, NewIdx, NPages, MaxXs, NXs, MaxYs, NYs - 1).
+    {NewIdx, NewTree} = perf3(Stamp, 100, Tree, Idx, S, P, Obj),
+    perf2(Stamp, NewTree, NewIdx, NPages, MaxXs, NXs, MaxYs, NYs - 1).
 
-perf3(0, Tree, Idx, _S, _P, _Obj) ->
+perf3(_Stamp, 0, Tree, Idx, _S, _P, _Obj) ->
     {Idx, Tree};
-perf3(N, Tree, Idx, S, P, Obj) ->
-    RefX = #xrefX{site = S, path = P, obj = Obj},
-    Start = get_time(),
-    NewTree = add({RefX, Idx}, Tree),
-    End = get_time(),
-    Msg = io_lib:format("~p", [End - Start]),
-    log(Msg, "zinf_loading"),
-    perf3(N - 1, NewTree, Idx + 1, S, P, Obj).
+perf3(Stamp, N, Tree, Idx, S, P, Obj) ->
+    XRefX = #xrefX{site = S, path = P, obj = Obj},
+    %AddStart = get_time(),
+    NewTree = add({XRefX, Idx}, Tree),
+    check(Tree, XRefX),
+    %AddEnd = get_time(),
+    %AddMsg = io_lib:format("~p", [AddEnd - AddStart]),
+    %log(AddMsg, "zinf_loading" ++ Stamp ++ ".csv"),
+    perf3(Stamp, N - 1, NewTree, Idx + 1, S, P, Obj).
 
 log(String, File) ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
