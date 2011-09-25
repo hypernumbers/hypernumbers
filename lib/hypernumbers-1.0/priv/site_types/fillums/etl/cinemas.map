@@ -1,0 +1,11 @@
+{head,"row","csv","cinema","overwrite"}.
+{mapping,"csv","C:C","B6"}.
+{mapping,"csv","D:D","B7"}.
+{mapping,"csv","E:E","B8"}.
+{mapping,"csv","F:F","B9"}.
+{mapping,"csv","G:G","B10"}.
+{mapping,"csv","H:H","B11"}.
+{mapping,"csv","M:M","B13"}.
+{mapping,"csv","N:N","C13"}.
+{mapping,"csv","O:O","D13"}.
+
