@@ -65,10 +65,11 @@ export_site(Dest, Site) ->
     ok = dump_groups(Site, Dest),
     io:format("about to dump perms~n"),
     ok = dump_perms(Site, Dest),
-    io:format("about to dump views, docroot and templates~n"),
+    io:format("about to dump views, docroot, templates and etl files~n"),
     ok = dump_folder(Site, Dest, "views"),
     ok = dump_folder(Site, Dest, "docroot"),
     ok = dump_folder(Site, Dest, "templates"),
+    ok = dump_folder(Site, Dest, "etl"),
     io:format("export site completed~n"),
     ok.
 
@@ -86,6 +87,7 @@ dump_etf(Site, SiteDest) ->
     ok.
 
 dump_page(EtfDest, Encoder, Ref, Path) ->
+    io:format("Dumping ~p~n", [Path]),
     FileName = ?join(EtfDest, hn_util:path_to_json_path(Path)),
     Page = Encoder(hn_mochi:page_attributes(Ref#refX{path = Path}, #env{})),
     Data = io_lib:format("~s", [lists:flatten(Page)]),
