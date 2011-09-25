@@ -1,4 +1,4 @@
-%%% @doc    This module handles the number/text formatting for a cell.
+%% @doc    This module handles the number/text formatting for a cell.
 %%%
 %%%         It does 2 things:
 %%%         <ul>
@@ -15,6 +15,11 @@
 -export([
          get_src/1,
          run_format/2
+        ]).
+
+%% a special interface to get a formated date for general/plain cases
+-export([
+         format_date/2
         ]).
 
 %% -import(format_util,
@@ -61,7 +66,7 @@ run_format(X, Src)->
     {ok,ErlTokens,_} = erl_scan:string(Src),
     {ok,ErlAbsForm}  = erl_parse:parse_exprs(ErlTokens),
     {value,Fun,_}    = erl_eval:exprs(ErlAbsForm,[]),
-    {ok,Fun(X)}.
+    Fun(X).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

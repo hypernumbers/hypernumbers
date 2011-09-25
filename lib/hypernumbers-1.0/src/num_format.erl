@@ -29,20 +29,28 @@ make_src(A)                 -> make_src2([A]).
         "(( is_list(X) andalso X=/=[] andalso (not(is_atom(hd(X)))) )
         orelse
         ( is_tuple(X) andalso element(1, X) == ustring))").
+-define(date_format, "[{day, zero}, {minus, \"-\"}, {mon, abbr}, "
+        ++ "{minus, \"-\"}, {year, four_digit}]").
 
 get_general() ->
-    Src = "fun(X) -> "++
+    Src = " fun({datetime, D, T}) ->\n"++
+        "     Val = format:format_date({D, T}, " ++ ?date_format ++ "),\n"++
+        "     {auto, Val};\n"++
+        "(X) -> "++
         "    if"++
-        "      "++?is_str++"     -> {auto, X};"++
-        "      not(is_number(X)) -> {auto, X};"++
-        "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++
-        "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
-        "     end "++
-        "end.",
+        "      "++?is_str++"     -> {auto, X};\n"++
+        "      not(is_number(X)) -> {auto, X};\n"++
+        "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};\n"++
+        "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}\n"++
+        "     end\n"++
+        " end.",
     {number,Src}.
 
 get_plain() ->
-    Src = "fun(X) -> "++
+    Src = " fun({datetime, D, T}) ->\n"++
+        "     Val = format:format_date({D, T}, " ++ ?date_format ++ "),"++
+        "     {auto, Val};\n"++
+        "(X) -> "++
         "    if"++
         "      "++?is_str++"     -> {auto, X};"++
         "      not(is_number(X)) -> {auto, X};"++
@@ -51,7 +59,6 @@ get_plain() ->
         "     end "++
         "end.",
     {number,Src}.
-
 
 verify(A) when is_list(A) ->
     B=lists:flatten(A),
