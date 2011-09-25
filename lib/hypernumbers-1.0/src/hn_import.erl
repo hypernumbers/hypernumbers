@@ -15,6 +15,7 @@
         ]).
 
 -export([
+         etl_to_row_append/3,
          etl_to_row/3,
          etl_to_sheet/3,
          xls_file/3,
@@ -44,7 +45,42 @@ save_map(Site, Name, Head, Validation, Mapping) ->
     ok = file:write_file(FileName, lists:flatten(File2)),
     remoting_reg:notify_site(Site).
 
+%% only used for 'row_append' operations - there is no mapping
+%% each row is loaded to the page that appears in column 'A'
+etl_to_row_append(FileName, Site, Type) ->
+    Input = case Type of
+                csv -> read_csv(FileName);
+                xls -> read_xls(FileName)
+            end,
+    Chunk = chunk(Input),
+    write_rows(Chunk, Site).
+
+write_rows([], _Site) -> ok;
+write_rows([{_, Rows} | T], Site) ->
+    ok = write_row(Rows, Site),
+    write_rows(T, Site).
+
+write_row([], _Site) -> ok;
+write_row([H | T], Site) ->
+    {_Y, List} = H,
+    RefXs = make_refXs(Site, List),
+    ok = new_db_api:append_row(RefXs, nil, nil),
+    syslib:limiter(Site),
+    write_row(T, Site).
+
+make_refXs(Site, List) ->
+    {1, Path} = lists:keyfind(1, 1, List),
+    [make_r2(Site, hn_util:path_tokens(Path), X) || X <- List].
+
+make_r2(Site, Path, {1, _}) ->
+    RefX = #refX{site = Site, path = Path, obj = {column, {1, 1}}},
+    {RefX, "=now()"};
+make_r2(Site, Path, {X, Val}) ->
+    RefX = #refX{site = Site, path = Path, obj = {column, {X, X}}},
+    {RefX, Val}.
+
 %% only used for 'row' type maps (file contains the destination)
+%% a 'row' type map has one record per line
 etl_to_row(FileName, Site, Map) ->
     case file:consult(Map) of
         {ok, Terms}     -> etl_row(Site, Terms, FileName);
