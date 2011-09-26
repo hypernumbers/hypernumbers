@@ -88,27 +88,24 @@ test() -> spawn(load_testing, test_SPAWN, []).
 test_SPAWN() ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
     load_testing:load(Stamp, disc_only,
+                       [{run, [
+                               trash_db,
+                               %z_test
+                               %load_data,
+                               %load_calcs,
+                               load_zs
+                               %afterz_data
+                               %afterz_calcs
+                              ]}
+                       ]),
+    load_testing:load(Stamp, disc_only,
                       [{run, [
-                              trash_db,
-                              %load_data,
-                              %load_calcs,
-                              %load_zs,
-                              afterz_data
-                              %afterz_calcs
+                              afterz_zs
                              ]},
-                       {cprof, [
-                                afterz_data
+                       {fprof, [
+                                all
                                ]}
                       ]).
-    %% load_testing:load(disc_only,
-    %%                   [{run, [
-    %%                           afterz_data
-    %%                          ]},
-    %%                    {fprof, [
-    %%                             dbsrv,
-    %%                             zinf
-    %%                            ]}
-    %%                    ]).
 
 profile_zinf_srv() ->
     TraceFile = zinf_srv:start_fprof(?site),
@@ -143,7 +140,6 @@ load(Stamp) ->
                                     ]}
                              ]).
 
-
 load(Type, Spec) ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
     load_2(Stamp, Type, Spec).
@@ -153,7 +149,7 @@ load(Stamp, Type, Spec) ->
 
 profile_zs() ->
     %Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-    %Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    %Dir = /media/logging/",
     %TraceFile = Dir ++ "profile_zs" ++ Stamp ++ ".trace",
     %fprof:trace(start, TraceFile),
     Path = ["profile_zs"],
@@ -166,7 +162,7 @@ profile_zs() ->
 
 test_zs() ->
     %Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-    %Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    %Dir = /media/logging/
     %TraceFile = Dir ++ "test_zs" ++ Stamp ++ ".trace",
     %%fprof:trace(start, TraceFile),
     test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles).
@@ -219,7 +215,10 @@ load_3(Stamp, Type, Spec) ->
     run(RSpc, CSpc, load_zs_cprof, {?site, Stamp}, fun load_zs_cprof/1),
     run(RSpc, CSpc, afterz_data,   Stamp,          fun afterz_data/1),
     run(RSpc, CSpc, afterz_calcs,  Stamp,          fun afterz_calcs/1),
+    run(RSpc, CSpc, afterz_zs,     Stamp,          fun afterz_zs/1),
     run(RSpc, CSpc, tests,         Stamp,          fun run_tests/1),
+
+    run(RSpc, CSpc, z_test,        Stamp,          fun run_z_tests/1),
 
     stop_fprof(FSpc, Stamp),
     io:format("over and out...~n").
@@ -305,11 +304,47 @@ force_page_del_test(Label, Page, Template, Max, N) ->
     log(Msg, Label ++ ".csv"),
     force_page_del_test(Label, Page, Template, Max, N - 1).
 
+build_zs(_LoadLabel, _RunLabel, _LoadTemplate, _RunTemplate,
+         _LoadPrefix, _RunPrefix, _Max, 0) -> ok;
+build_zs(LoadLabel, RunLabel, LoadTemplate, RunTemplate, LoadPrefix,
+         RunPrefix, Max, N) ->
+    LoadPath = [LoadPrefix, "page" ++ hn_webcontrols:pad(N)],
+    RunPath = [RunPrefix, "page" ++ hn_webcontrols:pad(N)],
+    io:format("~p: (~p) loading ~p as ~p ~n",
+              [LoadLabel, Max - N + 1, LoadTemplate,
+               hn_util:list_to_path(LoadPath)]),
+    LoadRefX = #refX{site = ?site, path = LoadPath, obj = {page, "/"}},
+    RunRefX = #refX{site = ?site, path = RunPath, obj = {page, "/"}},
+    LoadStartTime = get_time(),
+    ok = hn_templates:load_template(LoadRefX, LoadTemplate),
+    LoadMidTime = get_time(),
+    new_db_api:wait_for_dirty(?site),
+    LoadEndTime = get_time(),
+    LoadMsg = io_lib:format("~p,~p,~p", [Max - N + 1,
+                                         LoadMidTime - LoadStartTime,
+                                         LoadEndTime - LoadStartTime]),
+    log(LoadMsg, LoadLabel ++ ".csv"),
+    io:format("~p: (~p) loading ~p as ~p ~n",
+              [RunLabel, Max - N + 1, RunTemplate,
+               hn_util:list_to_path(RunPath)]),
+    RunStartTime = get_time(),
+    ok = hn_templates:load_template(RunRefX, RunTemplate),
+    RunMidTime = get_time(),
+    new_db_api:wait_for_dirty(?site),
+    RunEndTime = get_time(),
+    RunMsg = io_lib:format("~p,~p,~p", [Max - N + 1,
+                                        RunMidTime - RunStartTime,
+                                        RunEndTime - RunStartTime]),
+    log(RunMsg, RunLabel ++ ".csv"),
+    build_zs(LoadLabel, RunLabel, LoadTemplate, RunTemplate,
+             LoadPrefix, RunPrefix, Max, N - 1).
+
 load_pages(_Label, _Template, _Prefix, _Max, 0) -> ok;
 load_pages(Label, Template, Prefix, Max, N) ->
     Path = [Prefix, "page" ++ hn_webcontrols:pad(N)],
-    io:format("~p: (~p) loading ~p as ~p ~n", [Label, Max - N + 1, Template,
-                                          hn_util:list_to_path(Path)]),
+    io:format("~p: (~p) loading ~p as ~p ~n",
+              [Label, Max - N + 1, Template,
+               hn_util:list_to_path(Path)]),
     RefX = #refX{site = ?site, path = Path, obj = {page, "/"}},
     StartTime = get_time(),
     ok = hn_templates:load_template(RefX, Template),
@@ -325,7 +360,7 @@ load_pages(Label, Template, Prefix, Max, N) ->
 get_time() -> util2:get_timestamp()/1000000.
 
 log(String, File) ->
-    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    Dir = "/media/logging/",
     _Return = filelib:ensure_dir(Dir ++ File),
     Date = dh_date:format("d-M-y h:i:s"),
 
@@ -414,6 +449,13 @@ load_zs_cprof({Site, Stamp}) ->
     load_zs(Stamp),
     zinf_srv:stop_cprof(Site).
 
+run_z_tests(Stamp) ->
+    io:format("run a z_test to work out where the time is going...~n"),
+    ok = build_zs("z_load" ++ Stamp, "z_tests" ++ Stamp,
+                  ?z_test_loadpage, ?z_testpage,
+                  ?z_test_loadprefix, ?z_testprefix,
+                  ?no_of_z_testpages, ?no_of_z_testpages).
+
 load_zs(Stamp) ->
     io:format("~nabout to load zquery pages...~n"),
     ok = load_pages("zqueries" ++ Stamp, ?zquerypage, ?zqueryprefix,
@@ -421,6 +463,10 @@ load_zs(Stamp) ->
 
 load_calcs(Stamp) ->
     load_calcs2(Stamp, ?calcsprefix, ?no_of_calcpages).
+
+afterz_zs(Stamp) ->
+    ok = load_pages("afterz_zqueries" ++ Stamp, ?addz_template, ?addzs_prefix,
+                    ?no_of_addzpages, ?no_of_addzpages).
 
 afterz_calcs(Stamp) ->
     load_calcs2(Stamp, ?additionalcalcs, ?no_of_additional_calcs).
@@ -458,7 +504,7 @@ trash_db(Type) ->
     end.
 
 bulk_pages([]) ->
-        % bulk up on pages
+    % bulk up on pages
     io:format("~nabout to bulk up pages...~n"),
     % put the auth_srv into memory first
     ok = hn_db_admin:mem_only(?site, "kvstore"),
@@ -473,7 +519,7 @@ get_spec(Type, Spec) ->
     end.
 
 start_fprof([], _Stamp)   -> ok;
-start_fprof(all, Stamp) ->
+start_fprof([all], Stamp) ->
     Dir = get_dir(),
     File = make_fprof_file(Stamp) ++ ".trace",
     fprof:trace([start, {file, Dir ++ File}, {procs, all}]);
@@ -510,6 +556,6 @@ get_pid(X) when is_atom(X) ->
 make_fprof_file(Stamp) -> "fprof" ++ Stamp.
 
 get_dir() ->
-    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    Dir = "/media/logging/",
     _Return = filelib:ensure_dir(Dir),
     Dir.

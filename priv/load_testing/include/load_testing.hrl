@@ -17,8 +17,18 @@
 -define(no_of_additional_data, 20).
 -define(additionalcalcs, "additionalcalcs").
 -define(no_of_additional_calcs, 20).
+-define(addzs_prefix, "additionalzs").
+-define(no_of_addzpages, 1).
+-define(addz_template, "minizs").
 -define(bulkpage, "onecell").
 -define(pageload, 2). % creates N^4 pages
+
+% some params for z_tests
+-define(z_testpage, "400datapoints").
+-define(z_test_loadpage, "400zqueries").
+-define(z_testprefix, "z_tests").
+-define(z_test_loadprefix, "z_load").
+-define(no_of_z_testpages, 100).
 
 % now the number times the tests have to run
 -define(no_of_deletes, 25).
