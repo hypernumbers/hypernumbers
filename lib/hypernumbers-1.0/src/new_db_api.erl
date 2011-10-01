@@ -150,12 +150,11 @@ load_dirty_since(Since, QTbl) ->
                 new_db_wu:load_dirty_sinceD(Since, QTbl)
         end,
     case mnesia_mon:log_act(transaction, F, Report) of
-        [] -> {Since, []};
-        Ret ->
-            {SinceL, DirtyLL} = lists:unzip(Ret),
-            Since2 = lists:max(SinceL),
-            DirtyL = lists:usort(lists:flatten(DirtyLL)),
-            {Since2, DirtyL}
+        []  -> {Since, []};
+        Ret -> {SinceL, DirtyLL} = lists:unzip(Ret),
+               Since2 = lists:max(SinceL),
+               DirtyL = lists:usort(lists:flatten(DirtyLL)),
+               {Since2, DirtyL}
     end.
 
 %% this function marks all dirty zinfs as unprocessed
