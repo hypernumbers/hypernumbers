@@ -178,7 +178,7 @@ init([Site]) ->
 %%--------------------------------------------------------------------
 handle_call(start_fprof, _From, State) ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    Dir = "/media/logging/",
     TraceFile = Dir ++ ?PROFILE ++ Stamp ++ ".trace",
     fprof:trace(start, TraceFile),
     io:format("TraceFile is ~p~n", [TraceFile]),
@@ -1384,11 +1384,11 @@ perf2(Stamp, Tree, Idx, NPages, MaxXs, 0, MaxYs, 0) ->
     P = [integer_to_list(NPages)],
     Obj = {cell, {1,1}},
     XRefX = #xrefX{site = S, path = P, obj = Obj},
-    %CheckStart = get_time(),
-    %check(Tree, XRefX),
-    %CheckEnd = get_time(),
-    %CheckMsg = io_lib:format("~p", [CheckEnd - CheckStart]),
-    %log(CheckMsg, "zinf_checking" ++ Stamp ++ ".csv"),
+    CheckStart = get_time(),
+    check(Tree, XRefX),
+    CheckEnd = get_time(),
+    CheckMsg = io_lib:format("~p", [CheckEnd - CheckStart]),
+    log(CheckMsg, "zinf_checking" ++ Stamp ++ ".csv"),
     perf2(Stamp, Tree, Idx, NPages - 1, MaxXs, MaxXs, MaxYs, MaxYs);
 perf2(Stamp, Tree, Idx, NPages, MaxXs, NXs, MaxYs, 0) ->
     perf2(Stamp, Tree, Idx, NPages, MaxXs, NXs - 1, MaxYs, MaxYs);
@@ -1412,7 +1412,7 @@ perf3(Stamp, N, Tree, Idx, S, P, Obj) ->
     perf3(Stamp, N - 1, NewTree, Idx + 1, S, P, Obj).
 
 log(String, File) ->
-    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/load_testing/logs/",
+    Dir = "/media/logging/",
     _Return = filelib:ensure_dir(Dir ++ File),
     Date = dh_date:format("d-M-y h:i:s"),
 
