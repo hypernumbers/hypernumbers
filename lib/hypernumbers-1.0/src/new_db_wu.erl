@@ -1,4 +1,4 @@
-%%% @author    Gordon Guthrie <
+%%% @author    Gordon Guthrie
 %%% @copyright (C) 2011, Hypernumbers Ltd
 %%% @doc       new db api (old hn_db_api poured in and rewritten)
 %%%
@@ -91,20 +91,20 @@
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 proc_dirties_for_zinfD(Site, Tree, CheckFun) ->
-    Tbl = new_db_wu:trans(Site, dirty_for_zinf),
-    L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, write),
+    Tbl = trans(Site, dirty_for_zinf),
+    L = mnesia:dirty_match_object(Tbl, #dirty_for_zinf{_='_'}),
     L2 = shrink(L),
     Dirties = [CheckFun(Tree, X) || X <- L2],
     D1 = hslists:uniq(lists:flatten(Dirties)),
     ok = case D1 of % this construction takes the call out of cprof!
              []   -> ok;
-             List -> new_db_wu:mark_these_idxs_dirtyD(List, Site, nil)
+             List -> mark_these_idxs_dirtyD(List, Site, nil)
          end,
     [ok = mnesia:delete(Tbl, Id, write)
      || #dirty_for_zinf{id = Id} <- L].
 
 proc_dirty_zinfsD(Site, Tree, AddFun, DelFun) ->
-    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Tbl = trans(Site, dirty_zinf),
     Fun = fun(DirtyZinf, Tr) ->
                    #dirty_zinf{dirtycellidx = CI, old = OldP,
                                new = NewP} = DirtyZinf,
@@ -128,8 +128,8 @@ proc_dirty_zinfsD(Site, Tree, AddFun, DelFun) ->
     NewTree.
 
 maybe_write_zinftreeD(Site, Tree) ->
-    Tbl = new_db_wu:trans(Site, dirty_zinf),
-    ok = new_db_wu:write_kvD(Site, ?zinf_tree, Tree),
+    Tbl = trans(Site, dirty_zinf),
+    ok = write_kvD(Site, ?zinf_tree, Tree),
     Spec = #dirty_zinf{_='_', processed = true},
     L = mnesia:match_object(Tbl, Spec, write),
     [ok = mnesia:delete(Tbl, Id, write)
@@ -137,7 +137,7 @@ maybe_write_zinftreeD(Site, Tree) ->
     ok.
 
 reset_dirty_zinfsD(Site) ->
-    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Tbl = trans(Site, dirty_zinf),
     Spec = #dirty_zinf{_='_', processed = true},
     L = mnesia:match_object(Tbl, Spec, write),
     [ok = mnesia:write(Tbl, X#dirty_zinf{processed = false},
@@ -145,7 +145,7 @@ reset_dirty_zinfsD(Site) ->
     ok.
 
 read_timersD(Site) ->
-    Tbl = new_db_wu:trans(Site, timer),
+    Tbl = trans(Site, timer),
     Spec = #timer{_ ='_'},
     mnesia:match_object(Tbl, Spec, read).
 
@@ -176,7 +176,7 @@ load_dirty_sinceD(Since, QTbl) ->
     M = ets:fun2ms(fun(#dirty_queue{id = T, dirty = D})
                          when Since < T -> {T, D}
                    end),
-    mnesia:select(QTbl, M, read).
+    mnesia:select(QTbl, M, write).
 
 delete_apiD(Site, PublicKey) ->
     Tbl = trans(Site, api),
@@ -433,7 +433,9 @@ refXs2(RefX) -> refX_to_xrefX_createD(RefX).
 refX_to_xrefXD(#refX{site = S, path = P, obj = O}) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    case mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx) of
+    Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
+    %case mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx) of
+    case mnesia:index_match_object(Table, Pattern, 6, read) of
         [I] -> #xrefX{idx = I#local_obj.idx, site = S, path = P,
                       obj = O};
         _   -> false
@@ -997,7 +999,7 @@ post_process_format(Raw, Attrs) ->
         {erlang, {_Type, Output}} ->
             % Y'all hear, this is how America does color. I tell you what.
             case format:run_format(Raw, Output) of
-                {ok, {Color, Val1}} ->
+                {Color, Val1} ->
                     Val2  = case Val1 of
                                 {errval, ErrVal}     -> atom_to_list(ErrVal);
                                 A when is_atom(A)    -> atom_to_list(A);
