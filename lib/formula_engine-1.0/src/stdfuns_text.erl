@@ -355,9 +355,8 @@ substitute_(_Args, _N) ->
 
 text([Value, Format]) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
-    {ok, {_Color, Fmtdstr}} = format:run_format(Value, Output),
+    {_Color, Fmtdstr} = format:run_format(Value, Output),
     Fmtdstr.
-
 
 trim(Args) ->
     col(Args, [first_array, fetch_name, {cast, str}],
