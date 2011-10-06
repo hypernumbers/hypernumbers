@@ -14,6 +14,7 @@
          process_dump/0,
          top5/0,
          top/0,
+         show_registered/0,
          show_registered/1,
          log/2,
          log_term/2,
@@ -102,6 +103,15 @@ show_queues(Site) ->
 showq([])      -> ok;
 showq([H | T]) -> io:format("~p ~p~n", [H, mnesia:table_info(H, size)]),
                   showq(T).
+
+show_registered() ->
+    Globals = [{global:whereis_name(X), global, X} ||
+                  X <- global:registered_names()],
+    Locals = [{whereis(X), local, X} || X <- registered()],
+    Regs = lists:sort(lists:merge([Globals, Locals])),
+    io:format("Registered processes are:~n"),
+    [io:format("~p ~p ~p~n", [Pid, Type, Name]) || {Pid, Type, Name} <- Regs],
+    ok.
 
 show_registered("http://"++Site) ->
     Site2 = [case X of $: -> $&; X -> X end || X <- Site],
