@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         identify_borked_local_objs/0,
          clean_up_timer_table/0,
          add_api_table_2011_07_23/0,
          blip/0,
@@ -49,6 +50,29 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+identify_borked_local_objs() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tbl = new_db_wu:trans(Site, local_obj),
+                   Fun2 = fun(LO, []) ->
+                                  #local_obj{path = P, obj = O, revidx = R} = LO,
+                                  P2 = binary_to_term(P),
+                                  Pattern = {local_obj, '_', '_', '_', '_', R},
+                                  case mnesia:index_match_object(Tbl, Pattern, 6, read) of
+                                      [_I]  -> io:format(".");
+                                      List  -> io:format("~nLO ~p ~p ~p borked~n> contains ~p~n",
+                                                         [Site, P2, O, List])
+                                  end,
+                                  []
+                          end,
+                   Fun3 = fun() ->
+                                  mnesia:foldl(Fun2, [], Tbl)
+                          end,
+                   mnesia:activity(async_dirty, Fun3)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 clean_up_timer_table() ->
     Sites = hn_setup:get_sites(),
