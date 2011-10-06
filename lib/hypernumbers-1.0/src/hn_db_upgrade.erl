@@ -62,7 +62,7 @@ identify_borked_local_objs() ->
                                   Pattern = {local_obj, '_', '_', '_', '_', R},
                                   case mnesia:index_match_object(Tbl, Pattern, 6, read) of
                                       [_I]  -> ok;
-                                      List  -> io:format("~nLO ~p ~p ~p borked ~p~n",
+                                      List  -> io:format("LO ~p ~p ~p borked ~p~n",
                                                          [Site, P2, O, length(List)])
                                   end,
                                   []
