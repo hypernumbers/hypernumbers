@@ -81,7 +81,7 @@ identify2(Sites, Verbosity) ->
                                   end
                           end,
                    Fun3 = fun() ->
-                                  mnesia:foldl(Fun2, 1, Tbl)
+                                  mnesia:foldl(Fun2, 0, Tbl)
                           end,
                    Ret = mnesia:activity(async_dirty, Fun3),
                    io:format("~p borked local_objs for ~p~n", [Ret, Site])
