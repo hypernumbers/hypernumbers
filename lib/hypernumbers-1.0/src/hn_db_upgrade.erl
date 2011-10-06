@@ -54,13 +54,14 @@
 identify_borked_local_objs() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
+                   io:format("Checking ~p~n", [Site]),
                    Tbl = new_db_wu:trans(Site, local_obj),
                    Fun2 = fun(LO, []) ->
                                   #local_obj{path = P, obj = O, revidx = R} = LO,
                                   P2 = binary_to_term(P),
                                   Pattern = {local_obj, '_', '_', '_', '_', R},
                                   case mnesia:index_match_object(Tbl, Pattern, 6, read) of
-                                      [_I]  -> io:format(".");
+                                      [_I]  -> ok;
                                       List  -> io:format("~nLO ~p ~p ~p borked ~p~n",
                                                          [Site, P2, O, length(List)])
                                   end,
