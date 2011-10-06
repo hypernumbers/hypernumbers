@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         identify_borked_local_objs/1,
          identify_borked_local_objs/0,
          clean_up_timer_table/0,
          add_api_table_2011_07_23/0,
@@ -53,22 +54,28 @@
 
 identify_borked_local_objs() ->
     Sites = hn_setup:get_sites(),
+    identify2(Sites).
+
+identify_borked_local_objs(Site) ->
+    identify2([Site]).
+
+identify2(Sites) ->
     Fun1 = fun(Site) ->
                    io:format("Checking ~p~n", [Site]),
                    Tbl = new_db_wu:trans(Site, local_obj),
-                   Fun2 = fun(LO, []) ->
+                   Fun2 = fun(LO, N) ->
                                   #local_obj{path = P, obj = O, revidx = R} = LO,
                                   P2 = binary_to_term(P),
                                   Pattern = {local_obj, '_', '_', '_', '_', R},
                                   case mnesia:index_match_object(Tbl, Pattern, 6, read) of
-                                      [_I]  -> ok;
-                                      List  -> io:format("LO ~p ~p ~p borked ~p~n",
-                                                         [Site, P2, O, length(List)])
-                                  end,
-                                  []
+                                      [_I]  -> N;
+                                      List  -> io:format("~p LO ~p ~p ~p borked ~p~n",
+                                                         [N, Site, P2, O, length(List)]),
+                                               N + 1
+                                  end
                           end,
                    Fun3 = fun() ->
-                                  mnesia:foldl(Fun2, [], Tbl)
+                                  mnesia:foldl(Fun2, 1, Tbl)
                           end,
                    mnesia:activity(async_dirty, Fun3)
            end,
