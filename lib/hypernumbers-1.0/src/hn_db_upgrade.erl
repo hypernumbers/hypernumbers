@@ -208,7 +208,13 @@ fix_include(Site, Borked) ->
 transform([], Acc) -> Acc;
 transform([H | T], Acc) ->
     {_, List} = H,
-    L2 = lists:sort(List),
+    Fun = fun(#local_obj{idx = I1}, #local_obj{idx = I2}) ->
+                  if
+                      I1 >  I2 -> true;
+                      I1 =< I2 -> false
+                  end
+          end,
+    L2 = lists:sort(Fun, List),
     [LO | Extras] = L2,
     NewAcc = lists:merge(zip(Extras, LO, []), Acc),
     transform(T, NewAcc).
