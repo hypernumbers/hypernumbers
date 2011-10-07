@@ -438,8 +438,8 @@ refX_to_xrefXD(#refX{site = S, path = P, obj = O} = RefX) ->
     case mnesia:index_match_object(Table, Pattern, 6, read) of
         [I]  -> #xrefX{idx = I#local_obj.idx, site = S, path = P, obj = O};
         []   -> false;
-        List -> error_logger:error_msg("local_obj table screwed up for ~p:~n~p",
-                                    [RefX, List]),
+        List -> %error_logger:error_msg("local_obj table screwed up for ~p:~n~p",
+                %                    [RefX, List]),
                 L2 = lists:sort(List),
                 [I2 | _] = L2,
                 #xrefX{idx = I2#local_obj.idx, site = S, path = P, obj = O}
