@@ -93,7 +93,6 @@ identify2(Sites, Verbosity) ->
                 {NBorked, Borked} = mnesia:activity(async_dirty, F3),
                 io:format("~p borked local_objs for ~p~n", [NBorked, Site]),
                 Borked2 = transform(Borked, []),
-                io:format("Borked list2 is ~p~n", [Borked2]),
                 F4 = fun() ->
                              fix_up(Site, Borked2)
                      end,
@@ -222,7 +221,7 @@ zip([H | T], LO, Acc) ->
 
 add(Path, Obj, List, Acc) ->
     case lists:keymember({Path, Obj}, 1, Acc) of
-        true  -> List;
+        true  -> Acc;
         false -> [{{Path, Obj}, List} | Acc]
     end.
 
