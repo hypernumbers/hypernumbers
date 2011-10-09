@@ -336,14 +336,26 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             case new_db_wu:has_forms(Ref) of
                 false ->  Content = hn_render:content(Ref),
                           {{Html, Width, Height}, _Addons} = Content,
-                          W2 = trunc(Width/80),
-                          H2 = trunc(Height/22),
+                          {W2, H2} = get_preview(Width, Height),
                           HTML = hn_render:wrap_region(Html, Width, Height),
                           HTML2 = lists:flatten(HTML),
                           {include, {"Included Cells", W2, H2, #incs{}}, HTML2};
                 true  -> ?ERRVAL_CANTINC
             end
     end.
+
+get_preview(Width, Height) ->
+    W = trunc(Width/80),
+    H = trunc(Height/22),
+    W2 = if
+             W == 0 -> 1;
+             W  > 0 -> W
+         end,
+    H2 = if
+             H == 0 -> 1;
+             H  > 0 -> H
+         end,
+    {W2, H2}.
 
 has_circref({range, List}) -> has_c1(List).
 
