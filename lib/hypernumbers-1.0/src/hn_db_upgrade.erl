@@ -58,6 +58,7 @@ look_for_borked_merges() ->
     [look_for_borked_merges(X) || X <- Sites].
 
 look_for_borked_merges(Site) ->
+    io:format("Checking site ~p for borked merges~n", [Site]),
     Tbl = new_db_wu:trans(Site, item),
     Fun1 = fun(Item, []) ->
                    Term = binary_to_term(Item#item.attrs),
