@@ -84,6 +84,12 @@
           revidx
          }).
 
+-record(revidx,
+        {
+          revidx,
+          idx
+         }).
+
 -record(item, {idx, attrs}).
 
 -record(relation,
