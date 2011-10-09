@@ -58,7 +58,8 @@
 
 look_for_borked_merges() ->
     Sites = hn_setup:get_sites(),
-    [look_for_borked_merges(X) || X <- Sites].
+    [look_for_borked_merges(X) || X <- Sites],
+    ok.
 
 look_for_borked_merges(Site) ->
     io:format("Checking site ~p for borked merges~n", [Site]),
