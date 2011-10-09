@@ -10,6 +10,9 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         look_for_borked_merges/0,
+         look_for_borked_merges/1,
+         make_revidx_2011_10_02/0,
          clean_up_timer_table/0,
          add_api_table_2011_07_23/0,
          blip/0,
@@ -50,6 +53,60 @@
          %% upgrade_1776/0
         ]).
 
+look_for_borked_merges() ->
+    Sites = hn_setup:get_sites(),
+    [look_for_borked_merges(X) || X <- Sites].
+
+look_for_borked_merges(Site) ->
+    Tbl = new_db_wu:trans(Site, item),
+    Fun1 = fun(Item, []) ->
+                   Term = binary_to_term(Item#item.attrs),
+                   case lists:keyfind("merge", 1, Term) of
+                       false ->
+                           ok;
+                       {"merge", {struct, List}} ->
+                           check_merges(List, Item#item.idx)
+                   end,
+                   []
+           end,
+    Fun2 = fun() ->
+                   mnesia:foldl(Fun1, [], Tbl)
+           end,
+    mnesia:activity(transaction, Fun2).
+
+check_merges([], _Idx) -> ok;
+check_merges([{Type, N} | T], Idx) when N < 0 ->
+    io:format("Index ~p has negative index ~p for ~p~n", [Idx, N, Type]),
+    check_merges(T, Idx);
+check_merges([_H | T], Idx) ->
+    check_merges(T, Idx).
+
+make_revidx_2011_10_02() ->
+    Sites = hn_setup:get_sites(),
+    Fields = record_info(fields, revidx),
+    Fun1 = fun(Site) ->
+                   make_table(Site, revidx, Fields, disc_copies),
+                   Tbl1 = new_db_wu:trans(Site, local_obj),
+                   Tbl2 = new_db_wu:trans(Site, revidx),
+                   Fun2 = fun(LO, []) ->
+                                 #local_obj{idx = Idx, path = P, obj = O} = LO,
+                                  P2 = binary_to_term(P),
+                                  RevIdx = hn_util:list_to_path(P2)
+                                      ++ hn_util:obj_to_ref(O),
+                                  BRevIdx = term_to_binary(RevIdx),
+                                  Rec = #revidx{revidx = BRevIdx, idx = Idx},
+                                  mnesia:write(Tbl2, Rec, write),
+                                  io:format("."),
+                                  []
+                          end,
+                   Fun3 = fun() ->
+                                  mnesia:foldl(Fun2, [], Tbl1)
+                          end,
+                   mnesia:activity(transaction, Fun3),
+                   io:format("~n")
+           end,
+    lists:foreach(Fun1, Sites).
+
 clean_up_timer_table() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(#timer{idx = Idx}, Acc) ->
@@ -77,7 +134,6 @@ clean_up_timer_table() ->
            end,
     lists:foreach(Fun2, Sites),
     ok.
-
 
 add_api_table_2011_07_23() ->
     Sites = hn_setup:get_sites(),
