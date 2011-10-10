@@ -81,26 +81,26 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -spec wait_for_dirty(string()) -> ok.
 wait_for_dirty(Site) ->
-     case dbsrv:is_busy(Site) of
-         true ->
-             timer:sleep(100),
-             wait_for_dirty(Site);
-         false ->
-             ok
-     end.
+    case dbsrv:is_busy(Site) of
+        true ->
+            timer:sleep(100),
+            wait_for_dirty(Site);
+        false ->
+            ok
+    end.
 
 mark_idx_dirty(Site, Idx) ->
     Report1 = mnesia_mon:get_stamp("mark_idx_dirty (1)"),
     Fun1 = fun() ->
-                  mnesia_mon:report(Report1),
-                  new_db_wu:idx_to_xrefXD(Site, Idx)
+                   mnesia_mon:report(Report1),
+                   new_db_wu:idx_to_xrefXD(Site, Idx)
            end,
     XRefX = mnesia_mon:log_act(transaction, Fun1, Report1),
     Report2 = mnesia_mon:get_stamp("mark_idx_dirty (2)"),
     Fun2 = fun() ->
                    mnesia_mon:report(Report1),
                    ok = new_db_wu:mark_these_dirtyD([XRefX], nil)
-          end,
+           end,
     RefX = hn_util:xrefX_to_refX(XRefX),
     write_activity(RefX, Fun2, "quiet", Report2).
 
@@ -117,7 +117,7 @@ read_includes(#refX{obj = {page, "/"}} = RefX) ->
                   mnesia_mon:report(Report),
                   XRefX = new_db_wu:refX_to_xrefX_createD(RefX),
                   unpack_incs(new_db_wu:read_incsD(XRefX))
-           end,
+          end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
 -spec handle_circref_cell(string(), cellidx(), auth_srv:auth_spec()) -> ok.
@@ -190,7 +190,7 @@ process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
     Fun = fun() ->
                   mnesia_mon:report(Report),
                   new_db_wu:proc_dirty_zinfsD(Site, Tree, AddFun, DelFun)
-           end,
+          end,
     mnesia_mon:log_act(transaction, Fun, Report).
 
 process_dirties_for_zinf(Site, Tree, CheckFun) ->
@@ -611,7 +611,7 @@ clear(#refX{} = RefX, Type, Ar) ->
 %% page refX's
 -spec copy_n_paste(#refX{}, #refX{}, all | style | value, auth_srv:auth_spec()) -> ok.
 copy_n_paste(From, #refX{site = ToS, path = ToP} = To, What, Ar) when
-      is_record(From, refX), is_record(To, refX) ->
+is_record(From, refX), is_record(To, refX) ->
     Report = mnesia_mon:get_stamp("copy'n'paste"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
@@ -1028,7 +1028,7 @@ cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
                 false | horizontal | vertical,
                 all | style | value,
                 auth_srv:uid())
-               -> ok.
+-> ok.
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
@@ -1203,20 +1203,20 @@ filter_pages([Path | T], Tree) ->
 unpack_incs(List) -> unpack_1(List, [], [], []).
 
 unpack_1([], Js, Js_r, CSS) -> {hslists:uniq(Js),
-                                 hslists:uniq(Js_r),
-                                 hslists:uniq(CSS)};
+                                hslists:uniq(Js_r),
+                                hslists:uniq(CSS)};
 unpack_1([H | T], Js, Js_r, CSS) ->
     #include{js = J, js_reload = R, css = C} = H,
     NewJ = case J of
-                [] -> Js;
-                _  -> lists:append([J, Js])
-            end,
+               [] -> Js;
+               _  -> lists:append([J, Js])
+           end,
     NewR = case R of
-                [] -> Js_r;
-                _  -> lists:append([R, Js_r])
-            end,
+               [] -> Js_r;
+               _  -> lists:append([R, Js_r])
+           end,
     NewC = case C of
-                [] -> CSS;
-                _  -> lists:append([C, CSS])
-            end,
+               [] -> CSS;
+               _  -> lists:append([C, CSS])
+           end,
     unpack_1(T, NewJ, NewR, NewC).

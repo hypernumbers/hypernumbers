@@ -151,7 +151,7 @@ fix_borked_local_objs(Site, Verbosity) ->
 fix_borked_local_objs(Site, Verbosity, Fix) ->
     fix2([Site], Verbosity, Fix).
 
-fix2(Sites, Verbosity, _Fix) ->
+fix2(Sites, Verbosity, Fix) ->
     F = fun(Site) ->
                 io:format("fixing up ~p~n", [Site]),
                 Tbl = new_db_wu:trans(Site, local_obj),
@@ -184,7 +184,14 @@ fix2(Sites, Verbosity, _Fix) ->
                 Borked2 = transform(Borked, []),
                 F4 = fun() ->
                              Dirties = fix_up(Site, Borked2),
-                             io:format("Dirties is ~p~n", [Dirties])
+                             io:format("Dirties is ~p~n", [Dirties]),
+                             case Fix of
+                                 fix ->
+                                     [new_db_api:mark_idx_dirty(Site, X)
+                                      || X <- Dirties];
+                                 _ ->
+                                     ok
+                             end
                      end,
                 mnesia:activity(async_dirty, F4)
         end,
