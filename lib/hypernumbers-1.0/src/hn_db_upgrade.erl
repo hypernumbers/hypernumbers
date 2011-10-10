@@ -1,4 +1,4 @@
-%%% @author Dale Harvey
+%% @author Dale Harvey
 %%% @copyright 2009 Hypernumbers Ltd
 %%% @doc Upgrade db functions
 
@@ -153,6 +153,7 @@ fix_borked_local_objs(Site, Verbosity, Fix) ->
 
 fix2(Sites, Verbosity, _Fix) ->
     F = fun(Site) ->
+                io:format("fixing up ~p~n", [Site]),
                 Tbl = new_db_wu:trans(Site, local_obj),
                 F2 = fun(LO, {N, Acc}) ->
                              #local_obj{path = P, obj = O, revidx = R} = LO,
@@ -182,7 +183,8 @@ fix2(Sites, Verbosity, _Fix) ->
                 io:format("~p borked local_objs for ~p~n", [NBorked, Site]),
                 Borked2 = transform(Borked, []),
                 F4 = fun() ->
-                             fix_up(Site, Borked2)
+                             Dirties = fix_up(Site, Borked2),
+                             io:format("Dirties is ~p~n", [Dirties])
                      end,
                 mnesia:activity(async_dirty, F4)
         end,
@@ -191,11 +193,13 @@ fix2(Sites, Verbosity, _Fix) ->
 
 fix_up(Site, Borked) ->
     fix_item(Site, Borked),
-    fix_relation(Site, Borked),
     fix_logging(Site, Borked),
     fix_form(Site, Borked),
     fix_timer(Site, Borked),
-    fix_include(Site, Borked).
+    fix_include(Site, Borked),
+    % returns a list of idxs to recalc
+    {_, NewDirties} = fix_relation(Site, Borked),
+    lists:flatten(NewDirties).
 
 fix_item(Site, Borked) ->
     Tbl = new_db_wu:trans(Site, item),
@@ -211,41 +215,44 @@ fix_item(Site, Borked) ->
 
 fix_relation(Site, Borked) ->
     Tbl = new_db_wu:trans(Site, relation),
-    Fun = fun(Rel, Bkd) ->
+    Fun = fun(Rel, {Bkd, Dirties}) ->
                   #relation{cellidx = Idx, children = C, parents = P,
                             infparents = Inf, z_parents = Z} = Rel,
-                  case lists:keyfind(Idx, 1, Bkd) of
-                       false -> Cks = [{children, C},
-                                       {parents, P},
-                                       {infinite, Inf},
-                                       {zs, Z}],
-                                {Write, NewR} = check_rels(Idx, Cks,
-                                                           Bkd, [], false),
-                                io:format("Write is ~p NewR is ~p~n",
-                                          [Write, NewR]);
-                       Tuple -> io:format("in relation ~p (should delete)~n",
-                                          [Tuple])
+                  NDs = case lists:keyfind(Idx, 1, Bkd) of
+                            false -> Cks = [{children, C},
+                                            {parents, P},
+                                            {infinite, Inf},
+                                            {zs, Z}],
+                                     case check_rels(Cks, Idx, Bkd, false) of
+                                         true  -> [Idx | Dirties];
+                                         false -> Dirties
+                                     end;
+                            Tuple ->
+                                io:format("in relation ~p  (should delete)~n",
+                                          [Tuple]),
+                                Dirties
                    end,
-                  Bkd
+                  {Borked, NDs}
           end,
-    mnesia:foldl(Fun, Borked, Tbl).
+    mnesia:foldl(Fun, {Borked, []}, Tbl).
 
-check_rels(_Idx, [], _Bkd, Rel, Write) -> {Write, Rel};
-check_rels(Idx, [{Type, List} | T], Bkd, Rel, Write) ->
-    {NewWrite, NewR} = case check_rels2(List, Type, Bkd, Idx) of
-                           []    -> {Write, Rel};
-                           Other -> {true, [{type, Other} | Rel]}
-                       end,
-    check_rels(Idx, T, Bkd, NewR, NewWrite).
+check_rels([], _Idx, _Bkd, IsDirty) -> IsDirty;
+check_rels([{Type, List} | T], Idx, Bkd, IsDirty) ->
+    NewIsDirty = case check_rels2(List, Idx, Type, Bkd, false) of
+                     false -> IsDirty;
+                     true  -> true
+           end,
+    check_rels(T, Idx, Bkd, NewIsDirty).
 
-check_rels2([], _Type, _Borked, _Idx) -> ok;
-check_rels2([H | T], Type, Borked, Idx) ->
-    case lists:keyfind(H, 1, Borked) of
-        false  -> [];
-        _Tuple -> io:format("Substitute ~p ~p for ~p~n", [Type, H, Idx]),
-                  erk
-    end,
-    check_rels2(T, Type, Borked, Idx).
+check_rels2([], _Idx, _Type, _Borked, IsDirty) -> IsDirty;
+check_rels2([H | T], Idx, Type, Borked, IsDirty) ->
+    NewIsDirty = case lists:keyfind(H, 1, Borked) of
+                     false  -> IsDirty;
+                     _Tuple -> io:format("Substitute ~p ~p for ~p~n",
+                                         [Type, H, Idx]),
+                               true
+                 end,
+    check_rels2(T, Idx, Type, Borked, NewIsDirty).
 
 fix_logging(Site, Borked) ->
     Tbl = new_db_wu:trans(Site, logging),
