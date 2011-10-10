@@ -73,6 +73,7 @@ check_local_obj_consistency() ->
                    []
            end,
     Fun2 = fun(Site) ->
+                   io:format("Checking site ~p~n", [Site]),
                    Tbl = new_db_wu:trans(Site, local_obj),
                    Fun3 = fun() ->
                                   mnesia:foldl(Fun1, [], Tbl)
