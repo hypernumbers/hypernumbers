@@ -10,12 +10,14 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         check_local_obj_consistency/0,
          look_for_borked_merges/0,
          look_for_borked_merges/1,
          make_revidx_2011_10_02/0,
-         identify_borked_local_objs/2,
-         identify_borked_local_objs/1,
-         identify_borked_local_objs/0,
+         fix_borked_local_objs/3,
+         fix_borked_local_objs/2,
+         fix_borked_local_objs/1,
+         fix_borked_local_objs/0,
          clean_up_timer_table/0,
          add_api_table_2011_07_23/0,
          blip/0,
@@ -55,6 +57,29 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+check_local_obj_consistency() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(X, []) ->
+                   #local_obj{path = P, obj = O, revidx = R} = X,
+                   P2 = hn_util:list_to_path(binary_to_term(P)),
+                   O2 = hn_util:obj_to_ref(O),
+                   R2 = binary_to_term(R),
+                   case P2 ++ O2 of
+                       R2 -> ok;
+                       _  -> io:format("Revidx is borked ~p ~p~n",
+                                       [R2, P2 ++ O2])
+                   end,
+                   []
+           end,
+    Fun2 = fun(Site) ->
+                   Tbl = new_db_wu:trans(Site, local_obj),
+                   Fun3 = fun() ->
+                                  mnesia:foldl(Fun1, [], Tbl)
+                          end,
+                   mnesia:activity(transaction, Fun3)
+           end,
+    lists:foreach(Fun2, Sites).
 
 look_for_borked_merges() ->
     Sites = hn_setup:get_sites(),
@@ -112,17 +137,20 @@ make_revidx_2011_10_02() ->
            end,
     lists:foreach(Fun1, Sites).
 
-identify_borked_local_objs() ->
+fix_borked_local_objs() ->
     Sites = hn_setup:get_sites(),
-    identify2(Sites, quiet).
+    fix2(Sites, quiet, report).
 
-identify_borked_local_objs(Site) ->
-    identify2([Site], quiet).
+fix_borked_local_objs(Site) ->
+    fix2([Site], quiet, report).
 
-identify_borked_local_objs(Site, Verbosity) ->
-    identify2([Site], Verbosity).
+fix_borked_local_objs(Site, Verbosity) ->
+    fix2([Site], Verbosity, report).
 
-identify2(Sites, Verbosity) ->
+fix_borked_local_objs(Site, Verbosity, Fix) ->
+    fix2([Site], Verbosity, Fix).
+
+fix2(Sites, Verbosity, _Fix) ->
     F = fun(Site) ->
                 Tbl = new_db_wu:trans(Site, local_obj),
                 F2 = fun(LO, {N, Acc}) ->
@@ -131,8 +159,8 @@ identify2(Sites, Verbosity) ->
                              Pattern = {local_obj, '_', '_', '_', '_', R},
                              case mnesia:index_match_object(Tbl, Pattern,
                                                             6, read) of
-                                 [_I]  -> {N, Acc};
-                                 List  ->
+                                 [_I] -> {N, Acc};
+                                 List ->
                                      case Verbosity of
                                          verbose ->
                                              io:format("~p LO ~p ~p ~p "
@@ -182,15 +210,18 @@ fix_item(Site, Borked) ->
 
 fix_relation(Site, Borked) ->
     Tbl = new_db_wu:trans(Site, relation),
-    Fun = fun(Relation, Bkd) ->
+    Fun = fun(Rel, Bkd) ->
                   #relation{cellidx = Idx, children = C, parents = P,
-                            infparents = Inf, z_parents = Z} = Relation,
+                            infparents = Inf, z_parents = Z} = Rel,
                   case lists:keyfind(Idx, 1, Bkd) of
-                       false -> Checks = [{children, C},
-                                          {parents, P},
-                                          {infinite, Inf},
-                                          {zs, Z}],
-                                check_rels(Idx, Checks, Bkd);
+                       false -> Cks = [{children, C},
+                                       {parents, P},
+                                       {infinite, Inf},
+                                       {zs, Z}],
+                                {Write, NewR} = check_rels(Idx, Cks,
+                                                           Bkd, [], false),
+                                io:format("Write is ~p NewR is ~p~n",
+                                          [Write, NewR]);
                        Tuple -> io:format("in relation ~p (should delete)~n",
                                           [Tuple])
                    end,
@@ -198,21 +229,20 @@ fix_relation(Site, Borked) ->
           end,
     mnesia:foldl(Fun, Borked, Tbl).
 
-check_rels(_Idx, [], _Bkd) -> ok;
-check_rels(Idx, [{Type, List} | T], Bkd) when Type == infinite
-                                         orelse Type == zs ->
-    check_rels2(List, Type, Bkd, Idx),
-    check_rels(Idx, T, Bkd);
-check_rels(Idx, [{Type, List} | T], Bkd)  when Type == children
-                                          orelse Type == parents ->
-    check_rels2(List, Type, Bkd, Idx),
-    check_rels(Idx, T, Bkd).
+check_rels(_Idx, [], _Bkd, Rel, Write) -> {Write, Rel};
+check_rels(Idx, [{Type, List} | T], Bkd, Rel, Write) ->
+    {NewWrite, NewR} = case check_rels2(List, Type, Bkd, Idx) of
+                           []    -> {Write, Rel};
+                           Other -> {true, [{type, Other} | Rel]}
+                       end,
+    check_rels(Idx, T, Bkd, NewR, NewWrite).
 
 check_rels2([], _Type, _Borked, _Idx) -> ok;
 check_rels2([H | T], Type, Borked, Idx) ->
     case lists:keyfind(H, 1, Borked) of
-        false  -> ok;
-        _Tuple -> io:format("Substitute ~p ~p for ~p~n", [Type, H, Idx])
+        false  -> [];
+        _Tuple -> io:format("Substitute ~p ~p for ~p~n", [Type, H, Idx]),
+                  erk
     end,
     check_rels2(T, Type, Borked, Idx).
 
