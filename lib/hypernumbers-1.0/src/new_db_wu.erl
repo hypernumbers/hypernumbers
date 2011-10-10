@@ -590,13 +590,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                          _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
-            Attrs4 = case {Ht, Wd} of
-                         {1, 1} -> orddict:erase("merge", Attrs3);
-                         _      -> orddict:store("merge", {struct,
-                                                           [{"right", Wd - 1},
-                                                            {"down",  Ht - 1}]},
-                                                 Attrs3)
-                     end,
+            Attrs4 = handle_merge(Ht, Wd, Attrs3),
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
                                 {Pars, false}, InfPars, Recompile);
         % special case for the include function (special dirty!)
@@ -611,13 +605,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                      end,
             % with include you might need to bring incs through from
             % whatever is included so some jiggery might be required on the pokey
-            Attrs4 = case {Ht, Wd} of
-                         {1, 1} -> orddict:erase("merge", Attrs3);
-                         _      -> orddict:store("merge", {struct,
-                                                           [{"right", Wd - 1},
-                                                            {"down",  Ht - 1}]},
-                                                 Attrs3)
-                     end,
+            Attrs4 = handle_merge(Ht, Wd, Attrs3),
             Attrs5 = bring_through(Attrs4, XRefX, Pars),
             % mebbies there was incs, nuke 'em
             write_formula_attrs(Attrs5, XRefX, Formula, Pcode, Res,
@@ -633,13 +621,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                          _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
-            Attrs4 = case {Ht, Wd} of
-                         {1, 1} -> orddict:erase("merge", Attrs3);
-                         _      -> orddict:store("merge", {struct,
-                                                          [{"right", Wd - 1},
-                                                           {"down",  Ht - 1}]},
-                                                Attrs3)
-                     end,
+            Attrs4 = handle_merge(Ht, Wd, Attrs3),
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
         {ok, {Pcode, {timer, Spec, Res}, Parents, InfParents, Recompile}} ->
@@ -658,6 +640,12 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs2, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile)
     end.
+
+handle_merge(1, 1, Attrs) -> orddict:erase("merge", Attrs);
+handle_merge(Ht, Wd, Attrs)
+  when Ht >= 1 andalso Wd >= 1 ->
+    Merge = {struct, [{"right", Wd - 1}, {"down",  Ht - 1}]},
+    orddict:store("merge", Merge, Attrs).
 
 write_formula2(XRefX, OrigVal, {Type, Val},
                {"text-align", Align},
