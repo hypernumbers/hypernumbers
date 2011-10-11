@@ -177,14 +177,14 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                     false ->
                         O2a = io_lib:format("The idx doesn't exist.~n", []),
                         Cs = lists:sort(new_db_wu:read_ref(Payload, inside)),
-                        O3 = pretty_print(Cs, "The idx contains:", Mode,
+                        O3 = pretty_print(XRefX, Cs, "The idx contains:", Mode,
                                           [[O2a] | O2]),
                         lists:reverse(O3);
                     _     ->
                         O2a  = io_lib:format("The idx points to ~p (~p) on page ~p",
                                              [Obj, hn_util:obj_to_ref(Obj), P2]),
                         Cs = lists:sort(new_db_wu:read_ref(XRefX, inside)),
-                        O3 = pretty_print(Cs, "The idx contains:", Mode,
+                        O3 = pretty_print(XRefX, Cs, "The idx contains:", Mode,
                                           [[O2a] | O2]),
                         lists:reverse(O3)
                 end
@@ -210,13 +210,14 @@ log(String, File) ->
 	    error
     end.
 
-pretty_print(List, Slogan, Mode, Acc) ->
+pretty_print(XRefX, List, Slogan, Mode, Acc) ->
     Marker = io_lib:format(" ", []),
     Slogan2 = io_lib:format(Slogan, []),
     Ret = pretty_p2(List, Mode, [Marker, Slogan2 | Acc]),
-    [Marker | Ret].
+    Ret2 = print_relations(XRefX, Ret),
+    [Marker | Ret2].
 
-pretty_p2([], _Mode, Acc) -> Acc;
+pretty_p2([], _Mode, Acc) -> ["      no attributes" | Acc];
 pretty_p2([{X, Vals} | T], Mode, Acc) when is_record(X, xrefX) ->
     #xrefX{idx = Idx, path = P, obj = O} = X,
     NewO = io_lib:format(" ~p (~p) on ~p:",
@@ -235,8 +236,7 @@ pretty_p2([{X, Vals} | T], Mode, Acc) when is_record(X, xrefX) ->
               true  -> print_incs(X, NO3);
               false -> NO3
           end,
-    NO5 = print_relations(X, NO4),
-    pretty_p2(T, Mode, NO5).
+    pretty_p2(T, Mode, NO4).
 
 print_relations(#xrefX{site = S} = XRefX, Acc) ->
     case lists:sort(new_db_wu:read_relations(XRefX, read)) of
