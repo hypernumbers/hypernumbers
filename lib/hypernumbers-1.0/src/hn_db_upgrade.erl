@@ -1,4 +1,4 @@
-%% @author Dale Harvey
+%%% @author Dale Harvey
 %%% @copyright 2009 Hypernumbers Ltd
 %%% @doc Upgrade db functions
 
@@ -243,7 +243,7 @@ fix_relation(Verb, Site, Borked) ->
                                      D2 = check_children(C, Site, Bkd, []),
                                      {lists:merge(DIdx, D),
                                       lists:merge(DXRefX, D2)};
-                                     Tuple ->
+                            Tuple ->
                                 write(Verb, "in relation ~p  (should delete)~n",
                                           [Tuple]),
                                 {DIdx, DXRefX}
@@ -256,7 +256,7 @@ check_children([], _Site, _Bkd, Acc) -> Acc;
 check_children([H | T], Site, Bkd, Acc) ->
     NewAcc = case lists:keyfind(H, 1, Bkd) of
                  false -> Acc;
-                 true  -> [new_db_wu:idx_to_xrefXD(Site, H) | Acc]
+                 _     -> [new_db_wu:idx_to_xrefXD(Site, H) | Acc]
              end,
     check_children(T, Site, Bkd, NewAcc).
 
@@ -482,7 +482,7 @@ force_sparkline_recalc_2011_05_15() ->
 
 mark_dirty(_, [], _) -> ok;
 mark_dirty(Site, [H | T], Obj) ->
-    RefX = #refX{site = Site, path = H, obj = Obj},
+    RefX = #refX{site = Site, type = url, path = H, obj = Obj},
     Fun  = fun() ->
                    case new_db_wu:refX_to_xrefXD(RefX) of
                        false -> ok;
