@@ -181,8 +181,8 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                                           [[O2a] | O2]),
                         lists:reverse(O3);
                     _     ->
-                        O2a  = io_lib:format("The idx points to ~p on page ~p",
-                                             [Obj, P2]),
+                        O2a  = io_lib:format("The idx points to ~p (~p) on page ~p",
+                                             [Obj, hn_util:obj_to_ref(Obj), P2]),
                         Cs = lists:sort(new_db_wu:read_ref(XRefX, inside)),
                         O3 = pretty_print(Cs, "The idx contains:", Mode,
                                           [[O2a] | O2]),
