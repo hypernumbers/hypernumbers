@@ -14,6 +14,7 @@
          look_for_borked_merges/0,
          look_for_borked_merges/1,
          make_revidx_2011_10_02/0,
+         dump_borked_local_objs/0,
          fix_borked_local_objs/3,
          fix_borked_local_objs/2,
          fix_borked_local_objs/1,
@@ -138,6 +139,10 @@ make_revidx_2011_10_02() ->
            end,
     lists:foreach(Fun1, Sites).
 
+dump_borked_local_objs() ->
+    Sites = hn_setup:get_sites(),
+    fix2(Sites, [], report).
+
 fix_borked_local_objs() ->
     Sites = hn_setup:get_sites(),
     fix2(Sites, quiet, report).
@@ -153,7 +158,7 @@ fix_borked_local_objs(Site, Verbosity, Fix) ->
 
 fix2(Sites, Verbosity, Fix) ->
     F = fun(Site) ->
-                io:format("fixing up ~p~n", [Site]),
+                io:format("inspecting ~p~n", [Site]),
                 Tbl = new_db_wu:trans(Site, local_obj),
                 F2 = fun(LO, {N, Acc}) ->
                              #local_obj{path = P, obj = O, revidx = R} = LO,
@@ -161,17 +166,13 @@ fix2(Sites, Verbosity, Fix) ->
                              Pattern = {local_obj, '_', '_', '_', '_', R},
                              case mnesia:index_match_object(Tbl, Pattern,
                                                             6, read) of
-                                 [_I] -> {N, Acc};
+                                 [_I] ->
+                                     {N, Acc};
                                  List ->
-                                     case Verbosity of
-                                         verbose ->
-                                             io:format("~p LO ~p ~p ~p "
-                                                       ++ "borked ~p~n",
+                                     write(Verbosity, "~p LO ~p ~p ~p "
+                                           ++ "borked ~p~n",
                                                        [N, Site, P2, O,
-                                                        length(List)]);
-                                         _       ->
-                                             ok
-                                     end,
+                                                        length(List)]),
                                      NewAcc = add(P, O, List, Acc),
                                      {N + 1, NewAcc}
                              end
@@ -180,11 +181,12 @@ fix2(Sites, Verbosity, Fix) ->
                              mnesia:foldl(F2, {0, []}, Tbl)
                      end,
                 {NBorked, Borked} = mnesia:activity(async_dirty, F3),
-                io:format("~p borked local_objs for ~p~n", [NBorked, Site]),
+                write(Verbosity, "~p borked local_objs for ~p~n",
+                      [NBorked, Site]),
                 Borked2 = transform(Borked, []),
                 F4 = fun() ->
-                             Dirties = fix_up(Site, Borked2),
-                             io:format("Dirties is ~p~n", [Dirties]),
+                             Dirties = fix_up(Verbosity, Site, Borked2),
+                             write(Verbosity, "Dirties is ~p~n", [Dirties]),
                              case Fix of
                                  fix ->
                                      [new_db_api:mark_idx_dirty(Site, X)
@@ -198,29 +200,32 @@ fix2(Sites, Verbosity, Fix) ->
     lists:foreach(F, Sites),
     ok.
 
-fix_up(Site, Borked) ->
-    fix_item(Site, Borked),
-    fix_logging(Site, Borked),
-    fix_form(Site, Borked),
-    fix_timer(Site, Borked),
-    fix_include(Site, Borked),
+write(verbose, Msg, Data) -> io:format(Msg, Data);
+write(_, _, _)            -> ok.
+
+fix_up(Verb, Site, Borked) ->
+    fix_item(Verb, Site, Borked),
+    fix_logging(Verb, Site, Borked),
+    fix_form(Verb, Site, Borked),
+    fix_timer(Verb, Site, Borked),
+    fix_include(Verb, Site, Borked),
     % returns a list of idxs to recalc
-    {_, NewDirties} = fix_relation(Site, Borked),
+    {_, NewDirties} = fix_relation(Verb, Site, Borked),
     lists:flatten(NewDirties).
 
-fix_item(Site, Borked) ->
+fix_item(Verb, Site, Borked) ->
     Tbl = new_db_wu:trans(Site, item),
     Fun = fun(#item{idx = Idx}, Bkd) ->
                   case lists:keyfind(Idx, 1, Bkd) of
                       false -> ok;
-                      Tuple -> io:format("in item ~p (should delete)~n",
-                                         [Tuple])
+                      Tuple -> write(Verb, "in item ~p (should delete)~n",
+                                     [Tuple])
                   end,
                   Bkd
           end,
     mnesia:foldl(Fun, Borked, Tbl).
 
-fix_relation(Site, Borked) ->
+fix_relation(Verb, Site, Borked) ->
     Tbl = new_db_wu:trans(Site, relation),
     Fun = fun(Rel, {Bkd, Dirties}) ->
                   #relation{cellidx = Idx, children = C, parents = P,
@@ -235,7 +240,7 @@ fix_relation(Site, Borked) ->
                                          false -> Dirties
                                      end;
                             Tuple ->
-                                io:format("in relation ~p  (should delete)~n",
+                                write(Verb, "in relation ~p  (should delete)~n",
                                           [Tuple]),
                                 Dirties
                    end,
@@ -261,49 +266,49 @@ check_rels2([H | T], Idx, Type, Borked, IsDirty) ->
                  end,
     check_rels2(T, Idx, Type, Borked, NewIsDirty).
 
-fix_logging(Site, Borked) ->
+fix_logging(Verb, Site, Borked) ->
     Tbl = new_db_wu:trans(Site, logging),
     Fun = fun(#logging{idx = Idx}, Bkd) ->
                   case lists:keyfind(Idx, 1, Bkd) of
                       false -> ok;
-                      Tuple -> io:format("in logging ~p (should delete)~n",
-                                         [Tuple])
+                      Tuple -> write(Verb, "in logging ~p (should delete)~n",
+                                     [Tuple])
                   end,
                   Bkd
           end,
     mnesia:foldl(Fun, Borked, Tbl).
 
-fix_form(Site, Borked) ->
+fix_form(Verb, Site, Borked) ->
     Tbl = new_db_wu:trans(Site, form),
     Fun = fun(#form{key = Idx}, Bkd) ->
                   case lists:keyfind(Idx, 1, Bkd) of
                       false -> ok;
-                      Tuple -> io:format("in form ~p (should delete)~n",
-                                         [Tuple])
+                      Tuple -> write(Verb, "in form ~p (should delete)~n",
+                                     [Tuple])
                   end,
                   Bkd
           end,
     mnesia:foldl(Fun, Borked, Tbl).
 
-fix_timer(Site, Borked) ->
+fix_timer(Verb, Site, Borked) ->
     Tbl = new_db_wu:trans(Site, timer),
     Fun = fun(#timer{idx = Idx}, Bkd) ->
                   case lists:keyfind(Idx, 1, Bkd) of
                       false -> ok;
-                      Tuple -> io:format("in timer ~p (should delete)~n",
-                                         [Tuple])
+                      Tuple -> write(Verb, "in timer ~p (should delete)~n",
+                                     [Tuple])
                   end,
                   Bkd
           end,
     mnesia:foldl(Fun, Borked, Tbl).
 
-fix_include(Site, Borked) ->
+fix_include(Verb, Site, Borked) ->
     Tbl = new_db_wu:trans(Site, include),
     Fun = fun(#include{idx = Idx}, Bkd) ->
                   case lists:keyfind(Idx, 1, Bkd) of
                       false -> ok;
-                      Tuple -> io:format("in include ~p (should delete)~n",
-                                         [Tuple])
+                      Tuple -> write(Verb, "in include ~p (should delete)~n",
+                                     [Tuple])
                   end,
                   Bkd
           end,
