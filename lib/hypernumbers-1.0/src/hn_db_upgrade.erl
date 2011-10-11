@@ -185,17 +185,18 @@ fix2(Sites, Verbosity, Fix) ->
                       [NBorked, Site]),
                 Borked2 = transform(Borked, []),
                 F4 = fun() ->
-                             Dirties = fix_up(Verbosity, Site, Borked2),
-                             write(Verbosity, "Dirties is ~p~n", [Dirties]),
+                             {DI, DX} = fix_up(Verbosity, Site, Borked2),
+                             write(Verbosity, "DI is ~p~nDX is ~p~n", [DI, DX]),
                              case Fix of
                                  fix ->
                                      [new_db_api:mark_idx_dirty(Site, X)
-                                      || X <- Dirties];
+                                      || X <- DI],
+                                     new_db_wu:mark_these_dirtyD(DX, nil);
                                  _ ->
                                      ok
                              end
                      end,
-                mnesia:activity(async_dirty, F4)
+                mnesia:activity(transaction, F4)
         end,
     lists:foreach(F, Sites),
     ok.
@@ -210,8 +211,9 @@ fix_up(Verb, Site, Borked) ->
     fix_timer(Verb, Site, Borked),
     fix_include(Verb, Site, Borked),
     % returns a list of idxs to recalc
-    {_, NewDirties} = fix_relation(Verb, Site, Borked),
-    lists:flatten(NewDirties).
+    {_, {DirtyIdxs, DirtyXRefXs}} = fix_relation(Verb, Site, Borked),
+    {hslists:uniq(lists:flatten(DirtyIdxs)),
+     hslists:uniq(lists:flatten(DirtyXRefXs))}.
 
 fix_item(Verb, Site, Borked) ->
     Tbl = new_db_wu:trans(Site, item),
@@ -227,26 +229,36 @@ fix_item(Verb, Site, Borked) ->
 
 fix_relation(Verb, Site, Borked) ->
     Tbl = new_db_wu:trans(Site, relation),
-    Fun = fun(Rel, {Bkd, Dirties}) ->
+    Fun = fun(Rel, {Bkd, {DIdx, DXRefX}}) ->
                   #relation{cellidx = Idx, children = C, parents = P,
                             infparents = Inf, z_parents = Z} = Rel,
                   NDs = case lists:keyfind(Idx, 1, Bkd) of
-                            false -> Cks = [{children, C},
-                                            {parents, P},
+                            false -> Cks = [{parents, P},
                                             {infinite, Inf},
                                             {zs, Z}],
-                                     case check_rels(Cks, Idx, Bkd, false) of
-                                         true  -> [Idx | Dirties];
-                                         false -> Dirties
-                                     end;
-                            Tuple ->
+                                     D = case check_rels(Cks, Idx, Bkd, false) of
+                                         true  -> [Idx | DIdx];
+                                         false -> DIdx
+                                     end,
+                                     D2 = check_children(C, Site, Bkd, []),
+                                     {lists:merge(DIdx, D),
+                                      lists:merge(DXRefX, D2)};
+                                     Tuple ->
                                 write(Verb, "in relation ~p  (should delete)~n",
                                           [Tuple]),
-                                Dirties
+                                {DIdx, DXRefX}
                    end,
                   {Borked, NDs}
           end,
-    mnesia:foldl(Fun, {Borked, []}, Tbl).
+    mnesia:foldl(Fun, {Borked, {[], []}}, Tbl).
+
+check_children([], _Site, _Bkd, Acc) -> Acc;
+check_children([H | T], Site, Bkd, Acc) ->
+    NewAcc = case lists:keyfind(H, 1, Bkd) of
+                 false -> Acc;
+                 true  -> [new_db_wu:idx_to_xrefXD(Site, H) | Acc]
+             end,
+    check_children(T, Site, Bkd, NewAcc).
 
 check_rels([], _Idx, _Bkd, IsDirty) -> IsDirty;
 check_rels([{Type, List} | T], Idx, Bkd, IsDirty) ->
