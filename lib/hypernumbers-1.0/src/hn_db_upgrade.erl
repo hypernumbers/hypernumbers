@@ -69,7 +69,15 @@ check_local_objs_2011_10_13() ->
                    Tbl2 = new_db_wu:trans(Site, relation),
                    Tbl3 = new_db_wu:trans(Site, local_obj),
                    Fun1 = fun(X, []) ->
-                                  #local_obj{idx = Idx, path = P, obj = O} = X,
+                                  #local_obj{idx = Idx, type = T, path = P,
+                                             obj = O} = X,
+                                  case T of
+                                      undefined ->
+                                          Pa = binary_to_term(P),
+                                          io:format("undefined ~p ~p~n", [Pa, O]);
+                                      _ ->
+                                          ok
+                                  end,
                                   Ret1 = mnesia:read(Tbl1, Idx, read),
                                   Ret2 = mnesia:read(Tbl2, Idx, read),
                                   case {Ret1, Ret2} of
