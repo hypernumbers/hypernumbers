@@ -71,7 +71,7 @@ type_local_objs_2011_10_13() ->
                                   #local_obj{idx = Idx, type = T, path = P,
                                              obj = O} = X,
                                   case T of
-                                      undefined ->
+                                      undefined orelse "url" ->
                                           Pa = binary_to_term(P),
                                           Type = type(Pa),
                                           io:format("undefined ~p ~p is ~p~n",
