@@ -63,19 +63,26 @@
 
 check_local_objs_2011_10_13() ->
     Sites = hn_setup:get_sites(),
-    Fun1 = fun(X, []) ->
-                   #local_obj{idx = I, path = P, obj = O, revidx = R} = X,
-                   case O of
-                       {cell, {_, 0}} -> io:format("X is ~p~n", [X]);
-                       _             -> ok
-                   end,
-                   []
-           end,
     Fun2 = fun(Site) ->
                    io:format("Checking site ~p~n", [Site]),
-                   Tbl = new_db_wu:trans(Site, local_obj),
+                   Tbl1 = new_db_wu:trans(Site, item),
+                   Tbl2 = new_db_wu:trans(Site, relation),
+                   Tbl3 = new_db_wu:trans(Site, local_obj),
+                   Fun1 = fun(X, []) ->
+                                  #local_obj{idx = Idx, path = P, obj = O} = X,
+                                  Ret1 = mnesia:read(Tbl1, Idx, read),
+                                  Ret2 = mnesia:read(Tbl2, Idx, read),
+                                  case {Ret1, Ret2} of
+                                      {[], []} -> %mnesia:delete(Tbl3, Idx,
+                                                  %              write);
+                                          P2 = binary_to_term(P),
+                                          io:format("delete ~p ~p~n", [P2, O]);
+                                      _ -> ok
+                                  end,
+                                  []
+                          end,
                    Fun3 = fun() ->
-                                  mnesia:foldl(Fun1, [], Tbl)
+                                  mnesia:foldl(Fun1, [], Tbl3)
                           end,
                    mnesia:activity(transaction, Fun3)
            end,
