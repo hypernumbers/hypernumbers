@@ -77,7 +77,8 @@ check2(Site, Verbose, Fix) ->
 check_local_obj(Site, V, _Fix) ->
     Tbl1 = new_db_wu:trans(Site, relation),
     Fun1 = fun(X, Acc) ->
-                   #local_obj{idx = I, path = P, obj = O, revidx = R} = X,
+                   #local_obj{idx = I, type = Ty, path = P,
+                              obj = O, revidx = R} = X,
                    % check that the revidx is the correct
                    P2 = hn_util:list_to_path(binary_to_term(P)),
                    O2 = hn_util:obj_to_ref(O),
@@ -89,6 +90,12 @@ check_local_obj(Site, V, _Fix) ->
                                       [R2, P2 ++ O2]),
                                 I
                         end,
+                   % check that the type is not 'undefined'
+                   NA1 = case Ty of
+                             undefined -> I;
+                             url       -> [];
+                             gurl      -> []
+                         end,
                    % If the local_obj is a cell is MUST have one and
                    % only relation record - if it is not a cell it MUST NOT
                    % have a relation record
@@ -109,7 +116,7 @@ check_local_obj(Site, V, _Fix) ->
                                        [List, I]),
                                  I
                          end,
-                   NA3 = hslists:uniq(lists:flatten([NA, NA2])),
+                   NA3 = hslists:uniq(lists:flatten([NA, NA1, NA2])),
                    lists:merge(NA3, Acc)
            end,
     io:format("Checking site ~p~n", [Site]),
