@@ -84,6 +84,12 @@
           revidx
          }).
 
+-record(del_local,
+        {
+          idx,
+          timestamp = util2:get_timestamp()
+         }).
+
 -record(revidx,
         {
           revidx,
