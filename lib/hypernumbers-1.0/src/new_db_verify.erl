@@ -93,6 +93,7 @@ check_local_obj(Site, V, _Fix) ->
                    % check that the type is not 'undefined'
                    NA1 = case Ty of
                              undefined -> I;
+                             "url"     -> I;
                              url       -> [];
                              gurl      -> []
                          end,
