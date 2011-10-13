@@ -25,6 +25,7 @@
 -include_lib("stdlib/include/ms_transform.hrl").
 
 -export([
+         has_cell_been_deletedD/2,
          proc_dirties_for_zinfD/3,
          proc_dirty_zinfsD/4,
          maybe_write_zinftreeD/2,
@@ -90,6 +91,13 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+has_cell_been_deletedD(Site, Idx) ->
+    Tbl = trans(Site, del_local),
+    case mnesia:read(Tbl, Idx, read) of
+        []   -> false;
+        [_R] -> true
+    end.
+
 proc_dirties_for_zinfD(Site, Tree, CheckFun) ->
     Tbl = trans(Site, dirty_for_zinf),
     L = mnesia:dirty_match_object(Tbl, #dirty_for_zinf{_='_'}),
@@ -383,7 +391,7 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             % being deleted by rewriting the formulae of all the
             % children cells replacing the reference to this cell
             % with #ref!
-            % THESE ARE NOW RETURN IDX's!
+            % THESE NOW RETURN IDX's!
             LocalChildren = [get_childrenD(C) || C <- Cells],
             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
 
@@ -430,11 +438,10 @@ refXs2(RefX) -> refX_to_xrefX_createD(RefX).
 %% refX_to_xrefX reads the index of an object AND RETURNS 'false'
 %% IF IT DOESN'T EXIST
 -spec refX_to_xrefXD(#refX{}) -> #xrefX{} | false.
-refX_to_xrefXD(#refX{site = S, path = P, obj = O} = RefX) ->
+refX_to_xrefXD(#refX{site = S, path = P, obj = O}) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
     Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
-    %case mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx) of
     case mnesia:index_match_object(Table, Pattern, 6, read) of
         [I]  -> #xrefX{idx = I#local_obj.idx, site = S, path = P, obj = O};
         []   -> false;
@@ -1307,8 +1314,13 @@ expand_to_2(#refX{obj = {Type, _}} = Ref, I, J, A) ->
 -spec expunge_refsD(string(), [#refX{}]) -> ok.
 expunge_refsD(S, Refs) ->
     ItemT = trans(S, item),
+    ObjT = trans(S, local_obj),
+    DelT = trans(S, del_local),
     [begin
          mnesia:delete(ItemT, Idx, write),
+         mnesia:delete(ObjT, Idx, write),
+         Rec = #del_local{idx = Idx},
+         mnesia:write(DelT, Rec, write),
          case O of
              {cell, _} -> unattach_formD(Ref);
              _         -> ok

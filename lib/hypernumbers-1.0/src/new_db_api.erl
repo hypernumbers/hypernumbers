@@ -795,22 +795,29 @@ handle_dirty_cell(Site, Idx, Ar) ->
     Fun =
         fun() ->
                 mnesia_mon:report(Report),
-                Cell = new_db_wu:idx_to_xrefXD(Site, Idx),
-                Attrs = case new_db_wu:read_ref(Cell, inside, write) of
-                            [{_, A}] -> A;
-                            _        -> orddict:new()
-                        end,
-                case orddict:find("formula", Attrs) of
-                    {ok, F} ->
-                        _Dict = new_db_wu:write_attrs(Cell,
-                                                      [{"formula", F}],
-                                                      Ar),
-                        % cells may have been written that now depend on this
-                        % cell so it needs to report back dirty children
-                        [Rels] = new_db_wu:read_relations(Cell, read),
-                        Rels#relation.children;
-                    _ ->
-                        []
+                % check if the cell has been deleted
+                case new_db_wu:has_cell_been_deletedD(Site, Idx) of
+                    true ->
+                        [];
+                    false ->
+                        Cell = new_db_wu:idx_to_xrefXD(Site, Idx),
+                        Attrs = case new_db_wu:read_ref(Cell, inside, write) of
+                                    [{_, A}] -> A;
+                                    _        -> orddict:new()
+                                end,
+                        case orddict:find("formula", Attrs) of
+                            {ok, F} ->
+                                _Dict = new_db_wu:write_attrs(Cell,
+                                                              [{"formula", F}],
+                                                              Ar),
+                                % cells may have been written that now depend
+                                % on this cell so it needs to report back
+                                % dirty children
+                                [Rels] = new_db_wu:read_relations(Cell, read),
+                                Rels#relation.children;
+                            _ ->
+                                []
+                        end
                 end
         end,
     NewDirties = mnesia_mon:log_act(transaction, Fun, Report),

@@ -17,6 +17,7 @@
                            "include",
                            "item",
                            "local_obj",
+                           "del_local",
                            "relation",
                            "style",
                            "timer",

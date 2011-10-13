@@ -201,6 +201,7 @@ tables() ->
      ?TBL(dirty_queue,    set, [],                disc_copies),
      ?TBL(item,           set, [],                disc_copies),
      ?TBL(local_obj,      set, [obj,path,revidx], disc_copies),
+     ?TBL(del_local,      set, [],                disc_copies),
      ?TBL(relation,       set, [],                disc_copies),
      ?TBL(group,          set, [],                disc_copies),
      ?TBL(style,          set, [idx],             disc_copies),
