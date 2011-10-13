@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         check_local_objs_2011_10_13/0,
          add_del_obj_table_2011_10_13/0,
          check_local_obj_consistency/0,
          look_for_borked_merges/0,
@@ -59,6 +60,26 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+check_local_objs_2011_10_13() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(X, []) ->
+                   #local_obj{idx = I, path = P, obj = O, revidx = R} = X,
+                   case O of
+                       {cell, {_, 0}} -> io:format("X is ~p~n", [X]);
+                       _             -> ok
+                   end,
+                   []
+           end,
+    Fun2 = fun(Site) ->
+                   io:format("Checking site ~p~n", [Site]),
+                   Tbl = new_db_wu:trans(Site, local_obj),
+                   Fun3 = fun() ->
+                                  mnesia:foldl(Fun1, [], Tbl)
+                          end,
+                   mnesia:activity(transaction, Fun3)
+           end,
+    lists:foreach(Fun2, Sites).
 
 add_del_obj_table_2011_10_13() ->
     Sites = hn_setup:get_sites(),
