@@ -231,7 +231,7 @@ read_styles_IMPORTD(#refX{site = Site}) ->
 
 -spec get_last_row(#refX{}) -> integer().
 get_last_row(#refX{site = S, path = P}) ->
-    SelX = #refX{site = S, path = P, obj = {page, "/"}},
+    SelX = #refX{site = S, type = url, path = P, obj = {page, "/"}},
     Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end,
                        [{Y, LO} || LO = #local_obj{obj = {cell,{_,Y}}}
                                        <- read_objs(SelX, inside)]),
@@ -239,7 +239,7 @@ get_last_row(#refX{site = S, path = P}) ->
 
 -spec get_last_col(#refX{}) -> integer().
 get_last_col(#refX{site = S, path = P}) ->
-    SelX = #refX{site = S, path = P, obj = {page, "/"}},
+    SelX = #refX{site = S, type = url, path = P, obj = {page, "/"}},
     Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end,
                        [{X, LO} || LO = #local_obj{obj = {cell,{X,_}}}
                                        <- read_objs(SelX, inside)]),
@@ -455,7 +455,8 @@ refX_to_xrefXD(#refX{site = S, path = P, obj = O}) ->
 -spec refX_to_xrefX_createD(#refX{}) -> #xrefX{}.
 %% @doc refX_to_xrefX_create refX_to_xrefX_create gets the index of an object
 %% AND CREATES IT IF IT DOESN'T EXIST
-refX_to_xrefX_createD(#refX{site = S, type = Ty, path = P, obj = O} = RefX) ->
+refX_to_xrefX_createD(#refX{site = S, type = Ty, path = P, obj = O} = RefX)
+when Ty == url orelse Ty == gurl ->
     case refX_to_xrefXD(RefX) of
         false -> Idx = util2:get_timestamp(),
                  RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
@@ -1198,7 +1199,7 @@ read_objsD(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) -
                   if
                       X1  =< MX, MX  =< X2,
                       Y1  =< MY, MY  =< Y2 -> true;
-                      true               -> false
+                      true                 -> false
                   end;
              (_LO) -> false
           end,
@@ -1513,7 +1514,7 @@ deref(XChildX, [$= |Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
 
 deref1(_XChildX, [], _DeRefX, _Disp, Acc) -> lists:reverse(Acc);
 deref1(XChildX, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Disp, Acc) ->
-%% only deref the range if it is completely obliterated by the deletion
+    % only deref the range if it is completely obliterated by the deletion
     #refX{obj = Obj1} = DeRefX,
     Range = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of

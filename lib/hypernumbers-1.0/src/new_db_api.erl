@@ -334,14 +334,15 @@ handle_form_post(#refX{site = S, path = P,
                   Row = new_db_wu:get_last_row(RefX) + 1,
                   F = fun(X, Val) ->
                               Obj = {cell, {X, Row}},
-                              RefX2 = #refX{site = S, path = P, obj = Obj},
+                              RefX2 = #refX{site = S, type = url, path = P,
+                                            obj = Obj},
                               XRefX2 = new_db_wu:refX_to_xrefX_createD(RefX2),
                               _Dict = new_db_wu:write_attrs(XRefX2,
                                                             [{"formula", Val}],
                                                             PosterUid),
                               ok = new_db_wu:mark_these_dirtyD([XRefX2], PosterUid)
                       end,
-                  [F(X, V) || {#refX{site = S1, path = P1,
+                  [F(X, V) || {#refX{site = S1, type = gurl, path = P1,
                                      obj = {column, {X, X}}}, V}
                                   <- NVals, S == S1, P == P1]
           end,
@@ -362,14 +363,15 @@ append_row(List, PAr, VAr) when is_list(List) ->
                 Row = new_db_wu:get_last_row(RefX) + 1,
                 F = fun(X, Val) ->
                             Obj = {cell, {X, Row}},
-                            RefX2 = #refX{site = S, path = P, obj = Obj},
+                            RefX2 = #refX{site = S, type = url, path = P,
+                                          obj = Obj},
                             XRefX2 = new_db_wu:refX_to_xrefX_createD(RefX2),
                             _Dict = new_db_wu:write_attrs(XRefX2,
                                                           [{"formula", Val}],
                                                           PAr),
                             ok = new_db_wu:mark_these_dirtyD([XRefX2], VAr)
                     end,
-                [F(X, V) || {#refX{site = S1, path = P1,
+                [F(X, V) || {#refX{site = S1, type = gurl, path = P1,
                                    obj = {column, {X, X}}}, V}
                                 <- List, S == S1, P == P1]
         end,
@@ -1168,13 +1170,16 @@ allocate({Label, Value}, {S, P, Labels, Index, Ref, NLabels, Refs}) ->
         {#xrefX{obj = {cell, {X, _Y}}}, Label} ->
             % Label already exists
             {S, P, Labels, Index, Ref, NLabels,
-             [{#refX{site = S, path = P, obj = {column, {X, X}}}, Value} | Refs]};
+             [{#refX{site = S, type = gurl, path = P,
+                     obj = {column, {X, X}}}, Value} | Refs]};
         false  ->
             % Write new label
             X = Index + 1,
             {S, P, Labels, X, Ref,
-             [{#refX{site = S, path = P, obj = {cell,    {X, 1}}}, Label} | NLabels],
-             [{#refX{site = S, path = P, obj = {column,  {X, X}}}, Value} | Refs]}
+             [{#refX{site = S, type = url, path = P,
+                     obj = {cell, {X, 1}}}, Label} | NLabels],
+             [{#refX{site = S, type = gurl, path = P,
+                     obj = {column, {X, X}}}, Value} | Refs]}
     end.
 
 allocate_values(S, P, Values, Labels, Ref, Index) ->

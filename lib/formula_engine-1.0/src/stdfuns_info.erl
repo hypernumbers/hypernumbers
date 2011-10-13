@@ -58,6 +58,7 @@ cell([V1, V2]) ->
                  muin:col_index(R#cellref.col), finite),
     Path = muin_util:walk_path(muin:context_setting(path), R#cellref.path),
     RefX = #refX{site = muin:context_setting(site),
+                 type = url,
                  path = Path,
                  obj  = {cell, {muin:col_index(R#cellref.col),
                                 muin:row_index(R#cellref.row)}}},

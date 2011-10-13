@@ -59,7 +59,7 @@ split_sheets(X, {Ls, Fs}) ->
     end.
 
 write_data(Ref, {Sheet, Target, Data}, Uid) when is_list(Target) ->
-    NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
+    NRef = Ref#refX{type = url, path = Ref#refX.path ++ [Sheet],
                     obj  = hn_util:parse_attr(Target)},
     new_db_api:write_attributes([{NRef, Data}], Uid).
 
@@ -127,7 +127,7 @@ import(File, User, Ref, Name, Uid) ->
 
 write_warnings_page(Ref, Sheets, User, Name, Warnings, Uid) ->
 
-    new_db_api:write_attributes([{Ref#refX{obj = {column, {2, 2}}},
+    new_db_api:write_attributes([{Ref#refX{type = gurl, obj = {column, {2, 2}}},
                                  [{width, 400}]}], Uid),
 
     % write parent page information
@@ -172,7 +172,7 @@ write_warnings_page(Ref, Sheets, User, Name, Warnings, Uid) ->
 
 write_to_cell(Ref, Str, Col, Row, Attrs) ->
     Attrs2 = [{"formula", Str} | Attrs],
-    new_db_api:write_attributes([{Ref#refX{obj = {cell, {Col, Row}}}, Attrs2}]).
+    new_db_api:write_attributes([{Ref#refX{type = url, obj = {cell, {Col, Row}}}, Attrs2}]).
 
 write_warnings(_Ref, [], _) ->
     ok;

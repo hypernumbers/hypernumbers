@@ -472,7 +472,7 @@ jsonify_val({K, V}) ->
 url_to_refX(Url) -> url_parser:make_refX(Url).
 
 refX_from_index(#index{site = S, path = P, column = X, row = Y}) ->
-    #refX{site = S, path = P, obj = {cell, {X, Y}}}.
+    #refX{site = S, type = url, path = P, obj = {cell, {X, Y}}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

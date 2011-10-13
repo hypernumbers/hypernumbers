@@ -73,10 +73,10 @@ make_refXs(Site, List) ->
     [make_r2(Site, hn_util:path_tokens(Path), X) || X <- List].
 
 make_r2(Site, Path, {1, _}) ->
-    RefX = #refX{site = Site, path = Path, obj = {column, {1, 1}}},
+    RefX = #refX{site = Site, type = gurl, path = Path, obj = {column, {1, 1}}},
     {RefX, "=now()"};
 make_r2(Site, Path, {X, Val}) ->
-    RefX = #refX{site = Site, path = Path, obj = {column, {X, X}}},
+    RefX = #refX{site = Site, type = gurl, path = Path, obj = {column, {X, X}}},
     {RefX, Val}.
 
 %% only used for 'row' type maps (file contains the destination)
@@ -396,7 +396,7 @@ map_r4([{mapping, Sheet, From, To} | T], Site,
     {column, {X, X}} = hn_util:parse_ref(From),
     To2 = hn_util:parse_ref(To),
     Path = string:tokens(Page, "/"),
-    RefX = #refX{site = Site, type = "url", path = Path, obj = To2},
+    RefX = #refX{site = Site, type = url, path = Path, obj = To2},
     NewAcc = case lists:keysearch(X, 1, Cells) of
                  false             -> Acc;
                  {value, {X, Val}} -> [{RefX, Val} | Acc]
@@ -604,7 +604,7 @@ load_templates([H | T], "overwrite", Template) ->
     hn_templates:load_template(H, Template),
     ok = load_templates(T, "overwrite", Template);
 load_templates([H | T], "dont_overwrite", Template) ->
-    #refX{site = S, path = P} = H,
+    #refX{site = S, type = url, path = P} = H,
     case page_srv:does_page_exist(S, P) of
         true  -> {error, {hn_util:list_to_path(P) ++ " exists"}};
         false -> ok = hn_templates:load_template(H, Template),

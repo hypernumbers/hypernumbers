@@ -482,7 +482,7 @@ expand_zrefs(#xrefX{path = P, site = S, obj = O}) ->
     ZSegs = hn_util:parse_zpath(P),
     % we need to create #xrefX{}s for each expanded zref in the path
     % so lets pass in a #refX{} to make it cleaner down the line
-    RefX = #refX{site = S, path = P, obj = O},
+    RefX = #refX{site = S, type = url, path = P, obj = O},
     expandp(ZSegs, RefX, [], []).
 
 expandp([], _, _, Acc) ->

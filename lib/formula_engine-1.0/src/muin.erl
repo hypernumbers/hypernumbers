@@ -313,7 +313,7 @@ funcall(make_list, Args) ->
 
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
-    #refX{site = RSite, path = RPath,
+    #refX{site = RSite, type = url, path = RPath,
           obj = {cell, {RX, RY}}} = hn_util:url_to_refX(Url),
     F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my,
                                  Url, RSite, RPath, RX, RY) end,
@@ -654,8 +654,8 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
     NewMPath = lists:filter(fun(X) -> not(X == $/) end, MPath),
     NewRPath = lists:filter(fun(X) -> not(X == $/) end, RPath),
 
-    Child  = #refX{site=MSite, path=NewMPath, obj={cell, {MX, MY}}},
-    Parent = #refX{site=RSite, path=NewRPath, obj={cell, {RX, RY}}},
+    Child  = #refX{site=MSite, type = url, path=NewMPath, obj={cell, {MX, MY}}},
+    Parent = #refX{site=RSite, type = url, path=NewRPath, obj={cell, {RX, RY}}},
 
     % Yup it is not implemented...
     case new_db_api:read_incoming_hn(Parent, Child) of
@@ -666,7 +666,8 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
         {Val, DepTree} ->
             F = fun({url, [{type, Type}], [Url2]}) ->
                         Ref = hn_util:parse_url(Url2),
-                        #refX{site = S, path = P, obj = {cell, {X, Y}}} = Ref,
+                        #refX{site = S, type = url, path = P,
+                              obj = {cell, {X, Y}}} = Ref,
                         {Type,{S, P, X, Y}}
                 end,
             Dep = lists:map(F, DepTree) ++
@@ -935,7 +936,7 @@ zeval2(Site, Path, Toks, X, Y) ->
     OldContext = get(),
     % we run in the context of call '0, 0' - this is because z-order expressions
     % do not support r[]c[] format cell references (or is it vice-versa?)
-    RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
+    RefX = #refX{site = Site, type = gurl, path = Path, obj = {cell, {X, Y}}},
     [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX]),
     % no array context (fine) or security context (erk!)
     RTI = new_db_wu:xrefX_to_rti(XRefX, nil, false),
@@ -972,7 +973,7 @@ make_inf_xrefX(Path, Text) ->
     Segs = hn_util:path_tokens(Text),
     {_, Ref} = lists:split(length(Segs) - 1, Segs),
     Obj = hn_util:parse_ref(Ref),
-    RefX = #refX{site = ?msite, path = NewPath, obj = Obj},
+    RefX = #refX{site = ?msite, type = gurl, path = NewPath, obj = Obj},
     new_db_wu:refX_to_xrefX_createD(RefX).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

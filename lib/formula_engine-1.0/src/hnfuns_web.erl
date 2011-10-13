@@ -331,7 +331,7 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             Site = muin:context_setting(site),
             Path = muin_util:walk_path(muin:context_setting(path), RelPath),
             Obj = {range, {X1, Y1, X2, Y2}},
-            Ref = #refX{site = Site, path = Path, obj = Obj},
+            Ref = #refX{site = Site, type = url, path = Path, obj = Obj},
             % throw an error if we are trying to bring controls through
             case new_db_wu:has_forms(Ref) of
                 false ->  Content = hn_render:content(Ref),

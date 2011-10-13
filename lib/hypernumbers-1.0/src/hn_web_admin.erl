@@ -37,7 +37,8 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
             Path  = kfind("path", Args),
             Name  = kfind("name", Args),
             NPath = string:tokens(Path, "/"),
-            RefX  = #refX{site = Site, path = NPath, obj={page, "/"}},
+            RefX  = #refX{site = Site, type = url, path = NPath,
+                          obj= {page, "/"}},
             hn_templates:save_template(RefX, Name);
 
         "set_view" ->

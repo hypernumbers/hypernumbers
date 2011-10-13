@@ -14,7 +14,7 @@
 
 -compile(export_all).
 %~ -export([
-      %~ 
+      %~
         %~ ]).
 
 %%TODO
@@ -27,10 +27,10 @@ create_user_fn(Site, Function_Name, Page, Function_Description, Output_Value, Pa
 	Page_Array = re:split(Page, "/", [{return,list}]),
 	Page_Array2 = refine_string_list(Page_Array, []),
 	%~ io:format("Site is: ~p~nPage is: ~p~nFunction_Name is: ~p~nFunction_Description is: ~p~nFunction_Output_Value is: ~p~nListOfParameterNames is: ~p~nListOfParameterDescriptions is: ~p~nListOfParameterValues is: ~p~n", [Site, Page_Array2, Function_Name, Function_Description, Function_Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues]),
-	
+
 	create_user_fn2(Site, Page_Array2, Function_Name, Function_Description, Output_Value, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues).
-	
-	
+
+
 get_parameters_data([], Names, Descriptions, Values)	->
 	{lists:reverse(Names), lists:reverse(Descriptions), lists:reverse(Values)};
 
@@ -40,27 +40,28 @@ get_parameters_data([H | T], Names, Descriptions, Values)	->
 	Dsc	= kfind("description", Args),
 	Val	= kfind("value", Args),
 	get_parameters_data(T, [Nm | Names], [Dsc | Descriptions], [Val | Values]).
-	
+
 %~ curie:create_user_fn2("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", "b8", ["b5", "b6"], ["c5", "c6"], ["f5", "f6"]).
 create_user_fn2(Site, Page, Name, Description, OutputValue, ListOfParameterNames, ListOfParameterDescriptions, ListOfParameterValues)	->
     FUNCTION_NAME = get_cell_s_value(Name, Site, Page),
     AST = build_fun(Site, Page, OutputValue, ListOfParameterValues),
 	case AST of
-		{error, Message}	-> 	io:format("error, ~p~n", [Message]),
-								{error, Message};
-		_					->
-			PAGE_S_JSON = get_page_s_json(Site, Page),
-			WIZARD_TEMPLATE = make_template_for_fn_wizard(Site, Page, Name,
-														  Description,
-														  ListOfParameterNames,
-														  ListOfParameterDescriptions),
-			WIZARD_S_JSON = lists:flatten(mochijson:encode(WIZARD_TEMPLATE)),
-			DB_Entry = #user_fns{name = FUNCTION_NAME, ast = AST, pagejson = PAGE_S_JSON, wizardjson = WIZARD_S_JSON},
-			new_db_api:write_user_fn(Site, DB_Entry),
-			io:format("ok~n~p~n", [DB_Entry])
+		{error, Message} ->
+          io:format("error, ~p~n", [Message]),
+          {error, Message};
+		_	 ->
+          PAGE_S_JSON = get_page_s_json(Site, Page),
+          WIZARD_TEMPLATE = make_template_for_fn_wizard(Site, Page, Name,
+                                                        Description,
+                                                        ListOfParameterNames,
+                                                        ListOfParameterDescriptions),
+          WIZARD_S_JSON = lists:flatten(mochijson:encode(WIZARD_TEMPLATE)),
+          DB_Entry = #user_fns{name = FUNCTION_NAME, ast = AST, pagejson = PAGE_S_JSON, wizardjson = WIZARD_S_JSON},
+          new_db_api:write_user_fn(Site, DB_Entry),
+          io:format("ok~n~p~n", [DB_Entry])
 	end,
-	{ok, "create_user_fn"}.
-			
+    {ok, "create_user_fn"}.
+
 %~ curie:make_template_for_fn_wizard("http://hypernumbers.dev:9000", ["page1"],"b1", "b2", ["b5", "b6"], ["c5", "c6"]).
 %~ curie:make_template_for_fn_wizard("http://hypernumbers.dev:9000", ["page2"],"b1", "b2", ["b5"], ["c5"]).
 make_template_for_fn_wizard(Site, Page, Name, Description, ListOfParameterNames, ListOfParameterDescriptions)	->
@@ -107,7 +108,7 @@ read_user_fn(Site, Name)	->
 		[]	->	{error, no_entry_in_DB};
 		_	->	{ok, Result}
 	end.
-	
+
 delete_user_fn(Site, Name)	->
 	new_db_api:delete_user_fn(Site, Name),
 	{ok, "delete_user_fn"}.
@@ -123,7 +124,7 @@ build_fun(Site, Page, OutputValue, ListOfParameters) ->
 				case My_AST of
 					[]		-> {error, no_ast_in_final_result};
 					_My_AST	->
-						RetRef = #refX{site = Site, path = Page,
+						RetRef = #refX{site = Site, type = url, path = Page,
 									   obj = hn_util:parse_ref(OutputValue)},
 						%params in upper case, easier to compare
 						ParamListUpper = lists:map(fun string:to_upper/1, ListOfParameters),
@@ -134,7 +135,7 @@ build_fun(Site, Page, OutputValue, ListOfParameters) ->
 							valid   ->
 								case check_input_off_reference(ListOfParameters, Site, Page) of
 										invalid ->	{error, off_page_reference};
-										valid   ->	
+										valid   ->
 													AST = build_fun2(RetRef, _My_AST, ParamListUpper, Site, Page),
 													case check_for_not_in_param_error(AST) of
 														{error, Message}	->	{error, Message};
@@ -180,7 +181,7 @@ walk2([H | T], Ref, Params, Acc, Site, Page, _FinalRetRef) ->
 %walk_new_ret_ref(NewReference, Site)
 walk_new_ret_ref({cellref, _OffsetX, _OffsetY, Page, Cell}, Site)	->
 	%calculate new refX
-	#refX{site = Site, path = Page,
+	#refX{site = Site, type = url, path = Page,
                    obj = hn_util:parse_ref(Cell)}.
 
 
@@ -280,7 +281,7 @@ check_input_off_reference([H | T], Site, Page) ->
 
 %return cell's abstract syntax tree (not a tuple but just a list)
 get_cell_s_ast(H, Site, Page)	->
-	Cell = #refX{site = Site, path = Page,
+	Cell = #refX{site = Site, type = url, path = Page,
                    obj = hn_util:parse_ref(H)},
     List = new_db_api:read_ref(Cell),
     case List of
@@ -298,7 +299,7 @@ get_cell_s_ast(H, Site, Page)	->
 
 %get_cell_s_value("a2", "http://hypernumbers.dev:9000", ["page1"]).
 get_cell_s_value(Cell, Site, Page)	->
-	Ref = #refX{site = Site, path = Page,
+	Ref = #refX{site = Site, type = url, path = Page,
                    obj = hn_util:parse_ref(Cell)},
 	List = new_db_api:read_ref(Ref),
     case List of
@@ -312,11 +313,11 @@ get_cell_s_value(Cell, Site, Page)	->
 				[]				-> []
 			end
 	end.
-	
-	
+
+
 %curie:read_cell_s_attributes("a1", "http://hypernumbers.dev:9000", ["page3"]).
 read_cell_s_attributes(Cell, Site, Page)	->
-	Ref = #refX{site = Site, path = Page,
+	Ref = #refX{site = Site, type = url, path = Page,
                    obj = hn_util:parse_ref(Cell)},
     Attributes = new_db_api:read_ref(Ref),
 	io:format("Attributes are: ~p~n", [Attributes]).
@@ -341,4 +342,4 @@ check_for_not_in_param_error([{error, Message} | _T])	-> {error, Message};
 check_for_not_in_param_error({error, Message})			-> {error, Message};
 check_for_not_in_param_error([H | T]) when is_list(H)	-> check_for_not_in_param_error([check_for_not_in_param_error(H) | T]);
 check_for_not_in_param_error([_H | T])					-> check_for_not_in_param_error(T).
-	
+
