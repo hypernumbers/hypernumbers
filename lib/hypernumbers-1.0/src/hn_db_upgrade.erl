@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         type_local_objs_2011_10_13/0,
          check_local_objs_2011_10_13/0,
          add_del_obj_table_2011_10_13/0,
          check_local_obj_consistency/0,
@@ -60,6 +61,38 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+type_local_objs_2011_10_13() ->
+    Sites = hn_setup:get_sites(),
+    Fun2 = fun(Site) ->
+                   io:format("Checking site ~p~n", [Site]),
+                   Tbl3 = new_db_wu:trans(Site, local_obj),
+                   Fun1 = fun(X, []) ->
+                                  #local_obj{idx = Idx, type = T, path = P,
+                                             obj = O} = X,
+                                  case T of
+                                      undefined ->
+                                          Pa = binary_to_term(P),
+                                          Type = type(Pa),
+                                          io:format("undefined ~p ~p is ~p~n",
+                                                    [Pa, O, Type]),
+                                          Rec = X#local_obj{type = Type},
+                                          mnesia:write(Tbl3, Rec, write);
+                                      _ ->
+                                          ok
+                                  end,
+                                  []
+                          end,
+                   Fun3 = fun() ->
+                                  mnesia:foldl(Fun1, [], Tbl3)
+                          end,
+                   mnesia:activity(transaction, Fun3)
+           end,
+    lists:foreach(Fun2, Sites).
+
+type([])             -> url;
+type(["["++Rest| T]) -> gurl;
+type([_H | T])       -> type(T).
 
 check_local_objs_2011_10_13() ->
     Sites = hn_setup:get_sites(),
