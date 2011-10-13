@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_del_obj_table_2011_10_13/0,
          check_local_obj_consistency/0,
          look_for_borked_merges/0,
          look_for_borked_merges/1,
@@ -58,6 +59,15 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+add_del_obj_table_2011_10_13() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fields = record_info(fields, del_local),
+                   make_table(Site, del_local, Fields, disc_copies)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 check_local_obj_consistency() ->
     Sites = hn_setup:get_sites(),
