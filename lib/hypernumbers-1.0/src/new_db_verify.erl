@@ -197,7 +197,7 @@ check_rel4(children, C, Idx, Tbl, V) ->
 % the relation record for each parent MUST have the idx as a child
 check_rel4(Type, P, Idx, Tbl, V) ->
     case mnesia:read(Tbl, P, read) of
-        []  -> write(V, "The parent ~p: ~p of ~p doesn't exist~n",
+        []  -> write(V, "The parent ~p: ~p of ~p doesn't exists~n",
                      [Type, P, Idx]),
                error;
         [R] -> #relation{children = C} = R,
