@@ -42,6 +42,7 @@
                   ms_util,
                   ms_util2,
                   new_db_api,
+                  new_db_verify,
                   new_db_wu,
                   num_format,
                   page_srv,
