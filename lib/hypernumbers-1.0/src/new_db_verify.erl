@@ -8,6 +8,8 @@
 
 -module(new_db_verify).
 
+-define(m, mnesia:table_info).
+
 -include("spriki.hrl").
 
 % main api
@@ -81,16 +83,39 @@ check2(Site, Verbose, Fix) ->
                        BrokenItems, BrokenLogs, BrokenRels,
                        BrokenTimers]);
         _ ->
-            io:format("No of Broken: Zinfs: ~p "
-                      ++ "Forms: ~p "
-                      ++ "Incs: ~p "
-                      ++ "Items: ~p "
-                      ++ "Logs: ~p "
-                      ++ "Rels: ~p "
-                      ++ "Timers: ~p~n",
-                      [length(BrokenZinfs), length(BrokenForms),
-                       length(BrokenIncs), length(BrokenItems),
-                       length(BrokenLogs), Num, length(BrokenTimers)])
+            SizeForms  = ?m(new_db_wu:trans(Site, form),     size),
+            SizeIncs   = ?m(new_db_wu:trans(Site, include),  size),
+            SizeItems  = ?m(new_db_wu:trans(Site, item),     size),
+            SizeLogs   = ?m(new_db_wu:trans(Site, logging),  size),
+            SizeRels   = ?m(new_db_wu:trans(Site, relation), size),
+            SizeTimers = ?m(new_db_wu:trans(Site, timer),    size),
+            Errors = length(BrokenZinfs)
+                + length(BrokenForms)
+                + length(BrokenIncs)
+                + length(BrokenItems)
+                + length(BrokenLogs)
+                + Num
+                + length(BrokenTimers),
+            case Errors of
+                0 ->
+                    io:format("No errors~n");
+                _N ->
+                    io:format("No of Broken:~n"
+                              ++ "Zinfs:  ~p~n"
+                              ++ "Forms:  ~p out of ~p~n"
+                              ++ "Incs:   ~p out of ~p~n"
+                              ++ "Items:  ~p out of ~p~n"
+                              ++ "Logs:   ~p out of ~p~n"
+                              ++ "Rels:   ~p out of ~p~n"
+                              ++ "Timers: ~p out of ~p~n",
+                              [length(BrokenZinfs),
+                               length(BrokenForms), SizeForms,
+                               length(BrokenIncs),  SizeIncs,
+                               length(BrokenItems), SizeItems,
+                               length(BrokenLogs),  SizeLogs,
+                               Num, SizeRels,
+                               length(BrokenTimers), SizeTimers])
+                    end
     end.
 
 % check zinfs
