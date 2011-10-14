@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         remove_floating_local_objs_2011_10_14/0,
          type_local_objs_2011_10_13/0,
          check_local_objs_2011_10_13/0,
          add_del_obj_table_2011_10_13/0,
@@ -62,13 +63,44 @@
          %% upgrade_1776/0
         ]).
 
+remove_floating_local_objs_2011_10_14() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   io:format("Checking site ~p~n", [Site]),
+                   Tbl1 = new_db_wu:trans(Site, local_obj),
+                   Tbl2 = new_db_wu:trans(Site, item),
+                   Tbl3 = new_db_wu:trans(Site, relation),
+                   Fun1 = fun(LO, []) ->
+                                  #local_obj{idx = Idx, type = Ty,
+                                             path = P, obj = O} = LO,
+                                  P2 = binary_to_term(P),
+                                  Items = mnesia:read(Tbl2, Idx, read),
+                                  Rels  = mnesia:read(Tbl3, Idx, read),
+                                  case {Items, Rels, Ty, O} of
+                                      {[], [], url, {cell, _}} ->
+                                          io:format("floater ~p ~p ~p~n",
+                                                    [P2, O, Idx]),
+                                      ok = mnesia:delete_object(Tbl1, LO, write);
+                                       _Other ->
+                                          ok
+                                  end,
+                          []
+                          end,
+                   Fun2 = fun() ->
+                                  mnesia:foldl(Fun1, [], Tbl1)
+                          end,
+                   mnesia:activity(transaction, Fun2)
+           end,
+    lists:foreach(Fun1, Sites).
+
+
 type_local_objs_2011_10_13() ->
     Sites = hn_setup:get_sites(),
     Fun2 = fun(Site) ->
                    io:format("Checking site ~p~n", [Site]),
                    Tbl3 = new_db_wu:trans(Site, local_obj),
                    Fun1 = fun(X, []) ->
-                                  #local_obj{idx = Idx, type = T, path = P,
+                                  #local_obj{type = T, path = P,
                                              obj = O} = X,
                                   case T of
                                       undefined ->
@@ -96,9 +128,9 @@ type_local_objs_2011_10_13() ->
            end,
     lists:foreach(Fun2, Sites).
 
-type([])             -> url;
-type(["["++Rest| T]) -> gurl;
-type([_H | T])       -> type(T).
+type([])               -> url;
+type(["["++_Rest| _T]) -> gurl;
+type([_H | T])         -> type(T).
 
 check_local_objs_2011_10_13() ->
     Sites = hn_setup:get_sites(),
