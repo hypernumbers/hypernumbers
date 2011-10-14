@@ -31,7 +31,8 @@
          process_zinfs/1,
          check_zinfs/1,
          dump/1,
-         verify/3
+         verify/3,
+         check_borked/4
         ]).
 
 % perf testing API
@@ -101,6 +102,10 @@ dump(Site) ->
 verify(Site, Verbose, Fix) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:call({global, Id}, {verify, Site, Verbose, Fix}).
+
+check_borked(Site, Verbose, Fix, Borked) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:call({global, Id}, {check_borked, Site, Verbose, Fix, Borked}).
 
 %%%===================================================================
 %%% Profiling
@@ -191,6 +196,9 @@ handle_call(start_fprof, _From, State) ->
 handle_call({verify, Site, Verbose, Fix}, _From, State) ->
     #state{site = Site, zinf_tree = Tree} = State,
     {reply, verify_zs(Tree, Site, Verbose, Fix), State};
+handle_call({check_borked, Site, Verbose, Fix, Borked}, _From, State) ->
+    #state{site = Site, zinf_tree = Tree} = State,
+    {reply, check_bk_zs(Tree, Site, Verbose, Fix, Borked), State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
@@ -317,6 +325,11 @@ verify_zs(Tree, Site, Verbose, Fix) ->
     {_, _, _, Acc} = Ret,
     Acc.
 
+check_bk_zs(Tree, Site, Verbose, Fix, Borked) ->
+    Ret = check_bk_tree(Tree, [], {Site, Verbose, Fix, Borked, []}),
+    {_, _, _, _, Acc} = Ret,
+    Acc.
+
 %%%===================================================================
 %%% Funs to be applied to the tree
 %%%===================================================================
@@ -414,6 +427,15 @@ trim(K, Seg, Tree) ->
              end,
     {Status, gb_trees:enter(Seg, NewSubTree, Tree)}.
 
+check_bk_tree(Tree, PathAcc, Acc) ->
+    Fun = fun() ->
+                  Iter = gb_trees:iterator(Tree),
+                  iterate(Iter, fun check_bk_tree/3, fun check_bk2/3,
+                          PathAcc, Acc)
+          end,
+    mnesia:activity(transaction, Fun).
+
+
 verify_tree(Tree, PathAcc, Acc) ->
     Fun = fun() ->
                   Iter = gb_trees:iterator(Tree),
@@ -433,8 +455,12 @@ iterate(Iter, Fun1, Fun2, Htap, Acc) ->
         {selector, Sel, I2} -> {selector, List} = Sel,
                                NewAcc = Fun2(List, lists:reverse(Htap), Acc),
                                iterate(I2, Fun1, Fun2, Htap, NewAcc);
-        {{_, K}, V, I2}     -> Fun1(V, [K | Htap], Acc),
-                               Fun2(I2, Htap, Acc)
+        {{_, K}, V, I2}     -> NewAcc = Fun1(V, [K | Htap], Acc),
+                               case I2 of
+                                   {_Obj, _List} -> Fun2(I2, Htap, NewAcc);
+                                   _             -> iterate(I2, Fun1, Fun2,
+                                                            Htap, NewAcc)
+                               end
     end.
 
 dump_p([], _Path, Acc)     -> Acc;
@@ -464,6 +490,20 @@ verify3([H | T], {Site, Verbose, Fix, Acc}) ->
                          [H | Acc]
              end,
     verify3(T, {Site, Verbose, Fix, NewAcc}).
+
+
+check_bk2([], _Path, Acc)     -> Acc;
+check_bk2([H | T], Path, Acc) -> {_, List} = H,
+                                 NewAcc = check_bk3(List, Acc),
+                                 check_bk2(T, Path, NewAcc).
+
+check_bk3([], Acc) -> Acc;
+check_bk3([H | T], {Site, Verbose, Fix, Borked, Acc}) ->
+    NewAcc = case lists:member(H, Borked) of
+                 true  -> [H | Acc];
+                 false -> Acc
+             end,
+    check_bk3(T, {Site, Verbose, Fix, Borked, NewAcc}).
 
 match_tree(Tree, S, List, Fun, Htap) ->
     iterate(gb_trees:iterator(Tree), S, List, Fun, Htap, []).
