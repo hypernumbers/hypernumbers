@@ -71,12 +71,18 @@ type_local_objs_2011_10_13() ->
                                   #local_obj{idx = Idx, type = T, path = P,
                                              obj = O} = X,
                                   case T of
-                                      undefined orelse "url" ->
+                                      undefined ->
                                           Pa = binary_to_term(P),
                                           Type = type(Pa),
                                           io:format("undefined ~p ~p is ~p~n",
                                                     [Pa, O, Type]),
                                           Rec = X#local_obj{type = Type},
+                                          mnesia:write(Tbl3, Rec, write);
+                                      "url" ->
+                                          Pa = binary_to_term(P),
+                                          io:format("string type url ~p ~p~n",
+                                                    [Pa, O]),
+                                          Rec = X#local_obj{type = url},
                                           mnesia:write(Tbl3, Rec, write);
                                       _ ->
                                           ok
