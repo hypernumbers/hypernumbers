@@ -16,6 +16,11 @@
          check/3
         ]).
 
+% zinfs need their own checking
+-export([
+         check_zinfs/3
+         ]).
+
 % local_objs is the major table
 % it defines the idx's that are used across the whole estate...
 -export([
@@ -32,6 +37,12 @@
          check_timer/3
         ]).
 
+% the verbose writer needs to be used elsewhere
+-export([
+         write/3
+        ]).
+
+
 % main api
 check() ->
     Sites = hn_setup:get_sites(),
@@ -45,6 +56,7 @@ check(Site, Verbose, Fix) ->
     end.
 
 check2(Site, Verbose, Fix) ->
+    BrokenZinfs       = check_zinfs(Site, Verbose, Fix),
     BrokenForms       = check_form(Site, Verbose, Fix),
     BrokenIncs        = check_include(Site, Verbose, Fix),
     BrokenItems       = check_item(Site, Verbose, Fix),
@@ -53,25 +65,32 @@ check2(Site, Verbose, Fix) ->
     BrokenTimers      = check_timer(Site, Verbose, Fix),
     case Verbose of
         verbose ->
-            io:format("BrokenForms  is ~p~n"
+            io:format("BrokenZinfs  is ~p~n"
+                      ++ "BrokenForms  is ~p~n"
                       ++ "BrokenIncs   is ~p~n"
                       ++ "BrokenItems  is ~p~n"
                       ++ "BrokenLogs   is ~p~n"
                       ++ "BrokenRels   is ~p~n"
                       ++ "BrokenTimers is ~p~n",
-                      [BrokenForms, BrokenIncs, BrokenItems,
-                       BrokenLogs, BrokenRels, BrokenTimers]);
+                      [BrokenZinfs, BrokenForms, BrokenIncs,
+                       BrokenItems, BrokenLogs, BrokenRels,
+                       BrokenTimers]);
         _ ->
-            io:format("No of Broken: Forms: ~p "
+            io:format("No of Broken: Zinfs: ~p "
+                      ++ "Forms: ~p "
                       ++ "Incs: ~p "
                       ++ "Items: ~p "
                       ++ "Logs: ~p "
                       ++ "Rels: ~p "
                       ++ "Timers: ~p~n",
-                      [length(BrokenForms), length(BrokenIncs),
-                       length(BrokenItems), length(BrokenLogs),
-                       Num, length(BrokenTimers)])
+                      [length(BrokenZinfs), length(BrokenForms),
+                       length(BrokenIncs), length(BrokenItems),
+                       length(BrokenLogs), Num, length(BrokenTimers)])
     end.
+
+% check zinfs
+check_zinfs(Site, Verbose, Fix) ->
+    zinf_srv:verify(Site, Verbose, Fix).
 
 % master table check
 check_local_obj(Site, V, _Fix) ->
@@ -100,19 +119,21 @@ check_local_obj(Site, V, _Fix) ->
                    % If the local_obj is a cell is MUST have one and
                    % only relation record - if it is not a cell it MUST NOT
                    % have a relation record
-                   NA2 = case {mnesia:read(Tbl1, I, read), O} of
-                             {[], {cell, _}} ->
+                   NA2 = case {mnesia:read(Tbl1, I, read), Ty, O} of
+                             {[], url, {cell, _}} ->
                                  write(V, "no rel for ~p~n", [I]),
                                  I;
-                             {[_Rec], {cell, _}} ->
+                             {[_Rec], url, {cell, _}} ->
                                  [];
-                             {[Rec], _} ->
+                             % cols, rows and pages don't have rels
+                             {[Rec], url, _} ->
                                  write(V, "shouldn't have a rel ~p for ~p~n",
                                        [Rec, I]),
                                  I;
-                             {[], _} ->
+                             % gurls don't have rels
+                             {[], gurl, _} ->
                                  [];
-                             List ->
+                             {List, _, _} ->
                                  write(V, "many rels ~p for ~p~n",
                                        [List, I]),
                                  I
@@ -142,12 +163,14 @@ check_logging(Site, _V, _Fix) ->
     _Borked = check_table(Site, logging).
 
 check_relation(Site, V, _Fix) ->
-    Tbl = new_db_wu:trans(Site, relation),
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    Tbl2 = new_db_wu:trans(Site, relation),
     Fun1 = fun(Rel, {IAcc, N}) ->
                    #relation{cellidx = Idx, children = C, parents = P,
                              infparents = Inf, z_parents = Z} = Rel,
                    Borked = check_rel2([{children, C}, {parents, P},
-                                    {inf, Inf}, {zs, Z}], Tbl, Idx, V, []),
+                                    {inf, Inf}, {zs, Z}], Tbl1, Tbl2,
+                                       Idx, V, []),
                    case summarise(Borked, 0) of
                        0 -> {IAcc, N};
                        I -> io:format("~p borked rels~n", [I]),
@@ -155,41 +178,41 @@ check_relation(Site, V, _Fix) ->
                    end
            end,
     Fun2 = fun() ->
-                   mnesia:foldl(Fun1, {[], 0}, Tbl)
+                   mnesia:foldl(Fun1, {[], 0}, Tbl2)
            end,
     mnesia:activity(transaction, Fun2).
 
 summarise([], N) -> N;
 summarise([{_, List} | T], N) -> summarise(T, length(List) + N).
 
-check_rel2([], _Tbl, _Idx, _V, [{zs, []}, {inf, []}, {parents, []},
-                                {children, []}]) ->
+check_rel2([], _Tbl1, _Tbl2, _Idx, _V, [{zs, []}, {inf, []}, {parents, []},
+                                        {children, []}]) ->
     [{zs, []}, {inf, []}, {parents, []}, {children, []}];
-check_rel2([], _Tbl, Idx, V, Acc) ->
+check_rel2([], _Tbl1, _Tbl2, Idx, V, Acc) ->
     write(V, "The following idxs are borked in the "
           ++ "relations record for ~p~n~p~n", [Idx, Acc]),
     Acc;
-check_rel2([{Type, I} | T], Tbl, Idx, V, Acc) ->
-    NewAcc = [check_rel3(I, Type, Idx, Tbl, V, []) | Acc],
-    check_rel2(T, Tbl, Idx, V, NewAcc).
+check_rel2([{Type, I} | T], Tbl1, Tbl2, Idx, V, Acc) ->
+    NewAcc = [check_rel3(I, Type, Idx, Tbl1, Tbl2, V, []) | Acc],
+    check_rel2(T, Tbl1, Tbl2, Idx, V, NewAcc).
 
-check_rel3([], Type, _Idx, _Tbl, _V, Acc) -> {Type, Acc};
-check_rel3([H | T], Type, Idx, Tbl, V, Acc) ->
-    NewAcc = case mnesia:read(Tbl, H, read) of
+check_rel3([], Type, _Idx, _Tbl1, _Tbl2, _V, Acc) -> {Type, Acc};
+check_rel3([H | T], Type, Idx, Tbl1, Tbl2, V, Acc) ->
+    NewAcc = case mnesia:read(Tbl1, H, read) of
                  []    -> write(V, "~p: ~p of ~p doesn't exist~n",
                                 [Type, H, Idx]),
                           [H | Acc];
                  _List -> Acc
              end,
-    NewAcc2 = case check_rel4(Type, H, Idx, Tbl, V) of
+    NewAcc2 = case check_rel4(Type, H, Idx, Tbl1, Tbl2, V) of
                   ok    -> NewAcc;
                   error -> [H | Acc]
               end,
-    check_rel3(T, Type, Idx, Tbl, V, NewAcc2).
+    check_rel3(T, Type, Idx, Tbl1, Tbl2, V, NewAcc2).
 
 % the relation record for each child MUST have the Idx as a parent
-check_rel4(children, C, Idx, Tbl, V) ->
-    case mnesia:read(Tbl, C, read) of
+check_rel4(children, C, Idx, _Tbl1, Tbl2, V) ->
+    case mnesia:read(Tbl2, C, read) of
         []  -> write(V, "The child ~p of ~p doesn't exist~n", [C, Idx]),
                error;
         [R] -> #relation{parents = P, infparents = I, z_parents = Z} = R,
@@ -203,20 +226,36 @@ check_rel4(children, C, Idx, Tbl, V) ->
                end
     end;
 % the relation record for each parent MUST have the idx as a child
-check_rel4(Type, P, Idx, Tbl, V) ->
-    case mnesia:read(Tbl, P, read) of
-        []  -> write(V, "The parent ~p: ~p of ~p doesn't exists~n",
-                     [Type, P, Idx]),
+check_rel4(parent, P, Idx, _Tbl1, Tbl2, V) ->
+    io:format("Tbl2 is ~p~n", [Tbl2]),
+    case mnesia:read(Tbl2, P, read) of
+        []  -> write(V, "The parent: ~p of ~p doesn't exist~n",
+                     [P, Idx]),
                error;
         [R] -> #relation{children = C} = R,
                case lists:member(Idx, C) of
                    true  -> ok;
-                   false -> write(V, "The relation of the parent ~p: ~p of ~p"
+                   false -> write(V, "The relation of the parent: ~p of ~p"
                                   ++ "doenst have it as a child~n",
-                                  [Type, P, Idx]),
+                                  [P, Idx]),
                             error
                end
-    end.
+    end;
+% an infinite or z_parent MUST have a local_obj of type 'gurl'
+% associated with
+check_rel4(Type, P, Idx, Tbl1, _Tbl2, V)
+  when Type == inf orelse Type == z_parents ->
+  case mnesia:read(Tbl1, P, read) of
+      []                        -> write(V, "The parent ~p: ~p of ~p "
+                                          ++" doesn't exist~n",
+                                          [Type, P, Idx]),
+                                    error;
+      [#local_obj{type = gurl}] -> ok;
+      [#local_obj{type = url}]  -> write(V, "The parent ~p: ~p of ~p "
+                                          ++" is a 'url' not 'gurl'~n",
+                                         [Type, P, Idx]),
+                                   error
+  end.
 
 check_timer(Site, _V, _Fix) ->
     _Borked = check_table(Site, timer).

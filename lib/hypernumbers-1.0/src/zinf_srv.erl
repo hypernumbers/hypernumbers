@@ -30,7 +30,8 @@
 -export([
          process_zinfs/1,
          check_zinfs/1,
-         dump/1
+         dump/1,
+         verify/3
         ]).
 
 % perf testing API
@@ -96,6 +97,10 @@ check_zinfs(Site) ->
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:cast({global, Id}, {dump, Site}).
+
+verify(Site, Verbose, Fix) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:call({global, Id}, {verify, Site, Verbose, Fix}).
 
 %%%===================================================================
 %%% Profiling
@@ -183,6 +188,9 @@ handle_call(start_fprof, _From, State) ->
     fprof:trace(start, TraceFile),
     io:format("TraceFile is ~p~n", [TraceFile]),
     {reply, TraceFile, State};
+handle_call({verify, Site, Verbose, Fix}, _From, State) ->
+    #state{site = Site, zinf_tree = Tree} = State,
+    {reply, verify_zs(Tree, Site, Verbose, Fix), State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
@@ -221,10 +229,10 @@ handle_cast(Msg, State) ->
     #state{site = S, zinf_tree = Tree} = State,
     {Act, NewT} =
         case Msg of
-            process_zinfs -> {write, process_zs(S, Tree)};
-            check_zinfs   -> {nothing, check_zs(S, Tree)};
-            {dump, Site}  -> dump(Tree, Site),
-                             {nothing, Tree}
+            process_zinfs                -> {write, process_zs(S, Tree)};
+            check_zinfs                  -> {nothing, check_zs(S, Tree)};
+            {dump, Site}                 -> dump(Tree, Site),
+                                            {nothing, Tree}
         end,
     case Act of
         write -> new_db_api:maybe_write_zinftree(S, NewT, ?maxqueuesize);
@@ -302,7 +310,10 @@ check(Tree, #xrefX{site = S, path = P} = XRefX) ->
 
 dump(Tree, Site) ->
     io:format("Dumping Zinf tree for ~p~n", [Site]),
-    ok = dump_tree(Tree, []).
+    ok = dump_tree(Tree, [], ok). % don't need an acc
+
+verify_zs(Tree, Site, Verbose, Fix) ->
+    verify_tree(Tree, [], {Site, Verbose, Fix, []}).
 
 %%%===================================================================
 %%% Funs to be applied to the tree
@@ -401,27 +412,57 @@ trim(K, Seg, Tree) ->
              end,
     {Status, gb_trees:enter(Seg, NewSubTree, Tree)}.
 
-dump_tree(Tree, Acc) -> Iter = gb_trees:iterator(Tree),
-                        dump_t2(Iter, Acc).
+verify_tree(Tree, PathAcc, Acc) ->
+    Fun = fun() ->
+                  Iter = gb_trees:iterator(Tree),
+                  iterate(Iter, fun verify_tree/3, fun verify2/3,
+                          PathAcc, Acc)
+          end,
+    mnesia:activity(transaction, Fun).
 
-dump_t2([], _Htap)  -> ok;
-dump_t2(Iter, Htap) ->
+dump_tree(Tree, PathAcc, Acc) -> Iter = gb_trees:iterator(Tree),
+                                 iterate(Iter, fun dump_tree/3,
+                                         fun dump_p/3, PathAcc, Acc).
+
+iterate([], _Fun1, _Fun2, _Htap, Acc) -> Acc;
+iterate(Iter, Fun1, Fun2, Htap, Acc) ->
     case gb_trees:next(Iter) of
         none                -> ok;
         {selector, Sel, I2} -> {selector, List} = Sel,
-                               dump_p(List, lists:reverse(Htap)),
-                               dump_t2(I2, Htap);
-        {{_, K}, V, I2}     -> dump_tree(V, [K | Htap]),
-                               dump_t2(I2, Htap)
+                               NewAcc = Fun2(List, lists:reverse(Htap), Acc),
+                               iterate(I2, Fun1, Fun2, Htap, NewAcc);
+        {{_, K}, V, I2}     -> Fun1(V, [K | Htap], Acc),
+                               Fun2(I2, Htap, Acc)
     end.
 
-dump_p([], _Path)     -> ok;
-dump_p([H | T], Path) -> {Obj, List} = H,
-                         P2 = hn_util:list_to_path(Path),
-                         Ref = hn_util:obj_to_ref(Obj),
-                         io:format("at ~p Idx's are~n ~p~n",
-                                   [P2 ++ Ref, List]),
-                         dump_p(T, Path).
+dump_p([], _Path, Acc)     -> Acc;
+dump_p([H | T], Path, Acc) -> {Obj, List} = H,
+                              P2 = hn_util:list_to_path(Path),
+                              Ref = hn_util:obj_to_ref(Obj),
+                              io:format("at ~p Idx's are~n ~p~n",
+                                        [P2 ++ Ref, List]),
+                              dump_p(T, Path, Acc).
+
+verify2([], _Path, {_, _, _, Acc}) -> Acc;
+verify2([H | T], Path, Acc)        -> {_, List} = H,
+                                      NewAcc = verify3(List, Acc),
+                                      verify2(T, Path, NewAcc).
+
+verify3([], Acc) -> Acc;
+verify3([H | T], {Site, Verbose, Fix, Acc}) ->
+    Tbl = new_db_wu:trans(Site, local_obj),
+    io:format("Site is ~p~n", [Site]),
+    NewAcc = case mnesia:read(Tbl, H, read) of
+                 []   -> new_db_verify:write(Verbose, "zinf ~p doesn't "
+                                             ++ "exist~n", [H]),
+                         [H | Acc];
+                 [_R] -> Acc;
+                 List -> new_db_verify:write(Verbose, "zinf ~p should have "
+                                             ++ "one local_obj only ~p~n",
+                                             [List]),
+                         [H | Acc]
+             end,
+    verify3(T, {Site, Verbose, Fix, NewAcc}).
 
 match_tree(Tree, S, List, Fun, Htap) ->
     iterate(gb_trees:iterator(Tree), S, List, Fun, Htap, []).
