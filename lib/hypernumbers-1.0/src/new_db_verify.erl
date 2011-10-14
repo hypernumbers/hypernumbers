@@ -182,7 +182,6 @@ check_local_obj(Site, V, _Fix) ->
 
 %% simple checks for duff idx's
 check_form(Site, _V, _Fix) ->
-    io:format("fix index of form~n"),
     _Borked = check_table(Site, form).
 
 check_include(Site, _V, _Fix) ->
