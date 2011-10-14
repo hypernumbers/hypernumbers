@@ -141,8 +141,12 @@ check_local_obj(Site, V, _Fix) ->
                         end,
                    % check that the type is not 'undefined'
                    NA1 = case Ty of
-                             undefined -> I;
-                             "url"     -> I;
+                             undefined -> write(V, "local_obj ~p is undefined",
+                                                [I]),
+                                          I;
+                             "url"     -> write(V, "local_obj ~p is quoted url",
+                                                [I]),
+                                          I;
                              url       -> [];
                              gurl      -> []
                          end,
