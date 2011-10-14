@@ -174,7 +174,6 @@ check_local_obj(Site, V, _Fix) ->
                    NA3 = hslists:uniq(lists:flatten([NA, NA1, NA2])),
                    lists:merge(NA3, Acc)
            end,
-    io:format("Checking site ~p~n", [Site]),
     Tbl2 = new_db_wu:trans(Site, local_obj),
     Fun2 = fun() ->
                    mnesia:foldl(Fun1, [], Tbl2)
