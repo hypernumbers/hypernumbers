@@ -46,7 +46,8 @@
 % main api
 check() ->
     Sites = hn_setup:get_sites(),
-    [check(X, quiet, dontfix) || X <- Sites].
+    [check(X, quiet, dontfix) || X <- Sites],
+    ok.
 
 check(Site, Verbose, Fix) ->
     io:format("Checking ~p with ~p ~p~n", [Site, Verbose, Fix]),
