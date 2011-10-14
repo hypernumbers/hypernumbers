@@ -133,9 +133,9 @@ check_local_obj(Site, V, _Fix) ->
                              % gurls don't have rels
                              {[], gurl, _} ->
                                  [];
-                             {List, _, _} ->
-                                 write(V, "many rels ~p for ~p~n",
-                                       [List, I]),
+                             {List, Type, Obj} ->
+                                 write(V, "many rels ~p for ~p ~p ~p~n",
+                                       [List, Type, Obj, I]),
                                  I
                          end,
                    NA3 = hslists:uniq(lists:flatten([NA, NA1, NA2])),
