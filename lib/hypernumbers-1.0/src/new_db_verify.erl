@@ -126,6 +126,9 @@ check_local_obj(Site, V, _Fix) ->
                                  I;
                              {[_Rec], url, {cell, _}} ->
                                  [];
+                             % cols, rows and pages should have no relations
+                             {[], url, _} ->
+                                 [];
                              % cols, rows and pages don't have rels
                              {[Rec], url, _} ->
                                  write(V, "shouldn't have a rel ~p for ~p~n",
