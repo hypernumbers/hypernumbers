@@ -313,7 +313,9 @@ dump(Tree, Site) ->
     ok = dump_tree(Tree, [], ok). % don't need an acc
 
 verify_zs(Tree, Site, Verbose, Fix) ->
-    verify_tree(Tree, [], {Site, Verbose, Fix, []}).
+    Ret = verify_tree(Tree, [], {Site, Verbose, Fix, []}),
+    {_, _, _, Acc} = Ret,
+    Acc.
 
 %%%===================================================================
 %%% Funs to be applied to the tree
@@ -443,15 +445,14 @@ dump_p([H | T], Path, Acc) -> {Obj, List} = H,
                                         [P2 ++ Ref, List]),
                               dump_p(T, Path, Acc).
 
-verify2([], _Path, {_, _, _, Acc}) -> Acc;
-verify2([H | T], Path, Acc)        -> {_, List} = H,
-                                      NewAcc = verify3(List, Acc),
-                                      verify2(T, Path, NewAcc).
+verify2([], _Path, Acc)     -> Acc;
+verify2([H | T], Path, Acc) -> {_, List} = H,
+                               NewAcc = verify3(List, Acc),
+                               verify2(T, Path, NewAcc).
 
 verify3([], Acc) -> Acc;
 verify3([H | T], {Site, Verbose, Fix, Acc}) ->
     Tbl = new_db_wu:trans(Site, local_obj),
-    io:format("Site is ~p~n", [Site]),
     NewAcc = case mnesia:read(Tbl, H, read) of
                  []   -> new_db_verify:write(Verbose, "zinf ~p doesn't "
                                              ++ "exist~n", [H]),
