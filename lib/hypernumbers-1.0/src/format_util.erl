@@ -60,7 +60,7 @@ get_short_month(5) -> "May";
 get_short_month(6) -> "Jun";
 get_short_month(7) -> "Jul";
 get_short_month(8) -> "Aug";
-get_short_month(9) -> "Sept";
+get_short_month(9) -> "Sep";
 get_short_month(10) -> "Oct";
 get_short_month(11) -> "Nov";
 get_short_month(12) -> "Dec".
