@@ -155,7 +155,7 @@ check_local_obj(Site, V, _Fix) ->
                    % have a relation record
                    NA2 = case {mnesia:read(Tbl1, I, read), Ty, O} of
                              {[], url, {cell, _}} ->
-                                 write(V, "no rel for ~p~n", [I]),
+                                 write(V, "no rel for ~p ~p ~p~n", [P2, O, I]),
                                  I;
                              {[_Rec], url, {cell, _}} ->
                                  [];
@@ -164,15 +164,16 @@ check_local_obj(Site, V, _Fix) ->
                                  [];
                              % cols, rows and pages don't have rels
                              {[Rec], url, _} ->
-                                 write(V, "shouldn't have a rel ~p for ~p~n",
-                                       [Rec, I]),
+                                 write(V, "shouldn't have a rel ~p for "
+                                       ++ "~p ~p ~p~n",
+                                       [Rec, P2, O, I]),
                                  I;
                              % gurls don't have rels
                              {[], gurl, _} ->
                                  [];
                              {List, Type, Obj} ->
-                                 write(V, "many rels ~p for ~p ~p ~p~n",
-                                       [List, Type, Obj, I]),
+                                 write(V, "many rels ~p for ~p ~p ~p ~p ~p~n",
+                                       [List, Type, Obj, P2, O, I]),
                                  I
                          end,
                    NA3 = hslists:uniq(lists:flatten([NA, NA1, NA2])),
