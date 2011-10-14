@@ -231,7 +231,6 @@ check_rel4(children, C, Idx, _Tbl1, Tbl2, V) ->
     end;
 % the relation record for each parent MUST have the idx as a child
 check_rel4(parents, P, Idx, _Tbl1, Tbl2, V) ->
-    io:format("Tbl2 is ~p~n", [Tbl2]),
     case mnesia:read(Tbl2, P, read) of
         []  -> write(V, "The parent: ~p of ~p doesn't exist~n",
                      [P, Idx]),
