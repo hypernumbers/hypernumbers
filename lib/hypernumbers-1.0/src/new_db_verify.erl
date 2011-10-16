@@ -143,14 +143,18 @@ check_local_obj(Site, V, _Fix) ->
                         end,
                    % check that the type is not 'undefined'
                    NA1 = case Ty of
-                             undefined -> write(V, "local_obj ~p is undefined~n",
-                                                [I]),
-                                          I;
-                             "url"     -> write(V, "local_obj ~p is quoted url~n",
-                                                [I]),
-                                          I;
-                             url       -> [];
-                             gurl      -> []
+                             undefined ->
+                                 write(V, "local_obj ~p is undefined~n",
+                                       [I]),
+                                 I;
+                             "url" ->
+                                 write(V, "local_obj ~p is quoted url~n",
+                                       [I]),
+                                 I;
+                             url ->
+                                 [];
+                             gurl ->
+                                 []
                          end,
                    % If the local_obj is a cell is MUST have one and
                    % only relation record - if it is not a cell it MUST NOT
