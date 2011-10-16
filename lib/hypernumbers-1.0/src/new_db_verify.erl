@@ -158,8 +158,7 @@ check_local_obj(Site, V, _Fix) ->
                    NA2 = case {mnesia:read(Tbl1, I, read), Ty, O} of
                              {[], url, {cell, _}} ->
                                  write(V, "no rel for ~p ~p ~p~n", [P2, O, I]),
-                                 dump_item(V, Site, I),
-                                 I;
+                                 probe_item(V, Site, I);
                              {[_Rec], url, {cell, _}} ->
                                  [];
                              % cols, rows and pages should have no relations
@@ -188,14 +187,21 @@ check_local_obj(Site, V, _Fix) ->
            end,
     mnesia:activity(transaction, Fun2).
 
-dump_item(verbose, Site, I) ->
+probe_item(V, Site, I) ->
     Tbl = new_db_wu:trans(Site, item),
     case mnesia:read(Tbl, I, read) of
-        []                 -> io:format("no item either~n");
-        [#item{attrs = A}] -> A2 = binary_to_term(A),
-                              io:format("Attrs is ~p~n", [A2])
-    end;
-dump_item(_, _, _) -> ok.
+        [] ->
+            write(V, "item ~p has no attrs as well~n", [I]),
+            I;
+        [#item{attrs = A}] ->
+            A2 = binary_to_term(A),
+            case lists:keyfind("formula", 1, A2) of
+                false -> [];
+                F     -> write(V, "relationless item ~p has formula ~p~n",
+                               [I, F]),
+                         I
+            end
+    end.
 
 %% simple checks for duff idx's
 check_form(Site, _V, _Fix) ->
