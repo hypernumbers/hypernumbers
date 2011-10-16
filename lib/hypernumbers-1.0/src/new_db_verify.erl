@@ -56,7 +56,17 @@ check(Site, Verbose, Fix) ->
         []   -> check2(Site, Verbose, Fix);
         List -> write(Verbose, "local objs borked~n~p~n", [List]),
                 BorkedZ = zinf_srv:check_borked(Site, Verbose, Fix, List),
-                io:format("BorkedZ is ~p~n", [BorkedZ]),
+                case BorkedZ of
+                    [] -> ok;
+                    _  -> case Verbose of
+                              verbose ->
+                                  io:format("borked zinfs are ~p~n",
+                                            [BorkedZ]);
+                              _ ->
+                                  io:format("There are ~p borked zinfs~n",
+                                            [length(BorkedZ)])
+                          end
+                end,
                 Tbl = new_db_wu:trans(Site, local_obj),
                 Size = mnesia:table_info(Tbl, size),
                 io:format("~p out of ~p local_objs are borked~n",
