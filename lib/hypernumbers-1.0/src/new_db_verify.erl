@@ -34,7 +34,6 @@
          check_form/3,
          check_include/3,
          check_item/3,
-         check_logging/3,
          check_relation/3,
          check_timer/3
         ]).
@@ -69,7 +68,6 @@ check2(Site, Verbose, Fix) ->
     BrokenForms       = check_form(Site,     Verbose, Fix),
     BrokenIncs        = check_include(Site,  Verbose, Fix),
     BrokenItems       = check_item(Site,     Verbose, Fix),
-    BrokenLogs        = check_logging(Site,  Verbose, Fix),
     {BrokenRels, Num} = check_relation(Site, Verbose, Fix),
     BrokenTimers      = check_timer(Site,    Verbose, Fix),
     case Verbose of
@@ -78,24 +76,20 @@ check2(Site, Verbose, Fix) ->
                       ++ "BrokenForms  is ~p~n"
                       ++ "BrokenIncs   is ~p~n"
                       ++ "BrokenItems  is ~p~n"
-                      ++ "BrokenLogs   is ~p~n"
                       ++ "BrokenRels   is ~p~n"
                       ++ "BrokenTimers is ~p~n",
                       [BrokenZinfs, BrokenForms, BrokenIncs,
-                       BrokenItems, BrokenLogs, BrokenRels,
-                       BrokenTimers]);
+                       BrokenItems, BrokenRels, BrokenTimers]);
         _ ->
             SizeForms  = ?m(new_db_wu:trans(Site, form),     size),
             SizeIncs   = ?m(new_db_wu:trans(Site, include),  size),
             SizeItems  = ?m(new_db_wu:trans(Site, item),     size),
-            SizeLogs   = ?m(new_db_wu:trans(Site, logging),  size),
             SizeRels   = ?m(new_db_wu:trans(Site, relation), size),
             SizeTimers = ?m(new_db_wu:trans(Site, timer),    size),
             Errors = length(BrokenZinfs)
                 + length(BrokenForms)
                 + length(BrokenIncs)
                 + length(BrokenItems)
-                + length(BrokenLogs)
                 + Num
                 + length(BrokenTimers),
             case Errors of
@@ -107,17 +101,15 @@ check2(Site, Verbose, Fix) ->
                               ++ "Forms:  ~p out of ~p~n"
                               ++ "Incs:   ~p out of ~p~n"
                               ++ "Items:  ~p out of ~p~n"
-                              ++ "Logs:   ~p out of ~p~n"
                               ++ "Rels:   ~p out of ~p~n"
                               ++ "Timers: ~p out of ~p~n",
                               [length(BrokenZinfs),
                                length(BrokenForms), SizeForms,
                                length(BrokenIncs),  SizeIncs,
                                length(BrokenItems), SizeItems,
-                               length(BrokenLogs),  SizeLogs,
                                Num, SizeRels,
                                length(BrokenTimers), SizeTimers])
-                    end
+            end
     end.
 
 % check zinfs
@@ -228,9 +220,6 @@ check_include(Site, _V, _Fix) ->
 
 check_item(Site, _V, _Fix) ->
     _Borked = check_table(Site, item).
-
-check_logging(Site, _V, _Fix) ->
-    _Borked = check_table(Site, logging).
 
 check_relation(Site, V, _Fix) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
