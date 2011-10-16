@@ -157,7 +157,6 @@ check_local_obj(Site, V, _Fix) ->
                    % have a relation record
                    NA2 = case {mnesia:read(Tbl1, I, read), Ty, O} of
                              {[], url, {cell, _}} ->
-                                 write(V, "no rel for ~p ~p ~p~n", [P2, O, I]),
                                  probe_item(V, Site, I);
                              {[_Rec], url, {cell, _}} ->
                                  [];
