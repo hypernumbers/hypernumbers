@@ -80,7 +80,7 @@ remove_floating_local_objs_2011_10_14() ->
                                       {[], [], url, {cell, _}} ->
                                           io:format("floater ~p ~p ~p~n",
                                                     [P2, O, Idx]),
-                                      ok = mnesia:delete_object(Tbl1, LO, write);
+                                      ok = mnesia:delete(Tbl1, Idx, write);
                                        _Other ->
                                           ok
                                   end,
