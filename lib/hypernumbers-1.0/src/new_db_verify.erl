@@ -190,7 +190,7 @@ check_local_obj(Site, V, _Fix) ->
 
 dump_item(verbose, Site, I) ->
     Tbl = new_db_wu:trans(Site, item),
-    case mnesia:read(I, Tbl, read) of
+    case mnesia:read(Tbl, I, read) of
         []                 -> io:format("no item either~n");
         [#item{attrs = A}] -> A2 = binary_to_term(A),
                               io:format("Attrs is ~p~n", [A2])
