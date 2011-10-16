@@ -75,8 +75,8 @@ check(Site, Verbose, Fix) ->
                 end,
                 Tbl = new_db_wu:trans(Site, local_obj),
                 Size = mnesia:table_info(Tbl, size),
-                io:format("~p out of ~p local_objs are borked~n",
-                          [length(List), Size])
+                io:format("in ~p ~p out of ~p local_objs are borked~n",
+                          [Site, length(List), Size])
     end.
 
 check2(Site, Verbose, Fix) ->
