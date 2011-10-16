@@ -152,7 +152,7 @@ check_local_obj(Site, V, _Fix) ->
                                        [I, P2, O2]),
                                  I;
                              _ ->
-                                 ok
+                                 []
                          end,
                    % check that the type is not 'undefined'
                    NA1 = case Ty of
