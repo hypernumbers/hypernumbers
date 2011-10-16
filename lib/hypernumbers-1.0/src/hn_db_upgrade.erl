@@ -71,6 +71,7 @@ remove_floating_local_objs_2011_10_14() ->
                    Tbl2 = new_db_wu:trans(Site, item),
                    Tbl3 = new_db_wu:trans(Site, relation),
                    Fun1 = fun(LO, []) ->
+                                  io:format("."),
                                   #local_obj{idx = Idx, type = Ty,
                                              path = P, obj = O} = LO,
                                   P2 = binary_to_term(P),
