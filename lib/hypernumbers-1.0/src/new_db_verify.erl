@@ -134,13 +134,26 @@ check_local_obj(Site, V, _Fix) ->
                    P2 = hn_util:list_to_path(binary_to_term(P)),
                    O2 = hn_util:obj_to_ref(O),
                    R2 = binary_to_term(R),
-                   NA = case P2 ++ O2 of
+                   NA0 = case P2 ++ O2 of
                             R2 -> [];
                             _  ->
                                 write(V,"Revidx is borked ~p ~p~n",
                                       [R2, P2 ++ O2]),
                                 I
                         end,
+                   % check that things dont have negative indices
+                   NA = case O of
+                             {cell, {X, Y}} when X < 1 orelse Y < 1 ->
+                                 write(V, "local_obj ~p ~p ~p is duff~n",
+                                       [I, P2, O2]),
+                                 I;
+                             {_, {N1, N2}} when N1 < 1 orelse N2 < 1 ->
+                                 write(V, "local_obj ~p ~p ~p is duff~n",
+                                       [I, P2, O2]),
+                                 I;
+                             _ ->
+                                 ok
+                         end,
                    % check that the type is not 'undefined'
                    NA1 = case Ty of
                              undefined ->
@@ -181,7 +194,7 @@ check_local_obj(Site, V, _Fix) ->
                                        [List, Type, Obj, P2, O, I]),
                                  I
                          end,
-                   NA3 = hslists:uniq(lists:flatten([NA, NA1, NA2])),
+                   NA3 = hslists:uniq(lists:flatten([NA, NA0, NA1, NA2])),
                    lists:merge(NA3, Acc)
            end,
     Tbl2 = new_db_wu:trans(Site, local_obj),
