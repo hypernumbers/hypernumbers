@@ -47,11 +47,17 @@
 % main api
 check() ->
     Sites = hn_setup:get_sites(),
-    [check(X, quiet, dontfix) || X <- Sites],
+    io:format("about to check ~p sites...~n", [length(Sites)]),
+    Fun = fun(X) ->
+                  io:format("."),
+                  check(X, quiet, dontfix)
+          end,
+    [Fun(X) || X <- Sites],
+    io:format("Over and out...~n"),
     ok.
 
 check(Site, Verbose, Fix) ->
-    io:format("Checking ~p with ~p ~p~n", [Site, Verbose, Fix]),
+    write(Verbose, "Checking ~p with ~p ~p~n", [Site, Verbose, Fix]),
     case check_local_obj(Site, Verbose, Fix) of
         []   -> check2(Site, Verbose, Fix);
         List -> write(Verbose, "local objs borked~n~p~n", [List]),
@@ -104,7 +110,7 @@ check2(Site, Verbose, Fix) ->
                 + length(BrokenTimers),
             case Errors of
                 0 ->
-                    io:format("No errors~n");
+                    write(Verbose, "No errors~n", []);
                 _N ->
                     io:format("No of Broken:~n"
                               ++ "Zinfs:  ~p~n"
