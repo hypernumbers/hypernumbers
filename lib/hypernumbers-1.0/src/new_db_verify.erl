@@ -65,13 +65,13 @@ check(Site, Verbose, Fix) ->
     end.
 
 check2(Site, Verbose, Fix) ->
-    BrokenZinfs       = check_zinfs(Site, Verbose, Fix),
-    BrokenForms       = check_form(Site, Verbose, Fix),
-    BrokenIncs        = check_include(Site, Verbose, Fix),
-    BrokenItems       = check_item(Site, Verbose, Fix),
-    BrokenLogs        = check_logging(Site, Verbose, Fix),
+    BrokenZinfs       = check_zinfs(Site,    Verbose, Fix),
+    BrokenForms       = check_form(Site,     Verbose, Fix),
+    BrokenIncs        = check_include(Site,  Verbose, Fix),
+    BrokenItems       = check_item(Site,     Verbose, Fix),
+    BrokenLogs        = check_logging(Site,  Verbose, Fix),
     {BrokenRels, Num} = check_relation(Site, Verbose, Fix),
-    BrokenTimers      = check_timer(Site, Verbose, Fix),
+    BrokenTimers      = check_timer(Site,    Verbose, Fix),
     case Verbose of
         verbose ->
             io:format("BrokenZinfs  is ~p~n"
@@ -158,6 +158,7 @@ check_local_obj(Site, V, _Fix) ->
                    NA2 = case {mnesia:read(Tbl1, I, read), Ty, O} of
                              {[], url, {cell, _}} ->
                                  write(V, "no rel for ~p ~p ~p~n", [P2, O, I]),
+                                 dump_item(V, Site, I),
                                  I;
                              {[_Rec], url, {cell, _}} ->
                                  [];
@@ -186,6 +187,15 @@ check_local_obj(Site, V, _Fix) ->
                    mnesia:foldl(Fun1, [], Tbl2)
            end,
     mnesia:activity(transaction, Fun2).
+
+dump_item(verbose, Site, I) ->
+    Tbl = new_db_wu:trans(Site, item),
+    case mnesia:read(I, Tbl, read) of
+        []                 -> io:format("no item either~n");
+        [#item{attrs = A}] -> A2 = binary_to_term(A),
+                              io:format("Attrs is ~p~n", [A2])
+    end;
+dump_item(_, _, _) -> ok.
 
 %% simple checks for duff idx's
 check_form(Site, _V, _Fix) ->
