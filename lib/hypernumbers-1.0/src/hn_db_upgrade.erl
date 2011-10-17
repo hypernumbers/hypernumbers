@@ -81,7 +81,7 @@ remove_floating_local_objs_2011_10_14() ->
                                       {[], [], url, {cell, _}} ->
                                           io:format("floater ~p ~p ~p~n",
                                                     [P2, O, Idx]),
-                                          [I | Acc];
+                                          [Idx | Acc];
                                        _Other ->
                                           Acc
                                   end
@@ -89,16 +89,16 @@ remove_floating_local_objs_2011_10_14() ->
                    Fun2 = fun() ->
                                   mnesia:foldl(Fun1, [], Tbl1)
                           end,
-                   mnesia:activity(transaction, Fun2)
-           end,
-    List = lists:foreach(Fun1, Sites),
-    Fun3 = fun() ->
-                   Fun4 = fun(X) ->
-                                  mnesia:delete(Tbl1, X, write)
+                   List = mnesia:activity(transaction, Fun2),
+                   Fun3 = fun(X) ->
+                                  Fun4 = fun() ->
+                                                 mnesia:delete(Tbl1, X, write)
+                                         end,
+                                  mnesia:activity(transaction, Fun4)
                           end,
-                   Fun5 = mnesia:activity(transaction, Fun4)
+                   [Fun3(X) || X <- List]
            end,
-    [Fun3(X) || X <- List].
+    lists:foreach(Fun1, Sites).
 
 type_local_objs_2011_10_13() ->
     Sites = hn_setup:get_sites(),
