@@ -130,7 +130,10 @@ raw_idx_DEBUG(Site, Idx) ->
                           io:format("Raw item is ~p~n", [R2]),
                           Attrs2 = binary_to_term(R2#item.attrs),
                           io:format("item: idx ~p~n attrs ~p~n",
-                                    [R2#item.idx, Attrs2])
+                                    [R2#item.idx, Attrs2]),
+                          Tab3 = new_db_wu:trans(Site, relation),
+                          Rels = mnesia:read(Tab3, Idx, read),
+                          io:format("Raw Relations is ~p~n", [Rels])
                   end
           end,
     mnesia:transaction(Fun).
