@@ -314,7 +314,7 @@ check_relation(Site, V, _Fix) ->
     Fun2 = fun() ->
                    mnesia:foldl(Fun1, {[], 0}, Tbl2)
            end,
-    mnesia:activity(transaction, Fun2).
+    mnesia:activity(ets, Fun2).
 
 summarise([], N) -> N;
 summarise([{_, List} | T], N) -> summarise(T, length(List) + N).
@@ -414,7 +414,7 @@ check_table(Site, Table) ->
     Fun2 = fun() ->
                    mnesia:foldl(Fun1, [], Tbl)
            end,
-    mnesia:activity(transaction, Fun2).
+    mnesia:activity(etc, Fun2).
 
 write(verbose, Msg, Data) -> io:format(Msg, Data);
 write(_, _, _)            -> ok.
