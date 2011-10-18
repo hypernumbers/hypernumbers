@@ -65,6 +65,7 @@
 
 remove_floating_local_objs_2011_10_14() ->
     Sites = hn_setup:get_sites(),
+    Empty = term_to_binary([]),
     F1 = fun(Site) ->
                  io:format("Checking site ~p~n", [Site]),
                  Tbl1 = new_db_wu:trans(Site, local_obj),
@@ -79,14 +80,9 @@ remove_floating_local_objs_2011_10_14() ->
                                       Items = mnesia:read(Tbl2, Idx, read),
                                       case Items of
                                           [] ->
-                                              case mnesia:read(Tbl3, Idx, read) of
-                                                  [] ->
-                                                      io:format("floater ~p ~p ~p~n",
-                                                                [P2, O, Idx]),
-                                                      [Idx | Acc];
-                                                  _ ->
-                                                      Acc
-                                              end;
+                                              remove2(Tbl3, Idx, P2, O, Acc);
+                                          Empty ->
+                                              remove2(Tbl3, Idx, P2, O, Acc);
                                           _ ->
                                               Acc
                                       end;
@@ -107,6 +103,17 @@ remove_floating_local_objs_2011_10_14() ->
                  [F4(X) || X <- List]
          end,
     lists:foreach(F1, Sites).
+
+remove2(Tbl3, Idx, P2, O, Acc) ->
+    case mnesia:read(Tbl3, Idx, read) of
+        [] ->
+            io:format("floater ~p ~p ~p~n",
+                      [P2, O, Idx]),
+            [Idx | Acc];
+        _ ->
+            Acc
+    end.
+
 
 type_local_objs_2011_10_13() ->
     Sites = hn_setup:get_sites(),
