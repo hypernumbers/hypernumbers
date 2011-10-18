@@ -132,6 +132,8 @@ is_num_or_date(X) ->
                      [return_errors, {all, fun is_num_or_date/1}],
                      fun '+_'/1).
 
+'+_'([D1, D2]) when is_record(D1, datetime) andalso is_record(D2, datetime) ->
+    ?ERRVAL_VAL;
 '+_'([DT, V2]) when is_record(DT, datetime) ->
     '+_'([V2, DT]);
 '+_'([V1, #datetime{date=Date, time=Time}]) when is_number(V1) ->
