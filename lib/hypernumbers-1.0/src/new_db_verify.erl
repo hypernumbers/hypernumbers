@@ -143,7 +143,7 @@ check_local_objs2(Site, Verbose) ->
     F3 = fun() ->
                  mnesia:foldl(F2, {0, []}, Tbl)
          end,
-    {NBorked, Borked} = mnesia:activity(async_dirty, F3),
+    {NBorked, Borked} = mnesia:activity(ets, F3),
     write(Verbose, "~p borked local_objs for ~p~n",
           [NBorked, Site]),
     transform(Borked, []).
@@ -414,7 +414,7 @@ check_table(Site, Table) ->
     Fun2 = fun() ->
                    mnesia:foldl(Fun1, [], Tbl)
            end,
-    mnesia:activity(etc, Fun2).
+    mnesia:activity(ets, Fun2).
 
 write(verbose, Msg, Data) -> io:format(Msg, Data);
 write(_, _, _)            -> ok.
