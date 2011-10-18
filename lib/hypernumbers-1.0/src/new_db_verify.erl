@@ -61,18 +61,6 @@ check(Site, Verbose, Fix) ->
     case check_local_obj(Site, Verbose, Fix) of
         []   -> check2(Site, Verbose, Fix);
         List -> write(Verbose, "local objs borked~n~p~n", [List]),
-                BorkedZ = zinf_srv:check_borked(Site, Verbose, Fix, List),
-                case BorkedZ of
-                    [] -> ok;
-                    _  -> case Verbose of
-                              verbose ->
-                                  io:format("borked zinfs are ~p~n",
-                                            [BorkedZ]);
-                              _ ->
-                                  io:format("There are ~p borked zinfs~n",
-                                            [length(BorkedZ)])
-                          end
-                end,
                 Tbl = new_db_wu:trans(Site, local_obj),
                 Size = mnesia:table_info(Tbl, size),
                 io:format("in ~p ~p out of ~p local_objs are borked~n",
@@ -80,6 +68,7 @@ check(Site, Verbose, Fix) ->
     end.
 
 check2(Site, Verbose, Fix) ->
+    Borked = check_local_objs2(Site, Verbose),
     BrokenZinfs       = check_zinfs(Site,    Verbose, Fix),
     BrokenForms       = check_form(Site,     Verbose, Fix),
     BrokenIncs        = check_include(Site,  Verbose, Fix),
@@ -88,6 +77,7 @@ check2(Site, Verbose, Fix) ->
     BrokenTimers      = check_timer(Site,    Verbose, Fix),
     case Verbose of
         verbose ->
+            io:format("Borked local_objs are ~p~n", [Borked]),
             io:format("BrokenZinfs  is ~p~n"
                       ++ "BrokenForms  is ~p~n"
                       ++ "BrokenIncs   is ~p~n"
@@ -97,12 +87,14 @@ check2(Site, Verbose, Fix) ->
                       [BrokenZinfs, BrokenForms, BrokenIncs,
                        BrokenItems, BrokenRels, BrokenTimers]);
         _ ->
-            SizeForms  = ?m(new_db_wu:trans(Site, form),     size),
-            SizeIncs   = ?m(new_db_wu:trans(Site, include),  size),
-            SizeItems  = ?m(new_db_wu:trans(Site, item),     size),
-            SizeRels   = ?m(new_db_wu:trans(Site, relation), size),
-            SizeTimers = ?m(new_db_wu:trans(Site, timer),    size),
-            Errors = length(BrokenZinfs)
+            SizeLObjs  = ?m(new_db_wu:trans(Site, local_objs), size),
+            SizeForms  = ?m(new_db_wu:trans(Site, form),       size),
+            SizeIncs   = ?m(new_db_wu:trans(Site, include),    size),
+            SizeItems  = ?m(new_db_wu:trans(Site, item),       size),
+            SizeRels   = ?m(new_db_wu:trans(Site, relation),   size),
+            SizeTimers = ?m(new_db_wu:trans(Site, timer),      size),
+            Errors = length(Borked)
+                + length(BrokenZinfs)
                 + length(BrokenForms)
                 + length(BrokenIncs)
                 + length(BrokenItems)
@@ -112,6 +104,8 @@ check2(Site, Verbose, Fix) ->
                 0 ->
                     write(Verbose, "No errors~n", []);
                 _N ->
+                    io:format("No of borked Local_objs:~p out of ~p~n",
+                              [length(Borked), SizeLObjs]),
                     io:format("No of Broken:~n"
                               ++ "Zinfs:  ~p~n"
                               ++ "Forms:  ~p out of ~p~n"
@@ -128,9 +122,73 @@ check2(Site, Verbose, Fix) ->
             end
     end.
 
+% second pass check of local_objs
+check_local_objs2(Site, Verbose) ->
+    Tbl = new_db_wu:trans(Site, local_obj),
+    F2 = fun(LO, {N, Acc}) ->
+                 #local_obj{path = P, obj = O, revidx = R} = LO,
+                 P2 = binary_to_term(P),
+                 Pattern = {local_obj, '_', '_', '_', '_', R},
+                 case mnesia:index_match_object(Tbl, Pattern, 6, read) of
+                     [_I] ->
+                         {N, Acc};
+                     List ->
+                         write(Verbose, "~p LO ~p ~p ~p borked ~p~n",
+                               [N, Site, P2, O, length(List)]),
+                         NewAcc = add(P, O, List, Acc),
+                         {N + 1, NewAcc}
+                 end
+         end,
+    F3 = fun() ->
+                 mnesia:foldl(F2, {0, []}, Tbl)
+         end,
+    {NBorked, Borked} = mnesia:activity(async_dirty, F3),
+    write(Verbose, "~p borked local_objs for ~p~n",
+          [NBorked, Site]),
+    transform(Borked, []).
+
+transform([], Acc) -> Acc;
+transform([H | T], Acc) ->
+    {_, List} = H,
+    Fun = fun(#local_obj{idx = I1}, #local_obj{idx = I2}) ->
+                  if
+                      I1 >  I2 -> true;
+                      I1 =< I2 -> false
+                  end
+          end,
+    L2 = lists:sort(Fun, List),
+    [LO | Extras] = L2,
+    NewAcc = lists:merge(zip(Extras, LO, []), Acc),
+    transform(T, NewAcc).
+
+zip([], _, Acc)       -> Acc;
+zip([H | T], LO, Acc) ->
+    #local_obj{idx = BorkedIdx} = H,
+    #local_obj{idx = MasterIdx} = LO,
+    zip(T, LO, [{BorkedIdx, MasterIdx} | Acc]).
+
+add(Path, Obj, List, Acc) ->
+    case lists:keymember({Path, Obj}, 1, Acc) of
+        true  -> Acc;
+        false -> [{{Path, Obj}, List} | Acc]
+    end.
+
 % check zinfs
 check_zinfs(Site, Verbose, Fix) ->
     zinf_srv:verify(Site, Verbose, Fix).
+
+%% BorkedZ = zinf_srv:check_borked(Site, Verbose, Fix, List),
+%% case BorkedZ of
+%%     [] -> ok;
+%%     _  -> case Verbose of
+%%               verbose ->
+%%                   io:format("borked zinfs are ~p~n",
+%%                             [BorkedZ]);
+%%               _ ->
+%%                   io:format("There are ~p borked zinfs~n",
+%%                             [length(BorkedZ)])
+%%           end
+%% end,
 
 % master table check
 check_local_obj(Site, V, _Fix) ->
@@ -145,8 +203,8 @@ check_local_obj(Site, V, _Fix) ->
                    NA0 = case P2 ++ O2 of
                             R2 -> [];
                             _  ->
-                                write(V,"Revidx is borked ~p ~p~n",
-                                      [R2, P2 ++ O2]),
+                                write(V,"Revidx ~p is borked ~p ~p~n",
+                                      [I, R2, P2 ++ O2]),
                                 I
                         end,
                    % check that things dont have negative indices
@@ -178,7 +236,7 @@ check_local_obj(Site, V, _Fix) ->
                                  []
                          end,
                    % If the local_obj is a cell is MUST have one and
-                   % only relation record - if it is not a cell it MUST NOT
+                   % only one relation record - if it is not a cell it MUST NOT
                    % have a relation record
                    NA2 = case {mnesia:read(Tbl1, I, read), Ty, O} of
                              {[], url, {cell, _}} ->
@@ -209,7 +267,7 @@ check_local_obj(Site, V, _Fix) ->
     Fun2 = fun() ->
                    mnesia:foldl(Fun1, [], Tbl2)
            end,
-    mnesia:activity(transaction, Fun2).
+    mnesia:activity(ets, Fun2).
 
 probe_item(V, Site, I) ->
     Tbl = new_db_wu:trans(Site, item),
