@@ -104,8 +104,9 @@ check2(Site, Verbose, Fix) ->
                 0 ->
                     write(Verbose, "No errors~n", []);
                 _N ->
-                    io:format("No of borked Local_objs:~p out of ~p~n",
-                              [length(Borked), SizeLObjs]),
+                    io:format("~nSite: ~p~nNo of borked Local_objs:~p "
+                              ++ "out of ~p~n",
+                              [Site, length(Borked), SizeLObjs]),
                     io:format("No of Broken:~n"
                               ++ "Zinfs:  ~p~n"
                               ++ "Forms:  ~p out of ~p~n"
