@@ -87,7 +87,7 @@ check2(Site, Verbose, Fix) ->
                       [BrokenZinfs, BrokenForms, BrokenIncs,
                        BrokenItems, BrokenRels, BrokenTimers]);
         _ ->
-            SizeLObjs  = ?m(new_db_wu:trans(Site, local_objs), size),
+            SizeLObjs  = ?m(new_db_wu:trans(Site, local_obj), size),
             SizeForms  = ?m(new_db_wu:trans(Site, form),       size),
             SizeIncs   = ?m(new_db_wu:trans(Site, include),    size),
             SizeItems  = ?m(new_db_wu:trans(Site, item),       size),
@@ -104,7 +104,7 @@ check2(Site, Verbose, Fix) ->
                 0 ->
                     write(Verbose, "No errors~n", []);
                 _N ->
-                    io:format("~nSite: ~p~nNo of borked Local_objs:~p "
+                    io:format("~nSite: ~p~nNo of borked local_objs:~p "
                               ++ "out of ~p~n",
                               [Site, length(Borked), SizeLObjs]),
                     io:format("No of Broken:~n"
