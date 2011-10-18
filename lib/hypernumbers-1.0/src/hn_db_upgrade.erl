@@ -65,40 +65,48 @@
 
 remove_floating_local_objs_2011_10_14() ->
     Sites = hn_setup:get_sites(),
-    Fun1 = fun(Site) ->
-                   io:format("Checking site ~p~n", [Site]),
-                   Tbl1 = new_db_wu:trans(Site, local_obj),
-                   Tbl2 = new_db_wu:trans(Site, item),
-                   Tbl3 = new_db_wu:trans(Site, relation),
-                   Fun1 = fun(LO, Acc) ->
-                                  io:format("."),
-                                  #local_obj{idx = Idx, type = Ty,
-                                             path = P, obj = O} = LO,
-                                  P2 = binary_to_term(P),
-                                  Items = mnesia:read(Tbl2, Idx, read),
-                                  Rels  = mnesia:read(Tbl3, Idx, read),
-                                  case {Items, Rels, Ty, O} of
-                                      {[], [], url, {cell, _}} ->
-                                          io:format("floater ~p ~p ~p~n",
-                                                    [P2, O, Idx]),
-                                          [Idx | Acc];
-                                       _Other ->
-                                          Acc
-                                  end
-                          end,
-                   Fun2 = fun() ->
-                                  mnesia:foldl(Fun1, [], Tbl1)
-                          end,
-                   List = mnesia:activity(transaction, Fun2),
-                   Fun3 = fun(X) ->
-                                  Fun4 = fun() ->
-                                                 mnesia:delete(Tbl1, X, write)
-                                         end,
-                                  mnesia:activity(transaction, Fun4)
-                          end,
-                   [Fun3(X) || X <- List]
-           end,
-    lists:foreach(Fun1, Sites).
+    F1 = fun(Site) ->
+                 io:format("Checking site ~p~n", [Site]),
+                 Tbl1 = new_db_wu:trans(Site, local_obj),
+                 Tbl2 = new_db_wu:trans(Site, item),
+                 Tbl3 = new_db_wu:trans(Site, relation),
+                 F2 = fun(LO, Acc) ->
+                              #local_obj{idx = Idx, type = Ty,
+                                         path = P, obj = O} = LO,
+                              P2 = binary_to_term(P),
+                              case {Ty, O} of
+                                  {url, {cell, _}} ->
+                                      Items = mnesia:read(Tbl2, Idx, read),
+                                      case Items of
+                                          [] ->
+                                              case mnesia:read(Tbl3, Idx, read) of
+                                                  [] ->
+                                                      io:format("floater ~p ~p ~p~n",
+                                                                [P2, O, Idx]),
+                                                      [Idx | Acc];
+                                                  _ ->
+                                                      Acc
+                                              end;
+                                          _ ->
+                                              Acc
+                                      end;
+                                  _ ->
+                                      Acc
+                              end
+                      end,
+                 F3 = fun() ->
+                              mnesia:foldl(F2, [], Tbl1)
+                      end,
+                 List = mnesia:activity(transaction, F3),
+                 F4 = fun(X) ->
+                              F5 = fun() ->
+                                           mnesia:delete(Tbl1, X, write)
+                                   end,
+                              mnesia:activity(transaction, F5)
+                      end,
+                 [F4(X) || X <- List]
+         end,
+    lists:foreach(F1, Sites).
 
 type_local_objs_2011_10_13() ->
     Sites = hn_setup:get_sites(),
