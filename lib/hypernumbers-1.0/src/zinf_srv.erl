@@ -31,6 +31,7 @@
          process_zinfs/1,
          check_zinfs/1,
          dump/1,
+         dump_to_file/2,
          verify/3,
          check_borked/4
         ]).
@@ -94,6 +95,10 @@ process_zinfs(Site) ->
 check_zinfs(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:cast({global, Id}, check_zinfs).
+
+dump_to_file(Site, File) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:cast({global, Id}, {dump_to_file, Site, File}).
 
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
@@ -237,10 +242,12 @@ handle_cast(Msg, State) ->
     #state{site = S, zinf_tree = Tree} = State,
     {Act, NewT} =
         case Msg of
-            process_zinfs                -> {write, process_zs(S, Tree)};
-            check_zinfs                  -> {nothing, check_zs(S, Tree)};
-            {dump, Site}                 -> dump(Tree, Site),
-                                            {nothing, Tree}
+            process_zinfs              -> {write, process_zs(S, Tree)};
+            check_zinfs                -> {nothing, check_zs(S, Tree)};
+            {dump, Site}               -> dump(Tree, Site),
+                                          {nothing, Tree};
+            {dump_to_file, Site, File} -> dump_to_f(Tree, Site, File),
+                                          {nothing, Tree}
         end,
     case Act of
         write -> new_db_api:maybe_write_zinftree(S, NewT, ?maxqueuesize);
@@ -319,6 +326,10 @@ check(Tree, #xrefX{site = S, path = P} = XRefX) ->
 dump(Tree, Site) ->
     io:format("Dumping Zinf tree for ~p~n", [Site]),
     ok = dump_tree(Tree, [], ok). % don't need an acc
+
+dump_to_f(Tree, Site, File) ->
+    {Site, File} = dump_treef(Tree, [], {Site, File}),
+    ok.
 
 verify_zs(Tree, Site, Verbose, Fix) ->
     Ret = verify_tree(Tree, [], {Site, Verbose, Fix, []}),
@@ -444,9 +455,13 @@ verify_tree(Tree, PathAcc, Acc) ->
           end,
     mnesia:activity(transaction, Fun).
 
-dump_tree(Tree, PathAcc, Acc) -> Iter = gb_trees:iterator(Tree),
-                                 iterate(Iter, fun dump_tree/3,
-                                         fun dump_p/3, PathAcc, Acc).
+dump_tree(Tree, PathAcc, Acc) ->
+    Iter = gb_trees:iterator(Tree),
+    iterate(Iter, fun dump_tree/3, fun dump_p/3, PathAcc, Acc).
+
+dump_treef(Tree, PathAcc, Acc) ->
+    Iter = gb_trees:iterator(Tree),
+    iterate(Iter, fun dump_treef/3, fun dump_f/3, PathAcc, Acc).
 
 iterate([], _Fun1, _Fun2, _Htap, Acc) -> Acc;
 iterate(Iter, Fun1, Fun2, Htap, Acc) ->
@@ -470,6 +485,16 @@ dump_p([H | T], Path, Acc) -> {Obj, List} = H,
                               io:format("at ~p Idx's are~n ~p~n",
                                         [P2 ++ Ref, List]),
                               dump_p(T, Path, Acc).
+
+dump_f([], _Path, Acc)     -> Acc;
+dump_f([H | T], Path, Acc) -> {Obj, List} = H,
+                              {Site, File} = Acc,
+                              P2 = hn_util:list_to_path(Path),
+                              Ref = hn_util:obj_to_ref(Obj),
+                              String = io_lib:format("{~p,~p,~p}.",
+                                        [Site, P2 ++ Ref, List]),
+                              dump_string(String, File),
+                              dump_f(T, Path, Acc).
 
 verify2([], _Path, Acc)     -> Acc;
 verify2([H | T], Path, Acc) -> {_, List} = H,
@@ -1491,6 +1516,17 @@ perf3(Stamp, N, Tree, Idx, S, P, Obj) ->
     %AddMsg = io_lib:format("~p", [AddEnd - AddStart]),
     %log(AddMsg, "zinf_loading" ++ Stamp ++ ".csv"),
     perf3(Stamp, N - 1, NewTree, Idx + 1, S, P, Obj).
+
+dump_string(String, File) ->
+    Dir = "/home/gordon/hypernumbers/",
+    _Return = filelib:ensure_dir(Dir ++ File),
+    case file:open(Dir ++ File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [String]),
+            file:close(Id);
+        _ ->
+            error
+    end.
 
 log(String, File) ->
     Dir = "/media/logging/",
