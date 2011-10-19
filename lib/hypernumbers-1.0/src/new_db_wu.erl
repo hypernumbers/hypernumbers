@@ -612,7 +612,8 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
             % with include you might need to bring incs through from
-            % whatever is included so some jiggery might be required on the pokey
+            % whatever is included so some jiggery might be required
+            % on the pokey
             Attrs4 = handle_merge(Ht, Wd, Attrs3),
             Attrs5 = bring_through(Attrs4, XRefX, Pars),
             % mebbies there was incs, nuke 'em
