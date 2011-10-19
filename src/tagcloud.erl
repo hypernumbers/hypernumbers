@@ -11,6 +11,37 @@
 
 dump() ->
 
+    Europe = [
+              {'Austria',78},
+              {'Slovenia',88},
+              {'Malta',90},
+              {'Germany',91},
+              {'Spain',100},
+              {'Netherlands',100},
+              {'Greece',101},
+              {'Sweden',102},
+              {'Italy',106},
+              {'Denmark',110},
+              {'Poland',113},
+              {'England-&-Wales',116},
+              {'France',117},
+              {'Cyprus',117},
+              {'Portugal',120},
+              {'Northern-Ireland',123},
+              {'Hungary',123},
+              {'Luxembourg',126},
+              {'Slovakia',129},
+              {'Belgium',140},
+              {'Ireland-(Eire)',141},
+              {'Czech-Republic',142},
+              {'Romania',144},
+              {'Scotland',146},
+              {'Bulgaria',150},
+              {'Finland',152},
+              {'Estonia',256},
+              {'Lithuania',295}
+             ],
+
     NoVics = [{'One',1071},
               {'Two',8},
               {'Three',3}],
@@ -149,12 +180,15 @@ dump() ->
              {'male-killer',1346},
              {'female-killer',166},
              {'male-victim',865},
-             {'female-victim',231}],
+             {'female-victim',231}
+            ],
 
+    [logging(X, N, "europe.txt") || {X, N} <- Europe],
     %[logging(X, N, "tagcloud.txt") || {X, N} <- Words],
-    [logging(X, N, "vicscloud.txt") || {X, N} <- NoVics],
-    [logging(X, N, "killerscloud.txt") || {X, N} <- NoKillers].
-    %[logging(X, N, "fixedtagcloud.txt") || {X, N} <- WordRenorm].
+    %[logging(X, N, "vicscloud.txt") || {X, N} <- NoVics],
+    %[logging(X, N, "killerscloud.txt") || {X, N} <- NoKillers],
+    %[logging(X, N, "fixedtagcloud.txt") || {X, N} <- WordRenorm],
+    ok.
 
 logging(_Atom, 0, _File) -> ok;
 logging(Atom, N, File) ->
