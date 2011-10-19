@@ -505,17 +505,16 @@ verify3([], Acc) -> Acc;
 verify3([H | T], {Site, Verbose, Fix, Acc}) ->
     Tbl = new_db_wu:trans(Site, local_obj),
     NewAcc = case mnesia:read(Tbl, H, read) of
-                 []   -> new_db_verify:write(Verbose, "zinf ~p doesn't "
-                                             ++ "exist~n", [H]),
+                 []   -> write(Verbose, "zinf ~p doesn't "
+                               ++ "exist~n", [H]),
                          [H | Acc];
                  [_R] -> Acc;
-                 List -> new_db_verify:write(Verbose, "zinf ~p should have "
-                                             ++ "one local_obj only ~p~n",
-                                             [List]),
+                 List -> write(Verbose, "zinf ~p should have "
+                               ++ "one local_obj only ~p~n",
+                               [List]),
                          [H | Acc]
              end,
     verify3(T, {Site, Verbose, Fix, NewAcc}).
-
 
 check_bk2([], _Path, Acc)     -> Acc;
 check_bk2([H | T], Path, Acc) -> {_, List} = H,
@@ -1542,3 +1541,5 @@ log(String, File) ->
 
 get_time() -> util2:get_timestamp()/1000000.
 
+write(verbose, Msg, Data) -> io:format(Msg, Data);
+write(_, _, _)            -> ok.
