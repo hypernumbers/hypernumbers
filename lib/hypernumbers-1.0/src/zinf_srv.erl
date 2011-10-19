@@ -1518,9 +1518,8 @@ perf3(Stamp, N, Tree, Idx, S, P, Obj) ->
     perf3(Stamp, N - 1, NewTree, Idx + 1, S, P, Obj).
 
 dump_string(String, File) ->
-    Dir = "/home/gordon/hypernumbers/",
-    _Return = filelib:ensure_dir(Dir ++ File),
-    case file:open(Dir ++ File, [append]) of
+    _Return = filelib:ensure_dir(File),
+    case file:open(File, [append]) of
         {ok, Id} ->
             io:fwrite(Id, "~s~n", [String]),
             file:close(Id);
@@ -1531,7 +1530,7 @@ dump_string(String, File) ->
 log(String, File) ->
     Dir = "/media/logging/",
     _Return = filelib:ensure_dir(Dir ++ File),
-    Date = dh_date:format("d-M-y h:i:s"),
+    Date = dh_date:format("d_M_y_G_i_s"),
 
     case file:open(Dir ++ File, [append]) of
         {ok, Id} ->
