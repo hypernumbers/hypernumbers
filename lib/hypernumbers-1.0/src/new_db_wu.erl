@@ -1396,18 +1396,26 @@ get_offset(delete, N1, N2) -> N1 - N2 - 1;
 get_offset(insert, N1, N2) -> N2 - N1 + 1.
 
 shift_rows([], _, _, Acc) -> Acc;
-shift_rows([#local_obj{obj = {row, {MY1, MY2}}} = H | T], Y2, Offset, Acc)
+shift_rows([#local_obj{path = P, obj = {row, {MY1, MY2}}} = H | T],
+           Y2, Offset, Acc)
   when MY1 >= Y2 ->
-    NewRow = H#local_obj{obj = {row, {MY1 + Offset, MY2 + Offset}}},
+    NO = {row, {MY1 + Offset, MY2 + Offset}},
+    NP = hn_util:list_to_path(binary_to_term(P)),
+    NewRevIdx = term_to_binary(NP ++ hn_util:obj_to_ref(NO)),
+    NewRow = H#local_obj{obj = NO, revidx = NewRevIdx},
     shift_rows(T, Y2, Offset, [NewRow | Acc]);
 shift_rows([_H | T], Y2, Offset, Acc) ->
     shift_rows(T, Y2, Offset, Acc).
 
 shift_cols([], _, _, Acc) -> Acc;
-shift_cols([#local_obj{obj = {column, {MX1, MX2}}} = H | T], X2, Offset, Acc)
+shift_cols([#local_obj{path = P, obj = {column, {MX1, MX2}}} = H | T],
+           X2, Offset, Acc)
   when MX1 >= X2 ->
-    NewRow = H#local_obj{obj = {column, {MX1 + Offset, MX2 + Offset}}},
-    shift_cols(T, X2, Offset, [NewRow | Acc]);
+    NO = {column, {MX1 + Offset, MX2 + Offset}},
+    NP = hn_util:list_to_path(binary_to_term(P)),
+    NewRevIdx = term_to_binary(NP ++ hn_util:obj_to_ref(NO)),
+    NewCol = H#local_obj{obj = NO, revidx = NewRevIdx},
+    shift_cols(T, X2, Offset, [NewCol | Acc]);
 shift_cols([_H | T], X2, Offset, Acc) ->
     shift_cols(T, X2, Offset, Acc).
 
