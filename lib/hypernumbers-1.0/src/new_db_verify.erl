@@ -526,12 +526,16 @@ process(Tuple, Acc) ->
 process2(core, _, _, Acc) -> Acc;
 % skip these tables - not interesting
 process2(_Site, Table, _, Acc)
-  when Table == "style"
-       orelse Table == "logging"
-       orelse Table == "kvstore"
-       orelse Table == "group"
-       orelse Table == "dirty_zinf"
+  when Table == "api"
        orelse Table == "del_local"
+       orelse Table == "dirty_for_zinf"
+       orelse Table == "dirty_queue"
+       orelse Table == "dirty_zinf"
+       orelse Table == "group"
+       orelse Table == "kvstore"
+       orelse Table == "logging"
+       orelse Table == "style"
+       orelse Table == "user_fns"
        -> Acc;
 process2(Site, Table, Tuple, Acc) ->
     {ITree, RTree, NewAcc} = lookup(Site, Acc),
@@ -658,6 +662,14 @@ has_attr(Attr, Attrs) ->
         _F    -> true
     end.
 
+is_local_obj_valid(url, {range, {X1, Y1, X2, Y2}}, _Path)
+  when X1 > 0 andalso Y1 > 0 andalso X2 > 0 andalso Y2 > 0 ->
+    {true, true};
+is_local_obj_valid(gurl, {range, {X1, Y1, X2, Y2}}, _Path)
+  when X1 > 0 andalso Y1 > 0 andalso X2 > 0 andalso Y2 > 0 ->
+    {false, true};
+is_local_obj_valid(url, {range, _}, _Path) ->
+    {false, false};
 is_local_obj_valid(gurl, {row, {Y1, Y2}}, _Path)
   when Y1 > 0 andalso Y2 > 0 ->
     {true, true};
