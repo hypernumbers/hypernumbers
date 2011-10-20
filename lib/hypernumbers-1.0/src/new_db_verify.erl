@@ -98,6 +98,7 @@ verify2([H | T]) ->
     ok = verify_types(H),
     ok = verify_grid(H),
     ok = verify_revidxs(H),
+    ok = verify_zinfs(H),
     verify2(T).
 
 verify3([]) -> ok;
@@ -405,6 +406,28 @@ verify_revidxs({Idx, V}) ->
     dump("Invalid Reverse Index:", [Idx, V]),
     ok.
 
+verify_zinfs({Idx, #ver{relation = null,
+                        local_obj = exists,
+                        item = null,
+                        form = null,
+                        include = null,
+                        timer = null,
+                        children = [],
+                        parents = [],
+                        infparents = [],
+                        rev_parents = [],
+                        rev_infparents = [],
+                        has_formula = false,
+                        type = gurl,
+                        obj = {{cell, _}, _}} = V}) ->
+    ok;
+verify_zinfs({Idx, #ver{type = gurl,
+                        obj = {{cell, _}, _}} = V}) ->
+    dump("Invalid zinf:", [Idx, V]),
+    ok;
+verify_zinfs({_Idx, _V}) ->
+    ok.
+
 dump(Str, [Idx, V]) ->
     io:format("~nDumping: ~p~n", [Idx]),
     io:format("------------------------------------------------~n"),
@@ -652,12 +675,12 @@ is_local_obj_valid(gurl, {page, "/"}, _Path) ->
     {false, true};
 is_local_obj_valid(Type, {cell, {X, Y}}, Path)
   when X > 0 andalso Y > 0 ->
-    case type(Path) of
+    case type(hn_util:path_tokens(Path)) of
         Type -> {true, true};
         _    -> {false, true}
     end;
 is_local_obj_valid(Type, {cell, _}, Path)  ->
-    case type(Path) of
+    case type(hn_util:path_tokens(Path)) of
         Type -> {true, false};
         _    -> {false, false}
     end.
@@ -718,7 +741,6 @@ read_terms(Stream, File, Line, L, Acc) ->
     case read_term_from_stream(Stream, File, Line) of
         {ok, Term, NextLine} ->
             NewAcc = process(Term, Acc),
-            %io:format("Acc is ~p NewAcc is ~p~n", [Acc, NewAcc]),
             read_terms(Stream, File, NextLine, [Term|L], NewAcc);
         error ->
             {error, read};
