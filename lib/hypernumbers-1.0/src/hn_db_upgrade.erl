@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         show_ranges_2011_10_20/0,
          fix_up_row_col_revidxs_2011_10_20/0,
          do_z_parents_exist_2011_10_20/0,
          type_local_objs_2011_10_13/0,
@@ -63,6 +64,30 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+show_ranges_2011_10_20() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   io:format("Checking site ~p~n", [Site]),
+                   Tbl = new_db_wu:trans(Site, local_obj),
+                   Fun2 = fun(X, []) ->
+                                  #local_obj{obj = O, path = P} = X,
+                                  case O of
+                                      {range, _} ->
+                                  Pa = hn_util:list_to_path(binary_to_term(P)),
+                                  NO = hn_util:obj_to_ref(O),
+                                          io:format("Range in ~p ~p~n", [X, Pa ++ NO]);
+                                      _ ->
+                                          ok
+                                  end,
+                                  []
+                          end,
+                   Fun3 = fun() ->
+                                  mnesia:foldl(Fun2, [], Tbl)
+                          end,
+                   mnesia:activity(transaction, Fun3)
+           end,
+    lists:foreach(Fun1, Sites).
 
 fix_up_row_col_revidxs_2011_10_20() ->
     Sites = hn_setup:get_sites(),
