@@ -907,8 +907,11 @@ update_incsD(XRefX, Incs) when is_record(XRefX, xrefX)
 bring_through(Attrs, XRefX, Pars) ->
     Pars2 = [X || {Type, X} <- Pars, Type ==  local],
     Incs = get_incs(Pars2, [], [], []),
-    ok = update_incsD(XRefX, Incs),
-    orddict:store("__hasincs", t, Attrs).
+    case Incs of
+        #incs{} -> Attrs;
+        _       -> ok = update_incsD(XRefX, Incs),
+                   orddict:store("__hasincs", t, Attrs)
+    end.
 
 get_incs([], Js, Js_R, CSS) -> #incs{js = hslists:uniq(Js),
                                      js_reload = hslists:uniq(Js_R),
