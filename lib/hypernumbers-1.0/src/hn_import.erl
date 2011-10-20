@@ -239,7 +239,11 @@ rows(#refX{site = S} = Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
 
 cells(Ref, Row, {Col, {struct, Attrs}},
        Styles, Type, Fun, Uid) ->
-    NRef = Ref#refX{obj = {Type, {ltoi(Col), ltoi(Row)}}},
+    NRef = case Type of
+               cell   -> Ref#refX{type = url, obj = {Type, {ltoi(Col), ltoi(Row)}}};
+               row    -> Ref#refX{type = gurl, obj = {Type, {ltoi(Col), ltoi(Row)}}};
+               column -> Ref#refX{type = gurl, obj = {Type, {ltoi(Col), ltoi(Row)}}}
+           end,
     Fun(NRef, Styles, Attrs, Uid),
     ok.
 
@@ -290,7 +294,7 @@ make_a1([H | T], Ref, Acc) ->
 
 make_a2([], _Ref, _C, Acc)    -> Acc;
 make_a2([H | T], Ref, C, Acc) ->
-    NewRef = Ref#refX{obj={column, {C, C}}},
+    NewRef = Ref#refX{obj = {column, {C, C}}},
     make_a2(T, Ref, C + 1, [{NewRef, H} | Acc]).
 
 make_refs(List, Ref) -> make_r1(List, Ref, 1, []).
@@ -302,7 +306,7 @@ make_r1([H | T], Ref, R, Acc) ->
 
 make_r2([], _Ref, _R, _C, Acc)   -> Acc;
 make_r2([H | T], Ref, R, C, Acc) ->
-    NewRef = Ref#refX{obj={cell, {C, R}}},
+    NewRef = Ref#refX{obj = {cell, {C, R}}},
     make_r2(T, Ref, R, C + 1, [{NewRef, [{"formula", H}]} | Acc]).
 
 %%%
