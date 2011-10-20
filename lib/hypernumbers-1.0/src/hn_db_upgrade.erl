@@ -10,8 +10,8 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         fix_up_row_col_revidxs_2011_10_20/0,
          do_z_parents_exist_2011_10_20/0,
-         remove_floating_local_objs_2011_10_14/0,
          type_local_objs_2011_10_13/0,
          check_local_objs_2011_10_13/0,
          add_del_obj_table_2011_10_13/0,
@@ -64,6 +64,35 @@
          %% upgrade_1776/0
         ]).
 
+fix_up_row_col_revidxs_2011_10_20() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   io:format("Checking site ~p~n", [Site]),
+                   Tbl = new_db_wu:trans(Site, local_obj),
+                   Fun2 = fun(X, []) ->
+                                  #local_obj{path = P, obj = O, revidx = R} = X,
+                                  Pa = hn_util:list_to_path(binary_to_term(P)),
+                                  NO = hn_util:obj_to_ref(O),
+                                  R2 = binary_to_term(R),
+                                  Rev2 = Pa ++ NO,
+                                  case Rev2 of
+                                      R2 ->
+                                          ok;
+                                      _ ->
+                                          io:format("borked revidx ~p ~p for ~p~n",
+                                                    [R2, Rev2, X]),
+                                          Rec = X#local_obj{revidx = term_to_binary(Rev2)},
+                                          mnesia:write(Tbl, Rec, write)
+                                  end,
+                                  []
+                          end,
+                   Fun3 = fun() ->
+                                  mnesia:foldl(Fun2, [], Tbl)
+                          end,
+                   mnesia:activity(transaction, Fun3)
+           end,
+    lists:foreach(Fun1, Sites).
+
 do_z_parents_exist_2011_10_20() ->
     Sites = hn_setup:get_sites(),
     F1 = fun(Site) ->
@@ -84,58 +113,6 @@ do_z_parents_exist_2011_10_20() ->
                  mnesia:activity(transaction, F3)
          end,
     lists:foreach(F1, Sites).
-
-remove_floating_local_objs_2011_10_14() ->
-    Sites = hn_setup:get_sites(),
-    Empty = term_to_binary([]),
-    F1 = fun(Site) ->
-                 io:format("Checking site ~p~n", [Site]),
-                 Tbl1 = new_db_wu:trans(Site, local_obj),
-                 Tbl2 = new_db_wu:trans(Site, item),
-                 Tbl3 = new_db_wu:trans(Site, relation),
-                 F2 = fun(LO, Acc) ->
-                              #local_obj{idx = Idx, type = Ty,
-                                         path = P, obj = O} = LO,
-                              P2 = binary_to_term(P),
-                              case {Ty, O} of
-                                  {url, {cell, _}} ->
-                                      Items = mnesia:read(Tbl2, Idx, read),
-                                      case Items of
-                                          [] ->
-                                              remove2(Tbl3, Idx, P2, O, Acc);
-                                          Empty ->
-                                              remove2(Tbl3, Idx, P2, O, Acc);
-                                          _ ->
-                                              Acc
-                                      end;
-                                  _ ->
-                                      Acc
-                              end
-                      end,
-                 F3 = fun() ->
-                              mnesia:foldl(F2, [], Tbl1)
-                      end,
-                 List = mnesia:activity(transaction, F3),
-                 F4 = fun(X) ->
-                              F5 = fun() ->
-                                           mnesia:delete(Tbl1, X, write)
-                                   end,
-                              mnesia:activity(transaction, F5)
-                      end,
-                 [F4(X) || X <- List]
-         end,
-    lists:foreach(F1, Sites).
-
-remove2(Tbl3, Idx, P2, O, Acc) ->
-    case mnesia:read(Tbl3, Idx, read) of
-        [] ->
-            io:format("floater ~p ~p ~p~n",
-                      [P2, O, Idx]),
-            [Idx | Acc];
-        _ ->
-            Acc
-    end.
-
 
 type_local_objs_2011_10_13() ->
     Sites = hn_setup:get_sites(),
