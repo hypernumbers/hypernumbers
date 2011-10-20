@@ -41,7 +41,8 @@
 
 % debugging api
 -export([
-         dump_tables/0
+         dump_tables/0,
+         read_verification/0
         ]).
 
 % main api
@@ -67,6 +68,13 @@ dump_tables() ->
 check() ->
     {Dir, TermFile, ZinfFile} = dump_tables(),
     ok = read_verification(Dir ++ TermFile, Dir ++ ZinfFile).
+
+read_verification() ->
+    VerFile = "/home/gordon/hypernumbers/priv/verification/"
+        ++ "verification.20_Oct_11_13_27_19.terms",
+    ZinfFile = "/home/gordon/hypernumbers/priv/verification/"
+        ++ "zinf.20_Oct_11_13_27_19.terms",
+    read_verification(VerFile, ZinfFile).
 
 read_verification(VerFile, ZinfFile) ->
     {ok, Data}  = parse(VerFile),
