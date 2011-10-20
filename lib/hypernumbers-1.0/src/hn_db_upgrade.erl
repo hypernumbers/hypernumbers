@@ -67,6 +67,7 @@
 do_z_parents_exist_2011_10_20() ->
     Sites = hn_setup:get_sites(),
     F1 = fun(Site) ->
+                 io:format("Checking z parents for ~p~n", [Site]),
                  Tbl = new_db_wu:trans(Site, relation),
                  F2 = fun(LO, Acc) ->
                               case LO of
