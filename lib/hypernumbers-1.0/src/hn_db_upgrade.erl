@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         do_z_parents_exist_2011_10_20/0,
          remove_floating_local_objs_2011_10_14/0,
          type_local_objs_2011_10_13/0,
          check_local_objs_2011_10_13/0,
@@ -62,6 +63,26 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+do_z_parents_exist_2011_10_20() ->
+    Sites = hn_setup:get_sites(),
+    F1 = fun(Site) ->
+                 Tbl = new_db_wu:trans(Site, relation),
+                 F2 = fun(LO, Acc) ->
+                              case LO of
+                                  #relation{z_parents = []} ->
+                                      ok;
+                                  _ ->
+                                      io:format("LO is ~p~n", [LO])
+                              end,
+                              Acc
+                      end,
+                                  F3 = fun() ->
+                              mnesia:foldl(F2, [], Tbl)
+                      end,
+                 mnesia:activity(transaction, F3)
+         end,
+    lists:foreach(F1, Sites).
 
 remove_floating_local_objs_2011_10_14() ->
     Sites = hn_setup:get_sites(),
