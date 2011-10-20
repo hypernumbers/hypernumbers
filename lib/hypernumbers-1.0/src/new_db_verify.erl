@@ -23,10 +23,9 @@
           parents = [],
           children = [],
           infparents = [],
-          z_parents = [],
           rev_parents = [],
           rev_children = [],
-          rev_z_parents = [],
+          rev_infparents = [],
           type = null,
           valid_type = false,
           path = null, % makes it more readable
@@ -41,8 +40,7 @@
 
 % debugging api
 -export([
-         dump_tables/0,
-         read_verification/0
+         dump_tables/0
         ]).
 
 % main api
@@ -59,29 +57,24 @@ dump_tables() ->
                   mnesia:dump_to_textfile(Dir ++ TermFile)
           end,
     mnesia:activity(transaction, Fun),
+    io:format("Mnesia tables all dumped...~n"),
     Sites = hn_setup:get_sites(),
     [zinf_srv:dump_to_file(X, Dir ++ ZinfFile) || X <- Sites],
+    io:format("Zinfs all dumped...~n"),
     {Dir, TermFile, ZinfFile}.
 
 check() ->
     {Dir, TermFile, ZinfFile} = dump_tables(),
     ok = read_verification(Dir ++ TermFile, Dir ++ ZinfFile).
 
-read_verification() ->
-    read_verification("/home/gordon/hypernumbers/priv/verification/"
-                      ++"verification.19_Oct_11_14_28_58.terms",
-                      "/home/gordon/hypernumbers/priv/verification/"
-                      ++"zinf.19_Oct_11_14_28_58.terms").
-
 read_verification(VerFile, ZinfFile) ->
     {ok, Data}  = parse(VerFile),
+    io:format("in verification, data parsed...~n"),
     {ok, Zinfs} = file:consult(ZinfFile),
+    io:format("in verification, zinfs parsed...~n"),
     Data2 = process_zinfs(Zinfs, Data),
-    %[io:format("For ~p~n> ~p~n> ~p~n",
-    %           [X, gb_trees:to_list(I), gb_trees:to_list(R)])
-    % || {X, I, R} <- Data2],
-    ok = verify(Data2),
-    ok.
+    io:format("in verification, zinfs processed...~n"),
+    ok = verify(Data2).
 
 verify([]) -> ok;
 verify([H | T]) ->
@@ -125,9 +118,7 @@ verify_tables({_Idx, #ver{local_obj = exists,
                           has_formula = false,
                           parents = [],
                           infparents = [],
-                          z_parents = [],
-                          rev_parents = [],
-                          rev_z_parents = []}}) ->
+                          rev_parents = []}}) ->
     ok;
 verify_tables({_Idx, #ver{local_obj = exists,
                           item = exists,
@@ -138,9 +129,7 @@ verify_tables({_Idx, #ver{local_obj = exists,
                           has_formula = false,
                           parents = [],
                           infparents = [],
-                          z_parents = [],
-                          rev_parents = [],
-                          rev_z_parents = []}}) ->
+                          rev_parents = []}}) ->
     ok;
 verify_tables({_Idx, #ver{local_obj = exists,
                           item = exists,
@@ -183,7 +172,6 @@ verify_tables({Idx, #ver{local_obj = exists,
                           children = C,
                           parents = [],
                           infparents = [],
-                          z_parents = [],
                           has_formula = false} = V}) ->
     case C of
         [] -> dump("Invalid tables (type 1):", [Idx, V]);
@@ -200,13 +188,11 @@ verify_relations({Idx, #ver{relation = exists,
                             children = C,
                             parents = P,
                             infparents = I,
-                            z_parents = Z,
                             rev_children = RC,
                             rev_parents = RP,
-                            rev_z_parents = RZ} = V}) ->
-    TotalP = lists:merge([P, I, Z]),
-    case {same(C, RC), same(TotalP, RP)} of
-        {true, true} ->
+                            rev_infparents = RIP} = V}) ->
+    case {same(C, RC), same(P, RP), same(I, RIP)} of
+        {true, true, true} ->
             ok;
         _ ->
             dump("Invalid relations (type 1):", [Idx, V])
@@ -217,10 +203,8 @@ verify_relations({Idx, #ver{relation = exists,
                             children = C,
                             parents = [],
                             infparents = [],
-                            z_parents = [],
                             rev_children = RC,
-                            rev_parents = [],
-                            rev_z_parents = RZ} = V}) ->
+                            rev_parents = []} = V}) ->
     case same(C, RC) of
         true ->
             ok;
@@ -303,8 +287,7 @@ verify_objs({_Idx, #ver{relation = exists,
                         valid_obj = true,
                         has_formula = false,
                         parents = [],
-                        infparents = [],
-                        z_parents = []}}) ->
+                        infparents = []}}) ->
     ok;
 verify_objs({_Idx, #ver{relation = null,
                         local_obj = exists,
@@ -383,7 +366,6 @@ verify_objs({Idx, #ver{relation = exists,
                        children = C,
                        parents = [],
                        infparents = [],
-                       z_parents = [],
                        type = url,
                        obj = {{cell, _}, _},
                        has_formula = false} = V}) ->
@@ -394,6 +376,15 @@ verify_objs({Idx, #ver{relation = exists,
 verify_objs({Idx, #ver{obj = {{cell, _}, _},
                        type = url} = V}) ->
     dump("Invalid cell (type 2):", [Idx, V]),
+    ok;
+verify_objs({Idx, #ver{obj = {{row, _}, _}} = V}) ->
+    dump("Invalid cell (type 3):", [Idx, V]),
+    ok;
+verify_objs({Idx, #ver{obj = {{column, _}, _}} = V}) ->
+    dump("Invalid cell (type 4):", [Idx, V]),
+    ok;
+verify_objs({Idx, #ver{obj = {{page, _}, _}} = V}) ->
+    dump("Invalid cell (type 5):", [Idx, V]),
     ok.
 
 verify_types({_Idx, #ver{valid_type = true}}) ->
@@ -428,10 +419,9 @@ dump(Str, [Idx, V]) ->
                parents = P,
                children = C,
                infparents = IP,
-               z_parents = ZP,
                rev_parents = RP,
                rev_children = RC,
-               rev_z_parents = RZ,
+               rev_infparents = RIP,
                type = Ty,
                valid_type = VT,
                path = Path,
@@ -455,9 +445,8 @@ dump(Str, [Idx, V]) ->
     io:format("Relations:~n"
               ++ "> Children:  ~p ~p~n"
               ++ "> Parents    ~p ~p~n"
-              ++ "> InfParents ~p~n"
-              ++ "> Z Parents: ~p ~p~n",
-              [C, RC, P, RP, IP, ZP, RZ]),
+              ++ "> InfParents ~p ~p~n",
+              [C, RC, P, RP, IP, RIP]),
     io:format("Validities:~n"
               ++ "> Type:           ~p~n"
               ++ "> Valid Type?     ~p~n"
@@ -478,7 +467,6 @@ same(List1, List2) ->
 
 process_zinfs([], Acc) -> Acc;
 process_zinfs([H | T], Acc) ->
-    io:format("H is ~p~n", [H]),
     {"http://" ++ Site, Path, List} = H,
     {ITree, RTree, NewAcc} = lookup(Site, Acc),
     [Idx] = case gb_trees:lookup(Path, RTree) of
@@ -492,8 +480,8 @@ process_z2([], Site, _Idx, ITree, RTree, Acc) ->
     lists:keyreplace(Site, 1, Acc, {Site, ITree, RTree});
 process_z2([H | T], Site, Idx, ITree, RTree, Acc) ->
     Rec = get_rec(H, ITree),
-    #ver{rev_z_parents = List} = Rec,
-    Rec2 = Rec#ver{rev_z_parents = [Idx | List]},
+    #ver{rev_infparents = List} = Rec,
+    Rec2 = Rec#ver{rev_infparents = [Idx | List]},
     ITree2 = gb_trees:enter(H, Rec2, ITree),
     process_z2(T, Site, Idx, ITree2, RTree, Acc).
 
@@ -511,6 +499,7 @@ process2(_Site, Table, _, Acc)
        orelse Table == "kvstore"
        orelse Table == "group"
        orelse Table == "dirty_zinf"
+       orelse Table == "del_local"
        -> Acc;
 process2(Site, Table, Tuple, Acc) ->
     {ITree, RTree, NewAcc} = lookup(Site, Acc),
@@ -585,26 +574,27 @@ process3(Site, ITree, RTree, "item", Tuple, Acc) ->
     ITree2 = gb_trees:enter(Idx, Rec2, ITree),
     lists:keyreplace(Site, 1, Acc, {Site, ITree2, RTree});
 process3(Site, ITree, RTree, "relation", Tuple, Acc) ->
-    {_, Idx, Children, Parents, InfParents, Z_Parents, Include} = Tuple,
+    {_, Idx, Children, Parents, InfParents, _Zs, Include} = Tuple,
     Record = get_rec(Idx, ITree),
     Rec2 = case Record#ver.relation of
                null -> Record#ver{relation = exists,
                                   children = Children,
                                   parents = Parents,
                                   infparents = InfParents,
-                                  z_parents = Z_Parents,
                                   has_include_fn = Include};
                _    -> exit("duplicate relation record (can't happen!)")
            end,
     ITree2 = gb_trees:enter(Idx, Rec2, ITree),
-    ITree3 = invert_rel(ITree2, Idx, Children, Parents, InfParents, Z_Parents),
-    lists:keyreplace(Site, 1, Acc, {Site, ITree3, RTree}).
+    ITree3 = invert_rel(ITree2, Idx, Children, Parents, InfParents),
+    lists:keyreplace(Site, 1, Acc, {Site, ITree3, RTree});
+process3(Site, _ITree, _RTree, Table, _Tuple, _Acc) ->
+    io:format("Table ~p on ~p doesn't exist~n", [Table, Site]),
+    exit("table not being handled...").
 
-invert_rel(Tree, Idx, Children, Parents, InfParents, Z_Parents) ->
+invert_rel(Tree, Idx, Children, Parents, InfParents) ->
     Tree1 = invert_children(Children, Idx, Tree),
     Tree2 = invert_parents(Parents, Idx, Tree1),
-    Tree3 = invert_infparents(InfParents, Idx, Tree2),
-    invert_z_parents(Z_Parents, Idx, Tree3).
+    invert_infparents(InfParents, Idx, Tree2).
 
 invert_children([], _Idx, Tree) -> Tree;
 invert_children([H | T], Idx, Tree) ->
@@ -629,14 +619,6 @@ invert_infparents([H | T], Idx, Tree) ->
     Rec2 = Rec#ver{rev_children = [Idx | RC]},
     Tree2 = gb_trees:enter(H, Rec2, Tree),
     invert_infparents(T, Idx, Tree2).
-
-invert_z_parents([], _Idx, Tree) -> Tree;
-invert_z_parents([H | T], Idx, Tree) ->
-    Rec = get_rec(H, Tree),
-    #ver{rev_children = RC} = Rec,
-    Rec2 = Rec#ver{rev_children = [Idx | RC]},
-    Tree2 = gb_trees:enter(H, Rec2, Tree),
-    invert_z_parents(T, Idx, Tree2).
 
 has_attr(Attr, Attrs) ->
     case lists:keyfind(Attr, 1, Attrs) of
