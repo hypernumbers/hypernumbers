@@ -126,7 +126,6 @@ tokens([H | T], Seg, Acc)  -> tokens(T, [H | Seg], Acc).
 tokens2([$] | T], Seg, Acc) -> tokens(T, [], [lists:reverse([$] | Seg]) | Acc]);
 tokens2([H | T], Seg, Acc)  -> tokens2(T, [H | Seg], Acc).
 
-
 %%% turns a path into a z-path
 parse_zpath(List) -> parse_z(List, []).
 
