@@ -1,7 +1,8 @@
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2011, Hypernumers Ltd
 %%% @doc       A module to verify the status
-%%%            of a database
+%%%            of a hypernumbers database and
+%%%            make assertions about it...
 %%%
 %%% @end
 %%% Created : 12 Oct 2011 by gordon@hypernumbers.com
@@ -406,7 +407,7 @@ verify_revidxs({Idx, V}) ->
     dump("Invalid Reverse Index:", [Idx, V]),
     ok.
 
-verify_zinfs({Idx, #ver{relation = null,
+verify_zinfs({_Idx, #ver{relation = null,
                         local_obj = exists,
                         item = null,
                         form = null,
@@ -419,7 +420,7 @@ verify_zinfs({Idx, #ver{relation = null,
                         rev_infparents = [],
                         has_formula = false,
                         type = gurl,
-                        obj = {{cell, _}, _}} = V}) ->
+                        obj = {{cell, _}, _}}}) ->
     ok;
 verify_zinfs({Idx, #ver{type = gurl,
                         obj = {{cell, _}, _}} = V}) ->
