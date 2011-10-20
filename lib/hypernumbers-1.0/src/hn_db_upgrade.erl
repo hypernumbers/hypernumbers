@@ -145,20 +145,32 @@ type_local_objs_2011_10_13() ->
                    Fun1 = fun(X, []) ->
                                   #local_obj{type = T, path = P,
                                              obj = O} = X,
+                                  Pa = binary_to_term(P),
                                   case T of
                                       undefined ->
-                                          Pa = binary_to_term(P),
                                           Type = type(Pa),
                                           io:format("undefined ~p ~p is ~p~n",
                                                     [Pa, O, Type]),
                                           Rec = X#local_obj{type = Type},
                                           mnesia:write(Tbl3, Rec, write);
                                       "url" ->
-                                          Pa = binary_to_term(P),
                                           io:format("string type url ~p ~p~n",
                                                     [Pa, O]),
                                           Rec = X#local_obj{type = url},
                                           mnesia:write(Tbl3, Rec, write);
+                                      _ ->
+                                          ok
+                                  end,
+                                  case {O, T} of
+                                      {{Ref, _}, gurl} when Ref == row
+                                                             orelse Ref == column ->
+                                          ok;
+                                      {{Ref, _}, _} when Ref == row
+                                                          orelse Ref == column ->
+                                          io:format("string type url ~p ~p was ~p~n",
+                                                    [Pa, O, T]),
+                                          Rec2 = X#local_obj{type = gurl},
+                                          mnesia:write(Tbl3, Rec2, write);
                                       _ ->
                                           ok
                                   end,
