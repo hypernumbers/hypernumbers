@@ -11,7 +11,8 @@
          get_sites/0,
          get_site_type/1,
          create_path_from_name/2,
-         is_path/1
+         is_path/1,
+         tables/0
         ]).
 
 -include("spriki.hrl").

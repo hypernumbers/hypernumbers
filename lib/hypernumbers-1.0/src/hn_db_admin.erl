@@ -35,8 +35,30 @@
          backup/3,
          restore/2,
          dump_site_table/2,
-         dump_core_table/2
+         dump_core_table/2,
+         copy_site/2
         ]).
+
+-spec copy_site(string(), string()) -> ok.
+copy_site(FromSite, ToSite) ->
+    Tables = hn_setup:tables(),
+    [copy(FromSite, ToSite, X) || {X, _, _, _, _} <- Tables],
+    ok.
+
+copy(FromSite, ToSite, Table) ->
+    io:format("Copying ~p from ~p to ~p~n", [Table, FromSite, ToSite]),
+    FromTable = new_db_wu:trans(FromSite, Table),
+    ToTable = new_db_wu:trans(ToSite, Table),
+    {atomic, ok} = mnesia:clear_table(ToTable),
+    Fun1 = fun() ->
+                   Fun2 = fun(X, Acc) ->
+                                  ok = mnesia:write(ToTable, X, write),
+                                  Acc
+                          end,
+                   mnesia:foldl(Fun2, [], FromTable)
+           end,
+    [] = mnesia:activity(transaction, Fun1),
+    ok.
 
 -spec dump_site_table(string(), string()) -> ok.
 %% just dumps a table to the shell
