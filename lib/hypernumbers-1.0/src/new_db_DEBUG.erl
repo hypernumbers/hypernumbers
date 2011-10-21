@@ -20,7 +20,9 @@
          idx_DEBUG/2,
          idx_DEBUG/3,
          raw_idx_DEBUG/2,
-         raw_url_DEBUG/1
+         raw_url_DEBUG/1,
+         dump_site_table/2,
+         dump_core_table/2
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,6 +30,30 @@
 %%% Debug Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-spec dump_site_table(string(), string()) -> ok.
+%% just dumps a table to the shell
+dump_site_table(Site, Table) ->
+    Record = list_to_atom(Table),
+    Table2 = new_db_wu:trans(Site, Record),
+    dump2(Table2, Record).
+
+-spec dump_core_table(string(), string()) -> ok.
+%% just dumps a table to the shell
+dump_core_table(Prefix, Record) ->
+    Table = list_to_atom(Prefix ++ Record),
+    dump2(Table, list_to_atom(Record)).
+
+dump2(Table, Record) ->
+    N = ms_util2:no_of_fields(Record),
+    Spec =  list_to_tuple([Record| lists:duplicate(N, '_')]),
+    Fun = fun() ->
+                  Ret = mnesia:match_object(Table, Spec, write),
+                  io:format("Dumping ~p~n~n~p~n", [Table, Ret]),
+                  ok
+          end,
+    mnesia:activity(async_dirty, Fun),
+    ok.
+
 dump_lost_idxs(Site) ->
     io:format("looking through all idxs for ~p~n", [Site]),
     % first up basic tables
