@@ -36,13 +36,17 @@
           valid_revidx = invalid,
           has_formula = false,
           has_include = false,
-          has_include_fn = false
+          has_include_fn = false,
+          has_zinf = false,
+          zinf_path = null
          }).
 
 % debugging api
 -export([
          dump_tables/0,
-         read_verification/0
+         read_verification/0,
+         process_file/0,
+         process_file/2
         ]).
 
 % main api
@@ -67,406 +71,474 @@ dump_tables() ->
 
 check() ->
     {Dir, TermFile, ZinfFile} = dump_tables(),
-    ok = read_verification(Dir ++ TermFile, Dir ++ ZinfFile).
+    io:format("~p and ~p created in ~p~n", [TermFile, ZinfFile, Dir]),
+    ok = read_verification(Dir, TermFile, ZinfFile).
 
 read_verification() ->
-    VerFile = "/home/gordon/hypernumbers/priv/verification/"
-        ++ "verification.20_Oct_11_13_27_19.terms",
-    ZinfFile = "/home/gordon/hypernumbers/priv/verification/"
-        ++ "zinf.20_Oct_11_13_27_19.terms",
-    read_verification(VerFile, ZinfFile).
+    Dir = "/home/gordon/hypernumbers/priv/verification/",
+    VerFile = "verification.20_Oct_11_13_27_19.terms",
+    ZinfFile = "zinf.20_Oct_11_13_27_19.terms",
+    read_verification(Dir, VerFile, ZinfFile).
 
-read_verification(VerFile, ZinfFile) ->
-    {ok, Data}  = parse(VerFile),
+read_verification(Dir, VerFile, ZinfFile) ->
+    {ok, Data}  = parse(Dir ++ VerFile),
     io:format("in verification, data parsed...~n"),
-    {ok, Zinfs} = file:consult(ZinfFile),
+    {ok, Zinfs} = file:consult(Dir ++ ZinfFile),
     io:format("in verification, zinfs parsed...~n"),
     Data2 = process_zinfs(Zinfs, Data),
     io:format("in verification, zinfs processed...~n"),
-    ok = verify(Data2).
+    [_Prefix, Stamp, FileType] = string:tokens(VerFile, "."),
+    DataFile = "verification_data" ++ "." ++ Stamp ++ "." ++ FileType,
+    Terms =  make_terms(Data2, []),
+    ok = file:write_file(Dir ++ DataFile, Terms),
+    io:format("Written out processed data to ~p~n", [DataFile]),
+    process_data(Data2, Dir, "errors." ++ Stamp ++ "." ++ FileType).
 
-verify([]) -> ok;
-verify([H | T]) ->
+process_file() ->
+    Dir = "/home/gordon/hypernumbers/priv/verification/",
+    File = "verification_data.20_Oct_11_13_27_19.terms",
+    process_file(Dir, File).
+
+process_file(Dir, File) ->
+    {ok, Data} = file:consult(Dir ++ File),
+    io:format("Verification Data loaded...~n"),
+    [_Prefix, Stamp, FileType] = string:tokens(File, "."),
+    FileName = "errors."  ++ Stamp ++ "." ++ FileType,
+    process_data(Data, Dir, FileName).
+
+process_data(Data, Dir, FileName) ->
+    _Return = filelib:ensure_dir(Dir ++ FileName),
+    case file:open(Dir ++ FileName, [append]) of
+        {ok, Id} ->
+            Return = verify(Data, Id, {[], []}),
+            file:close(Id),
+            Return;
+        _ ->
+            error
+    end.
+
+verify([], _, _) -> ok;
+verify([H | T], FileId, {Acc1, Acc2}) ->
     {Site, ITree, RTree} = H,
     io:format("Verifying~p:~n", [Site]),
     Idxes = gb_trees:to_list(ITree),
     RevIdxs = gb_trees:to_list(RTree),
-    ok = verify2(Idxes),
-    ok = verify3(RevIdxs),
-    verify(T).
+    Broken_Idxs = verify2(Idxes, Site, FileId, []),
+    Broken_Revs = verify3(RevIdxs, Site, FileId, []),
+    verify(T, FileId, {[{Site, Broken_Idxs} | Acc1], [{Site, Broken_Revs} | Acc2]}).
 
-verify2([]) -> ok;
-verify2([H | T]) ->
-    ok = verify_tables(H),
-    ok = verify_relations(H),
-    ok = verify_includes(H),
-    ok = verify_timers(H),
-    ok = verify_forms(H),
-    ok = verify_formula(H),
-    ok = verify_objs(H),
-    ok = verify_types(H),
-    ok = verify_grid(H),
-    ok = verify_revidxs(H),
-    ok = verify_zinfs(H),
-    verify2(T).
+verify2([], _Site, _FileId, Acc) -> Acc;
+verify2([H | T], Site, FileId, Acc) ->
+    Acc1 = verify_tables(Site, FileId, H, Acc),
+    Acc2 = verify_relations(Site, FileId, H, Acc1),
+    Acc3 = verify_includes(Site, FileId, H, Acc2),
+    Acc4 = verify_timers(Site, FileId, H, Acc3),
+    Acc5 = verify_forms(Site, FileId, H, Acc4),
+    Acc6 = verify_formula(Site, FileId, H, Acc5),
+    Acc7 = verify_objs(Site, FileId, H, Acc6),
+    Acc8 = verify_types(Site, FileId, H, Acc7),
+    Acc9 = verify_grid(Site, FileId, H, Acc8),
+    Acc10 = verify_revidxs(Site, FileId, H, Acc9),
+    Acc11 = verify_zinfs(Site, FileId, H, Acc10),
+    verify2(T, Site, FileId, Acc11).
 
-verify3([]) -> ok;
-verify3([H | T]) ->
+verify3([], _Site, _FileId, Acc) -> Acc;
+verify3([H | T], Site, FileId, Acc) ->
     case H of
-        {_Path, [_Idx]} -> ok;
-        {Path, List}    -> io:format("multiple local objs for ~p ~p~n",
-                                     [Path, List])
+        {_Path, [_Idx]} ->
+            ok;
+        {Path, List}    ->
+            io:fwrite(FileId, "multiple local objs for ~p ~p~n~p~n",
+                      [Site, Path, List])
     end,
-    verify3(T).
+    verify3(T, Site, FileId, Acc).
 
-verify_tables({_Idx, #ver{local_obj = exists,
-                          item = null,
-                          relation = null,
-                          form = null,
-                          include = null,
-                          timer = null,
-                          has_formula = false,
-                          parents = [],
-                          infparents = [],
-                          rev_parents = []}}) ->
-    ok;
-verify_tables({_Idx, #ver{local_obj = exists,
-                          item = exists,
-                          relation = null,
-                          form = null,
-                          include = null,
-                          timer = null,
-                          has_formula = false,
-                          parents = [],
-                          infparents = [],
-                          rev_parents = []}}) ->
-    ok;
-verify_tables({_Idx, #ver{local_obj = exists,
-                          item = exists,
-                          relation = exists,
-                          form = null,
-                          include = null,
-                          timer = null,
-                          has_formula = true}}) ->
-    ok;
-verify_tables({_Idx, #ver{local_obj = exists,
-                          item = exists,
-                          relation = exists,
-                          form = exists,
-                          include = null,
-                          timer = null,
-                          has_formula = true}}) ->
-    ok;
-verify_tables({_Idx, #ver{local_obj = exists,
-                          item = exists,
-                          relation = exists,
-                          form = null,
-                          include = exists,
-                          timer = null,
-                          has_formula = true}}) ->
-    ok;
-verify_tables({_Idx, #ver{local_obj = exists,
-                          item = exists,
-                          relation = exists,
-                          form = null,
-                          include = null,
-                          timer = exists,
-                          has_formula = true}}) ->
-    ok;
-verify_tables({Idx, #ver{local_obj = exists,
-                          item = null,
-                          relation = exists,
-                          form = null,
-                          include = null,
-                          timer = null,
-                          children = C,
-                          parents = [],
-                          infparents = [],
-                          has_formula = false} = V}) ->
+verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
+                                          item = null,
+                                          relation = null,
+                                          form = null,
+                                          include = null,
+                                          timer = null,
+                                          has_formula = false,
+                                          parents = [],
+                                          infparents = [],
+                                          rev_parents = []}}, Acc) ->
+    Acc;
+verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
+                                          item = exists,
+                                          relation = null,
+                                          form = null,
+                                          include = null,
+                                          timer = null,
+                                          has_formula = false,
+                                          parents = [],
+                                          infparents = [],
+                                          rev_parents = []}}, Acc) ->
+    Acc;
+verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
+                                          item = exists,
+                                          relation = exists,
+                                          form = null,
+                                          include = null,
+                                          timer = null,
+                                          has_formula = true}}, Acc) ->
+    Acc;
+verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
+                                          item = exists,
+                                          relation = exists,
+                                          form = exists,
+                                          include = null,
+                                          timer = null,
+                                          has_formula = true}}, Acc) ->
+    Acc;
+verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
+                                          item = exists,
+                                          relation = exists,
+                                          form = null,
+                                          include = exists,
+                                          timer = null,
+                                          has_formula = true}}, Acc) ->
+    Acc;
+verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
+                                          item = exists,
+                                          relation = exists,
+                                          form = null,
+                                          include = null,
+                                          timer = exists,
+                                          has_formula = true}}, Acc) ->
+    Acc;
+verify_tables(Site, FileId, {Idx, #ver{local_obj = exists,
+                                       item = null,
+                                       relation = exists,
+                                       form = null,
+                                       include = null,
+                                       timer = null,
+                                       children = C,
+                                       parents = [],
+                                       infparents = [],
+                                       has_formula = false} = V}, Acc) ->
     case C of
-        [] -> dump("Invalid tables (type 1):", [Idx, V]);
-        _  -> ok
+        [] -> Str = "Invalid tables (type 1)",
+              dump(Site, FileId, Str, [Idx, V]),
+              [{Idx, Str}];
+        _  -> Acc
     end;
-verify_tables({Idx, #ver{local_obj = exists} = V}) ->
-    dump("Invalid tables (type 2):", [Idx, V]);
-verify_tables({_Idx, _H}) ->
-    ok.
+verify_tables(Site, FileId, {Idx, #ver{local_obj = exists} = V}, Acc) ->
+    Str = "Invalid tables (type 2)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_tables(_Site, _FileId, {_Idx, _H}, Acc) ->
+    Acc.
 
-verify_relations({Idx, #ver{relation = exists,
-                            local_obj = exists,
-                            item = exists,
-                            children = C,
-                            parents = P,
-                            infparents = I,
-                            rev_children = RC,
-                            rev_parents = RP,
-                            rev_infparents = RIP} = V}) ->
+verify_relations(Site, FileId, {Idx, #ver{relation = exists,
+                                          local_obj = exists,
+                                          item = exists,
+                                          children = C,
+                                          parents = P,
+                                          infparents = I,
+                                          rev_children = RC,
+                                          rev_parents = RP,
+                                          rev_infparents = RIP} = V}, Acc) ->
     case {same(C, RC), same(P, RP), same(I, RIP)} of
         {true, true, true} ->
-            ok;
+            Acc;
         _ ->
-            dump("Invalid relations (type 1):", [Idx, V])
+            Str = "Invalid relations (type 1)",
+            dump(Site, FileId, Str, [Idx, V]),
+            [{Idx, Str} | Acc]
     end;
-verify_relations({Idx, #ver{relation = exists,
-                            local_obj = exists,
-                            item = null,
-                            children = C,
-                            parents = [],
-                            infparents = [],
-                            rev_children = RC,
-                            rev_parents = []} = V}) ->
+verify_relations(Site, FileId, {Idx, #ver{relation = exists,
+                                          local_obj = exists,
+                                          item = null,
+                                          children = C,
+                                          parents = [],
+                                          infparents = [],
+                                          rev_children = RC,
+                                          rev_parents = []} = V}, Acc) ->
     case same(C, RC) of
         true ->
-            ok;
+            Acc;
         _ ->
-            dump("Invalid relations (type 2):", [Idx, V])
+            Str = "Invalid relations (type 2)",
+            dump(Site, FileId, Str, [Idx, V]),
+            [{Idx, Str} | Acc]
     end;
-verify_relations({Idx, #ver{relation = exists} = V}) ->
-    dump("Invalid relations (type 2):", [Idx, V]);
-verify_relations({_Idx, _H}) -> ok.
+verify_relations(Site, FileId, {Idx, #ver{relation = exists} = V}, Acc) ->
+    Str = "Invalid relations (type 2)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_relations(_Site, _FileId, {_Idx, _H}, Acc) ->
+    Acc.
 
-verify_includes({_Idx, #ver{relation = exists,
-                            local_obj = exists,
-                            item = exists,
-                            form = null,
-                            include = exists,
-                            timer = null,
-                            has_include = true}}) ->
-    ok;
-verify_includes({Idx, #ver{include = exists} = V}) ->
-    dump("Invalid include (type 1):", [Idx, V]),
-    ok;
-verify_includes({Idx, #ver{has_include = true} = V}) ->
-    dump("Invalid include (type 2):", [Idx, V]),
-    ok;
-verify_includes({_Idx, _H}) ->
-    ok.
+verify_includes(_Site, _FileId, {_Idx, #ver{relation = exists,
+                                            local_obj = exists,
+                                            item = exists,
+                                            form = null,
+                                            include = exists,
+                                            timer = null,
+                                            has_include = true}}, Acc) ->
+    Acc;
+verify_includes(Site, FileId, {Idx, #ver{include = exists} = V}, Acc) ->
+    Str = "Invalid include (type 1)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_includes(Site, FileId, {Idx, #ver{has_include = true} = V}, Acc) ->
+    Str = "Invalid include (type 2)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_includes(_Site, _FileId, {_Idx, _H}, Acc) ->
+    Acc.
 
-verify_timers({_Idx, #ver{relation = exists,
-                          local_obj = exists,
-                          item = exists,
-                          form = null,
-                          include = null,
-                          timer = exists}}) ->
-    ok;
-verify_timers({Idx, #ver{timer = exists} = V}) ->
-    dump("Invalid timer:", [Idx, V]),
-    ok;
-verify_timers({_Idx, _H}) ->
-    ok.
+verify_timers(_Site, _FileId, {_Idx, #ver{relation = exists,
+                                          local_obj = exists,
+                                          item = exists,
+                                          form = null,
+                                          include = null,
+                                          timer = exists}}, Acc) ->
+    Acc;
+verify_timers(Site, FileId, {Idx, #ver{timer = exists} = V}, Acc) ->
+    Str = "Invalid timer",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_timers(_Site, _FileId, {_Idx, _H}, Acc) ->
+    Acc.
 
-verify_forms({_Idx, #ver{relation = exists,
-                         local_obj = exists,
-                         item = exists,
-                         form = exists,
-                         include = null,
-                         timer = null}}) ->
-    ok;
-verify_forms({Idx, #ver{form = exists} = V}) ->
-    dump("Invalid form:", [Idx, V]),
-    ok;
-verify_forms({_Idx, _H}) ->
-    ok.
+verify_forms(_Site, _FileId, {_Idx, #ver{relation = exists,
+                                         local_obj = exists,
+                                         item = exists,
+                                         form = exists,
+                                         include = null,
+                                         timer = null}}, Acc) ->
+    Acc;
+verify_forms(Site, FileId, {Idx, #ver{form = exists} = V}, Acc) ->
+    Str = "Invalid form",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_forms(_Site, _FileId, {_Idx, _H}, Acc) ->
+    Acc.
 
-verify_formula({_Idx, #ver{local_obj = exists,
-                           item = exists,
-                           relation = exists,
-                           has_formula = true,
-                           obj = {{cell, _}, _},
-                           type = url}}) ->
-    ok;
-verify_formula({Idx, #ver{has_formula = true} = V}) ->
-    dump("Invalid formula:", [Idx, V]),
-    ok;
-verify_formula({_Idx, _H}) ->
-    ok.
+verify_formula(_Site, _FileId, {_Idx, #ver{local_obj = exists,
+                                           item = exists,
+                                           relation = exists,
+                                           has_formula = true,
+                                           obj = {{cell, _}, _},
+                                           type = url}}, Acc) ->
+    Acc;
+verify_formula(Site, FileId, {Idx, #ver{has_formula = true} = V}, Acc) ->
+    Str = "Invalid formula",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_formula(_Site, _FileId, {_Idx, _H}, Acc) ->
+    Acc.
 
-verify_objs({_Idx, #ver{relation = exists,
-                        local_obj = exists,
-                        item = exists,
-                        type = url,
-                        obj = {{cell, _}, _},
-                        valid_obj = true,
-                        has_formula = true}}) ->
-    ok;
-verify_objs({_Idx, #ver{relation = exists,
-                        local_obj = exists,
-                        item = exists,
-                        type = url,
-                        obj = {{cell, _}, _},
-                        valid_obj = true,
-                        has_formula = false,
-                        parents = [],
-                        infparents = []}}) ->
-    ok;
-verify_objs({_Idx, #ver{relation = null,
-                        local_obj = exists,
-                        item = exists,
-                        type = url,
-                        obj = {{cell, _}, _},
-                        valid_obj = true,
-                        has_formula = false}}) ->
-    ok;
-verify_objs({_Idx, #ver{relation = null,
-                        local_obj = exists,
-                        item = null,
-                        form = null,
-                        include = null,
-                        timer = null,
-                        type = url,
-                        obj = {{page, "/"}, _},
-                        has_formula = false}}) ->
-    ok;
-verify_objs({_Idx, #ver{relation = null,
-                        local_obj = exists,
-                        item = null,
-                        form = null,
-                        include = null,
-                        timer = null,
-                        type = gurl,
-                        obj = {{row, _}, _},
-                        has_formula = false}}) ->
-    ok;
-verify_objs({_Idx, #ver{relation = null,
-                        local_obj = exists,
-                        item = exists,
-                        form = null,
-                        include = null,
-                        timer = null,
-                        type = gurl,
-                        obj = {{row, _}, _},
-                        has_formula = false}}) ->
-    ok;
-verify_objs({_Idx, #ver{relation = null,
-                        local_obj = exists,
-                        item = null,
-                        form = null,
-                        include = null,
-                        timer = null,
-                        type = gurl,
-                        obj = {{column, _}, _},
-                        has_formula = false}}) ->
-    ok;
-verify_objs({_Idx, #ver{relation = null,
-                        local_obj = exists,
-                        item = exists,
-                        form = null,
-                        include = null,
-                        timer = null,
-                        type = gurl,
-                        obj = {{column, _}, _},
-                        has_formula = false}}) ->
-    ok;
-verify_objs({_Idx, #ver{relation = null,
-                       local_obj = exists,
-                       item = null,
-                       form = null,
-                       include = null,
-                       timer = null,
-                       type = gurl,
-                       obj = {{cell, _}, _},
-                       has_formula = false}}) ->
-    ok;
-verify_objs({Idx, #ver{relation = exists,
-                       local_obj = exists,
-                       item = null,
-                       form = null,
-                       include = null,
-                       timer = null,
-                       children = C,
-                       parents = [],
-                       infparents = [],
-                       type = url,
-                       obj = {{cell, _}, _},
-                       has_formula = false} = V}) ->
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = exists,
+                                        local_obj = exists,
+                                        item = exists,
+                                        type = url,
+                                        obj = {{cell, _}, _},
+                                        valid_obj = true,
+                                        has_formula = true}}, Acc) ->
+    Acc;
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = exists,
+                                        local_obj = exists,
+                                        item = exists,
+                                        type = url,
+                                        obj = {{cell, _}, _},
+                                        valid_obj = true,
+                                        has_formula = false,
+                                        parents = [],
+                                        infparents = []}}, Acc) ->
+    Acc;
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                        local_obj = exists,
+                                        item = exists,
+                                        type = url,
+                                        obj = {{cell, _}, _},
+                                        valid_obj = true,
+                                        has_formula = false}}, Acc) ->
+    Acc;
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                        local_obj = exists,
+                                        item = null,
+                                        form = null,
+                                        include = null,
+                                        timer = null,
+                                        type = url,
+                                        obj = {{page, "/"}, _},
+                                        has_formula = false}}, Acc) ->
+    Acc;
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                        local_obj = exists,
+                                        item = null,
+                                        form = null,
+                                        include = null,
+                                        timer = null,
+                                        type = gurl,
+                                        obj = {{row, _}, _},
+                                        has_formula = false}}, Acc) ->
+    Acc;
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                        local_obj = exists,
+                                        item = exists,
+                                        form = null,
+                                        include = null,
+                                        timer = null,
+                                        type = gurl,
+                                        obj = {{row, _}, _},
+                                        has_formula = false}}, Acc) ->
+    Acc;
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                        local_obj = exists,
+                                        item = null,
+                                        form = null,
+                                        include = null,
+                                        timer = null,
+                                        type = gurl,
+                                        obj = {{column, _}, _},
+                                        has_formula = false}}, Acc) ->
+    Acc;
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                        local_obj = exists,
+                                        item = exists,
+                                        form = null,
+                                        include = null,
+                                        timer = null,
+                                        type = gurl,
+                                        obj = {{column, _}, _},
+                                        has_formula = false}}, Acc) ->
+    Acc;
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                        local_obj = exists,
+                                        item = null,
+                                        form = null,
+                                        include = null,
+                                        timer = null,
+                                        type = gurl,
+                                        obj = {{cell, _}, _},
+                                        has_formula = false}}, Acc) ->
+    Acc;
+verify_objs(Site, FileId, {Idx, #ver{relation = exists,
+                                     local_obj = exists,
+                                     item = null,
+                                     form = null,
+                                     include = null,
+                                     timer = null,
+                                     children = C,
+                                     parents = [],
+                                     infparents = [],
+                                     type = url,
+                                     obj = {{cell, _}, _},
+                                     has_formula = false} = V}, Acc) ->
     case C of
-        [] -> dump("Invalid cell (type 1):", [Idx, V]);
-        _  -> ok
+        [] -> Str = "Invalid Object (cell) (type 1)",
+              dump(Site, FileId, Str, [Idx, V]),
+              [{Idx, Str} | Acc];
+        _  -> Acc
     end;
-verify_objs({Idx, #ver{obj = {{cell, _}, _},
-                       type = url} = V}) ->
-    dump("Invalid cell (type 2):", [Idx, V]),
-    ok;
-verify_objs({Idx, #ver{obj = {{row, _}, _}} = V}) ->
-    dump("Invalid cell (type 3):", [Idx, V]),
-    ok;
-verify_objs({Idx, #ver{obj = {{column, _}, _}} = V}) ->
-    dump("Invalid cell (type 4):", [Idx, V]),
-    ok;
-verify_objs({Idx, #ver{obj = {{page, _}, _}} = V}) ->
-    dump("Invalid cell (type 5):", [Idx, V]),
-    ok.
+verify_objs(Site, FileId, {Idx, #ver{obj = {{cell, _}, _},
+                                     type = url} = V}, Acc) ->
+    Str = "Invalid Object (cell) (type 2)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_objs(Site, FileId, {Idx, #ver{obj = {{row, _}, _}} = V}, Acc) ->
+    Str = "Invalid Object (Row) (type 3)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_objs(Site, FileId, {Idx, #ver{obj = {{column, _}, _}} = V}, Acc) ->
+    Str = "Invalid Object (column) (type 4)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_objs(Site, FileId, {Idx, #ver{obj = {{page, _}, _}} = V}, Acc) ->
+    Str = "Invalid Object (cell) (type 5)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_objs(Site, FileId, {Idx, V}, Acc) ->
+    Str = "Invalid Object (type 6)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc].
 
-verify_types({_Idx, #ver{valid_type = true}}) ->
-    ok;
-verify_types({Idx, V}) ->
-    dump("Invalid types:", [Idx, V]),
-    ok.
+verify_types(_Site, _FileId, {_Idx, #ver{valid_type = true}}, Acc) ->
+    Acc;
+verify_types(Site, FileId, {Idx, V}, Acc) ->
+    Str = "Invalid types",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc].
 
-verify_grid({_Idx, #ver{valid_obj = true}}) ->
-    ok;
-verify_grid({Idx, #ver{valid_obj = false} = V}) ->
-    dump("Invalid grid:", [Idx, V]),
-    ok.
+verify_grid(_Site, _FileId, {_Idx, #ver{valid_obj = true}}, Acc) ->
+    Acc;
+verify_grid(Site, FileId, {Idx, #ver{valid_obj = false} = V}, Acc) ->
+    Str = "Invalid grid",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc].
 
-verify_revidxs({_Idx, #ver{valid_revidx = true}}) ->
-    ok;
-verify_revidxs({Idx, V}) ->
-    dump("Invalid Reverse Index:", [Idx, V]),
-    ok.
+verify_revidxs(_Site, _FileId, {_Idx, #ver{valid_revidx = true}}, Acc) ->
+    Acc;
+verify_revidxs(Site, FileId, {Idx, V}, Acc) ->
+    Str = "Invalid Reverse Index",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc].
 
-verify_zinfs({_Idx, #ver{relation = null,
-                        local_obj = exists,
-                        item = null,
-                        form = null,
-                        include = null,
-                        timer = null,
-                        children = [],
-                        parents = [],
-                        infparents = [],
-                        rev_parents = [],
-                        rev_infparents = [],
-                        has_formula = false,
-                        type = gurl,
-                        obj = {{cell, _}, _}}}) ->
-    ok;
-verify_zinfs({Idx, #ver{type = gurl,
-                        obj = {{cell, _}, _}} = V}) ->
-    dump("Invalid zinf:", [Idx, V]),
-    ok;
-verify_zinfs({_Idx, _V}) ->
-    ok.
+verify_zinfs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                         local_obj = exists,
+                                         item = null,
+                                         form = null,
+                                         include = null,
+                                         timer = null,
+                                         children = [],
+                                         parents = [],
+                                         infparents = [],
+                                         rev_parents = [],
+                                         rev_infparents = [],
+                                         has_formula = false,
+                                         type = gurl,
+                                         obj = {{cell, _}, _}}}, Acc) ->
+    Acc;
+verify_zinfs(Site, FileId, {Idx, #ver{type = gurl,
+                                      obj = {{cell, _}, _}} = V}, Acc) ->
+    Str = "Invalid zinf",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_zinfs(_Site, _FileId, {_Idx, _V}, Acc) ->
+    Acc.
 
-dump(Str, [Idx, V]) ->
-    io:format("~nDumping: ~p~n", [Idx]),
-    io:format("------------------------------------------------~n"),
-    io:format(Str, []),
-    #ver{
-               relation = RE,
-               local_obj = LE,
-               item = IE,
-               form = FE,
-               include = IncE,
-               timer = TE,
-               parents = P,
-               children = C,
-               infparents = IP,
-               rev_parents = RP,
-               rev_children = RC,
-               rev_infparents = RIP,
-               type = Ty,
-               valid_type = VT,
-               path = Path,
-               obj = {O1, O2},
-               revidx = RevI,
-               valid_obj = VO,
-               valid_revidx = VR,
-               has_formula = HF,
-               has_include = HI,
-               has_include_fn = RHI
-              } = V,
-    io:format("~p (~p) Reversed: ~p Formula? ~p~n",[Path ++ O2, O1, RevI, HF]),
-    io:format("Tables:~n"
+dump(Site, FileId, Str, [Idx, V]) ->
+    io:fwrite(FileId, "~nDumping: ~p ~p~n", [Site, Idx]),
+    io:fwrite(FileId, "------------------------------------------------~n", []),
+    io:fwrite(FileId, "Reason: " ++ Str ++ "~n", []),
+    #ver{relation = RE,
+         local_obj = LE,
+         item = IE,
+         form = FE,
+         include = IncE,
+         timer = TE,
+         parents = P,
+         children = C,
+         infparents = IP,
+         rev_parents = RP,
+         rev_children = RC,
+         rev_infparents = RIP,
+         type = Ty,
+         valid_type = VT,
+         path = Path,
+         obj = O,
+         revidx = RevI,
+         valid_obj = VO,
+         valid_revidx = VR,
+         has_formula = HF,
+         has_include = HI,
+         has_include_fn = RHI,
+         has_zinf = Z,
+         zinf_path = ZPath
+        } = V,
+    case {Path, O} of
+        {null, null} ->
+            io:fwrite(FileId, "no path or obj ~nReversed: ~p Zinf Path: ~p Formula? ~p~n",
+                      [RevI, ZPath, HF]);
+        {List, {O1, O2}} when is_list(List) ->
+            io:fwrite(FileId, "~p (~p)~nReversed: ~p Zinf Path: ~p Formula? ~p~n",
+                      [Path ++ O2, O1, RevI, ZPath, HF])
+    end,
+    io:fwrite(FileId, "Tables:~n"
               ++ "> relation:  ~p~n"
               ++ "> local_obj: ~p~n"
               ++ "> item:      ~p~n"
@@ -474,20 +546,21 @@ dump(Str, [Idx, V]) ->
               ++ "> include:   ~p~n"
               ++ "> timer:     ~p~n",
               [RE, LE, IE, FE, IncE, TE]),
-    io:format("Relations:~n"
+    io:fwrite(FileId, "Relations:~n"
               ++ "> Children:  ~p ~p~n"
               ++ "> Parents    ~p ~p~n"
               ++ "> InfParents ~p ~p~n",
               [C, RC, P, RP, IP, RIP]),
-    io:format("Validities:~n"
+    io:fwrite(FileId, "Validities:~n"
               ++ "> Type:           ~p~n"
               ++ "> Valid Type?     ~p~n"
               ++ "> Valid Obj?      ~p~n"
               ++ "> Valid RevIdx?   ~p~n"
               ++ "> Has Include?    ~p~n"
-              ++ "> Has Include Fn? ~p~n",
-              [Ty, VT, VO, VR, HI, RHI]),
-    io:format("------------------------------------------------~n").
+              ++ "> Has Include Fn? ~p~n"
+              ++ "> Has Zinf?       ~p~n",
+              [Ty, VT, VO, VR, HI, RHI, Z]),
+    io:fwrite(FileId, "------------------------------------------------~n", []).
 
 same(List1, List2) ->
     L1 = lists:sort(List1),
@@ -505,17 +578,17 @@ process_zinfs([H | T], Acc) ->
                 none       -> exit("zinf doesn't exist...");
                 {value, V} -> V
             end,
-    NewAcc2 = process_z2(List, Site, Idx, ITree, RTree, NewAcc),
+    NewAcc2 = process_z2(List, Site, Path, Idx, ITree, RTree, NewAcc),
     process_zinfs(T, NewAcc2).
 
-process_z2([], Site, _Idx, ITree, RTree, Acc) ->
+process_z2([], Site, _Path, _Idx, ITree, RTree, Acc) ->
     lists:keyreplace(Site, 1, Acc, {Site, ITree, RTree});
-process_z2([H | T], Site, Idx, ITree, RTree, Acc) ->
+process_z2([H | T], Site, Path, Idx, ITree, RTree, Acc) ->
     Rec = get_rec(H, ITree),
     #ver{rev_infparents = List} = Rec,
-    Rec2 = Rec#ver{rev_infparents = [Idx | List]},
+    Rec2 = Rec#ver{rev_infparents = [Idx | List], has_zinf = true, zinf_path = Path},
     ITree2 = gb_trees:enter(H, Rec2, ITree),
-    process_z2(T, Site, Idx, ITree2, RTree, Acc).
+    process_z2(T, Site, Path, Idx, ITree2, RTree, Acc).
 
 process(Tuple, Acc) ->
     Head = element(2, Tuple),
@@ -729,6 +802,8 @@ extract_tables(core_site) ->
     {core, core_site};
 extract_tables(service_hns_resource) ->
     {core, service_hns_resource};
+extract_tables(service_hns_record) ->
+    {core, service_hns_record};
 extract_tables(service_hns_zone) ->
     {core, service_hns_zone};
 extract_tables(service_passport_user) ->
@@ -777,6 +852,14 @@ read_term_from_stream(Stream, File, Line) ->
             Toks2 = fix_up(Toks, []),
             case erl_parse:parse_term(Toks2) of
                 {ok, Term} ->
+                    case (trunc(Line/1000) - Line/1000) of
+                        0.0 -> io:format(".");
+                        _   -> ok
+                    end,
+                    case (trunc(Line/10000) - Line/10000) of
+                        0.0 -> io:format("~nLine ~p~n", [Line]);
+                        _   -> ok
+                    end,
                     {ok, {Line, Term}, EndLine};
                 {error, {NewLine,Mod,What}} ->
                     Str = Mod:format_error(What),
@@ -802,3 +885,9 @@ fix_up([H | T], Acc) ->
 
 snip([{'>', N} | T], Acc) -> {T, [{atom, N, removed} | Acc]};
 snip([_H | T], Acc)       -> snip(T, Acc).
+
+make_terms([], Acc) ->
+    lists:flatten(lists:reverse(Acc));
+make_terms([H | T], Acc) ->
+    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
+    make_terms(T, [NewAcc | Acc]).
