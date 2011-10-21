@@ -101,7 +101,7 @@ raw_url_DEBUG(Url) ->
                                        [Url, R#local_obj.idx]),
                              io:format("The local_obj is for ~p on ~p and "
                                        ++ " has a reverse index of ~p~n",
-                                       [R#local_obj.obj,
+                                       [hn_util:obj_to_ref(R#local_obj.obj),
                                         binary_to_term(R#local_obj.path),
                                         binary_to_term(R#local_obj.revidx)])
                              end
@@ -123,7 +123,8 @@ raw_idx_DEBUG(Site, Idx) ->
                           io:format("local_obj: idx ~p~n type ~p~n path ~p~n "
                                     ++ "obj ~p~n revidx ~p~n",
                                     [R1#local_obj.idx, R1#local_obj.type,
-                            binary_to_term(R1#local_obj.path), R1#local_obj.obj,
+                                     binary_to_term(R1#local_obj.path),
+                                     hn_util:obj_to_ref(R1#local_obj.obj),
                                      binary_to_term(R1#local_obj.revidx)]),
                           Tab2 = new_db_wu:trans(Site, item),
                           [R2] = mnesia:read(Tab2, Idx, read),
@@ -264,7 +265,8 @@ print_rel4(_S, [], Acc) -> Acc;
 print_rel4(S, [H | T], Acc) ->
     XRefX = new_db_wu:idx_to_xrefXD(S, H),
     NewAcc = [io_lib:format("        ~p on ~p",
-                            [XRefX#xrefX.obj, XRefX#xrefX.path]) | Acc],
+                            [hn_util:obj_to_ref(XRefX#xrefX.obj),
+                             XRefX#xrefX.path]) | Acc],
     print_rel4(S, T, NewAcc).
 
 pretty_p3([], _Vals, Acc) -> Acc;
@@ -309,7 +311,7 @@ print_f2(Site, [H | T], Acc) ->
     #form{id={_, _, Lable}} = H,
     XRefX = new_db_wu:idx_to_xrefXD(Site, H#form.key),
     NewAcc = [io_lib:format("      ~p on ~p of ~p called ~p",
-                            [XRefX#xrefX.obj,
+                            [hn_util:obj_to_ref(XRefX#xrefX.obj),
                              hn_util:list_to_path(XRefX#xrefX.path),
                              H#form.kind, Lable]) | Acc],
     print_f2(Site, T, NewAcc).
@@ -318,10 +320,10 @@ pp(Site, Idx, XRefX, verbose, O) ->
     [I] = new_db_wu:idx_DEBUG(Site, Idx),
     O1 = io_lib:format("local_obj contains ~p ~p ~p~n",
                        [binary_to_term(I#local_obj.path),
-                        I#local_obj.obj,
+                        hn_util:obj_to_ref(I#local_obj.obj),
                         binary_to_term(I#local_obj.revidx)]),
     O2 = io_lib:format("XRefX contains ~p ~p~n",
-                       [XRefX#xrefX.path, XRefX#xrefX.obj]),
+                       [XRefX#xrefX.path, hn_util:obj_to_ref(XRefX#xrefX.obj)]),
 
     [[O1] | [[O2] | O]];
 pp(_, _, _, _, O) -> O.
@@ -372,7 +374,8 @@ item_and_local_objs_DEBUGD(Site) ->
     Fun2 = fun(X, []) ->
                    io:format("Record ~p is ~p ~p with a reverse index of ~p~n",
                              [X#local_obj.idx, binary_to_term(X#local_obj.path),
-                              X#local_obj.obj, binary_to_term(X#local_obj.revidx)]),
+                              hn_util:obj_to_ref(X#local_obj.obj),
+                              binary_to_term(X#local_obj.revidx)]),
                    []
            end,
     mnesia:foldl(Fun2, [], Tab2).
