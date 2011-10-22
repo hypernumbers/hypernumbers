@@ -733,6 +733,11 @@ userdef_call(Fname, Args) ->
 %% Returns value in the cell + get_value_and_link() is called`
 do_cell(RelPath, Rowidx, Colidx, Type) ->
     Path = muin_util:walk_path(?mpath, RelPath),
+
+    % this circref check ONLY finds circumstances where a cell refers
+    % to itself DIRECTLY (ie putting =A1+3 in cell A1)
+    % for INDIRECT circular refernences (ie putting =A2 in A1 and =A1 in A2)
+    % the circ reference is detected in dbsrv.erl
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my
                  andalso Path == ?mpath),
 

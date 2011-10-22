@@ -42,7 +42,7 @@ start_link(Site) ->
     supervisor_bridge:start_link({global, Id}, ?MODULE, [Site]).
 
 read_only_activity(Site, Activity) ->
-    %% Fix for circular chain deadlock. eg. include() in a formula.
+%% Fix for circular chain deadlock. eg. include() in a formula.
     case mnesia:is_transaction() of
         true -> Activity();
         false ->
@@ -106,7 +106,7 @@ dbsrv_init(Site, QTbl) ->
     dbsrv(Site, QTbl, Since, WorkPlan, Graph).
 
 -spec dbsrv(string(), atom(), term(), [cellidx()], digraph())
-                        -> no_return().
+-> no_return().
 dbsrv(Site, QTbl, Since, WorkPlan, Graph0) ->
     Graph = cleanup(WorkPlan, Since, QTbl, Graph0),
     {Since2, WorkPlan2} = check_messages(Site, Since, QTbl, WorkPlan, Graph),
@@ -128,7 +128,7 @@ cleanup(_, _, _, Graph) -> Graph.
 
 %% Checks if new work is waiting to be processed.
 -spec check_messages(string(), term(), atom(), [cellidx()], digraph())
-               -> {term(), [cellidx()]}.
+-> {term(), [cellidx()]}.
 check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
     % check the state of memory usage and maybe run a garbage collect
     {heap_size, HSZ} = process_info(self(), heap_size),
@@ -180,13 +180,15 @@ build_workplan(Site, Dirty, Graph) ->
     ok = mnesia_mon:log_act(transaction, Trans, Report),
     case digraph_utils:topsort(Graph) of
         false -> eliminate_circ_ref(Site, Dirty, Graph);
-        Work -> Work
+        Work  -> Work
     end.
 
 %% When a formula is added, it is necessary to test whether or not
 %% its parents are already present in the recalc tree. If so,
 %% dependency edges must be added from these parents to the new
-%% formula.
+%% formula. This check ONLY finds INDIRECT circular references
+%% (ie putting =A2 in A1 and =A1 in A2) for DIRECT circular references
+%% (ie putting =A1+3 in cell A1) the circ ref is detected in muin.erl
 -spec check_interference(cellidx(), atom(), digraph()) -> [cellidx()].
 check_interference(Cell, Site, Graph) ->
     case new_db_wu:read_relationsD(Site, Cell, read) of
@@ -230,7 +232,7 @@ eliminate_circ_ref(Site, Dirty, Graph) ->
     Cycle = lists:flatten(digraph_utils:cyclic_strong_components(Graph)),
     [digraph:del_vertex(Graph, V) || V <- Cycle],
     [new_db_api:handle_circref_cell(Site, V, nil) || V <- Cycle,
-                                                    lists:member(V, Dirty)],
+                                                     lists:member(V, Dirty)],
     build_workplan(Site, Dirty, Graph).
 
 -spec execute_plan([cellidx()], string(), digraph()) -> ok.
