@@ -12,15 +12,15 @@
 -export([
          dump_lost_idxs/1,
          tick/0,
-         timer_DEBUG/1,
-         dirty_for_zinf_DEBUG/1,
-         item_and_local_objs_DEBUG/1,
-         url_DEBUG/1,
-         url_DEBUG/2,
-         idx_DEBUG/2,
-         idx_DEBUG/3,
-         raw_idx_DEBUG/2,
-         raw_url_DEBUG/1,
+         timer/1,
+         dirty_for_zinf/1,
+         item_and_local_objs/1,
+         url/1,
+         url/2,
+         idx/2,
+         idx/3,
+         raw_idx/2,
+         raw_url/1,
          dump_site_table/2,
          dump_core_table/2
         ]).
@@ -96,25 +96,25 @@ tick() ->
     ok = new_db_api:write_attributes([{RefX, [{"formula", F}]}]),
     timer:apply_after(1000, new_db_DEBUG, tick, []).
 
-timer_DEBUG(Site) ->
+timer(Site) ->
     F = fun() ->
                 timer_debugD(Site)
         end,
     mnesia:transaction(F).
 
-item_and_local_objs_DEBUG(Site) ->
+item_and_local_objs(Site) ->
     F = fun() ->
-                item_and_local_objs_DEBUGD(Site)
+                item_and_local_objsD(Site)
         end,
     mnesia:transaction(F).
 
-dirty_for_zinf_DEBUG(Site) ->
+dirty_for_zinf(Site) ->
     F = fun() ->
-                dirty_for_zinf_DEBUGD(Site)
+                dirty_for_zinfD(Site)
         end,
     mnesia:transaction(F).
 
-raw_url_DEBUG(Url) ->
+raw_url(Url) ->
     Fun = fun() ->
                   RefX = hn_util:url_to_refX(Url),
                   #refX{site = S, path = P, obj = O} = RefX,
@@ -135,7 +135,7 @@ raw_url_DEBUG(Url) ->
     {atomic, ok} = mnesia:transaction(Fun),
     ok.
 
-raw_idx_DEBUG(Site, Idx) ->
+raw_idx(Site, Idx) ->
     Fun = fun() ->
                   case new_db_wu:idx_to_xrefXD(Site, Idx) of
                       {error, _, _} ->
@@ -165,19 +165,19 @@ raw_idx_DEBUG(Site, Idx) ->
           end,
     mnesia:transaction(Fun).
 
-url_DEBUG(Url) -> url_DEBUG(Url, quiet).
+url(Url) -> url(Url, quiet).
 
 % use the atom 'verbose' for this mode to get everything
 % use 'log' to log the results
-url_DEBUG(Url, Mode) -> RefX = hn_util:url_to_refX(Url),
+url(Url, Mode) -> RefX = hn_util:url_to_refX(Url),
                         Output = io_lib:format("Url ~p being debugged", [Url]),
                         'DEBUG'(refX, RefX, Mode, [Output]).
 
-idx_DEBUG(Site, Idx) -> idx_DEBUG(Site, Idx, false).
+idx(Site, Idx) -> idx(Site, Idx, false).
 
 % use the atom 'verbose' for this mode to get everything
 % use 'log' to log the results
-idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
+idx(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
 
 'DEBUG'(Type, Payload, Mode, Output) ->
 
@@ -371,12 +371,12 @@ timer_debugD(Site) ->
     Tab = new_db_wu:trans(Site, timer),
     Fun = fun(#timer{idx = Idx, spec = Spec}, []) ->
                    io:format("Debugging timer for ~p with ~p~n", [Idx, Spec]),
-                   idx_DEBUG(Site, Idx),
+                   idx(Site, Idx),
                    []
            end,
     mnesia:foldl(Fun, [], Tab).
 
-dirty_for_zinf_DEBUGD(Site) ->
+dirty_for_zinfD(Site) ->
     Tab1 = new_db_wu:trans(Site, dirty_for_zinf),
     io:format("Dumping dirty_for_zinf table:~n"),
     Fun1 = fun(X, []) ->
@@ -386,7 +386,7 @@ dirty_for_zinf_DEBUGD(Site) ->
            end,
     mnesia:foldl(Fun1, [], Tab1).
 
-item_and_local_objs_DEBUGD(Site) ->
+item_and_local_objsD(Site) ->
     Tab1 = new_db_wu:trans(Site, item),
     io:format("Dumping item table:~n"),
     Fun1 = fun(X, []) ->
@@ -405,8 +405,6 @@ item_and_local_objs_DEBUGD(Site) ->
                    []
            end,
     mnesia:foldl(Fun2, [], Tab2).
-
-%idx_DEBUG(S, Idx) -> mnesia:read(trans(S, local_obj), Idx, read).
 
 dump_logs(Site, Idx) ->
     Table = new_db_wu:trans(Site, logging),
