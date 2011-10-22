@@ -8,7 +8,6 @@
           auth_req = nil
          }).
 
-
 %% DateTime: fields are in the format expected by functions in the
 %% calendar module in stdlib.
 -record(datetime, {
@@ -20,7 +19,8 @@
 -record(cellref, {
           col, row,       % pos_integer()|{offset, pos_integer()}
           path,           % string like "./" or "/foo/bar"
-          text = ""       % token text (used in the parser for function names like ATAN2)
+          text = ""       % token text (used in the parser for
+                          % function names like ATAN2)
          }).
 
 -record(zcellref, {
@@ -32,7 +32,8 @@
 -record(rangeref, {
           type,          % finite|col|row
           path,          % like in #cellref{}
-          tl, br,        % {Col, Row} | {col|row, pos_integer()|{offset, pos_integer()}}
+          tl, br,        % {Col, Row} | {col|row, pos_integer()
+                         % | {offset, pos_integer()}}
           width, height, % pos_integer()|na
           text = ""      % token text
          }).
