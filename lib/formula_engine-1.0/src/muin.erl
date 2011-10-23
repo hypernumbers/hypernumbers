@@ -93,13 +93,14 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                           idx = Idx,
                           array_context=AryCtx,
                           auth_req=AuthReq}) ->
-%% Populate the process dictionary.
+    % Populate the process dictionary.
     lists:map(fun({K,V}) -> put(K, V) end,
               [{site, Site}, {path, Path}, {x, Col}, {y, Row},
                {idx, Idx},
                {array_context, AryCtx}, {infinite, []},
                {retvals, {[], []}}, {recompile, false},
-               {auth_req, AuthReq}]),
+               {auth_req, AuthReq},
+               {circref, false}]),
     Fcode = case ?array_context of
                 true -> loopify(Pcode);
                 false -> Pcode
@@ -113,9 +114,10 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
     %    _        ->  Result = eval_formula(Fcode)
  	  %end,
     {_Errors, References} = get(retvals),
-    FiniteRefs = [{X, L} || {X, finite, L} <- References],
+    FiniteRefs = [{X, L} || {X, _, L} <- References],
     InfiniteRefs = get(infinite),
-    {ok, {Fcode, Result, FiniteRefs, InfiniteRefs, get(recompile)}}.
+    {ok, {Fcode, Result, FiniteRefs, InfiniteRefs,
+          get(recompile), get(circref)}}.
 
 % not all functions can be included in other functions
 external_eval_formula(X) ->
@@ -379,7 +381,6 @@ funcall(user_defined_function, [Function_Name, Site | Args])  ->
 %% TODO: If a function exists in one of the modules, but calling it returns
 %%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
 funcall(Fname, Args0) ->
-
     % TODO, this should be taken out, no reason to strictly
     % evaluate arguments -- hahaha
     Funs = [ '+', '^^',
@@ -568,21 +569,22 @@ row(#cellref{row = Row}) -> Row.
 path(#cellref{path = Path}) -> Path.
 
 prefetch_references(L) ->
-    lists:foldr(fun(R, Acc) when ?is_cellref(R);
-                                 ?is_rangeref(R);
-                                 ?is_namedexpr(R) ->
-                        [fetch(R) | Acc];
-                   ([], Acc) -> [[] | Acc];
-                   (X, Acc) when is_list(X)->
-                        % not all functions can be included in other functions
-                        case lists:member(hd(X), ?notincfns) of
-                            true  -> ?ERRVAL_CANTINC;
-                            false -> [X | Acc]
-                        end;
-                   (X, Acc) -> [X | Acc]
-                end,
-                [],
-                L).
+    Fun = fun(R, Acc) when ?is_cellref(R);
+                           ?is_rangeref(R);
+                           ?is_namedexpr(R) ->
+                  [fetch(R) | Acc];
+             ([], Acc) ->
+                  [[] | Acc];
+             (X, Acc) when is_list(X)->
+                  % not all functions can be included in other functions
+                  case lists:member(hd(X), ?notincfns) of
+                      true  -> ?ERRVAL_CANTINC;
+                      false -> [X | Acc]
+                  end;
+             (X, Acc) ->
+                  [X | Acc]
+          end,
+    lists:foldr(Fun, [], L).
 
 row_index(N) when is_integer(N) -> N;
 row_index({offset, N}) -> ?my + N.
@@ -734,28 +736,16 @@ userdef_call(Fname, Args) ->
 do_cell(RelPath, Rowidx, Colidx, Type) ->
     Path = muin_util:walk_path(?mpath, RelPath),
 
-    % this circref check ONLY finds circumstances where a cell refers
-    % to itself DIRECTLY (ie putting =A1+3 in cell A1)
-    % for INDIRECT circular refernences (ie putting =A2 in A1 and =A1 in A2)
-    % the circ reference is detected in dbsrv.erl
-    IsCircRef = (Colidx == ?mx andalso Rowidx == ?my
-                 andalso Path == ?mpath),
-
-    case IsCircRef of
-        true ->
-            ?ERRVAL_CIRCREF;
-        false ->
-            FetchFun = fun() ->
-                               get_cell_info(?msite, Path,
-                                             Colidx, Rowidx, Type)
-                       end,
-            case ?mar of
-                nil   -> get_value_and_link(FetchFun);
-                _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of
-                             {view, _} -> get_value_and_link(FetchFun);
-                             _Else     -> ?ERR_AUTH
-                         end
-            end
+    FetchFun = fun() ->
+                       get_cell_info(?msite, Path,
+                                     Colidx, Rowidx, Type)
+               end,
+    case ?mar of
+        nil   -> get_value_and_link(FetchFun);
+        _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of
+                     {view, _} -> get_value_and_link(FetchFun);
+                     _Else     -> ?ERR_AUTH
+                 end
     end.
 
 %% @doc Calls supplied fun to get a cell's value and dependence information,
@@ -763,6 +753,24 @@ do_cell(RelPath, Rowidx, Colidx, Type) ->
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
     {Value, Errs, Refs} = FetchFun(),
+    % this checks for DIRECT circular references where a formula
+    % refers to itself (ie =A1 in cell A1). INDIRECT circular references
+    % (eg =A2 in cell A1 and =A1 in cell A2) are found in dbsrv.erl
+    % the process dictionary entry 'oldcontextpath' only exists
+    % if this is a z-reference so check if it exists and then
+    % look for a circular reference against a the original path
+    % not the current one
+    {MPath, MX, MY} = case get(oldcontextpath) of
+                          undefined -> {?mpath, ?mx, ?my};
+                          OldCP     -> {OldCP, get(oldcontextcol),
+                                        get(oldcontextrow)}
+                                  end,
+    case Refs of
+        [{_, _, {xrefX, _, _, MPath, {cell, {MX, MY}}}}] ->
+            put(circref, true);
+        _ ->
+            ok
+    end,
     {Errs0, Refs0} = get(retvals),
     put(retvals, {Errs0 ++ Errs, Refs0 ++ Refs}),
     Value.
@@ -781,9 +789,10 @@ sort1D(Refs, Path, Type) -> sort1D_(Refs, Path, Type, orddict:new()).
 
 sort1D_([], _Path, Type, Dict) -> Size = orddict:size(Dict),
                                   List = orddict:to_list(Dict),
-                                  Filled = fill1D(List, 1, 1, Size + 1, [], 'to-last-key'),
-                                  % if it is row then you need to flatten the List
-                                  % by one degree and wrap it in a list
+                                  Filled = fill1D(List, 1, 1, Size + 1, [],
+                                                  'to-last-key'),
+                                  % if it is row then you need to flatten the
+                                  % List by one degree and wrap it in a list
                                   % (ie a 2d transposition)
                                   case Type of
                                       column -> Filled;
@@ -904,7 +913,7 @@ m1(Site, PageTree, [H | T], [ZH | ZT], Htap, Match, NoMatch, Err) ->
                    NoMatch, Err);
             {nomatch, Path} ->
                 {Match, [{nomatch, Path} | NoMatch], Err};
-            {error,   Path, V} ->
+            {error, Path, V} ->
                 {Match, NoMatch, [{error, Path, V} | Err]}
         end,
     m1(Site, PageTree, T, [ZH | ZT], Htap, NewM, NewNM, NewE).
@@ -920,13 +929,13 @@ m2(Site,  S, {zseg, Z, _}, Htap) ->
         {error, Val} -> {error,     lists:reverse([S | Htap]), Val}
     end.
 
-
 %% the zinf server has no context to execute at this stage!
 zeval_from_zinf(Site, Path, Toks) ->
     % zeval evaluates an expression in a cell context - but that cell
     % cannot actually exists - so use {0,0} which is the cell 1 up and 1
     % right of A1
-    zeval2(Site, Path, Toks, 0, 0).
+    Return = zeval2(Site, Path, Toks, 0, 0),
+    {Return, get(circref)}.
 
 zeval(Site, Path, Toks) ->
     X = ?mx,
@@ -937,6 +946,10 @@ zeval(Site, Path, Toks) ->
 %% so here you need to rip it out and then stick it back in
 %% (not good, Damn you Hasan!).
 zeval2(Site, Path, Toks, X, Y) ->
+    % set the oldcontext path
+    put(oldcontextpath, ?mpath),
+    put(oldcontextrow, ?my),
+    put(oldcontextcol, ?mx),
     % capture the process dictionary (it will get gubbed!)
     OldContext = get(),
     % we run in the context of call '0, 0' - this is because z-order expressions
@@ -945,21 +958,30 @@ zeval2(Site, Path, Toks, X, Y) ->
     [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX]),
     % no array context (fine) or security context (erk!)
     RTI = new_db_wu:xrefX_to_rti(XRefX, nil, false),
-    Return = case catch(xfl_parser:parse(Toks)) of
-                 {ok, Ast} ->
-                     {ok, {_, Rs, _, _, _}} = muin:run_code(Ast, RTI),
-                     % cast to a boolean
-                     Rs2 = typechecks:std_bools([Rs]),
-                     case Rs2 of
-                         [true]  -> match;
-                         [false] -> nomatch;
-                         Val     -> {error, Val}
-                     end;
-                 ?syntax_err ->
-                     ?error_in_formula
-             end,
+    {Return, CircRef} =
+        case catch(xfl_parser:parse(Toks)) of
+            {ok, Ast} ->
+                {ok, {_, Rs, _, _, _, CR}} = muin:run_code(Ast, RTI),
+                % cast to a boolean
+                Rs2 = typechecks:std_bools([Rs]),
+                case Rs2 of
+                    [true]  -> {match, CR};
+                    [false] -> {nomatch, CR};
+                    Val     -> {{error, Val}, CR}
+                end;
+            ?syntax_err ->
+                {?error_in_formula, false}
+        end,
     % restore the process dictionary (fugly! fugly! fugly!)
     [put(K, V) || {K, V} <- OldContext],
+    erase(oldcontextpath),
+    erase(oldcontextrow),
+    erase(oldcontextcol),
+    % need to flag up the circular reference (which you have just erased)
+    case CircRef of
+        true  -> put(circref, true);
+        false -> ok
+    end,
     Return.
 
 fetch_vals(Paths, Row, Col) -> fetch_v1(Paths, Row, Col, []).
@@ -1032,8 +1054,8 @@ test_xfl() ->
                                  {ok, Ast};
                              O2         ->
                                  io:format("Parse fail: "++
-                                           "Expr is ~p Fla is ~p Trans is ~p~n"++
-                                           "Toks is ~p~nStatus is ~p~n",
+                                           "Expr is ~p Fla is ~p Trans is ~p~n"
+                                           ++ "Toks is ~p~nStatus is ~p~n",
                                            [X, Fla, Trans, Toks, O2]),
                                  ?syntax_err
                          end;

@@ -116,15 +116,15 @@ proc_dirty_zinfsD(Site, Tree, AddFun, DelFun) ->
     Fun = fun(DirtyZinf, Tr) ->
                    #dirty_zinf{dirtycellidx = CI, old = OldP,
                                new = NewP} = DirtyZinf,
-                   % expand the new and old parents
-                   NewP2 = get_zinfs(NewP, CI),
-                   OldP2 = get_zinfs(OldP, CI),
-                   Add = ordsets:subtract(NewP2, OldP2),
-                   Del = ordsets:subtract(OldP2, NewP2),
-                   NewTree = lists:foldl(AddFun, Tr, Add),
-                   NewTree2 = lists:foldl(DelFun, NewTree, Del),
-                   NewTree2
-           end,
+                  % expand the new and old parents
+                  NewP2 = get_zinfs(NewP, CI),
+                  OldP2 = get_zinfs(OldP, CI),
+                  Add = ordsets:subtract(NewP2, OldP2),
+                  Del = ordsets:subtract(OldP2, NewP2),
+                  NewTree = lists:foldl(AddFun, Tr, Add),
+                  NewTree2 = lists:foldl(DelFun, NewTree, Del),
+                  NewTree2
+          end,
     Spec = #dirty_zinf{_='_', processed = false},
     L = mnesia:match_object(Tbl, Spec, write),
     % need to apply the dirty zinfs in the order
@@ -559,7 +559,8 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             % mebbies there was incs, nuke 'em
             write_error_attrs(Attrs2, XRefX, Formula, Error);
         % the formula returns as rawform
-        {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile}} ->
+        {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile,
+              CircRef}} ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id = {XRefX#xrefX.path, Trans, Label}},
             ok = attach_formD(XRefX, Form),
@@ -571,10 +572,11 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
             % mebbies there was incs, nuke 'em
             write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Html,
-                                {Parents, false}, InfParents, Recompile);
+                                {Parents, false}, InfParents,
+                                Recompile, CircRef);
         % the formula returns a web control
         {ok, {Pcode, {webcontrol, {Payload, {Title, Wd, Ht, Incs}}, Res},
-              Parents, InfParents, Recompile}} ->
+              Parents, InfParents, Recompile, CircRef}} ->
             {Trans, Label} = Payload#form.id,
             Form = Payload#form{id = {XRefX#xrefX.path, Trans, Label}},
             ok = attach_formD(XRefX, Form),
@@ -587,10 +589,11 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                      end,
             Attrs4 = orddict:store("preview", {Title, Wd, Ht}, Attrs3),
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents, Recompile);
+                                {Parents, false}, InfParents,
+                                Recompile, CircRef);
         % the formula returns a web-hingie that needs to be previewed
         {ok, {Pcode, {preview, {PreV, Wd, Ht, Incs}, Res}, Pars,
-              InfPars, Recompile}} ->
+              InfPars, Recompile, CircRef}} ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Blank = #incs{},
             Attrs3 = case Incs of
@@ -600,10 +603,11 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                      end,
             Attrs4 = handle_merge(Ht, Wd, Attrs3),
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
-                                {Pars, false}, InfPars, Recompile);
+                                {Pars, false}, InfPars,
+                                Recompile, CircRef);
         % special case for the include function (special dirty!)
         {ok, {Pcode, {include, {PreV, Wd, Ht, Incs}, Res}, Pars,
-              InfPars, Recompile}} ->
+              InfPars, Recompile, CircRef}} ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Blank = #incs{},
             Attrs3 = case Incs of
@@ -618,10 +622,11 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             Attrs5 = bring_through(Attrs4, XRefX, Pars),
             % mebbies there was incs, nuke 'em
             write_formula_attrs(Attrs5, XRefX, Formula, Pcode, Res,
-                                {Pars, true}, InfPars, Recompile);
+                                {Pars, true}, InfPars,
+                                Recompile, CircRef);
         % normal functions with a resize
         {ok, {Pcode, {resize, {Wd, Ht, Incs}, Res}, Parents,
-              InfParents, Recompile}} ->
+              InfParents, Recompile, CircRef}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             Blank = #incs{},
@@ -632,22 +637,26 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                      end,
             Attrs4 = handle_merge(Ht, Wd, Attrs3),
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents, Recompile);
-        {ok, {Pcode, {timer, Spec, Res}, Parents, InfParents, Recompile}} ->
+                                {Parents, false}, InfParents,
+                                Recompile, CircRef);
+        {ok, {Pcode, {timer, Spec, Res}, Parents, InfParents, Recompile,
+              CircRef}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             Attrs3 = orddict:store("__hastimer", t, Attrs2),
             ok = update_timerD(XRefX, Spec),
             write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents, Recompile);
+                                {Parents, false}, InfParents,
+                                Recompile, CircRef);
         % bog standard function!
-        {ok, {Pcode, Res, Parents, InfParents, Recompile}} ->
+        {ok, {Pcode, Res, Parents, InfParents, Recompile, CircRef}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             % mebbies there was incs, nuke 'em
             ok = update_incsD(XRefX, #incs{}),
             write_formula_attrs(Attrs2, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents, Recompile)
+                                {Parents, false}, InfParents,
+                                Recompile, CircRef)
     end.
 
 handle_merge(1, 1, Attrs) -> orddict:erase("merge", Attrs);
@@ -875,10 +884,18 @@ attach_formD(#xrefX{idx = Idx, site = Site}, Form) ->
     mnesia:write(Tbl, Form#form{key = Idx}, write).
 
 write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res, {Parents, IsIncl},
-                    InfParents, Recompile) ->
+                    InfParents, Recompile, CircRef) ->
     ok = set_relationsD(XRefX, Parents, InfParents, IsIncl),
     Align = default_align(Res),
-    add_attributes(Attrs, [{"formula", Formula},
+    % if it is a circular reference it is going to be recalculated
+    % so stop the recalc NEXT TIME by replacing the current
+    % formula with the #CIRCREF! error - the next recalc will
+    % sort out the final __ast, blah-blah...
+    Formula2 = case CircRef of
+                   true -> "#CIRCREF!";
+                   _    -> Formula
+               end,
+    add_attributes(Attrs, [{"formula", Formula2},
                            {"__rawvalue", Res},
                            {"__ast", Pcode},
                            {"__default-align", Align},
@@ -2365,4 +2382,3 @@ get_z2([H | T], CI, Acc) ->
     Zs2 = lists:merge([H], Zs),
     NewAcc = [{X, CI} || X <- Zs2],
     get_z2(T, CI, [NewAcc | Acc]).
-

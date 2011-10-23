@@ -545,7 +545,8 @@ iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
             NewAcc = case match_seg(K, H, S, Htap) of
                          match    -> match_tree(V, S, T, Fun, [H | Htap]);
                          nomatch  -> [];
-                         error    -> []
+                         error    -> [];
+                         circref  -> []
                      end,
             iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
      end.
@@ -556,10 +557,12 @@ match_seg(selector,    _S,  _Site, _Htap) -> nomatch;
 match_seg({zseg, S1},   S,   Site,  Htap) ->
     Path = lists:reverse([S | Htap]),
     case run_zeval(Site, Path, S1) of
-        match          -> match;
-        nomatch        -> nomatch;
-        {errval, _Err} -> error;
-        {error, _}     -> error   % Old style errors from fns (shouldn't exist!)
+        {_, true}               -> circref;
+        {match, false}          -> match;
+        {nomatch, false}        -> nomatch;
+        {{errval, _Err}, false} -> error;
+        {{error, _}, false}     -> error   % Old style errs from fns
+                                           % (shouldn't exist!)
     end.
 
 run_zeval(Site, Path, Z) ->
