@@ -70,7 +70,7 @@ gen_test(Template, Fixture) ->
                     X2-X1+2
             end,
 
-    Ref = #refX{site="http://hypernumbers.dev:9000", path=[Name]},
+    Ref = #refX{site="http://hypernumbers.dev:9000", type = url, path=[Name]},
     Url = Ref#refX.site ++ hn_util:list_to_path(Ref#refX.path),
 
     Names = gen_names(Name, Count),
@@ -90,7 +90,7 @@ gen_names(Name, Count) ->
 gen_test_cases(_Name, _Path, 0) ->
     [];
 gen_test_cases(Name, Path, N) ->
-    Str = "~s(_Conf) -> ~n \"Success\" = get_val(#refX{path=[~p],obj="
+    Str = "~s(_Conf) -> ~n \"Success\" = get_val(#refX{path=[~p],type=url,obj="
         "{cell,{1,~p}}}).~n",
 
     [ ?FORMAT(Str,[Name++"_A"++itol(X), Path, X])
