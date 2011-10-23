@@ -550,7 +550,7 @@ iget(Ref, page, #qry{view = ?LOGVIEW}, Env) ->
     text_html(Env, hn_logs:get_logs(Ref));
 
 iget(Ref, page, #qry{view = ?WIKI},
-     Env=#env{accept=html,uid=Uid}) ->
+     Env=#env{accept = html,uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "view wiki page"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, wikipage),
     Page = hn_render:wrap_page(Html, Width, Height, Addons, "wikipage"),
