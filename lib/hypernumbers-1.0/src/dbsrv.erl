@@ -186,9 +186,10 @@ build_workplan(Site, Dirty, Graph) ->
 %% When a formula is added, it is necessary to test whether or not
 %% its parents are already present in the recalc tree. If so,
 %% dependency edges must be added from these parents to the new
-%% formula. This check ONLY finds INDIRECT circular references
-%% (ie putting =A2 in A1 and =A1 in A2) for DIRECT circular references
-%% (ie putting =A1+3 in cell A1) the circ ref is detected in muin.erl
+%% formula. This checks for INDIRECT circular references
+%% (eg =A2 in cell A1 and =A1 in cell A2) only.
+%% Checks for DIRECT circular references where a formula
+%% refers to itself (ie =A1 in cell A1) are done in muin.erl
 -spec check_interference(cellidx(), atom(), digraph()) -> [cellidx()].
 check_interference(Cell, Site, Graph) ->
     case new_db_wu:read_relationsD(Site, Cell, read) of
