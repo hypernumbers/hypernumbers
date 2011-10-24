@@ -12,6 +12,8 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         log/2,
+         log_terms/2,
          get_templates/1,
          get_maps/1,
          templateroot/1,
@@ -86,6 +88,29 @@
          % Formula utilities
          make_formula/2
         ]).
+
+log_terms(Terms, File) ->
+    Str = lists:flatten(io_lib:format("~p.~n", [Terms])),
+    _Return = filelib:ensure_dir(File),
+    case file:open(File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [Str]),
+            file:close(Id);
+        _ ->
+            error
+    end.
+
+log(String, File) ->
+    _Return = filelib:ensure_dir(File),
+    Date = dh_date:format("d_M_y_G_i_s"),
+
+    case file:open(File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
+            file:close(Id);
+        _ ->
+            error
+    end.
 
 get_templates(Site) ->
     Templates = filelib:wildcard("*.json", templateroot(Site)),
