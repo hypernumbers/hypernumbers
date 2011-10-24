@@ -43,6 +43,8 @@
 
 % debugging api
 -export([
+         summarise_problems/0,
+         summarise_problems/2,
          dump_tables/0,
          read_verification/0,
          process_file/0,
@@ -53,6 +55,35 @@
 -export([
          check/0
         ]).
+
+summarise_problems() ->
+    Dir = "/home/gordon/hypernumbers/priv/verification/",
+    File = "fixable_errors.20_Oct_11_13_27_19.terms",
+    summarise_problems(Dir, File).
+
+summarise_problems(Dir, File) ->
+    {ok, [{Data1, Data2}]} = file:consult(Dir ++ File),
+    io:format("Summarised problems loaded~n"),
+    [summarise(X, Site, Data2, []) || {Site, X} <- Data1],
+    ok.
+
+summarise([], Site, Data2, Acc) ->
+    io:format("~n~p:~n", [Site]),
+    print_summary(Acc),
+    case lists:keyfind(Site, 1, Data2) of
+        false        -> io:format("no broken revidxs~n");
+        {Site, List} -> io:format("~p broken revidxs~n", [length(List)])
+    end;
+summarise([{_Idx, Type} | T], Site, Data2, Acc) ->
+    NewAcc = case lists:keyfind(Type, 1, Acc) of
+                 false     -> [{Type, 1} | Acc];
+                 {Type, N} -> lists:keyreplace(Type, 1, Acc, {Type, N + 1})
+             end,
+    summarise(T, Site, Data2, NewAcc).
+
+print_summary([])                  -> ok;
+print_summary([{Type, Count} | T]) -> io:format("~p " ++ Type ++ "~n", [Count]),
+                                      print_summary(T).
 
 dump_tables() ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../priv/verification/",
@@ -104,7 +135,11 @@ process_file(Dir, File) ->
     io:format("Verification Data loaded...~n"),
     [_Prefix, Stamp, FileType] = string:tokens(File, "."),
     FileName = "errors."  ++ Stamp ++ "." ++ FileType,
-    process_data(Data, Dir, FileName).
+    Errors = process_data(Data, Dir, FileName),
+    FileName2 = "fixable_errors." ++ Stamp ++ "." ++ FileType,
+    hn_util:log_terms(Errors, Dir ++ FileName2),
+    summarise_problems(Dir, FileName2),
+    ok.
 
 process_data(Data, Dir, FileName) ->
     _Return = filelib:ensure_dir(Dir ++ FileName),
@@ -117,7 +152,7 @@ process_data(Data, Dir, FileName) ->
             error
     end.
 
-verify([], _, _) -> ok;
+verify([], _, Acc) -> Acc;
 verify([H | T], FileId, {Acc1, Acc2}) ->
     {Site, ITree, RTree} = H,
     io:format("Verifying~p:~n", [Site]),
@@ -153,6 +188,8 @@ verify3([H | T], Site, FileId, Acc) ->
     end,
     verify3(T, Site, FileId, Acc).
 
+% an entry in a local table has no formula, or parents could be a row, col
+% page
 verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           item = null,
                                           relation = null,
@@ -160,10 +197,16 @@ verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           include = null,
                                           timer = null,
                                           has_formula = false,
+                                          obj = {{Type, _}, _},
                                           parents = [],
                                           infparents = [],
-                                          rev_parents = []}}, Acc) ->
+                                          rev_parents = []}}, Acc)
+  when Type == row
+       orelse Type == column
+       orelse Type == page->
     Acc;
+% a cell with no formula matches this - it has an item but no relations
+% or formulae
 verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           item = exists,
                                           relation = null,
@@ -171,10 +214,12 @@ verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           include = null,
                                           timer = null,
                                           has_formula = false,
+                                          obj = {{cell, _}, _},
                                           parents = [],
                                           infparents = [],
                                           rev_parents = []}}, Acc) ->
     Acc;
+% a normal cell with a formula (check the formula stuff elsewhere)
 verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           item = exists,
                                           relation = exists,
@@ -183,6 +228,7 @@ verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           timer = null,
                                           has_formula = true}}, Acc) ->
     Acc;
+% a cell with a form element in it
 verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           item = exists,
                                           relation = exists,
@@ -191,6 +237,7 @@ verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           timer = null,
                                           has_formula = true}}, Acc) ->
     Acc;
+% a cell with an include in it
 verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           item = exists,
                                           relation = exists,
@@ -199,6 +246,7 @@ verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           timer = null,
                                           has_formula = true}}, Acc) ->
     Acc;
+% a cell with a timer in it
 verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           item = exists,
                                           relation = exists,
@@ -207,6 +255,8 @@ verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           timer = exists,
                                           has_formula = true}}, Acc) ->
     Acc;
+% a cell that is refered to by a formula in another cell but which has
+% no content - can't have no children
 verify_tables(Site, FileId, {Idx, #ver{local_obj = exists,
                                        item = null,
                                        relation = exists,
@@ -219,6 +269,24 @@ verify_tables(Site, FileId, {Idx, #ver{local_obj = exists,
                                        has_formula = false} = V}, Acc) ->
     case C of
         [] -> Str = "Invalid tables (type 1)",
+              dump(Site, FileId, Str, [Idx, V]),
+              [{Idx, Str}];
+        _  -> Acc
+    end;
+% a cell that is refered to by a formula in another cell but which has
+% some content (like a format) - can't have no children
+verify_tables(Site, FileId, {Idx, #ver{local_obj = exists,
+                                       item = exists,
+                                       relation = exists,
+                                       form = null,
+                                       include = null,
+                                       timer = null,
+                                       children = C,
+                                       parents = [],
+                                       infparents = [],
+                                       has_formula = false} = V}, Acc) ->
+    case C of
+        [] -> Str = "Invalid tables (type 1a)",
               dump(Site, FileId, Str, [Idx, V]),
               [{Idx, Str}];
         _  -> Acc
@@ -264,7 +332,7 @@ verify_relations(Site, FileId, {Idx, #ver{relation = exists,
             [{Idx, Str} | Acc]
     end;
 verify_relations(Site, FileId, {Idx, #ver{relation = exists} = V}, Acc) ->
-    Str = "Invalid relations (type 2)",
+    Str = "Invalid relations (type 3)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_relations(_Site, _FileId, {_Idx, _H}, Acc) ->
@@ -441,7 +509,7 @@ verify_objs(Site, FileId, {Idx, #ver{obj = {{cell, _}, _},
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_objs(Site, FileId, {Idx, #ver{obj = {{row, _}, _}} = V}, Acc) ->
-    Str = "Invalid Object (Row) (type 3)",
+    Str = "Invalid Object (row) (type 3)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_objs(Site, FileId, {Idx, #ver{obj = {{column, _}, _}} = V}, Acc) ->
@@ -449,7 +517,7 @@ verify_objs(Site, FileId, {Idx, #ver{obj = {{column, _}, _}} = V}, Acc) ->
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_objs(Site, FileId, {Idx, #ver{obj = {{page, _}, _}} = V}, Acc) ->
-    Str = "Invalid Object (cell) (type 5)",
+    Str = "Invalid Object (page) (type 5)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_objs(Site, FileId, {Idx, V}, Acc) ->
@@ -474,7 +542,7 @@ verify_grid(Site, FileId, {Idx, #ver{valid_obj = false} = V}, Acc) ->
 verify_revidxs(_Site, _FileId, {_Idx, #ver{valid_revidx = true}}, Acc) ->
     Acc;
 verify_revidxs(Site, FileId, {Idx, V}, Acc) ->
-    Str = "Invalid Reverse Index",
+    Str = "Invalid reverse index",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc].
 
