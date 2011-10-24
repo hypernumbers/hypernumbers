@@ -973,6 +973,7 @@ zeval2(Site, Path, Toks, X, Y) ->
                 {?error_in_formula, false}
         end,
     % restore the process dictionary (fugly! fugly! fugly!)
+    {_Errs, ZRetVals} = get(retvals),
     [put(K, V) || {K, V} <- OldContext],
     erase(oldcontextpath),
     erase(oldcontextrow),
@@ -982,6 +983,9 @@ zeval2(Site, Path, Toks, X, Y) ->
         true  -> put(circref, true);
         false -> ok
     end,
+    % also add in the missing parents from the sub-context
+    {Errs, OrigRetVals} = get(retvals),
+    put(retvals, {Errs, ZRetVals ++ OrigRetVals}),
     Return.
 
 fetch_vals(Paths, Row, Col) -> fetch_v1(Paths, Row, Col, []).
