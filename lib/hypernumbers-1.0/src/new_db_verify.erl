@@ -1,5 +1,5 @@
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2011, Hypernumers Ltd
+%%% @copyright (C) 2011, Hypernumbers Ltd
 %%% @doc       A module to verify the status
 %%%            of a hypernumbers database and
 %%%            make assertions about it...
@@ -47,8 +47,8 @@
          summarise_problems/2,
          dump_tables/0,
          read_verification/0,
-         process_file/0,
-         process_file/2
+         process_mnesia_dump/0,
+         process_mnesia_dump/2
         ]).
 
 % main api
@@ -63,7 +63,7 @@ summarise_problems() ->
 
 summarise_problems(Dir, File) ->
     {ok, [{Data1, Data2}]} = file:consult(Dir ++ File),
-    io:format("Summarised problems loaded~n"),
+    io:format("Problems loaded~n"),
     [summarise(X, Site, Data2, []) || {Site, X} <- Data1],
     ok.
 
@@ -103,7 +103,12 @@ dump_tables() ->
 check() ->
     {Dir, TermFile, ZinfFile} = dump_tables(),
     io:format("~p and ~p created in ~p~n", [TermFile, ZinfFile, Dir]),
-    ok = read_verification(Dir, TermFile, ZinfFile).
+    Data = read_verification(Dir, TermFile, ZinfFile),
+    [_Prefix, Stamp, FileType] = string:tokens(TermFile, "."),
+    FileName2 = "fixable_errors." ++ Stamp ++ "." ++ FileType,
+    hn_util:log_terms(Data, Dir ++ FileName2),
+    summarise_problems(Dir, FileName2),
+    ok.
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
@@ -114,7 +119,13 @@ read_verification() ->
 read_verification(Dir, VerFile, ZinfFile) ->
     {ok, Data}  = parse(Dir ++ VerFile),
     io:format("in verification, data parsed...~n"),
-    {ok, Zinfs} = file:consult(Dir ++ ZinfFile),
+    {ok, Zinfs} = case file:consult(Dir ++ ZinfFile) of
+                      {error, enoent} ->
+                          io:format("No zinfs written, assuming empty~n"),
+                          {ok, []};
+                      {ok, Zs} ->
+                          {ok, Zs}
+                  end,
     io:format("in verification, zinfs parsed...~n"),
     Data2 = process_zinfs(Zinfs, Data),
     io:format("in verification, zinfs processed...~n"),
@@ -125,12 +136,12 @@ read_verification(Dir, VerFile, ZinfFile) ->
     io:format("Written out processed data to ~p~n", [DataFile]),
     process_data(Data2, Dir, "errors." ++ Stamp ++ "." ++ FileType).
 
-process_file() ->
+process_mnesia_dump() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
     File = "verification_data.20_Oct_11_13_27_19.terms",
-    process_file(Dir, File).
+    process_mnesia_dump(Dir, File).
 
-process_file(Dir, File) ->
+process_mnesia_dump(Dir, File) ->
     {ok, Data} = file:consult(Dir ++ File),
     io:format("Verification Data loaded...~n"),
     [_Prefix, Stamp, FileType] = string:tokens(File, "."),
@@ -155,12 +166,13 @@ process_data(Data, Dir, FileName) ->
 verify([], _, Acc) -> Acc;
 verify([H | T], FileId, {Acc1, Acc2}) ->
     {Site, ITree, RTree} = H,
-    io:format("Verifying~p:~n", [Site]),
+    io:format("Verifying: ~p~n", [Site]),
     Idxes = gb_trees:to_list(ITree),
     RevIdxs = gb_trees:to_list(RTree),
     Broken_Idxs = verify2(Idxes, Site, FileId, []),
     Broken_Revs = verify3(RevIdxs, Site, FileId, []),
-    verify(T, FileId, {[{Site, Broken_Idxs} | Acc1], [{Site, Broken_Revs} | Acc2]}).
+    verify(T, FileId, {[{Site, Broken_Idxs} | Acc1],
+                       [{Site, Broken_Revs} | Acc2]}).
 
 verify2([], _Site, _FileId, Acc) -> Acc;
 verify2([H | T], Site, FileId, Acc) ->
@@ -266,31 +278,49 @@ verify_tables(Site, FileId, {Idx, #ver{local_obj = exists,
                                        children = C,
                                        parents = [],
                                        infparents = [],
-                                       has_formula = false} = V}, Acc) ->
+                                       has_formula = false,
+                                       has_zinf = false} = V}, Acc) ->
     case C of
         [] -> Str = "Invalid tables (type 1)",
               dump(Site, FileId, Str, [Idx, V]),
-              [{Idx, Str}];
+              [{Idx, Str} | Acc];
         _  -> Acc
     end;
-% a cell that is refered to by a formula in another cell but which has
-% some content (like a format) - can't have no children
-verify_tables(Site, FileId, {Idx, #ver{local_obj = exists,
-                                       item = exists,
-                                       relation = exists,
-                                       form = null,
-                                       include = null,
-                                       timer = null,
-                                       children = C,
-                                       parents = [],
-                                       infparents = [],
-                                       has_formula = false} = V}, Acc) ->
-    case C of
-        [] -> Str = "Invalid tables (type 1a)",
-              dump(Site, FileId, Str, [Idx, V]),
-              [{Idx, Str}];
-        _  -> Acc
-    end;
+% a cell that had some content and a style but which had its contents cleared
+% the contents clearer doesn't clear the relation table
+verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
+                                          item = exists,
+                                          relation = exists,
+                                          form = null,
+                                          include = null,
+                                          timer = null,
+                                          parents = [],
+                                          infparents = [],
+                                          has_formula = false}}, Acc) ->
+    Acc;
+% a zquery
+verify_tables(_Site, _FileId, {_Idx, #ver{relation = null,
+                                          local_obj = exists,
+                                          item = null,
+                                          form = null,
+                                          include = null,
+                                          timer = null,
+                                          type = gurl,
+                                          valid_type = true,
+                                          obj = {{cell, _}, _}}}, Acc) ->
+    Acc;
+% rows and columns
+verify_tables(_Site, _FileId, {_Idx, #ver{relation = null,
+                                          local_obj = exists,
+                                          item = exists,
+                                          form = null,
+                                          include = null,
+                                          timer = null,
+                                          type = gurl,
+                                          valid_type = true,
+                                          obj = {{Type, _}, _}}}, Acc)
+  when Type == row orelse Type == column ->
+    Acc;
 verify_tables(Site, FileId, {Idx, #ver{local_obj = exists} = V}, Acc) ->
     Str = "Invalid tables (type 2)",
     dump(Site, FileId, Str, [Idx, V]),
@@ -344,7 +374,9 @@ verify_includes(_Site, _FileId, {_Idx, #ver{relation = exists,
                                             form = null,
                                             include = exists,
                                             timer = null,
-                                            has_include = true}}, Acc) ->
+                                            has_include = true,
+                                            obj = {{cell, _}, _},
+                                            has_formula = true}}, Acc) ->
     Acc;
 verify_includes(Site, FileId, {Idx, #ver{include = exists} = V}, Acc) ->
     Str = "Invalid include (type 1)",
@@ -362,7 +394,9 @@ verify_timers(_Site, _FileId, {_Idx, #ver{relation = exists,
                                           item = exists,
                                           form = null,
                                           include = null,
-                                          timer = exists}}, Acc) ->
+                                          timer = exists,
+                                          obj = {{cell, _}, _},
+                                          has_formula = true}}, Acc) ->
     Acc;
 verify_timers(Site, FileId, {Idx, #ver{timer = exists} = V}, Acc) ->
     Str = "Invalid timer",
@@ -376,7 +410,9 @@ verify_forms(_Site, _FileId, {_Idx, #ver{relation = exists,
                                          item = exists,
                                          form = exists,
                                          include = null,
-                                         timer = null}}, Acc) ->
+                                         timer = null,
+                                         obj = {{cell, _}, _},
+                                         has_formula = true}}, Acc) ->
     Acc;
 verify_forms(Site, FileId, {Idx, #ver{form = exists} = V}, Acc) ->
     Str = "Invalid form",
@@ -517,7 +553,7 @@ verify_objs(Site, FileId, {Idx, #ver{obj = {{column, _}, _}} = V}, Acc) ->
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_objs(Site, FileId, {Idx, #ver{obj = {{page, _}, _}} = V}, Acc) ->
-    Str = "Invalid Object (page) (type 5)",
+    Str = "Invalid Object (page) (type 5) (old adding in css/js)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_objs(Site, FileId, {Idx, V}, Acc) ->
