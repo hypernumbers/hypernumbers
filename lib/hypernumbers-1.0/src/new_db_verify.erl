@@ -47,6 +47,7 @@
          summarise_problems/2,
          dump_tables/0,
          read_verification/0,
+         read_verification/3,
          process_mnesia_dump/0,
          process_mnesia_dump/2
         ]).
@@ -131,7 +132,7 @@ read_verification(Dir, VerFile, ZinfFile) ->
     io:format("in verification, zinfs processed...~n"),
     [_Prefix, Stamp, FileType] = string:tokens(VerFile, "."),
     DataFile = "verification_data" ++ "." ++ Stamp ++ "." ++ FileType,
-    Terms =  make_terms(Data2, []),
+    Terms = make_terms(Data2, []),
     ok = file:write_file(Dir ++ DataFile, Terms),
     io:format("Written out processed data to ~p~n", [DataFile]),
     process_data(Data2, Dir, "errors." ++ Stamp ++ "." ++ FileType).
