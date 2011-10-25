@@ -1,8 +1,6 @@
 #!/bin/bash
 echo "Invalid tables (type 1)"
 grep "Invalid tables (type 1)" errors.20_Oct_11_13_27_19.terms | wc -l
-echo "Invalid tables (type 1a)"
-grep "Invalid tables (type 1a)" errors.20_Oct_11_13_27_19.terms | wc -l
 echo "Invalid tables (type 2)"
 grep "Invalid tables (type 2)" errors.20_Oct_11_13_27_19.terms | wc -l
 echo "Invalid relations (type 1)"
