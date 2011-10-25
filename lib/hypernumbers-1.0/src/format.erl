@@ -553,7 +553,7 @@ execute(X,{hour,zero},true) ->
     format_util:pad_calendar(integer_to_list(format_util:clock_12(Hour)));
 execute(X,{hour,zero},false) ->
     {_D,{Hour,_M,_S}}=X,
-    format_util:pad_calendar(integer_to_list(format_util:clock_12(Hour)));
+    format_util:pad_calendar(integer_to_list(Hour));
 execute(X,{hour,elapsed},_) ->
     Secs=calendar:datetime_to_gregorian_seconds(X),
     integer_to_list(round(Secs/3600));
