@@ -734,9 +734,9 @@ speedo1(Size, Val, Title, Subtitle, Thresholds) ->
     end.
 
 speedo_scale(Th, Val) ->
-    NoOfColours = 20,
-    NoOfCMinus1 = 19,
-    NoOfCMinus2 = 18,
+    NoOfColours = 100,
+    NoOfCMinus1 = 99,
+    NoOfCMinus2 = 98,
     [Zero, Orange, Red, Max] = lists:reverse(cast_data(Th)),
     Diff = Max - Zero,
     NGreen = trunc(((Orange - Zero)/Diff) * NoOfColours),
