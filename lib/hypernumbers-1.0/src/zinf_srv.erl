@@ -47,8 +47,8 @@
 %% API for fns used in new_db_api
 -export([
          add/2,
-         del/2,
-         expand_zrefs/1
+         del/2
+         %expand_zrefs/1
         ]).
 
 -export([
@@ -412,7 +412,7 @@ alter_tree1(Tree, [], Fun) ->
                                   {Status, gb_trees:insert(selector, NewSels, Tree)};
                     {value, V} -> {St2, NewVs} = Fun(V),
                                   {St2, gb_trees:enter(selector, NewVs, Tree)}
-          end,
+                end,
     {St, Ret};
 alter_tree1(Tree, [H | T], Fun) ->
     {St, Ret} = case gb_trees:lookup(H, Tree) of
@@ -426,7 +426,7 @@ alter_tree1(Tree, [H | T], Fun) ->
                       {deleted, K} -> {St3, NewTree} = trim(K, H, Ret),
                                       {St3, NewTree};
                       _Other       -> {ok, Ret}
-    end,
+                  end,
     {St2, Ret2}.
 
 trim(K, Seg, Tree) ->
@@ -492,7 +492,7 @@ dump_f([H | T], Path, Acc) -> {Obj, List} = H,
                               P2 = hn_util:list_to_path(Path),
                               Ref = hn_util:obj_to_ref(Obj),
                               String = io_lib:format("{~p,~p,~p}.",
-                                        [Site, P2 ++ Ref, List]),
+                                                     [Site, P2 ++ Ref, List]),
                               dump_string(String, File),
                               dump_f(T, Path, Acc).
 
@@ -540,8 +540,8 @@ iterate(Iter, S, [], Fun, Htap, Acc) ->
     end;
 iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
     case gb_trees:next(Iter) of
-         none       -> lists:flatten(Acc);
-         {K, V, I2} ->
+        none       -> lists:flatten(Acc);
+        {K, V, I2} ->
             NewAcc = case match_seg(K, H, S, Htap) of
                          match    -> match_tree(V, S, T, Fun, [H | Htap]);
                          nomatch  -> [];
@@ -549,7 +549,7 @@ iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
                          circref  -> []
                      end,
             iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
-     end.
+    end.
 
 match_seg({seg, S},     S,  _Site, _Htap) -> match;
 match_seg({seg, _S1}, _S2,  _Site, _Htap) -> nomatch;
@@ -562,7 +562,7 @@ match_seg({zseg, S1},   S,   Site,  Htap) ->
         {nomatch, false}        -> nomatch;
         {{errval, _Err}, false} -> error;
         {{error, _}, false}     -> error   % Old style errs from fns
-                                           % (shouldn't exist!)
+                                   % (shouldn't exist!)
     end.
 
 run_zeval(Site, Path, Z) ->
@@ -587,12 +587,17 @@ run_zeval(Site, Path, Z) ->
     {atomic, Ret} = mnesia:transaction(Fun),
     Ret.
 
+% used in tests - not sure why...
+% it is no longer called from new_db_api
 expand_zrefs(#xrefX{path = P, site = S, obj = O}) ->
     ZSegs = hn_util:parse_zpath(P),
     % we need to create #xrefX{}s for each expanded zref in the path
     % so lets pass in a #refX{} to make it cleaner down the line
     RefX = #refX{site = S, type = url, path = P, obj = O},
-    expandp(ZSegs, RefX, [], []).
+    io:format("ZSegs is ~p~n", [ZSegs]),
+    ZRefs = expandp(ZSegs, RefX, [], []),
+    io:format("Expanded ZRefs is ~p~n", [ZRefs]),
+    ZRefs.
 
 expandp([], _, _, Acc) ->
     hslists:uniq(lists:merge(Acc));
@@ -600,6 +605,7 @@ expandp([{seg, S} | T], X, Htap, Acc) ->
     expandp(T, X, [S | Htap], Acc);
 expandp([{zseg, Z} | T], X, Htap, Acc) ->
     {ok, Toks} = xfl_lexer:lex(Z, {0, 0}),
+    io:format("Toks is ~p~n", [Toks]),
     NewAcc = walk(Toks, X, ["[true]" | Htap], []),
     expandp(T, X, [Z | Htap], [NewAcc | Acc]).
 
@@ -610,6 +616,7 @@ walk([{cellref, _, {cellref, _, _, Path, Ref}} | T], RefX, Htap, Acc) ->
     Obj = hn_util:parse_ref(Ref2),
     RefX2 = RefX#refX{path = NewPath, obj = Obj},
     [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX2]),
+    io:format("in zinf_srv:walk (1) XRefX is ~p~n", [XRefX]),
     walk(T, RefX, Htap, [XRefX | Acc]);
 walk([{rangeref, _, {rangeref, _, Path, _, _, _, _, Ref}} | T],
      RefX, Htap, Acc) ->
@@ -618,6 +625,7 @@ walk([{rangeref, _, {rangeref, _, Path, _, _, _, _, Ref}} | T],
     Obj = hn_util:parse_ref(Ref2),
     RefX2 = RefX#refX{path = NewPath, obj = Obj},
     [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX2]),
+    io:format("in zinf_srv:walk (2) XRefX is ~p~n", [XRefX]),
     walk(T, RefX, Htap, [XRefX | Acc]);
 walk([_ | T], RefX, Htap, Acc) ->
     walk(T, RefX, Htap, Acc).
@@ -635,11 +643,11 @@ testA1([]) ->
     Obj2 = {column, {1, 2}},
     Idx2 = 2,
     Actions1 = [
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
-              ],
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
+               ],
     Actions2 = [
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
-              ],
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
@@ -666,11 +674,11 @@ testA1a([]) ->
     Obj2 = {column, {1, 2}},
     Idx2 = 2,
     Actions1 = [
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
-              ],
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
+               ],
     Actions2 = [
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
-              ],
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
@@ -696,11 +704,11 @@ testA1b([]) ->
     Obj2 = {column, {1, 2}},
     Idx2 = 2,
     Actions1 = [
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
-              ],
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
+               ],
     Actions2 = [
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
-              ],
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
@@ -733,23 +741,23 @@ testA2([]) ->
     Idx2 = 2,
     %Idx3 = 3,
     Actions1 = [
-               %{Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
-               %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-               %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-               %{Idx3, #xrefX{site = S, path = P3, obj = Obj3}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
-              ],
+                %{Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
+                %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                %{Idx3, #xrefX{site = S, path = P3, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
+               ],
     Actions2 = [
-               %{Idx1, #xrefX{site = S, path = P2, obj = Obj1}},
-               %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-               %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-               %{Idx3, #xrefX{site = S, path = P3, obj = Obj3}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
-              ],
+                %{Idx1, #xrefX{site = S, path = P2, obj = Obj1}},
+                %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                %{Idx3, #xrefX{site = S, path = P3, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
@@ -784,12 +792,12 @@ testA3([]) ->
     Idx2 = 2,
     Idx3 = 3,
     Actions1 = [
-               {Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-               {Idx3, #xrefX{site = S, path = P4, obj = Obj3}},
-               {Idx2, #xrefX{site = S, path = P5, obj = Obj2}}
-              ],
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P4, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P5, obj = Obj2}}
+               ],
     Actions2 = lists:reverse(hslists:dedup([Actions1, []])),
     io:format("Actions1 is ~p~nActions2 is ~p~n", [Actions1, Actions2]),
     Fun1 = fun({I, R}, Tr) ->
@@ -823,12 +831,12 @@ testA4([]) ->
     Idx2 = 2,
     Idx3 = 3,
     Actions1 = [
-               {Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-               {Idx2, #xrefX{site = S, path = P3, obj = Obj1}},
-               {Idx3, #xrefX{site = S, path = P3, obj = Obj3}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
-              ],
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
@@ -861,16 +869,16 @@ testA4a([]) ->
     Idx2 = 2,
     Idx3 = 3,
     Actions1 = [
-               {Idx1, #xrefX{site = S, path = P1, obj = Obj2}},
-               {Idx2, #xrefX{site = S, path = P1, obj = Obj1}},
-               {Idx3, #xrefX{site = S, path = P1, obj = Obj1}},
-               {Idx1, #xrefX{site = S, path = P2, obj = Obj3}},
-               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
-               {Idx3, #xrefX{site = S, path = P2, obj = Obj2}},
-               {Idx1, #xrefX{site = S, path = P3, obj = Obj3}},
-               {Idx2, #xrefX{site = S, path = P3, obj = Obj2}},
-               {Idx3, #xrefX{site = S, path = P3, obj = Obj2}}
-              ],
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx1, #xrefX{site = S, path = P3, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P3, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj2}}
+               ],
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
                    L = [{X, I} || X <- XRefXs],
@@ -930,7 +938,7 @@ testA5([]) ->
                 {Idx3, #xrefX{site = S, path = P1, obj = Obj3}},
                 {Idx3, #xrefX{site = S, path = P2, obj = Obj3}},
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj3}}
-              ],
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
@@ -991,7 +999,7 @@ testA5a([]) ->
                 {Idx3, #xrefX{site = S, path = P1, obj = Obj3}},
                 {Idx3, #xrefX{site = S, path = P2, obj = Obj3}},
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj3}}
-              ],
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
@@ -1041,13 +1049,13 @@ testB1([]) ->
     Cell1 = {cell, {1, 1}},
     Actions1 = [
                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}}
-              ],
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
                    L = [{X, I} || X <- XRefXs],
                    lists:foldl(fun add/2, Tr, L)
-          end,
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
     [N] = check(NewTree1, RefX),
@@ -1071,7 +1079,7 @@ testB2([]) ->
                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
                 {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}}
-              ],
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
@@ -1101,7 +1109,7 @@ testB3([]) ->
                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
                 {Idx2, #xrefX{site = S, path = P1, obj = Obj2}},
                 {Idx3, #xrefX{site = S, path = P1, obj = Obj3}}
-              ],
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
@@ -1134,13 +1142,13 @@ testB4([]) ->
                 {Idx2, #xrefX{site = S, path = P1, obj = Obj2}},
                 {Idx3, #xrefX{site = S, path = P1, obj = Obj3}},
                 {Idx4, #xrefX{site = S, path = P1, obj = Obj4}}
-              ],
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    XRefXs = lists:merge([R], expand_zrefs(R)),
                    L = [{X, I} || X <- XRefXs],
                    lists:foldl(fun add/2, Tr, L)
-          end,
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
     List = check(NewTree1, RefX),
@@ -1424,7 +1432,7 @@ test_dump() ->
                 {Idx4, #xrefX{site = S, path = P2, obj = Obj1}},
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
-              ],
+               ],
 
     Fun1 = fun({I, R}, Tr) ->
                    add({R, I}, Tr)
@@ -1435,7 +1443,7 @@ test_dump() ->
                 {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
-              ],
+               ],
 
     Fun2 = fun({I, R}, {ok, Tr}) ->
                    del({R, I}, Tr)
@@ -1477,12 +1485,12 @@ unit_test_() ->
               ],
 
     %{setup, Setup, Cleanup,
-     {setup, Setup, [{with, [], SeriesA}]}.
+    {setup, Setup, [{with, [], SeriesA}]}.
 
 % test the performance of the zinf server
 run_perf_test() -> Tree = gb_trees:empty(),
-                  Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-                  perf2(Stamp, Tree, 1, 100, 20, 20, 20, 20).
+                   Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+                   perf2(Stamp, Tree, 1, 100, 20, 20, 20, 20).
 
 perf2(_Stamp, _Tree, _Idx, 0, _, 0, _,  0) -> ok;
 % order matters!

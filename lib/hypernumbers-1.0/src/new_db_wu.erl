@@ -117,8 +117,8 @@ proc_dirty_zinfsD(Site, Tree, AddFun, DelFun) ->
                    #dirty_zinf{dirtycellidx = CI, old = OldP,
                                new = NewP} = DirtyZinf,
                   % expand the new and old parents
-                  NewP2 = get_zinfs(NewP, CI),
-                  OldP2 = get_zinfs(OldP, CI),
+                  NewP2 = lists:zip(NewP, lists:duplicate(length(NewP), CI)),
+                  OldP2 = lists:zip(OldP, lists:duplicate(length(OldP), CI)),
                   Add = ordsets:subtract(NewP2, OldP2),
                   Del = ordsets:subtract(OldP2, NewP2),
                   NewTree = lists:foldl(AddFun, Tr, Add),
@@ -342,6 +342,7 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                  fun(Attrs) ->
                          case lists:keymember("formula", 1, Attrs) of
                              true ->
+                                 % set relations to handle other cells
                                  ok = set_relationsD(XRefX, [], [], false),
                                  ok = unattach_formD(XRefX),
                                  ok = delete_incsD(XRefX),
@@ -2374,11 +2375,11 @@ shrink2([#dirty_for_zinf{dirty = D} = H,
     shrink2([H | T], Acc);
 shrink2([#dirty_for_zinf{dirty = D} | T], Acc) -> shrink2(T, [D | Acc]).
 
-get_zinfs(List, CI) -> get_z2(List, CI, []).
+%% get_zinfs(List, CI) -> get_z2(List, CI, []).
 
-get_z2([], _CI, Acc) -> lists:sort(lists:flatten(Acc));
-get_z2([H | T], CI, Acc) ->
-    Zs = zinf_srv:expand_zrefs(H),
-    Zs2 = lists:merge([H], Zs),
-    NewAcc = [{X, CI} || X <- Zs2],
-    get_z2(T, CI, [NewAcc | Acc]).
+%% get_z2([], _CI, Acc) -> lists:sort(lists:flatten(Acc));
+%% get_z2([H | T], CI, Acc) ->
+%%     Zs = zinf_srv:expand_zrefs(H),
+%%     Zs2 = lists:merge([H], Zs),
+%%     NewAcc = [{X, CI} || X <- Zs2],
+%%     get_z2(T, CI, [NewAcc | Acc]).

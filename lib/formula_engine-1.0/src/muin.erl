@@ -934,28 +934,29 @@ zeval_from_zinf(Site, Path, Toks) ->
     % zeval evaluates an expression in a cell context - but that cell
     % cannot actually exists - so use {0,0} which is the cell 1 up and 1
     % right of A1
-    Return = zeval2(Site, Path, Toks, 0, 0),
+    % NOTE that we create an xrefX{} with a fake idx this xrefX{}
+    % doesn't go anywhere near the database
+    XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {0, 0}}},
+    Return = zeval2(XRefX, Toks),
     {Return, get(circref)}.
 
 zeval(Site, Path, Toks) ->
     X = ?mx,
     Y = ?my,
-    zeval2(Site, Path, Toks, X, Y).
+    RefX = #refX{site = Site, type = url, path = Path, obj = {cell, {X, Y}}},
+    [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX]),
+    zeval2(XRefX, Toks).
 
 %% the execution context for expressions is stored in the process dictionary
 %% so here you need to rip it out and then stick it back in
 %% (not good, Damn you Hasan!).
-zeval2(Site, Path, Toks, X, Y) ->
+zeval2(XRefX, Toks) ->
     % set the oldcontext path
     put(oldcontextpath, ?mpath),
     put(oldcontextrow, ?my),
     put(oldcontextcol, ?mx),
     % capture the process dictionary (it will get gubbed!)
     OldContext = get(),
-    % we run in the context of call '0, 0' - this is because z-order expressions
-    % do not support r[]c[] format cell references (or is it vice-versa?)
-    RefX = #refX{site = Site, type = gurl, path = Path, obj = {cell, {X, Y}}},
-    [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX]),
     % no array context (fine) or security context (erk!)
     RTI = new_db_wu:xrefX_to_rti(XRefX, nil, false),
     {Return, CircRef} =
