@@ -31,6 +31,7 @@ fix2([{Idx, Type} | T], Site) ->
     fix2(T, Site).
 
 fix3(Site, "Invalid tables (type 1)", Idx) ->
+    io:format("Deleting ~p ~p Invalid tables (type 1)~n", [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Tbl2 = new_db_wu:trans(Site, relation),
     Fun = fun() ->
@@ -44,8 +45,10 @@ fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid include (type 1)", _Idx) -> ok;
 fix3(Site, "Invalid include (type 2)", Idx) ->
+    io:format("Marking dirty ~p ~p Invalid include (type 2)~n", [Site, Idx]),
     new_db_api:mark_idx_dirty(Site, Idx);
 fix3(Site, "Invalid timer", Idx) ->
+    io:format("Deleting ~p ~p Invalid timer)~n", [Site, Idx]),
     Tbl = new_db_wu:trans(Site, timer),
     Fun = fun() ->
                   mnesia:delete(Tbl, Idx, write)
@@ -63,5 +66,3 @@ fix3(_Site, "Invalid types", _Idx) -> ok;
 fix3(_Site, "Invalid grid", _Idx) -> ok;
 fix3(_Site, "Invalid reverse index", _Idx) -> ok;
 fix3(_Site, "Invalid zinf", _Idx) -> ok.
-
-
