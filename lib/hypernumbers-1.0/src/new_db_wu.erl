@@ -582,7 +582,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             Attrs2 = orddict:store("__hasform", t, Attrs),
             Blank = #incs{},
             Attrs3 = case Incs of
-                         Blank -> Attrs2;
+                         Blank -> orddict:erase("__hasincs", Attrs2);
                          _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
@@ -596,7 +596,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Blank = #incs{},
             Attrs3 = case Incs of
-                         Blank -> Attrs2;
+                         Blank -> orddict:erase("__hasincs", Attrs2);
                          _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
@@ -610,7 +610,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Blank = #incs{},
             Attrs3 = case Incs of
-                         Blank -> Attrs2;
+                         Blank -> orddict:erase("__hasincs", Attrs2);
                          _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
@@ -629,7 +629,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             Attrs2 = orddict:erase("preview", Attrs),
             Blank = #incs{},
             Attrs3 = case Incs of
-                         Blank -> Attrs2;
+                         Blank -> orddict:erase("__hasincs", Attrs2);
                          _     -> ok = update_incsD(XRefX, Incs),
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
