@@ -41,20 +41,25 @@
           zinf_path = null
          }).
 
+% main api
+-export([
+         check/0
+        ]).
+
+% step-by-step api
+% in order
+-export([
+         dump_tables/0,
+         read_verification/3
+        ]).
+
 % debugging api
 -export([
          summarise_problems/0,
          summarise_problems/2,
-         dump_tables/0,
          read_verification/0,
-         read_verification/3,
-         process_mnesia_dump/0,
-         process_mnesia_dump/2
-        ]).
-
-% main api
--export([
-         check/0
+         process_mnesia_dump/0, % will wig out unless you fix #FUNs
+         process_mnesia_dump/2  % will wig out unless you fix #FUNs
         ]).
 
 summarise_problems() ->
@@ -113,8 +118,8 @@ check() ->
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.20_Oct_11_13_27_19.terms",
-    ZinfFile = "zinf.20_Oct_11_13_27_19.terms",
+    VerFile = "verification.26_Oct_11_8_53_26.terms",
+    ZinfFile = "zinf.26_Oct_11_8_53_26.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
@@ -137,11 +142,16 @@ read_verification(Dir, VerFile, ZinfFile) ->
     ok = file:write_file(Dir ++ DataFile, Terms),
     io:format("Written out processed data to ~p~n", [DataFile]),
     garbage_collect(self()),
-    process_data(Data2, Dir, "errors." ++ Stamp ++ "." ++ FileType).
+    FileName = "errors."  ++ Stamp ++ "." ++ FileType,
+    Errors = process_data(Data, Dir, FileName),
+    FileName2 = "fixable_errors." ++ Stamp ++ "." ++ FileType,
+    hn_util:log_terms(Errors, Dir ++ FileName2),
+    summarise_problems(Dir, FileName2),
+    ok.
 
 process_mnesia_dump() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    File = "verification_data.20_Oct_11_13_27_19.terms",
+    File = "verification.26_Oct_11_13_24_37.terms",
     process_mnesia_dump(Dir, File).
 
 process_mnesia_dump(Dir, File) ->
@@ -169,11 +179,15 @@ process_data(Data, Dir, FileName) ->
 verify([], _, Acc) -> Acc;
 verify([H | T], FileId, {Acc1, Acc2}) ->
     {Site, ITree, RTree} = H,
-    io:format("Verifying: ~p~n", [Site]),
+    io:format("Verifying: ~p: ", [Site]),
     Idxes = gb_trees:to_list(ITree),
+    io:format("Indexes made...~n"),
     RevIdxs = gb_trees:to_list(RTree),
+    io:format("Reverse Indexes made..."),
     Broken_Idxs = verify2(Idxes, Site, FileId, []),
+    io:format("Borked idxs identified..."),
     Broken_Revs = verify3(RevIdxs, Site, FileId, []),
+    io:format("Borked revidxs identified~n"),
     verify(T, FileId, {[{Site, Broken_Idxs} | Acc1],
                        [{Site, Broken_Revs} | Acc2]}).
 
@@ -374,18 +388,18 @@ verify_relations(_Site, _FileId, {_Idx, _H}, Acc) ->
 verify_includes(_Site, _FileId, {_Idx, #ver{relation = exists,
                                             local_obj = exists,
                                             item = exists,
-                                            form = null,
                                             include = exists,
-                                            timer = null,
                                             has_include = true,
                                             obj = {{cell, _}, _},
                                             has_formula = true}}, Acc) ->
     Acc;
-verify_includes(Site, FileId, {Idx, #ver{include = exists} = V}, Acc) ->
+verify_includes(Site, FileId, {Idx, #ver{include = exists,
+                                        has_include = false} = V}, Acc) ->
     Str = "Invalid include (type 1)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
-verify_includes(Site, FileId, {Idx, #ver{has_include = true} = V}, Acc) ->
+verify_includes(Site, FileId, {Idx, #ver{include = false,
+                                         has_include = true} = V}, Acc) ->
     Str = "Invalid include (type 2)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
@@ -395,8 +409,6 @@ verify_includes(_Site, _FileId, {_Idx, _H}, Acc) ->
 verify_timers(_Site, _FileId, {_Idx, #ver{relation = exists,
                                           local_obj = exists,
                                           item = exists,
-                                          form = null,
-                                          include = null,
                                           timer = exists,
                                           obj = {{cell, _}, _},
                                           has_formula = true}}, Acc) ->
@@ -412,8 +424,6 @@ verify_forms(_Site, _FileId, {_Idx, #ver{relation = exists,
                                          local_obj = exists,
                                          item = exists,
                                          form = exists,
-                                         include = null,
-                                         timer = null,
                                          obj = {{cell, _}, _},
                                          has_formula = true}}, Acc) ->
     Acc;
