@@ -160,7 +160,16 @@ raw_idx(Site, Idx) ->
                                     [R2#item.idx, Attrs2]),
                           Tab3 = new_db_wu:trans(Site, relation),
                           Rels = mnesia:read(Tab3, Idx, read),
-                          io:format("Raw Relations is ~p~n", [Rels])
+                          io:format("Raw Relations is ~p~n", [Rels]),
+                          Tab4 = new_db_wu:trans(Site, form),
+                          Forms = mnesia:read(Tab4, Idx, read),
+                          io:format("Raw Forms is ~p~n", [Forms]),
+                          Tab5 = new_db_wu:trans(Site, include),
+                          Includes = mnesia:read(Tab5, Idx, read),
+                          io:format("Raw Includes is ~p~n", [Includes]),
+                          Tab6 = new_db_wu:trans(Site, timer),
+                          Timer = mnesia:read(Tab6, Idx, read),
+                          io:format("Raw Timer is ~p~n", [Timer])
                   end
           end,
     mnesia:transaction(Fun).
