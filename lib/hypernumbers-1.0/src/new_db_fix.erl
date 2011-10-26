@@ -24,7 +24,7 @@ fix() ->
     fix(Dir, File).
 
 fix(Dir, File) ->
-    spawn(new_db_fix, fix_spawn, [Dir, File]).
+    spawn(new_db_fix, fix_SPAWN, [Dir, File]).
 
 fix_SPAWN(Dir, File) ->
     {ok, [{Data1, _Data2}]} = file:consult(Dir ++ File),
