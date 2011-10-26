@@ -39,8 +39,12 @@ fix3(Site, "Invalid tables (type 1)", Idx) ->
                   mnesia:delete(Tbl2, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
-fix3(_Site, "Invalid tables (type 2)", _Idx) -> ok;
-fix3(_Site, "Invalid relations (type 1)", _Idx) -> ok;
+fix3(Site, "Invalid tables (type 2)", Idx) ->
+    io:format("Marking dirty ~p ~p Invalid tables (type 2)~n", [Site, Idx]),
+    new_db_api:mark_idx_dirty(Site, Idx);
+fix3(Site, "Invalid relations (type 1)", Idx) ->
+    io:format("Marking dirty ~p ~p Invalid relations (type 1)~n", [Site, Idx]),
+    new_db_api:mark_idx_dirty(Site, Idx);
 fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid include (type 1)", _Idx) -> ok;
