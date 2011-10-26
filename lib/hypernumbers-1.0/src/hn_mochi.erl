@@ -536,7 +536,8 @@ iget(#refX{site=Site, path=Path}, page, #qry{view=?DEMO}, Env) ->
     text_html(Env, make_demo(Site, Path));
 
 iget(#refX{site=Site, path=Path}, page, #qry{view=?RECALC}, Env) ->
-    ok = new_db_api:recalc_page(#refX{site = Site, path = Path, obj = {page, "/"}}),
+    ok = new_db_api:recalc_page(#refX{site = Site, type = url,
+                                      path = Path, obj = {page, "/"}}),
     Html = hn_util:viewroot(Site) ++ "/recalc.html",
     serve_html(Env, Html);
 
@@ -847,7 +848,8 @@ ipost(Ref=#refX{site = S, path = P} = Ref, _Qry,
             respond(403, Env);
         true  ->
             Path = string:tokens(hn_util:abs_path(P, ResPath), "/"),
-            Res = Ref#refX{site = S, path = Path, obj = {row, {1, 1}}},
+            Res = Ref#refX{site = S, type = gurl, path = Path,
+                           obj = {row, {1, 1}}},
             ok = new_db_api:handle_form_post(Res, Array, PosterUid),
             json(Env, "success")
     end;
@@ -1212,7 +1214,6 @@ extract_styles(Site) ->
     [style_to_css(S) ||
         S <- new_db_api:read_styles_IMPORT(#refX{site=Site}) ].
 
-
 style_to_css(#style{magic_style = Style, idx = I}) ->
     Num = ms_util2:no_of_fields(magic_style),
     {I, style_att(Num + 1, Style, [])}.
@@ -1246,7 +1247,8 @@ post_column_values(Ref, Values, PAr, VAr, Offset) ->
                 % don't want values of "" stuck in because they count as not blank
                 % with countblank() so we skip them
                 % we don't do this in cell formulae though...
-                NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
+                NRef = Ref#refX{type = url, obj = {cell,
+                                                   {X1 + Acc, Y1 + Offset}}},
                 case Val of
                     "" -> ok = new_db_api:clear(NRef, contents, PAr),
                           Acc + 1;
