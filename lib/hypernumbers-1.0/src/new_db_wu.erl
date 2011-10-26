@@ -557,7 +557,6 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
         {error, {errval, Error}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
-            % mebbies there was incs, nuke 'em
             write_error_attrs(Attrs2, XRefX, Formula, Error);
         % the formula returns as rawform
         {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile,
@@ -571,7 +570,6 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                      end,
             Attrs2 = orddict:store("__hasform", t, Attrs),
             Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
-            % mebbies there was incs, nuke 'em
             write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Html,
                                 {Parents, false}, InfParents,
                                 Recompile, CircRef);
@@ -621,7 +619,6 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             % on the pokey
             Attrs4 = handle_merge(Ht, Wd, Attrs3),
             Attrs5 = bring_through(Attrs4, XRefX, Pars),
-            % mebbies there was incs, nuke 'em
             write_formula_attrs(Attrs5, XRefX, Formula, Pcode, Res,
                                 {Pars, true}, InfPars,
                                 Recompile, CircRef);
@@ -653,7 +650,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
         {ok, {Pcode, Res, Parents, InfParents, Recompile, CircRef}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
-            % mebbies there was incs, nuke 'em
+            % mebbies there was incs, nuke 'em (WHY?)
             ok = update_incsD(XRefX, #incs{}),
             write_formula_attrs(Attrs2, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents,
@@ -925,9 +922,10 @@ update_incsD(XRefX, Incs) when is_record(XRefX, xrefX)
 bring_through(Attrs, XRefX, Pars) ->
     Pars2 = [X || {Type, X} <- Pars, Type ==  local],
     Incs = get_incs(Pars2, [], [], []),
+    Blank = #incs{}, % no you can't just use #incs{} in the case statement, duh!
     case Incs of
-        #incs{} -> Attrs;
-        _       -> ok = update_incsD(XRefX, Incs),
+        Blank -> Attrs;
+        _     -> ok = update_incsD(XRefX, Incs),
                    orddict:store("__hasincs", t, Attrs)
     end.
 
