@@ -13,12 +13,20 @@
          fix/2
         ]).
 
+% spawning api
+-export([
+         fix_SPAWN/2
+        ]).
+
 fix() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
     File = "fixable_errors.20_Oct_11_13_27_19.terms",
     fix(Dir, File).
 
 fix(Dir, File) ->
+    spawn(new_db_fix, fix_spawn, [Dir, File]).
+
+fix_SPAWN(Dir, File) ->
     {ok, [{Data1, _Data2}]} = file:consult(Dir ++ File),
     io:format("Problems loaded~n"),
     [fix2(X, Site) || {Site, X} <- Data1],
