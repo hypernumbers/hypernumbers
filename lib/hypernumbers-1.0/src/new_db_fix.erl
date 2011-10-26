@@ -76,7 +76,7 @@ fix3(_Site, "Invalid Object (page) (type 5) (old adding in css/js)",
      _Idx) -> ok;
 fix3(_Site, "Invalid Object (type 6)", _Idx) -> ok;
 fix3(_Site, "Invalid types", _Idx) -> ok;
-fix3(_Site, "Invalid grid (type 1)", _Idx) ->
+fix3(Site, "Invalid grid (type 1)", Idx) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Tbl2 = new_db_wu:trans(Site, item),
     Fun = fun() ->
@@ -84,10 +84,10 @@ fix3(_Site, "Invalid grid (type 1)", _Idx) ->
                   mnesia:delete(Tbl2, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
-fix3(_Site, "Invalid grid (type 2)", _Idx) ->
+fix3(Site, "Invalid grid (type 2)", Idx) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Fun = fun() ->
-                  mnesia:delete(Tbl1, Idx, write),
+                  mnesia:delete(Tbl1, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid grid (type 3)", _Idx) -> ok;
