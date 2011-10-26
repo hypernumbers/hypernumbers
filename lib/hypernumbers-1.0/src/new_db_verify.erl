@@ -118,8 +118,8 @@ check() ->
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.26_Oct_11_8_53_26.terms",
-    ZinfFile = "zinf.26_Oct_11_8_53_26.terms",
+    VerFile = "verification.26_Oct_11_15_50_05.terms",
+    ZinfFile = "zinf.26_Oct_11_15_50_05.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
@@ -181,13 +181,13 @@ verify([H | T], FileId, {Acc1, Acc2}) ->
     {Site, ITree, RTree} = H,
     io:format("Verifying: ~p: ", [Site]),
     Idxes = gb_trees:to_list(ITree),
-    io:format("Indexes made...~n"),
+    io:format("Idxs..."),
     RevIdxs = gb_trees:to_list(RTree),
-    io:format("Reverse Indexes made..."),
+    io:format("RevIdxs..."),
     Broken_Idxs = verify2(Idxes, Site, FileId, []),
-    io:format("Borked idxs identified..."),
+    io:format("Borked Idxs..."),
     Broken_Revs = verify3(RevIdxs, Site, FileId, []),
-    io:format("Borked revidxs identified~n"),
+    io:format("Borked RevIdxs~n"),
     verify(T, FileId, {[{Site, Broken_Idxs} | Acc1],
                        [{Site, Broken_Revs} | Acc2]}).
 
@@ -448,6 +448,7 @@ verify_formula(Site, FileId, {Idx, #ver{has_formula = true} = V}, Acc) ->
 verify_formula(_Site, _FileId, {_Idx, _H}, Acc) ->
     Acc.
 
+% straight forware cell with a formula
 verify_objs(_Site, _FileId, {_Idx, #ver{relation = exists,
                                         local_obj = exists,
                                         item = exists,
@@ -456,6 +457,7 @@ verify_objs(_Site, _FileId, {_Idx, #ver{relation = exists,
                                         valid_obj = true,
                                         has_formula = true}}, Acc) ->
     Acc;
+% straight-forward cell without a formula
 verify_objs(_Site, _FileId, {_Idx, #ver{relation = exists,
                                         local_obj = exists,
                                         item = exists,
@@ -466,6 +468,7 @@ verify_objs(_Site, _FileId, {_Idx, #ver{relation = exists,
                                         parents = [],
                                         infparents = []}}, Acc) ->
     Acc;
+% another cell without a formula
 verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         local_obj = exists,
                                         item = exists,
@@ -474,6 +477,18 @@ verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         valid_obj = true,
                                         has_formula = false}}, Acc) ->
     Acc;
+% another cell
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                        local_obj = exists,
+                                        item = null,
+                                        form = null,
+                                        include = null,
+                                        timer = null,
+                                        type = gurl,
+                                        obj = {{cell, _}, _},
+                                        has_formula = false}}, Acc) ->
+    Acc;
+% a page
 verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         local_obj = exists,
                                         item = null,
@@ -484,6 +499,7 @@ verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         obj = {{page, "/"}, _},
                                         has_formula = false}}, Acc) ->
     Acc;
+% a row
 verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         local_obj = exists,
                                         item = null,
@@ -494,6 +510,7 @@ verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         obj = {{row, _}, _},
                                         has_formula = false}}, Acc) ->
     Acc;
+% another row
 verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         local_obj = exists,
                                         item = exists,
@@ -504,6 +521,7 @@ verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         obj = {{row, _}, _},
                                         has_formula = false}}, Acc) ->
     Acc;
+% a column
 verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         local_obj = exists,
                                         item = null,
@@ -514,6 +532,7 @@ verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         obj = {{column, _}, _},
                                         has_formula = false}}, Acc) ->
     Acc;
+% another column
 verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         local_obj = exists,
                                         item = exists,
@@ -524,14 +543,26 @@ verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         obj = {{column, _}, _},
                                         has_formula = false}}, Acc) ->
     Acc;
+% a range
+verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
+                                        local_obj = exists,
+                                        item = exists,
+                                        form = null,
+                                        include = null,
+                                        timer = null,
+                                        type = url,
+                                        obj = {{range, _}, _},
+                                        has_formula = false}}, Acc) ->
+    Acc;
+% another range
 verify_objs(_Site, _FileId, {_Idx, #ver{relation = null,
                                         local_obj = exists,
                                         item = null,
                                         form = null,
                                         include = null,
                                         timer = null,
-                                        type = gurl,
-                                        obj = {{cell, _}, _},
+                                        type = url,
+                                        obj = {{range, _}, _},
                                         has_formula = false}}, Acc) ->
     Acc;
 verify_objs(Site, FileId, {Idx, #ver{relation = exists,
@@ -583,8 +614,28 @@ verify_types(Site, FileId, {Idx, V}, Acc) ->
 
 verify_grid(_Site, _FileId, {_Idx, #ver{valid_obj = true}}, Acc) ->
     Acc;
+verify_grid(Site, FileId, {Idx, #ver{relation = null,
+                                     local_obj = exists,
+                                     item = exists,
+                                     obj = {{Type, {N, M}}, _},
+                                     valid_obj = false} = V}, Acc)
+  when Type == row orelse Type == column
+       andalso (N < 1 andalso M < 1) ->
+    Str = "Invalid grid (type 1)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_grid(Site, FileId, {Idx, #ver{relation = null,
+                                     local_obj = exists,
+                                     item = null,
+                                     obj = {{cell, {0, 0}}, _},
+                                     type = gurl,
+                                     valid_type = false,
+                                     valid_obj = false} = V}, Acc) ->
+    Str = "Invalid grid (type 2)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
 verify_grid(Site, FileId, {Idx, #ver{valid_obj = false} = V}, Acc) ->
-    Str = "Invalid grid",
+    Str = "Invalid grid (type 3)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc].
 
