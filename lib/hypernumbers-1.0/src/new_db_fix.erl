@@ -60,7 +60,8 @@ fix3(_Site, "Invalid Object (cell) (type 1)", _Idx) -> ok;
 fix3(_Site, "Invalid Object (cell) (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid Object (row) (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid Object (column) (type 4)", _Idx) -> ok;
-fix3(_Site, "Invalid Object (page) (type 5)", _Idx) -> ok;
+fix3(_Site, "Invalid Object (page) (type 5) (old adding in css/js)",
+     _Idx) -> ok;
 fix3(_Site, "Invalid Object (type 6)", _Idx) -> ok;
 fix3(_Site, "Invalid types", _Idx) -> ok;
 fix3(_Site, "Invalid grid", _Idx) -> ok;
