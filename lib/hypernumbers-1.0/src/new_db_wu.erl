@@ -256,15 +256,18 @@ matching_formsD(#refX{site = Site, path = Path}, Trans) ->
                 all | style | value, string()) -> ok.
 copy_cell(From = #xrefX{obj = {cell, _}},
           To = #xrefX{obj = {cell, _}},
-          _, value, Uid) ->
+          Incr, value, Uid) ->
     SourceAttrs = case read_ref(From, inside, read) of
                       [{_, As}] -> As;
                       _         -> []
                   end,
-        Op = fun(Attrs) -> {clean, copy_value(SourceAttrs, Attrs)}
-         end,
-    apply_to_attrsD(To, Op, copy, Uid, ?NONTRANSFORMATIVE),
-    ok;
+    Attrs = case orddict:find("__rawvalue", SourceAttrs) of
+                {ok, V} ->
+                    orddict:store("formula", tconv:to_s(V), orddict:new());
+                _ ->
+                    orddict:new()
+            end,
+    copy_c2(From, To, Incr, Uid, Attrs);
 copy_cell(From = #xrefX{obj = {cell, _}},
           To = #xrefX{obj = {cell, _}},
           _, style, Uid) ->
@@ -275,13 +278,15 @@ copy_cell(From = #xrefX{obj = {cell, _}},
     Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["style"])} end,
     apply_to_attrsD(To, Op, copy, Uid, ?NONTRANSFORMATIVE),
     ok;
-copy_cell(#xrefX{obj = {cell, {FX,FY}}} = From,
-          #xrefX{obj = {cell, {TX,TY}}} = To,
-          Incr, all, Uid) ->
+copy_cell(From, To, Incr, all, Uid) ->
     Attrs = case read_ref(From, inside, read) of
                 [{_, As}] -> As;
                 _         -> []
             end,
+    copy_c2(From, To, Incr, Uid, Attrs).
+
+copy_c2(#xrefX{obj = {cell, {FX, FY}}},
+        #xrefX{obj = {cell, {TX, TY}}} = To, Incr, Uid, Attrs) ->
     Formula = case orddict:find("formula", Attrs) of
                   {ok, V} -> superparser:process(V);
                   _       -> "" end,
@@ -820,7 +825,7 @@ tell_front_end1(Tuple) ->
 
 idx_to_xrefXD(S, Idx) ->
     case mnesia:read(trans(S, local_obj), Idx, read) of
-        [Rec] -> #local_obj{path = P,  obj = O} = Rec,
+        [Rec] -> #local_obj{path = P, obj = O} = Rec,
                  #xrefX{idx = Idx, site = S,
                         path = binary_to_term(P), obj = O};
         []    -> {error, id_not_found, Idx}
@@ -1038,7 +1043,8 @@ post_process_format(Raw, Attrs) ->
     end.
 
 log_write(_, _, _, _Action, nil) -> ok;
-log_write(#xrefX{idx = Idx, site = S, path = P, obj = O}, Old, New, Action, Uid) ->
+log_write(#xrefX{idx = Idx, site = S, path = P, obj = O}, Old,
+          New, Action, Uid) ->
     {OldF, OldV} = extract(Old),
     {NewF, NewV} = extract(New),
     L = io_lib:format("old: formula ~p value ~p new: formula ~p value ~p",
@@ -1292,6 +1298,7 @@ extract(List) ->
     VT = lists:keyfind("__rawvalue", 1, List),
     case {FT, VT} of
         {false, false}                      -> {"", ""};
+        {{"formula", F}, false}             -> {F, ""};
         {{"formula", F}, {"__rawvalue", V}} -> {F, V}
     end.
 
@@ -2224,12 +2231,6 @@ content_attrs() ->
      "__shared",
      "__area",
      "__default-align"].
-
-copy_value(SD, TD) ->
-    case orddict:find("__rawvalue", SD) of
-        {ok, V} -> orddict:store("formula", tconv:to_s(V), TD);
-        _ -> TD
-    end.
 
 copy_attributes(_SD, TD, []) -> TD;
 copy_attributes(SD, TD, [Key|T]) ->
