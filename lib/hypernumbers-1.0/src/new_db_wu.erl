@@ -1236,6 +1236,7 @@ read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
 read_objsD(#refX{site = Site} = Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
+    io:format("Ref is ~p~nMS is ~p~n", [Ref, MS]),
     mnesia:select(trans(Site, local_obj), MS);
 read_objsD(#refX{site = S, path = P, obj = O}, direct) ->
     Table = trans(S, local_obj),
@@ -1251,10 +1252,10 @@ objs_intersect_ref(#refX{path = P, obj = {range, {X1, Y1, X2, Y2}}}) ->
                   when MP ==  PBin,
                        X1  =< MX, MX  =< X2,
                        Y1  =< MY, MY  =< Y2 -> LO;
-                  (LO = #local_obj{path = MP, obj = {row,{MY, mY}}})
+                  (LO = #local_obj{path = MP, obj = {row,{MY, MY}}})
                   when MP ==  PBin,
                        Y1  =< MY, MY  =< Y2 -> LO;
-                  (LO = #local_obj{path = MP, obj = {column, {MX, mX}}})
+                  (LO = #local_obj{path = MP, obj = {column, {MX, MX}}})
                   when MP ==  PBin,
                        X1  =< MX, MX  =< X2 -> LO;
                   (LO = #local_obj{path = MP, obj = {page, _}})
