@@ -1236,7 +1236,6 @@ read_objsD(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
 read_objsD(#refX{site = Site} = Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
-    io:format("Ref is ~p~nMS is ~p~n", [Ref, MS]),
     mnesia:select(trans(Site, local_obj), MS);
 read_objsD(#refX{site = S, path = P, obj = O}, direct) ->
     Table = trans(S, local_obj),
