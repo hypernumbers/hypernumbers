@@ -1336,10 +1336,12 @@ expand_to_2(#refX{obj = {Type, _}} = Ref, I, J, A) ->
 expunge_refsD(S, Refs) ->
     ItemT = trans(S, item),
     ObjT = trans(S, local_obj),
+    RelT = trans(S, relation),
     DelT = trans(S, del_local),
     [begin
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete(ObjT, Idx, write),
+         mnesia:delete(RelT, Idx, write),
          Rec = #del_local{idx = Idx},
          mnesia:write(DelT, Rec, write),
          case O of
@@ -2225,7 +2227,7 @@ content_attrs() ->
 
 copy_value(SD, TD) ->
     case orddict:find("__rawvalue", SD) of
-        {ok, V} -> orddict:store("formula", V, TD);
+        {ok, V} -> orddict:store("formula", tconv:to_s(V), TD);
         _ -> TD
     end.
 
