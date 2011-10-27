@@ -118,8 +118,8 @@ check() ->
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.26_Oct_11_15_50_05.terms",
-    ZinfFile = "zinf.26_Oct_11_15_50_05.terms",
+    VerFile = "verification.26_Oct_11_21_34_06.terms",
+    ZinfFile = "zinf.26_Oct_11_21_34_06.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
@@ -263,6 +263,16 @@ verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                           relation = exists,
                                           form = exists,
                                           include = null,
+                                          timer = null,
+                                          has_formula = true}}, Acc) ->
+    Acc;
+% another cell with a form element in it - some form elements
+% like map.sheet.button also bring an include through
+verify_tables(_Site, _FileId, {_Idx, #ver{local_obj = exists,
+                                          item = exists,
+                                          relation = exists,
+                                          form = exists,
+                                          include = exists,
                                           timer = null,
                                           has_formula = true}}, Acc) ->
     Acc;

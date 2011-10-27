@@ -18,6 +18,8 @@
          fix_SPAWN/2
         ]).
 
+-include("spriki.hrl").
+
 fix() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
     File = "fixable_errors.20_Oct_11_13_27_19.terms",
@@ -49,9 +51,14 @@ fix3(Site, "Invalid tables (type 1)", Idx) ->
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid tables (type 2)", _Idx) -> ok;
 fix3(Site, "Invalid relations (type 1)", Idx) ->
-    io:format("Marking dirty ~p ~p Invalid relations (type 1)~n", [Site, Idx]),
-    new_db_api:mark_idx_dirty(Site, Idx);
-fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
+    Tbl1 = new_db_wu:trans(Site, relation),
+    Fun = fun() ->
+                  [Rel] = mnesia:read(Tbl1, Idx),
+                  #relation{infparents = Dirties} = Rel,
+                  [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties]
+          end,
+    mnesia:activity(transaction, Fun);
+    fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid include (type 1)", _Idx) -> ok;
 fix3(Site, "Invalid include (type 2)", Idx) ->
