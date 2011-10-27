@@ -98,8 +98,8 @@ process3(Input) ->
     end.
 
 %% fixup is going to strip the &nbsp; off both end of the string
-fixup(List) -> Ret = fixup3(lists:reverse(fixup2(string:strip(List)))),
-               Ret.
+fixup(List) when is_list(List) ->
+    fixup3(lists:reverse(fixup2(string:strip(List)))).
 
 fixup2([32 | Rest]) -> fixup2(Rest);
 fixup2([$&,$n,$b,$s,$p,$;|Rest]) -> fixup2(Rest);
