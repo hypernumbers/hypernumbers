@@ -185,11 +185,13 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
            integer(), integer(), integer(), integer())
           -> textdata().
 % both the inputs need to be drawn even if there is no value
-draw(undefined,Css,"inline",C,R,X,Y,W,H) -> draw("",Css, "inline",C,R,X,Y,W,H);
-draw(undefined,Css,{"select", _}=Inp,C,R,X,Y,W,H) -> draw("",Css,Inp,C,R,X,Y,W,H);
+draw(undefined,Css,"inline",C,R,X,Y,W,H) ->
+    draw("",Css, "inline",C,R,X,Y,W,H);
+draw(undefined,Css,{"select", _}=Inp,C,R,X,Y,W,H) ->
+    draw("",Css,Inp,C,R,X,Y,W,H);
 draw(undefined,"",_Inp,_C,_R,_X,_Y,_W,_H) -> "";
 draw(Value,Css,Inp,C,R,X,Y,W,H) ->
-% Tom wants to fix this up :(
+    % Tom wants to fix this up :(
     Val = case Value of
               {errval, ErrVal} ->
                   atom_to_list(ErrVal);
@@ -207,9 +209,9 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
                   Value
           end,
     Cell = tconv:to_b26(C) ++ integer_to_list(R),
-    St = "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s"
-        ++" -moz-border-radius: 2px 2px 2px 2px;"
-        ++" -webkit-border-radius: 2px 2px 2px 2px;",
+    St = "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s",
+        %++" -moz-border-radius: 2px 2px 2px 2px;"
+        %++" -webkit-border-radius: 2px 2px 2px 2px;",
 
     case Inp of
         "inline" ->

@@ -566,7 +566,6 @@ label {
     -webkit-border-radius-bottomleft:2px;
     -webkit-border-radius-bottomright:2px;
    margin: 0px 0px 4px 4px;
-
 }
 
 .hn_padded, #clinput {
@@ -585,8 +584,6 @@ label {
    position: static;
    padding: 0px 1px 0px 1px;
    background-color: white;
-   -moz-border-radius: 4px 4px 4px 4px;
-   -webkit-border-radius: 4px 4px 4px 4px;
    -moz-box-sizing: content-box;
    border: 1px solid orange;
    outline: none;
