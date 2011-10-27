@@ -57,39 +57,13 @@
 -export([
          summarise_problems/0,
          summarise_problems/2,
-         read_verification/0,
-         process_mnesia_dump/0, % will wig out unless you fix #FUNs
-         process_mnesia_dump/2  % will wig out unless you fix #FUNs
+         read_verification/0
         ]).
 
-summarise_problems() ->
-    Dir = "/home/gordon/hypernumbers/priv/verification/",
-    File = "fixable_errors.20_Oct_11_13_27_19.terms",
-    summarise_problems(Dir, File).
-
-summarise_problems(Dir, File) ->
-    {ok, [{Data1, Data2}]} = file:consult(Dir ++ File),
-    io:format("Problems loaded~n"),
-    [summarise(X, Site, Data2, []) || {Site, X} <- Data1],
-    ok.
-
-summarise([], Site, Data2, Acc) ->
-    io:format("~n~p:~n", [Site]),
-    print_summary(Acc),
-    case lists:keyfind(Site, 1, Data2) of
-        false        -> io:format("no broken revidxs~n");
-        {Site, List} -> io:format("~p broken revidxs~n", [length(List)])
-    end;
-summarise([{_Idx, Type} | T], Site, Data2, Acc) ->
-    NewAcc = case lists:keyfind(Type, 1, Acc) of
-                 false     -> [{Type, 1} | Acc];
-                 {Type, N} -> lists:keyreplace(Type, 1, Acc, {Type, N + 1})
-             end,
-    summarise(T, Site, Data2, NewAcc).
-
-print_summary([])                  -> ok;
-print_summary([{Type, Count} | T]) -> io:format("~p " ++ Type ++ "~n", [Count]),
-                                      print_summary(T).
+check() ->
+    {Dir, TermFile, ZinfFile} = dump_tables(),
+    io:format("~p and ~p created in ~p~n", [TermFile, ZinfFile, Dir]),
+    read_verification(Dir, TermFile, ZinfFile).
 
 dump_tables() ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../priv/verification/",
@@ -106,20 +80,10 @@ dump_tables() ->
     io:format("Zinfs all dumped...~n"),
     {Dir, TermFile, ZinfFile}.
 
-check() ->
-    {Dir, TermFile, ZinfFile} = dump_tables(),
-    io:format("~p and ~p created in ~p~n", [TermFile, ZinfFile, Dir]),
-    Data = read_verification(Dir, TermFile, ZinfFile),
-    [_Prefix, Stamp, FileType] = string:tokens(TermFile, "."),
-    FileName2 = "fixable_errors." ++ Stamp ++ "." ++ FileType,
-    hn_util:log_terms(Data, Dir ++ FileName2),
-    summarise_problems(Dir, FileName2),
-    ok.
-
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.26_Oct_11_21_34_06.terms",
-    ZinfFile = "zinf.26_Oct_11_21_34_06.terms",
+    VerFile = "verification.27_Oct_11_8_42_59.terms",
+    ZinfFile = "zinf.27_Oct_11_8_42_59.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
@@ -149,21 +113,34 @@ read_verification(Dir, VerFile, ZinfFile) ->
     summarise_problems(Dir, FileName2),
     ok.
 
-process_mnesia_dump() ->
+summarise_problems() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    File = "verification.26_Oct_11_13_24_37.terms",
-    process_mnesia_dump(Dir, File).
+    File = "fixable_errors.20_Oct_11_13_27_19.terms",
+    summarise_problems(Dir, File).
 
-process_mnesia_dump(Dir, File) ->
-    {ok, Data} = file:consult(Dir ++ File),
-    io:format("Verification Data loaded...~n"),
-    [_Prefix, Stamp, FileType] = string:tokens(File, "."),
-    FileName = "errors."  ++ Stamp ++ "." ++ FileType,
-    Errors = process_data(Data, Dir, FileName),
-    FileName2 = "fixable_errors." ++ Stamp ++ "." ++ FileType,
-    hn_util:log_terms(Errors, Dir ++ FileName2),
-    summarise_problems(Dir, FileName2),
+summarise_problems(Dir, File) ->
+    {ok, [{Data1, Data2}]} = file:consult(Dir ++ File),
+    io:format("Problems loaded~n"),
+    [summarise(X, Site, Data2, []) || {Site, X} <- Data1],
     ok.
+
+summarise([], Site, Data2, Acc) ->
+    io:format("~n~p:~n", [Site]),
+    print_summary(Acc),
+    case lists:keyfind(Site, 1, Data2) of
+        false        -> io:format("no broken revidxs~n");
+        {Site, List} -> io:format("~p broken revidxs~n", [length(List)])
+    end;
+summarise([{_Idx, Type} | T], Site, Data2, Acc) ->
+    NewAcc = case lists:keyfind(Type, 1, Acc) of
+                 false     -> [{Type, 1} | Acc];
+                 {Type, N} -> lists:keyreplace(Type, 1, Acc, {Type, N + 1})
+             end,
+    summarise(T, Site, Data2, NewAcc).
+
+print_summary([])                  -> ok;
+print_summary([{Type, Count} | T]) -> io:format("~p " ++ Type ++ "~n", [Count]),
+                                      print_summary(T).
 
 process_data(Data, Dir, FileName) ->
     _Return = filelib:ensure_dir(Dir ++ FileName),
@@ -764,7 +741,8 @@ process_z2([], Site, _Path, _Idx, ITree, RTree, Acc) ->
 process_z2([H | T], Site, Path, Idx, ITree, RTree, Acc) ->
     Rec = get_rec(H, ITree),
     #ver{rev_infparents = List} = Rec,
-    Rec2 = Rec#ver{rev_infparents = [Idx | List], has_zinf = true, zinf_path = Path},
+    Rec2 = Rec#ver{rev_infparents = [Idx | List], has_zinf = true,
+                   zinf_path = Path},
     ITree2 = gb_trees:enter(H, Rec2, ITree),
     process_z2(T, Site, Path, Idx, ITree2, RTree, Acc).
 
