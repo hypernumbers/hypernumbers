@@ -107,7 +107,7 @@ read_verification(Dir, VerFile, ZinfFile) ->
     io:format("Written out processed data to ~p~n", [DataFile]),
     garbage_collect(self()),
     FileName = "errors."  ++ Stamp ++ "." ++ FileType,
-    Errors = process_data(Data, Dir, FileName),
+    Errors = process_data(Data2, Dir, FileName),
     FileName2 = "fixable_errors." ++ Stamp ++ "." ++ FileType,
     hn_util:log_terms(Errors, Dir ++ FileName2),
     summarise_problems(Dir, FileName2),
@@ -633,24 +633,30 @@ verify_revidxs(Site, FileId, {Idx, V}, Acc) ->
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc].
 
-verify_zinfs(_Site, _FileId, {_Idx, #ver{relation = null,
-                                         local_obj = exists,
-                                         item = null,
-                                         form = null,
-                                         include = null,
-                                         timer = null,
-                                         children = [],
-                                         parents = [],
-                                         infparents = [],
-                                         rev_parents = [],
-                                         rev_infparents = [],
-                                         has_formula = false,
-                                         type = gurl,
-                                         obj = {{cell, _}, _}}}, Acc) ->
-    Acc;
+verify_zinfs(Site, FileId, {Idx, #ver{relation = null,
+                                      local_obj = exists,
+                                      item = null,
+                                      form = null,
+                                      include = null,
+                                      timer = null,
+                                      children = C,
+                                      parents = [],
+                                      rev_children = RC,
+                                      infparents = [],
+                                      rev_parents = [],
+                                      rev_infparents = [],
+                                      has_formula = false,
+                                      type = gurl,
+                                      obj = {{cell, _}, _}} = V}, Acc) ->
+    case same(C, RC) of
+        true -> Acc;
+        _    -> Str = "Invalid zinf (type 1)",
+                dump(Site, FileId, Str, [Idx, V]),
+                [{Idx, Str} | Acc]
+    end;
 verify_zinfs(Site, FileId, {Idx, #ver{type = gurl,
                                       obj = {{cell, _}, _}} = V}, Acc) ->
-    Str = "Invalid zinf",
+    Str = "Invalid zinf (type 2)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_zinfs(_Site, _FileId, {_Idx, _V}, Acc) ->
@@ -727,24 +733,31 @@ same(List1, List2) ->
 
 process_zinfs([], Acc) -> Acc;
 process_zinfs([H | T], Acc) ->
-    {"http://" ++ Site, Path, List} = H,
+    {"http://" ++ Site, ZIdx, Path, List} = H,
     {ITree, RTree, NewAcc} = lookup(Site, Acc),
     [Idx] = case gb_trees:lookup(Path, RTree) of
                 none       -> exit("zinf doesn't exist...");
                 {value, V} -> V
             end,
-    NewAcc2 = process_z2(List, Site, Path, Idx, ITree, RTree, NewAcc),
+    NewAcc2 = process_z2(List, Site, Path, ZIdx, Idx, ITree, RTree, NewAcc),
     process_zinfs(T, NewAcc2).
 
-process_z2([], Site, _Path, _Idx, ITree, RTree, Acc) ->
+process_z2([], Site, _Path, _ZIDx, _Idx, ITree, RTree, Acc) ->
     lists:keyreplace(Site, 1, Acc, {Site, ITree, RTree});
-process_z2([H | T], Site, Path, Idx, ITree, RTree, Acc) ->
+process_z2([H | T], Site, Path, ZIdx, Idx, ITree, RTree, Acc) ->
+    % first put the idx of the zinf into the rev_infparents of the
+    % record
     Rec = get_rec(H, ITree),
     #ver{rev_infparents = List} = Rec,
     Rec2 = Rec#ver{rev_infparents = [Idx | List], has_zinf = true,
                    zinf_path = Path},
     ITree2 = gb_trees:enter(H, Rec2, ITree),
-    process_z2(T, Site, Path, Idx, ITree2, RTree, Acc).
+    % now do the reverse make the url the child of the zinf
+    Rec3 = get_rec(ZIdx, ITree2),
+    #ver{infparents = List3} = Rec3,
+    Rec4 = Rec3#ver{children = [H | List3]},
+    ITree4 = gb_trees:enter(ZIdx, Rec4, ITree2),
+    process_z2(T, Site, Path, ZIdx, Idx, ITree4, RTree, Acc).
 
 process(Tuple, Acc) ->
     Head = element(2, Tuple),

@@ -486,15 +486,26 @@ dump_p([H | T], Path, Acc) -> {Obj, List} = H,
                                         [P2 ++ Ref, List]),
                               dump_p(T, Path, Acc).
 
-dump_f([], _Path, Acc)     -> Acc;
-dump_f([H | T], Path, Acc) -> {Obj, List} = H,
-                              {Site, File} = Acc,
-                              P2 = hn_util:list_to_path(Path),
-                              Ref = hn_util:obj_to_ref(Obj),
-                              String = io_lib:format("{~p,~p,~p}.",
-                                                     [Site, P2 ++ Ref, List]),
-                              dump_string(String, File),
-                              dump_f(T, Path, Acc).
+dump_f([], _Path, Acc) ->
+    Acc;
+dump_f([H | T], Path, Acc) ->
+    {Obj, List} = H,
+    {Site, File} = Acc,
+    P2 = hn_util:list_to_path(Path),
+    Ref = hn_util:obj_to_ref(Obj),
+    Tbl = new_db_wu:trans(Site, local_obj),
+    Fun = fun() ->
+                  RevIdx = P2 ++ Ref,
+                  RevB = term_to_binary(RevIdx),
+                  Pattern = {local_obj, '_', '_', '_', '_', RevB},
+                  [Rec] =  mnesia:index_match_object(Tbl, Pattern, 6, read),
+                  Rec#local_obj.idx
+          end,
+    Idx = mnesia:activity(transaction, Fun),
+    String = io_lib:format("{~p,~p,~p,~p}.",
+                           [Site, Idx, P2 ++ Ref, List]),
+    dump_string(String, File),
+    dump_f(T, Path, Acc).
 
 verify2([], _Path, Acc)     -> Acc;
 verify2([H | T], Path, Acc) -> {_, List} = H,
