@@ -56,11 +56,12 @@
 -define(linestyles, "chls").
 -define(margins,    "chma").
 -define(title,      "chtt").
+-define(titlestyle, "chts").
 -define(axeslables, "chxl").
 -define(axeslabpos, "chxp").
 -define(tickmarks,  "chxt").
 -define(speedolab,  "chl").
--define(barwidths, "chbh").
+-define(barwidths,  "chbh").
 
 % definition of standard stuff
 -define(SPEEDOPARAMS, {array, [[0, 33, 66, 100]]}).
@@ -68,6 +69,7 @@
 -define(ORANGE,       "FF9900").
 -define(GREEN,        "80C65A").
 -define(GREY,         "999999").
+-define(BLACK,        "000000").
 -define(NORMALAXES,   "x,y").
 -define(LABLEAXES,    "x,x,y,y").
 -define(HIST_VGROUP,  "bvg").
@@ -708,25 +710,16 @@ speedo1(Size, Val, Title, Subtitle, Thresholds) ->
         0 =< V3 andalso V3 =< 100 ->
             Opts = [],
             NewOpts = [
-                       Lables,
                        Colours,
+                       Lables,
                        {?tickmarks, "y"},
                        {?size, Size},
                        {?type, "gm"},
                        {?data, "t:" ++ tconv:to_s(V3)},
+                       {?titlestyle, "000000,18"},
                        {?speedolab, Sb2},
                        {?title, Tt2}
                        ],
-            %        "<img src='http://chart.apis.google.com/chart" ++
-            % "?chxl=0:|OK|Beware|Danger" ++
-            % "&amp;chxt=y" ++
-            % "&amp;chs=" ++Size++
-            % "&amp;cht=gm" ++
-            % "&amp;chco=000000,008000|FFCC33|FF0000" ++
-            % "&amp;chd=t:" ++ tconv:to_s(Val2 * 100) ++
-            % "&amp;chl=" ++ S2 ++
-            % "&amp;chtt=" ++ T2 ++
-            % "'>"
             case Opts of
                 [] -> make_chart2(NewOpts);
                 _  -> make_chart2(lists:concat([Opts, NewOpts]))
@@ -750,13 +743,9 @@ speedo_scale(Th, Val) ->
     Cols = lists:concat([lists:duplicate(NGreen,   ?GREEN),
                          lists:duplicate(NOrange2, ?ORANGE),
                          lists:duplicate(NRed2,    ?RED)]),
-    Labs = lists:concat([make_blanks(NGreen - 1),
-                         ["W"],
-                         make_blanks(NOrange - 1),
-                         ["D"],
-                         make_blanks(NRed2)]),
-    Colours = {?colours, ?GREY ++ "," ++ string:join(Cols, "|")},
+    Labs = lists:concat([make_blanks(NoOfColours)]),
     Lables = {?axeslables, "0:|" ++  string:join(Labs, "|")},
+    Colours = {?colours, ?BLACK ++ "," ++ string:join(Cols, "|")},
     V = ((Val - Zero)/Diff*100),
     {V, Colours, Lables}.
 
