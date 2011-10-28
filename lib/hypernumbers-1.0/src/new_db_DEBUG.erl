@@ -153,11 +153,15 @@ raw_idx(Site, Idx) ->
                                      hn_util:obj_to_ref(R1#local_obj.obj),
                                      binary_to_term(R1#local_obj.revidx)]),
                           Tab2 = new_db_wu:trans(Site, item),
-                          [R2] = mnesia:read(Tab2, Idx, read),
+                          R2 = mnesia:read(Tab2, Idx, read),
                           io:format("Raw item is ~p~n", [R2]),
-                          Attrs2 = binary_to_term(R2#item.attrs),
-                          io:format("item: idx ~p~n attrs ~p~n",
-                                    [R2#item.idx, Attrs2]),
+                          case R2 of
+                              []      -> ok;
+                              [RItem] ->
+                                  Attrs2 = binary_to_term(RItem#item.attrs),
+                                  io:format("item: idx ~p~n attrs ~p~n",
+                                            [RItem#item.idx, Attrs2])
+                          end,
                           Tab3 = new_db_wu:trans(Site, relation),
                           Rels = mnesia:read(Tab3, Idx, read),
                           io:format("Raw Relations is ~p~n", [Rels]),
