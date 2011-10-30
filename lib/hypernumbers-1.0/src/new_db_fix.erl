@@ -58,7 +58,7 @@ fix_dups3({RevIdx, List}, Site) ->
 
 dump([], _Site)     -> ok;
 dump([Idx | T], Site) ->
-    io:format("Reading ~p~n", [Idx]),x
+    io:format("Reading ~p~n", [Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Tbl2 = new_db_wu:trans(Site, item),
     Tbl3 = new_db_wu:trans(Site, relation),
