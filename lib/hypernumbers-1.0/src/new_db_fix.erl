@@ -29,16 +29,24 @@ fix(Dir, File) ->
     spawn(new_db_fix, fix_SPAWN, [Dir, File]).
 
 fix_SPAWN(Dir, File) ->
-    {ok, [{Data1, _Data2}]} = file:consult(Dir ++ File),
+    {ok, [{Data1, Data2}]} = file:consult(Dir ++ File),
     io:format("Problems loaded~n"),
     [fix2(X, Site) || {Site, X} <- Data1],
+    [fix_dups2(Dups, Site) || {Site, Dups} <- Data2],
     ok.
 
-fix2([], _) ->
-    ok;
-fix2([{Idx, Type} | T], Site) ->
-    fix3("http://" ++ Site, Type, Idx),
-    fix2(T, Site).
+fix_dups2([], _Site)     -> ok;
+fix_dups2([H | T], Site) -> ok = fix_dups3(H, Site),
+                            fix_dups2(T, Site).
+
+fix_dups3([], _Site)     -> ok;
+fix_dups3([{Path, List} | T], Site) ->
+    io:format("Fix up ~p ~p ~p~n", [Site, Path, length(List)]),
+    fix_dups2(T, Site).
+
+fix2([], _)                   -> ok;
+fix2([{Idx, Type} | T], Site) -> ok = fix3("http://" ++ Site, Type, Idx),
+                                 fix2(T, Site).
 
 fix3(Site, "Invalid tables (type 1)", Idx) ->
     io:format("Deleting ~p ~p Invalid tables (type 1)~n", [Site, Idx]),
@@ -50,6 +58,9 @@ fix3(Site, "Invalid tables (type 1)", Idx) ->
           end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid tables (type 2)", _Idx) -> ok;
+fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) -> ok;
+% fixing invalid tables type 4 is handled by Invalid Object (cell) (type 2)
+fix3(_Site, "Invalid tables (type 4)", _Idx) -> ok;
 fix3(Site, "Invalid relations (type 1)", Idx) ->
     Tbl1 = new_db_wu:trans(Site, relation),
     Fun = fun() ->
@@ -58,7 +69,7 @@ fix3(Site, "Invalid relations (type 1)", Idx) ->
                   [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties]
           end,
     mnesia:activity(transaction, Fun);
-    fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid include (type 1)", _Idx) -> ok;
 fix3(Site, "Invalid include (type 2)", Idx) ->
@@ -74,13 +85,25 @@ fix3(Site, "Invalid timer", Idx) ->
 fix3(_Site, "Invalid form", _Idx) -> ok;
 fix3(_Site, "Invalid formula", _Idx) -> ok;
 fix3(_Site, "Invalid Object (cell) (type 1)", _Idx) -> ok;
-fix3(_Site, "Invalid Object (cell) (type 2)", _Idx) -> ok;
+fix3(Site, "Invalid Object (cell) (type 2)", Idx) ->
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    Fun = fun() ->
+                  mnesia:delete(Tbl1, Idx, write)
+          end,
+    mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid Object (row) (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid Object (column) (type 4)", _Idx) -> ok;
 fix3(_Site, "Invalid Object (page) (type 5) (old adding in css/js)",
      _Idx) -> ok;
 fix3(_Site, "Invalid Object (type 6)", _Idx) -> ok;
-fix3(_Site, "Invalid types", _Idx) -> ok;
+fix3(Site, "Invalid types", Idx) ->
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    Fun = fun() ->
+                  [Rec] = mnesia:read(Tbl1, Idx, write),
+                  Rec2 = Rec#local_obj{type = gurl},
+                  mnesia:write(Tbl1, Rec2, write)
+          end,
+    mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid grid (type 1)", Idx) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Tbl2 = new_db_wu:trans(Site, item),
@@ -97,4 +120,5 @@ fix3(Site, "Invalid grid (type 2)", Idx) ->
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid grid (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid reverse index", _Idx) -> ok;
-fix3(_Site, "Invalid zinf", _Idx) -> ok.
+fix3(_Site, "Invalid zinf (type 1)", _Idx) -> ok;
+fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.

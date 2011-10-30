@@ -82,8 +82,8 @@ dump_tables() ->
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.27_Oct_11_8_42_59.terms",
-    ZinfFile = "zinf.27_Oct_11_8_42_59.terms",
+    VerFile = "verification.28_Oct_11_12_11_02.terms",
+    ZinfFile = "zinf.28_Oct_11_12_11_02.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
@@ -103,12 +103,15 @@ read_verification(Dir, VerFile, ZinfFile) ->
     DataFile = "verification_data" ++ "." ++ Stamp ++ "." ++ FileType,
     garbage_collect(self()),
     Terms = make_terms(Data2, []),
+    delete_file(Dir ++ DataFile),
     ok = file:write_file(Dir ++ DataFile, Terms),
     io:format("Written out processed data to ~p~n", [DataFile]),
     garbage_collect(self()),
     FileName = "errors."  ++ Stamp ++ "." ++ FileType,
+    delete_file(Dir ++ FileName),
     Errors = process_data(Data2, Dir, FileName),
     FileName2 = "fixable_errors." ++ Stamp ++ "." ++ FileType,
+    file:delete(Dir ++ FileName2),
     hn_util:log_terms(Errors, Dir ++ FileName2),
     summarise_problems(Dir, FileName2),
     ok.
@@ -185,14 +188,15 @@ verify2([H | T], Site, FileId, Acc) ->
 
 verify3([], _Site, _FileId, Acc) -> Acc;
 verify3([H | T], Site, FileId, Acc) ->
-    case H of
-        {_Path, [_Idx]} ->
-            ok;
-        {Path, List}    ->
-            io:fwrite(FileId, "multiple local objs for ~p ~p~n~p~n",
-                      [Site, Path, List])
-    end,
-    verify3(T, Site, FileId, Acc).
+    NewAcc = case H of
+                 {_Path, [_Idx]} ->
+                     Acc;
+                 {Path, List}    ->
+                     io:fwrite(FileId, "multiple local objs for ~p ~p~n~p~n",
+                               [Site, Path, List]),
+                     [{Path, List} | Acc]
+             end,
+    verify3(T, Site, FileId, NewAcc).
 
 % an entry in a local table has no formula, or parents could be a row, col
 % page
@@ -325,8 +329,37 @@ verify_tables(_Site, _FileId, {_Idx, #ver{relation = null,
                                           obj = {{Type, _}, _}}}, Acc)
   when Type == row orelse Type == column ->
     Acc;
-verify_tables(Site, FileId, {Idx, #ver{local_obj = exists} = V}, Acc) ->
+% a range
+% our old friend handing refXs created by the function
+% hnfuns_web:table/1
+verify_tables(Site, FileId, {Idx, #ver{relation = null,
+                                       local_obj = exists,
+                                       item = null,
+                                       form = null,
+                                       include = null,
+                                       timer = null,
+                                       type = url,
+                                       valid_type = true,
+                                       obj = {{Type, _}, _}} = V}, Acc)
+  when Type == range ->
     Str = "Invalid tables (type 2)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+% the old page add in for js/css
+verify_tables(Site, FileId, {Idx, #ver{relation = null,
+                                       local_obj = exists,
+                                       item = exists,
+                                       form = null,
+                                       include = null,
+                                       timer = null,
+                                       type = url,
+                                       valid_type = true,
+                                       obj = {{page, _}, _}} = V}, Acc) ->
+    Str = "Invalid tables (type 3) (old adding in css/js)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_tables(Site, FileId, {Idx, #ver{local_obj = exists} = V}, Acc) ->
+    Str = "Invalid tables (type 4)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_tables(_Site, _FileId, {_Idx, _H}, Acc) ->
@@ -754,7 +787,7 @@ process_z2([H | T], Site, Path, ZIdx, Idx, ITree, RTree, Acc) ->
     ITree2 = gb_trees:enter(H, Rec2, ITree),
     % now do the reverse make the url the child of the zinf
     Rec3 = get_rec(ZIdx, ITree2),
-    #ver{infparents = List3} = Rec3,
+    #ver{children = List3} = Rec3,
     Rec4 = Rec3#ver{children = [H | List3]},
     ITree4 = gb_trees:enter(ZIdx, Rec4, ITree2),
     process_z2(T, Site, Path, ZIdx, Idx, ITree4, RTree, Acc).
@@ -1060,3 +1093,10 @@ make_terms([], Acc) ->
 make_terms([H | T], Acc) ->
     NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
     make_terms(T, [NewAcc | Acc]).
+
+delete_file(File) ->
+    case file:delete(File) of
+        ok              -> ok; % file deleted
+        {error, enoent} -> ok; % file doesn't exist
+        Other           -> exit(Other)
+    end.
