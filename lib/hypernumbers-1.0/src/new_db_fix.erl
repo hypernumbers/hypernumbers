@@ -70,7 +70,8 @@ dump([#local_obj{idx = Idx, path = P, obj = O} | T], Site) ->
                  case List of
                      [] -> ok;
                      L  -> P2 = binary_to_term(P),
-                           io:format("forcing recalcs ~p~n~p~n~p~n", [Idx, P2, O]),
+                           io:format("forcing recalcs ~p~n~p~n~p~n~p~n",
+                                     [Idx, Site, P2, O]),
                            io:format("L is ~p~n", [L]),
                            ok = new_db_wu:mark_these_idxs_dirtyD(List, Site, nil)
                  end
