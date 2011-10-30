@@ -40,7 +40,7 @@ fix_SPAWN(Dir, File) ->
     ok.
 
 fix_dups2([], _Site)     -> ok;
-fix_dups2([H | T], Site) -> ok = fix_dups3(H, Site),
+fix_dups2([H | T], Site) -> ok = fix_dups3(H, "http://" ++ Site),
                             fix_dups2(T, Site).
 
 fix_dups3({RevIdx, List}, Site) ->
