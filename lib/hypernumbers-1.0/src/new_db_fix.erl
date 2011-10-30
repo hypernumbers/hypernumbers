@@ -62,16 +62,17 @@ dump([#local_obj{idx = Idx} | T], Site) ->
     Tbl2 = new_db_wu:trans(Site, item),
     Tbl3 = new_db_wu:trans(Site, relation),
     case mnesia:read(Tbl2, Idx, write) of
-        []     -> ok;
-        [Item] -> io:format("Item is ~p~n", [Item])
+        []      -> ok;
+        [_Item] -> ok %io:format("Item is ~p~n", [Item])
     end,
     case mnesia:read(Tbl3, Idx, write) of
         []    -> ok;
         [Rel] -> #relation{parents = List} = Rel,
-                 io:format("Relation is ~p~n", [Rel]),
+                 %io:format("Relation is ~p~n", [Rel]),
                  case List of
                      [] -> ok;
-                     _L -> ok = new_db_wu:mark_these_idxs_dirtyD(List, Site, nil)
+                     _L -> io:format("forcing recalcs~n"),
+                           ok = new_db_wu:mark_these_idxs_dirtyD(List, Site, nil)
                  end
     end,
     dump(T, Site).
