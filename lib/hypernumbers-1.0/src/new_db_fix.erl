@@ -48,8 +48,8 @@ fix_dups3({RevIdx, List}, Site) ->
     F = fun() ->
                 Tbl1 = new_db_wu:trans(Site, local_obj),
                 Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
-                List = mnesia:index_match_object(Tbl1, Pattern, 6, read),
-                [Master | Rest] = lists:reverse(List),
+                Ret = mnesia:index_match_object(Tbl1, Pattern, 6, read),
+                [Master | Rest] = lists:reverse(Ret),
                 io:format("Master is ~p~n", [Master]),
                 ok = dump(Rest, Site)
         end,
