@@ -397,8 +397,11 @@ table_collect(Ref) ->
             NewPath = muin_util:walk_path(Path, Ref#rangeref.path),
             RefX = muin_util:make_refX(Site, NewPath, Ref),
             Attrs = new_db_api:read_attribute(RefX, "value"),
+            % this is a bit of a bollox - need to create the actual
+            % underlying XRefX's for the range and this next one does it
+            % prolly should fix...
             RefXS = new_db_wu:expand_ref(RefX),
-            fix_up(RefXS, Attrs)
+            fix_up(RefX, Attrs)
     end.
 
 sort({{_, _, _, _, {cell, {X1, Y1}}}, _},
