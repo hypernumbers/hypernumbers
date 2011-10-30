@@ -173,15 +173,15 @@ verify([H | T], FileId, {Acc1, Acc2}) ->
 
 verify2([], _Site, _FileId, Acc) -> Acc;
 verify2([H | T], Site, FileId, Acc) ->
-    Acc1 = verify_tables(Site, FileId, H, Acc),
-    Acc2 = verify_relations(Site, FileId, H, Acc1),
-    Acc3 = verify_includes(Site, FileId, H, Acc2),
-    Acc4 = verify_timers(Site, FileId, H, Acc3),
-    Acc5 = verify_forms(Site, FileId, H, Acc4),
-    Acc6 = verify_formula(Site, FileId, H, Acc5),
-    Acc7 = verify_objs(Site, FileId, H, Acc6),
-    Acc8 = verify_types(Site, FileId, H, Acc7),
-    Acc9 = verify_grid(Site, FileId, H, Acc8),
+    Acc1  = verify_tables(Site, FileId, H, Acc),
+    Acc2  = verify_relations(Site, FileId, H, Acc1),
+    Acc3  = verify_includes(Site, FileId, H, Acc2),
+    Acc4  = verify_timers(Site, FileId, H, Acc3),
+    Acc5  = verify_forms(Site, FileId, H, Acc4),
+    Acc6  = verify_formula(Site, FileId, H, Acc5),
+    Acc7  = verify_objs(Site, FileId, H, Acc6),
+    Acc8  = verify_types(Site, FileId, H, Acc7),
+    Acc9  = verify_grid(Site, FileId, H, Acc8),
     Acc10 = verify_revidxs(Site, FileId, H, Acc9),
     Acc11 = verify_zinfs(Site, FileId, H, Acc10),
     verify2(T, Site, FileId, Acc11).
