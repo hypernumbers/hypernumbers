@@ -43,10 +43,9 @@ fix_dups2([], _Site)     -> ok;
 fix_dups2([H | T], Site) -> ok = fix_dups3(H, Site),
                             fix_dups2(T, Site).
 
-fix_dups3([], _Site)     -> ok;
-fix_dups3([{Path, List} | T], Site) ->
+fix_dups3({Path, List}, Site) ->
     io:format("Fix up ~p ~p ~p~n", [Site, Path, length(List)]),
-    fix_dups3(T, Site).
+    ok.
 
 fix2([], _)                   -> ok;
 fix2([{Idx, Type} | T], Site) -> ok = fix3("http://" ++ Site, Type, Idx),
