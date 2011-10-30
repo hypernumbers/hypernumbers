@@ -44,7 +44,7 @@ fix_dups2([H | T], Site) -> ok = fix_dups3(H, "http://" ++ Site),
                             fix_dups2(T, Site).
 
 fix_dups3({RevIdx, List}, Site) ->
-    io:format("Fix up ~p ~p ~p~n", [Site, RevIdx, length(List)]),
+    % io:format("Fix up ~p ~p ~p~n", [Site, RevIdx, length(List)]),
     F = fun() ->
                 Tbl1 = new_db_wu:trans(Site, local_obj),
                 Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
