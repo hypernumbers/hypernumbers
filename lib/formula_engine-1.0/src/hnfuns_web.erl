@@ -401,7 +401,7 @@ table_collect(Ref) ->
             % underlying XRefX's for the range and this next one does it
             % prolly should fix...
             RefXS = new_db_wu:expand_ref(RefX),
-            fix_up(RefX, Attrs)
+            fix_up(RefXS, Attrs)
     end.
 
 sort({{_, _, _, _, {cell, {X1, Y1}}}, _},
