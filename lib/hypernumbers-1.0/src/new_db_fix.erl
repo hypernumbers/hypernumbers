@@ -43,9 +43,29 @@ fix_dups2([], _Site)     -> ok;
 fix_dups2([H | T], Site) -> ok = fix_dups3(H, Site),
                             fix_dups2(T, Site).
 
-fix_dups3({Path, List}, Site) ->
-    io:format("Fix up ~p ~p ~p~n", [Site, Path, length(List)]),
+fix_dups3({RevIdx, List}, Site) ->
+    io:format("Fix up ~p ~p ~p~n", [Site, RevIdx, length(List)]),
+    F = fun() ->
+                Tbl1 = new_db_wu:trans(Site, local_obj),
+                Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
+                List = mnesia:index_match_object(Tbl1, Pattern, 6, read),
+                [Master | Rest] = lists:reverse(List),
+                io:format("Master is ~p~n", [Master]),
+                ok = dump(Rest, Site)
+        end,
+    mnesia:activity(transaction, F),
     ok.
+
+dump([], _Site)     -> ok;
+dump([Idx | T], Site) ->
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    Tbl2 = new_db_wu:trans(Site, item),
+    Tbl3 = new_db_wu:trans(Site, relation),
+    Ret1 = mnesia:read(Tbl1, Idx, write),
+    Ret2 = mnesia:read(Tbl2, Idx, write),
+    Ret3 = mnesia:read(Tbl3, Idx, write),
+    io:format("~p~n~p~n~p~n", [Ret1, Ret2, Ret3]),
+    dump(T, Site).
 
 fix2([], _)                   -> ok;
 fix2([{Idx, Type} | T], Site) -> ok = fix3("http://" ++ Site, Type, Idx),
