@@ -57,15 +57,13 @@ fix_dups3({RevIdx, List}, Site) ->
     ok.
 
 dump([], _Site)     -> ok;
-dump([Idx | T], Site) ->
+dump([#local_obj{idx = Idx} | T], Site) ->
     io:format("Reading ~p~n", [Idx]),
-    Tbl1 = new_db_wu:trans(Site, local_obj),
     Tbl2 = new_db_wu:trans(Site, item),
     Tbl3 = new_db_wu:trans(Site, relation),
-    Ret1 = mnesia:read(Tbl1, Idx, write),
     Ret2 = mnesia:read(Tbl2, Idx, write),
     Ret3 = mnesia:read(Tbl3, Idx, write),
-    io:format("~p~n~p~n~p~n", [Ret1, Ret2, Ret3]),
+    io:format("Items: ~p~nRelations: ~p~n", [Ret2, Ret3]),
     dump(T, Site).
 
 fix2([], _)                   -> ok;
