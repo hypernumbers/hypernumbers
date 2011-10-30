@@ -10,6 +10,7 @@
 
 -export([
          fix/0,
+         fix_DEBUG/2,
          fix/2
         ]).
 
@@ -24,6 +25,9 @@ fix() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
     File = "fixable_errors.20_Oct_11_13_27_19.terms",
     fix(Dir, File).
+
+fix_DEBUG(Dir, File) ->
+    fix_SPAWN(Dir, File).
 
 fix(Dir, File) ->
     spawn(new_db_fix, fix_SPAWN, [Dir, File]).
@@ -42,7 +46,7 @@ fix_dups2([H | T], Site) -> ok = fix_dups3(H, Site),
 fix_dups3([], _Site)     -> ok;
 fix_dups3([{Path, List} | T], Site) ->
     io:format("Fix up ~p ~p ~p~n", [Site, Path, length(List)]),
-    fix_dups2(T, Site).
+    fix_dups3(T, Site).
 
 fix2([], _)                   -> ok;
 fix2([{Idx, Type} | T], Site) -> ok = fix3("http://" ++ Site, Type, Idx),
