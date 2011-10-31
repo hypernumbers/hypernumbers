@@ -76,7 +76,9 @@ fix_dups3({RevIdx, List}, Site) ->
                 Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
                 Ret = mnesia:index_match_object(Tbl1, Pattern, 6, read),
                 [Master | Rest] = lists:reverse(lists:sort(Ret)),
-                io:format("Master is ~p~nList is ~p~n", [Master, Rest])
+                RX = [X || #local_obj{idx = X} <- Rest],
+                io:format("Master is ~p~nList is ~p~n", [Master#local_obj.idx,
+                                                         RX])
         end,
     mnesia:activity(transaction, F),
     ok.
