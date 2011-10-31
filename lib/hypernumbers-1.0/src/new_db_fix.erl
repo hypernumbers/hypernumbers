@@ -117,7 +117,7 @@ fix3(Site, "Invalid tables (type 1)", Idx) ->
                   mnesia:delete(Tbl2, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
-fix3(_Site, "Invalid tables (type 2) (dont' fix)", _Idx) -> ok;
+fix3(_Site, "Invalid tables (type 2) (don't fix)", _Idx) -> ok;
 fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) ->
     ok;
 % fixing invalid tables type 4 is handled by Invalid Object (cell) (type 2)
