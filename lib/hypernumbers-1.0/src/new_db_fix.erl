@@ -75,14 +75,14 @@ fix_dups3({RevIdx, List}, Site) ->
                 Tbl1 = new_db_wu:trans(Site, local_obj),
                 Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
                 Ret = mnesia:index_match_object(Tbl1, Pattern, 6, read),
-                [_Master | Rest] = lists:reverse(Ret),
-                ok = dump(Rest, Site)
+                [Master | Rest] = lists:reverse(lists:sort(Ret)),
+                io:format("Master is ~p~nList is ~p~n", [Master, Rest])
         end,
     mnesia:activity(transaction, F),
     ok.
 
-dump([], _Site)     -> ok;
-dump([#local_obj{idx = Idx, path = P, obj = O} | T], Site) ->
+dump([], _Master, _Site)     -> ok;
+dump([#local_obj{idx = Idx, path = P, obj = O} | T], Master, Site) ->
     Tbl2 = new_db_wu:trans(Site, item),
     Tbl3 = new_db_wu:trans(Site, relation),
     case mnesia:read(Tbl2, Idx, write) of
@@ -102,7 +102,7 @@ dump([#local_obj{idx = Idx, path = P, obj = O} | T], Site) ->
                            ok = new_db_wu:mark_these_idxs_dirtyD(List, Site, nil)
                  end
     end,
-    dump(T, Site).
+    dump(T, Master, Site).
 
 fix2([], _)                   -> ok;
 fix2([{Idx, Type} | T], Site) -> fix3("http://" ++ Site, Type, Idx),
