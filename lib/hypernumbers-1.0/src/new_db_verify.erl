@@ -82,8 +82,8 @@ dump_tables() ->
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.30_Oct_11_18_04_46.terms",
-    ZinfFile = "zinf.30_Oct_11_18_04_46.terms.terms",
+    VerFile = "verification.31_Oct_11_8_33_38.terms",
+    ZinfFile = "zinf.31_Oct_11_8_33_38.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
@@ -131,8 +131,14 @@ summarise([], Site, Data2, Acc) ->
     io:format("~n~p:~n", [Site]),
     print_summary(Acc),
     case lists:keyfind(Site, 1, Data2) of
-        false        -> io:format("no broken revidxs~n");
-        {Site, List} -> io:format("~p broken revidxs~n", [length(List)])
+        false        -> exit("revidx has gone tits up");
+        {Site, List} -> Len = length(List),
+                        case Len of
+                            0 ->
+                                ok;
+                            N ->
+                                io:format("~p multiple local_objs~n", [N])
+                        end
     end;
 summarise([{_Idx, Type} | T], Site, Data2, Acc) ->
     NewAcc = case lists:keyfind(Type, 1, Acc) of

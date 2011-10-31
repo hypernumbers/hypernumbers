@@ -141,16 +141,25 @@ fix3(Site, "Invalid include (type 2)", Idx) ->
               [Site, Idx]),
     new_db_api:mark_idx_dirty(Site, Idx);
 fix3(Site, "Invalid timer", Idx) ->
-    io:format("Deleting ~p ~p Invalid timer)~n", [Site, Idx]),
+    io:format("Deleting ~p ~p Invalid timer~n", [Site, Idx]),
     Tbl = new_db_wu:trans(Site, timer),
     Fun = fun() ->
                   mnesia:delete(Tbl, Idx, write)
                       end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid form", _Idx) -> ok;
-fix3(_Site, "Invalid formula", _Idx) -> ok;
 fix3(_Site, "Invalid formula (type 1)", _Idx) -> ok;
-fix3(_Site, "Invalid formula (type 2)", _Idx) -> ok;
+fix3(Site, "Invalid formula (type 2)", Idx) ->
+    io:format("Deleting ~p ~p Invalid formula (type 2)~n", [Site, Idx]),
+    Tbl1 = new_db_wu:trans(Site, item),
+    Tbl2 = new_db_wu:trans(Site, local_obj),
+    Tbl3 = new_db_wu:trans(Site, relation),
+    Fun = fun() ->
+                  mnesia:delete(Tbl1, Idx, write),
+                  mnesia:delete(Tbl2, Idx, write),
+                  mnesia:delete(Tbl3, Idx, write)
+          end,
+    mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid Object (cell) (type 1)", _Idx) -> ok;
 fix3(Site, "Invalid Object (cell) (type 2)", Idx) ->
     io:format("deleteing Invalid Object (cell) (type 2) ~p ~p~n",
