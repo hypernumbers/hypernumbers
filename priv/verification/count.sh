@@ -20,8 +20,10 @@ echo "Invalid timer"
 grep "Invalid timer" $FILE | wc -l
 echo "Invalid form"
 grep "Invalid form" $FILE | wc -l
-echo "Invalid formula"
-grep "Invalid formula" $FILE | wc -l
+echo "Invalid formula (type 1)"
+grep "Invalid formula (type 1)" $FILE | wc -l
+echo "Invalid formula (type 2)"
+grep "Invalid formula (type 2)" $FILE | wc -l
 echo "Invalid Object (cell) (type 1)"
 grep "Invalid Object (cell) (type 1)" $FILE | wc -l
 echo "Invalid Object (cell) (type 2)"

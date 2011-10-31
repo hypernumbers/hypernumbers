@@ -82,8 +82,8 @@ dump_tables() ->
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.28_Oct_11_12_11_02.terms",
-    ZinfFile = "zinf.28_Oct_11_12_11_02.terms",
+    VerFile = "verification.30_Oct_11_18_04_46.terms",
+    ZinfFile = "zinf.30_Oct_11_18_04_46.terms.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
@@ -342,7 +342,7 @@ verify_tables(Site, FileId, {Idx, #ver{relation = null,
                                        valid_type = true,
                                        obj = {{Type, _}, _}} = V}, Acc)
   when Type == range ->
-    Str = "Invalid tables (type 2)",
+    Str = "Invalid tables (type 2) (don't fix)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 % the old page add in for js/css
@@ -461,8 +461,17 @@ verify_formula(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                            obj = {{cell, _}, _},
                                            type = url}}, Acc) ->
     Acc;
+verify_formula(Site, FileId, {Idx, #ver{relation = exists,
+                                        local_obj = exists,
+                                        item = exists,
+                                        obj = {{cell, _}, _},
+                                        type = gurl,
+                                        has_formula = true} = V}, Acc) ->
+    Str = "Invalid formula (type 2)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
 verify_formula(Site, FileId, {Idx, #ver{has_formula = true} = V}, Acc) ->
-    Str = "Invalid formula",
+    Str = "Invalid formula (type 2)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_formula(_Site, _FileId, {_Idx, _H}, Acc) ->

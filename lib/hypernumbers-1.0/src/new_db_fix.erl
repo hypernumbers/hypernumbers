@@ -8,15 +8,24 @@
 
 -module(new_db_fix).
 
+% main api
+-export([
+         fix/2,
+         fix_dups/2
+        ]).
+
+% debugging exports
 -export([
          fix/0,
+         fix_dups/0,
          fix_DEBUG/2,
-         fix/2
+         fix_dups_DEBUG/2
         ]).
 
 % spawning api
 -export([
-         fix_SPAWN/2
+         fix_SPAWN/2,
+         fix_dups_SPAWN/2
         ]).
 
 -include("spriki.hrl").
@@ -26,18 +35,35 @@ fix() ->
     File = "fixable_errors.20_Oct_11_13_27_19.terms",
     fix(Dir, File).
 
+fix_dups() ->
+    Dir = "/home/gordon/hypernumbers/priv/verification/",
+    File = "fixable_errors.20_Oct_11_13_27_19.terms",
+    fix_dups(Dir, File).
+
 fix_DEBUG(Dir, File) ->
     fix_SPAWN(Dir, File).
+
+fix_dups_DEBUG(Dir, File) ->
+    fix_dups_SPAWN(Dir, File).
 
 fix(Dir, File) ->
     spawn(new_db_fix, fix_SPAWN, [Dir, File]).
 
+fix_dups(Dir, File) ->
+    spawn(new_db_fix, fix_dups_SPAWN, [Dir, File]).
+
 fix_SPAWN(Dir, File) ->
-    {ok, [{Data1, Data2}]} = file:consult(Dir ++ File),
-    io:format("Problems loaded~n"),
+    {ok, [{Data1, _Data2}]} = file:consult(Dir ++ File),
+    io:format("Problems loaded - fixing errors~n"),
     [fix2(X, Site) || {Site, X} <- Data1],
+    ok.
+
+fix_dups_SPAWN(Dir, File) ->
+    {ok, [{_Data1, Data2}]} = file:consult(Dir ++ File),
+    io:format("Problems loaded - fixing dups~n"),
     [fix_dups2(Dups, Site) || {Site, Dups} <- Data2],
     ok.
+
 
 fix_dups2([], _Site)     -> ok;
 fix_dups2([H | T], Site) -> ok = fix_dups3(H, "http://" ++ Site),
@@ -91,7 +117,7 @@ fix3(Site, "Invalid tables (type 1)", Idx) ->
                   mnesia:delete(Tbl2, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
-fix3(_Site, "Invalid tables (type 2)", _Idx) -> ok;
+fix3(_Site, "Invalid tables (type 2) (dont' fix)", _Idx) -> ok;
 fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) -> ok;
 % fixing invalid tables type 4 is handled by Invalid Object (cell) (type 2)
 fix3(_Site, "Invalid tables (type 4)", _Idx) -> ok;
@@ -117,7 +143,8 @@ fix3(Site, "Invalid timer", Idx) ->
                       end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid form", _Idx) -> ok;
-fix3(_Site, "Invalid formula", _Idx) -> ok;
+fix3(_Site, "Invalid formula (type 1)", _Idx) -> ok;
+fix3(_Site, "Invalid formula (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid Object (cell) (type 1)", _Idx) -> ok;
 fix3(Site, "Invalid Object (cell) (type 2)", Idx) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
