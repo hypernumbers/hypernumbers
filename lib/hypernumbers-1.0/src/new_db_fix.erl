@@ -78,32 +78,20 @@ fix_dups3({RevIdx, List}, Site) ->
                 [Master | Rest] = lists:reverse(lists:sort(Ret)),
                 RX = [X || #local_obj{idx = X} <- Rest],
                 io:format("Master is ~p~nList is ~p~n", [Master#local_obj.idx,
-                                                         RX])
+                                                         RX]),
+                dump(RX, Master, Site)
         end,
     mnesia:activity(transaction, F),
     ok.
 
 dump([], _Master, _Site)     -> ok;
-dump([#local_obj{idx = Idx, path = P, obj = O} | T], Master, Site) ->
-    Tbl2 = new_db_wu:trans(Site, item),
-    Tbl3 = new_db_wu:trans(Site, relation),
-    case mnesia:read(Tbl2, Idx, write) of
-        []      -> ok;
-        [_Item] -> ok %io:format("Item is ~p~n", [Item])
-    end,
-    case mnesia:read(Tbl3, Idx, write) of
-        []    -> ok;
-        [Rel] -> #relation{parents = List} = Rel,
-                 %io:format("Relation is ~p~n", [Rel]),
-                 case List of
-                     [] -> ok;
-                     L  -> P2 = binary_to_term(P),
-                           io:format("forcing recalcs ~p~n~p~n~p~n~p~n",
-                                     [Idx, Site, P2, O]),
-                           io:format("L is ~p~n", [L]),
-                           ok = new_db_wu:mark_these_idxs_dirtyD(List, Site, nil)
-                 end
-    end,
+dump([Idx| T], Master, Site) ->
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    [Rec] = mnesia:read(Tbl1, Idx, write),
+    #local_obj{path = P, obj = O} = Rec,
+    RefX = #refX{site = Site, type = url, path = binary_to_term(P), obj = O},
+    %ok = new_db_wu:write_attributes([{RefX, {"formula", ""}}]),
+    io:format("should flush ~p~n", [RefX]),
     dump(T, Master, Site).
 
 fix2([], _)                   -> ok;
