@@ -118,7 +118,8 @@ fix3(Site, "Invalid tables (type 1)", Idx) ->
           end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid tables (type 2) (dont' fix)", _Idx) -> ok;
-fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) -> ok;
+fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) ->
+    ok;
 % fixing invalid tables type 4 is handled by Invalid Object (cell) (type 2)
 fix3(_Site, "Invalid tables (type 4)", _Idx) -> ok;
 fix3(Site, "Invalid relations (type 1)", Idx) ->
@@ -146,6 +147,7 @@ fix3(Site, "Invalid timer", Idx) ->
                       end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid form", _Idx) -> ok;
+fix3(_Site, "Invalid formula", _Idx) -> ok;
 fix3(_Site, "Invalid formula (type 1)", _Idx) -> ok;
 fix3(_Site, "Invalid formula (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid Object (cell) (type 1)", _Idx) -> ok;
