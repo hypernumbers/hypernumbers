@@ -123,15 +123,16 @@ fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) ->
 % fixing invalid tables type 4 is handled by Invalid Object (cell) (type 2)
 fix3(_Site, "Invalid tables (type 4)", _Idx) -> ok;
 fix3(Site, "Invalid relations (type 1)", Idx) ->
-    io:format("recalcing Invalid relations (type 1) for ~p ~p~n",
-              [Site, Idx]),
-    Tbl1 = new_db_wu:trans(Site, relation),
-    Fun = fun() ->
-                  [Rel] = mnesia:read(Tbl1, Idx),
-                  #relation{infparents = Dirties} = Rel,
-                  [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties]
-          end,
-    mnesia:activity(transaction, Fun);
+    %% io:format("(SHOULD) recalcing Invalid relations (type 1) for ~p ~p~n",
+    %%           [Site, Idx]),
+    %% Tbl1 = new_db_wu:trans(Site, relation),
+    %% Fun = fun() ->
+    %%               [Rel] = mnesia:read(Tbl1, Idx),
+    %%               #relation{infparents = Dirties} = Rel,
+    %%               [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties]
+    %%       end,
+    %% mnesia:activity(transaction, Fun);
+    ok;
 fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid include (type 1)", _Idx) -> ok;
