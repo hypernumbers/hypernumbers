@@ -77,8 +77,8 @@ fix_dups3({RevIdx, List}, Site) ->
                 Ret = mnesia:index_match_object(Tbl1, Pattern, 6, read),
                 [Master | Rest] = lists:reverse(lists:sort(Ret)),
                 RX = [X || #local_obj{idx = X} <- Rest],
-                io:format("Master is ~p~nList is ~p~n", [Master#local_obj.idx,
-                                                         RX]),
+                % io:format("Master is ~p~nList is ~p~n", [Master#local_obj.idx,
+                %                                         RX]),
                 dump(RX, Master, Site)
         end,
     mnesia:activity(transaction, F),
@@ -90,8 +90,7 @@ dump([Idx| T], Master, Site) ->
     [Rec] = mnesia:read(Tbl1, Idx, write),
     #local_obj{path = P, obj = O} = Rec,
     RefX = #refX{site = Site, type = url, path = binary_to_term(P), obj = O},
-    %ok = new_db_wu:write_attributes([{RefX, {"formula", ""}}]),
-    io:format("should flush ~p~n", [RefX]),
+    ok = new_db_wu:write_attributes([{RefX, {"formula", ""}}]),
     dump(T, Master, Site).
 
 fix2([], _)                   -> ok;
