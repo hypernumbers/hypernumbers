@@ -105,7 +105,7 @@ dump([#local_obj{idx = Idx, path = P, obj = O} | T], Site) ->
     dump(T, Site).
 
 fix2([], _)                   -> ok;
-fix2([{Idx, Type} | T], Site) -> ok = fix3("http://" ++ Site, Type, Idx),
+fix2([{Idx, Type} | T], Site) -> fix3("http://" ++ Site, Type, Idx),
                                  fix2(T, Site).
 
 fix3(Site, "Invalid tables (type 1)", Idx) ->
