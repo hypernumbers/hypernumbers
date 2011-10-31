@@ -122,6 +122,8 @@ fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) -> ok;
 % fixing invalid tables type 4 is handled by Invalid Object (cell) (type 2)
 fix3(_Site, "Invalid tables (type 4)", _Idx) -> ok;
 fix3(Site, "Invalid relations (type 1)", Idx) ->
+    io:formt("recalcing Invalid relations (type 1) for ~p ~p~n",
+             [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, relation),
     Fun = fun() ->
                   [Rel] = mnesia:read(Tbl1, Idx),
@@ -133,7 +135,8 @@ fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid include (type 1)", _Idx) -> ok;
 fix3(Site, "Invalid include (type 2)", Idx) ->
-    io:format("Marking dirty ~p ~p Invalid include (type 2)~n", [Site, Idx]),
+    io:format("Marking dirty ~p ~p Invalid include (type 2)~n",
+              [Site, Idx]),
     new_db_api:mark_idx_dirty(Site, Idx);
 fix3(Site, "Invalid timer", Idx) ->
     io:format("Deleting ~p ~p Invalid timer)~n", [Site, Idx]),
@@ -147,6 +150,8 @@ fix3(_Site, "Invalid formula (type 1)", _Idx) -> ok;
 fix3(_Site, "Invalid formula (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid Object (cell) (type 1)", _Idx) -> ok;
 fix3(Site, "Invalid Object (cell) (type 2)", Idx) ->
+    io:format("deleteing Invalid Object (cell) (type 2) ~p ~p~n",
+              [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Fun = fun() ->
                   mnesia:delete(Tbl1, Idx, write)
@@ -158,6 +163,7 @@ fix3(_Site, "Invalid Object (page) (type 5) (old adding in css/js)",
      _Idx) -> ok;
 fix3(_Site, "Invalid Object (type 6)", _Idx) -> ok;
 fix3(Site, "Invalid types", Idx) ->
+    io:format("fixing Invalid types ~p ~p~n", [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Fun = fun() ->
                   [Rec] = mnesia:read(Tbl1, Idx, write),
@@ -166,6 +172,7 @@ fix3(Site, "Invalid types", Idx) ->
           end,
     mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid grid (type 1)", Idx) ->
+    io:format("deleting Invalid grid (type 1) ~p ~p~n", [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Tbl2 = new_db_wu:trans(Site, item),
     Fun = fun() ->
@@ -174,6 +181,7 @@ fix3(Site, "Invalid grid (type 1)", Idx) ->
           end,
     mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid grid (type 2)", Idx) ->
+    io:format("deleting Invalid grid (type 2) ~p ~p~n", [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Fun = fun() ->
                   mnesia:delete(Tbl1, Idx, write)
