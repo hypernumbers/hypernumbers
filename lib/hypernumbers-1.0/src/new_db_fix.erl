@@ -19,7 +19,8 @@
          fix/0,
          uncouple_dups/0,
          fix_DEBUG/2,
-         uncouple_dups_DEBUG/2
+         uncouple_dups_DEBUG/2,
+         fix_dups_DEBUG/2
         ]).
 
 % spawning api
@@ -46,6 +47,10 @@ fix_DEBUG(Dir, File) ->
 uncouple_dups_DEBUG(Dir, File) ->
     uncouple_dups_SPAWN(Dir, File).
 
+fix_dups_DEBUG(Dir, File) ->
+    fix_dups_SPAWN(Dir, File).
+
+
 fix(Dir, File) ->
     spawn(new_db_fix, fix_SPAWN, [Dir, File]).
 
@@ -64,6 +69,11 @@ uncouple_dups_SPAWN(Dir, File) ->
     [uncouple_dups2(Dups, Site) || {Site, Dups} <- Data2],
     ok.
 
+fix_dups_SPAWN(Dir, File) ->
+    {ok, [{_Data1, Data2}]} = file:consult(Dir ++ File),
+    io:format("Problems loaded - fixing dups~n"),
+    [fix_dups2(Dups, Site) || {Site, Dups} <- Data2],
+    ok.
 
 uncouple_dups2([], _Site)     -> ok;
 uncouple_dups2([H | T], Site) -> ok = uncouple_dups3(H, "http://" ++ Site),
@@ -98,6 +108,40 @@ uncouple_dups4([Idx| T], Master, Site) ->
         _ -> ok
     end,
     uncouple_dups4(T, Master, Site).
+
+fix_dups2([], _Site)     -> ok;
+fix_dups2([H | T], Site) -> ok = fix_dups3(H, "http://" ++ Site),
+                                 fix_dups2(T, Site).
+
+fix_dups3({RevIdx, List}, Site) ->
+    % io:format("Fix up ~p ~p ~p~n", [Site, RevIdx, length(List)]),
+    F = fun() ->
+                Tbl1 = new_db_wu:trans(Site, local_obj),
+                Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
+                Ret = mnesia:index_match_object(Tbl1, Pattern, 6, read),
+                [Master | Rest] = lists:reverse(lists:sort(Ret)),
+                RX = [X || #local_obj{idx = X} <- Rest],
+                fix_dups4(RX, Master, Site)
+        end,
+    mnesia:activity(transaction, F),
+    ok.
+
+fix_dups4([], _Master, _Site)     -> ok;
+fix_dups4([Idx| T], Master, Site) ->
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    Tbl2 = new_db_wu:trans(Site, item),
+    Tbl3 = new_db_wu:trans(Site, relation),
+    [Rec] = mnesia:read(Tbl1, Idx, write),
+    #local_obj{path = P, obj = O} = Rec,
+    case O of
+        {cell, _} ->
+            mnesia:delete(Tbl1, Idx, write),
+            mnesia:delete(Tbl2, Idx, write),
+            mnesia:delete(Tbl3, Idx, write);
+        _ ->
+            mnesia:delete(Tbl1, Idx, write)
+    end,
+    fix_dups4(T, Master, Site).
 
 fix2([], _)                   -> ok;
 fix2([{Idx, Type} | T], Site) -> fix3("http://" ++ Site, Type, Idx),
