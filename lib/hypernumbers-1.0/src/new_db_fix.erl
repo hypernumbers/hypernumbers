@@ -258,7 +258,6 @@ fix3(Site, "Invalid grid (type 3)", Idx) ->
     io:format("Fixing invalid grid problems~n"),
     Tbl1 = new_db_wu:trans(Site, item),
     Fun = fun() ->
-                  mnesia:delete(Tbl1, Idx, write),
                   [Rec] = mnesia:read(Tbl1, Idx, write),
                   Attrs = binary_to_term(Rec#item.attrs),
                   io:format("Attrs is ~p~n", [Attrs])
