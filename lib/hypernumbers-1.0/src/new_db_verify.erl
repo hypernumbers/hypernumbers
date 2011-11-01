@@ -82,8 +82,8 @@ dump_tables() ->
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.31_Oct_11_19_54_22.terms",
-    ZinfFile = "zinf.31_Oct_11_19_54_22.terms",
+    VerFile = "verification.01_Nov_11_11_33_52.terms",
+    ZinfFile = "zinf.01_Nov_11_11_33_52.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
