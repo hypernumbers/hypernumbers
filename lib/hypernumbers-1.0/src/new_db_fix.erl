@@ -141,17 +141,21 @@ fix_dups4([Idx| T], Master, Site) ->
         {cell, _} ->
             %io:format("Cell to delete is ~p ~p ~p~n",
             %          [Site, binary_to_term(P), O]),
-            [Rel] = mnesia:read(Tbl2, Idx, write),
+            %[Rel] = mnesia:read(Tbl2, Idx, write),
             %io:format("Rel to delete is ~p~n", [Rel]),
-            [Item] = mnesia:read(Tbl3, Idx, write),
-            A = binary_to_term(Item#item.attrs),
+            %[Item] = mnesia:read(Tbl3, Idx, write),
+            %A = binary_to_term(Item#item.attrs),
             %io:format("Item to delete is ~p~n", [A]);
             mnesia:delete(Tbl1, Idx, write),
             mnesia:delete(Tbl2, Idx, write),
             mnesia:delete(Tbl3, Idx, write);
         _ ->
             %io:format("Non-cell to delete is ~p~n", [Rec])
-            mnesia:delete(Tbl1, Idx, write)
+            mnesia:delete(Tbl1, Idx, write),
+            case mnesia:read(Tbl3, Idx, write) of
+                []   -> ok;
+                [_I] -> mnesia:delete(Tbl3, Idx, write)
+            end
     end,
     fix_dups4(T, Master, Site).
 
@@ -250,7 +254,13 @@ fix3(Site, "Invalid grid (type 2)", Idx) ->
                   mnesia:delete(Tbl1, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
-fix3(_Site, "Invalid grid (type 3)", _Idx) -> ok;
+fix3(Site, "Invalid grid (type 3)", Idx) ->
+    io:format("Fixing invalid grid problems~n"),
+    Tbl1 = new_db_wu:trans(Site, item),
+    [Rec] = mnesia:read(Tbl1, Idx, write),
+    Attrs = binary_to_term(Rec#item.attrs),
+    io:format("Attrs is ~p~n", [Attrs]),
+    ok;
 fix3(_Site, "Invalid reverse index", _Idx) -> ok;
 fix3(_Site, "Invalid zinf (type 1)", _Idx) -> ok;
 fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.
