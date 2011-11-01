@@ -11,21 +11,21 @@
 % main api
 -export([
          fix/2,
-         fix_dups/2
+         uncouple_dups/2
         ]).
 
 % debugging exports
 -export([
          fix/0,
-         fix_dups/0,
+         uncouple_dups/0,
          fix_DEBUG/2,
-         fix_dups_DEBUG/2
+         uncouple_dups_DEBUG/2
         ]).
 
 % spawning api
 -export([
          fix_SPAWN/2,
-         fix_dups_SPAWN/2
+         uncouple_dups_SPAWN/2
         ]).
 
 -include("spriki.hrl").
@@ -35,22 +35,22 @@ fix() ->
     File = "fixable_errors.20_Oct_11_13_27_19.terms",
     fix(Dir, File).
 
-fix_dups() ->
+uncouple_dups() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
     File = "fixable_errors.20_Oct_11_13_27_19.terms",
-    fix_dups(Dir, File).
+    uncouple_dups(Dir, File).
 
 fix_DEBUG(Dir, File) ->
     fix_SPAWN(Dir, File).
 
-fix_dups_DEBUG(Dir, File) ->
-    fix_dups_SPAWN(Dir, File).
+uncouple_dups_DEBUG(Dir, File) ->
+    uncouple_dups_SPAWN(Dir, File).
 
 fix(Dir, File) ->
     spawn(new_db_fix, fix_SPAWN, [Dir, File]).
 
-fix_dups(Dir, File) ->
-    spawn(new_db_fix, fix_dups_SPAWN, [Dir, File]).
+uncouple_dups(Dir, File) ->
+    spawn(new_db_fix, uncouple_dups_SPAWN, [Dir, File]).
 
 fix_SPAWN(Dir, File) ->
     {ok, [{Data1, _Data2}]} = file:consult(Dir ++ File),
@@ -58,18 +58,18 @@ fix_SPAWN(Dir, File) ->
     [fix2(X, Site) || {Site, X} <- Data1],
     ok.
 
-fix_dups_SPAWN(Dir, File) ->
+uncouple_dups_SPAWN(Dir, File) ->
     {ok, [{_Data1, Data2}]} = file:consult(Dir ++ File),
     io:format("Problems loaded - fixing dups~n"),
-    [fix_dups2(Dups, Site) || {Site, Dups} <- Data2],
+    [uncouple_dups2(Dups, Site) || {Site, Dups} <- Data2],
     ok.
 
 
-fix_dups2([], _Site)     -> ok;
-fix_dups2([H | T], Site) -> ok = fix_dups3(H, "http://" ++ Site),
-                            fix_dups2(T, Site).
+uncouple_dups2([], _Site)     -> ok;
+uncouple_dups2([H | T], Site) -> ok = uncouple_dups3(H, "http://" ++ Site),
+                                 uncouple_dups2(T, Site).
 
-fix_dups3({RevIdx, List}, Site) ->
+uncouple_dups3({RevIdx, List}, Site) ->
     % io:format("Fix up ~p ~p ~p~n", [Site, RevIdx, length(List)]),
     F = fun() ->
                 Tbl1 = new_db_wu:trans(Site, local_obj),
@@ -79,19 +79,20 @@ fix_dups3({RevIdx, List}, Site) ->
                 RX = [X || #local_obj{idx = X} <- Rest],
                 % io:format("Master is ~p~nList is ~p~n", [Master#local_obj.idx,
                 %                                         RX]),
-                dump(RX, Master, Site)
+                uncouple_dups4(RX, Master, Site)
         end,
     mnesia:activity(transaction, F),
     ok.
 
-dump([], _Master, _Site)     -> ok;
-dump([Idx| T], Master, Site) ->
+uncouple_dups4([], _Master, _Site)     -> ok;
+uncouple_dups4([Idx| T], Master, Site) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
     [Rec] = mnesia:read(Tbl1, Idx, write),
     #local_obj{path = P, obj = O} = Rec,
-    RefX = #refX{site = Site, type = url, path = binary_to_term(P), obj = O},
-    ok = new_db_wu:write_attributes([{RefX, {"formula", ""}}]),
-    dump(T, Master, Site).
+    XRefX = #xrefX{idx = Idx, site = Site, path = binary_to_term(P), obj = O},
+    io:format("XRefX is ~p~n", [XRefX]),
+    % ok = new_db_wu:write_attrs([{XRefX, [{"formula", ""}]}]),
+    uncouple_dups4(T, Master, Site).
 
 fix2([], _)                   -> ok;
 fix2([{Idx, Type} | T], Site) -> fix3("http://" ++ Site, Type, Idx),
@@ -112,15 +113,15 @@ fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) ->
 % fixing invalid tables type 4 is handled by Invalid Object (cell) (type 2)
 fix3(_Site, "Invalid tables (type 4)", _Idx) -> ok;
 fix3(Site, "Invalid relations (type 1)", Idx) ->
-    %% io:format("(SHOULD) recalcing Invalid relations (type 1) for ~p ~p~n",
-    %%           [Site, Idx]),
-    %% Tbl1 = new_db_wu:trans(Site, relation),
-    %% Fun = fun() ->
-    %%               [Rel] = mnesia:read(Tbl1, Idx),
-    %%               #relation{infparents = Dirties} = Rel,
-    %%               [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties]
-    %%       end,
-    %% mnesia:activity(transaction, Fun);
+%% io:format("(SHOULD) recalcing Invalid relations (type 1) for ~p ~p~n",
+%%           [Site, Idx]),
+%% Tbl1 = new_db_wu:trans(Site, relation),
+%% Fun = fun() ->
+%%               [Rel] = mnesia:read(Tbl1, Idx),
+%%               #relation{infparents = Dirties} = Rel,
+%%               [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties]
+%%       end,
+%% mnesia:activity(transaction, Fun);
     ok;
 fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 3)", _Idx) -> ok;
@@ -134,7 +135,7 @@ fix3(Site, "Invalid timer", Idx) ->
     Tbl = new_db_wu:trans(Site, timer),
     Fun = fun() ->
                   mnesia:delete(Tbl, Idx, write)
-                      end,
+          end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid form", _Idx) -> ok;
 fix3(_Site, "Invalid formula (type 1)", _Idx) -> ok;

@@ -82,8 +82,8 @@ dump_tables() ->
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.31_Oct_11_8_33_38.terms",
-    ZinfFile = "zinf.31_Oct_11_8_33_38.terms",
+    VerFile = "verification.31_Oct_11_19_54_22.terms",
+    ZinfFile = "zinf.31_Oct_11_19_54_22.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
@@ -1045,6 +1045,7 @@ file(File) ->
         {ok, Stream} ->
             Res = read_terms(Stream, File, 1, [], []),
             file:close(Stream),
+            io:format("File is closed...~n"),
             Res;
         _Other ->
             {error, open}
