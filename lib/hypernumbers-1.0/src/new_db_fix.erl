@@ -91,7 +91,7 @@ uncouple_dups4([Idx| T], Master, Site) ->
     #local_obj{path = P, obj = O} = Rec,
     XRefX = #xrefX{idx = Idx, site = Site, path = binary_to_term(P), obj = O},
     %io:format("XRefX is ~p~n", [XRefX]),
-    ok = new_db_wu:write_attrs([{XRefX, [{"formula", ""}]}]),
+    ok = new_db_wu:write_attrs(XRefX, [{"formula", ""}]),
     uncouple_dups4(T, Master, Site).
 
 fix2([], _)                   -> ok;
