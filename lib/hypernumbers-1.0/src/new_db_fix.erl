@@ -97,6 +97,7 @@ uncouple_dups3({RevIdx, List}, Site) ->
 uncouple_dups4([], _Master, _Site)     -> ok;
 uncouple_dups4([Idx| T], Master, Site) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
+    Tbl2 = new_db_wu:trans(Site, relation),
     [Rec] = mnesia:read(Tbl1, Idx, write),
     #local_obj{path = P, obj = O} = Rec,
     case O of
@@ -104,7 +105,10 @@ uncouple_dups4([Idx| T], Master, Site) ->
             XRefX = #xrefX{idx = Idx, site = Site, path = binary_to_term(P),
                            obj = O},
             %io:format("XRefX is ~p~n", [XRefX]),
-            new_db_wu:write_attrs(XRefX, [{"formula", ""}]);
+            new_db_wu:write_attrs(XRefX, [{"formula", ""}]),
+            [Rel] = mnesia:read(Tbl2, Idx, write),
+            C = Rel#relation.children,
+            [new_db_api:mark_idx_dirty(Site, X) || X <- C];
         _ -> ok
     end,
     uncouple_dups4(T, Master, Site).
