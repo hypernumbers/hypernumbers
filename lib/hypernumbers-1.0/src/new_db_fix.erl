@@ -135,11 +135,17 @@ fix_dups4([Idx| T], Master, Site) ->
     #local_obj{path = P, obj = O} = Rec,
     case O of
         {cell, _} ->
-            mnesia:delete(Tbl1, Idx, write),
-            mnesia:delete(Tbl2, Idx, write),
-            mnesia:delete(Tbl3, Idx, write);
+            io:format("Cell to delete is ~p~n", [Rec]),
+            [Rel] = mnesia:read(Tbl2, Idx, write),
+            io:format("Rel to delete is ~p~n", [Rel]),
+            [Item] = mnesia:read(Tbl3, Idx, write),
+            io:format("Item to delete is ~p~n", [Item]);
+            %mnesia:delete(Tbl1, Idx, write),
+            %mnesia:delete(Tbl2, Idx, write),
+            %mnesia:delete(Tbl3, Idx, write);
         _ ->
-            mnesia:delete(Tbl1, Idx, write)
+            io:format("Non-cell to delete is ~p~n", [Rec])
+            %mnesia:delete(Tbl1, Idx, write)
     end,
     fix_dups4(T, Master, Site).
 
