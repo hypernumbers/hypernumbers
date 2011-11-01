@@ -129,8 +129,8 @@ fix_dups3({RevIdx, List}, Site) ->
 fix_dups4([], _Master, _Site)     -> ok;
 fix_dups4([Idx| T], Master, Site) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
-    Tbl2 = new_db_wu:trans(Site, item),
-    Tbl3 = new_db_wu:trans(Site, relation),
+    Tbl2 = new_db_wu:trans(Site, relation),
+    Tbl3 = new_db_wu:trans(Site, item),
     [Rec] = mnesia:read(Tbl1, Idx, write),
     #local_obj{path = P, obj = O} = Rec,
     case O of
