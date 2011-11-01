@@ -452,10 +452,10 @@ refX_to_xrefXD(#refX{site = S, path = P, obj = O}) ->
         [I]  -> #xrefX{idx = I#local_obj.idx, site = S, path = P, obj = O};
         []   -> false;
         List -> %error_logger:error_msg("local_obj table screwed up for ~p:~n~p",
-                %                    [RefX, List]),
-                L2 = lists:sort(List),
-                [I2 | _] = L2,
-                #xrefX{idx = I2#local_obj.idx, site = S, path = P, obj = O}
+            %                    [RefX, List]),
+            L2 = lists:reverse(lists:sort(List)),
+            [I2 | _] = L2,
+            #xrefX{idx = I2#local_obj.idx, site = S, path = P, obj = O}
     end.
 
 -spec refX_to_xrefX_createD(#refX{}) -> #xrefX{}.
