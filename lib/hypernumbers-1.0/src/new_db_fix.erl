@@ -150,7 +150,8 @@ fix_dups4([Idx| T], Master, Site) ->
             %mnesia:delete(Tbl2, Idx, write),
             %mnesia:delete(Tbl3, Idx, write);
         _ ->
-            io:format("Non-cell to delete is ~p~n", [Rec])
+            ok
+            %io:format("Non-cell to delete is ~p~n", [Rec])
             %mnesia:delete(Tbl1, Idx, write)
     end,
     fix_dups4(T, Master, Site).
