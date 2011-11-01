@@ -144,8 +144,8 @@ fix_dups4([Idx| T], Master, Site) ->
             [Rel] = mnesia:read(Tbl2, Idx, write),
             io:format("Rel to delete is ~p~n", [Rel]),
             [Item] = mnesia:read(Tbl3, Idx, write),
-            A = binary_to_term(Item#item.attrs),
-            io:format("Item to delete is ~p~n", [A]);
+            A = binary_to_term(Item#item.attrs);
+            %io:format("Item to delete is ~p~n", [A]);
             %mnesia:delete(Tbl1, Idx, write),
             %mnesia:delete(Tbl2, Idx, write),
             %mnesia:delete(Tbl3, Idx, write);
