@@ -869,7 +869,6 @@ write_attributes(List, PAr, VAr) ->
 %%% Internal Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 expand(List) ->
     {R, A} = lists:unzip(List),
     expand2(R, A, []).
