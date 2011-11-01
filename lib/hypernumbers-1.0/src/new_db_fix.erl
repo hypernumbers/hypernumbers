@@ -257,10 +257,13 @@ fix3(Site, "Invalid grid (type 2)", Idx) ->
 fix3(Site, "Invalid grid (type 3)", Idx) ->
     io:format("Fixing invalid grid problems~n"),
     Tbl1 = new_db_wu:trans(Site, item),
-    [Rec] = mnesia:read(Tbl1, Idx, write),
-    Attrs = binary_to_term(Rec#item.attrs),
-    io:format("Attrs is ~p~n", [Attrs]),
-    ok;
+    Fun = fun() ->
+                  mnesia:delete(Tbl1, Idx, write),
+                  [Rec] = mnesia:read(Tbl1, Idx, write),
+                  Attrs = binary_to_term(Rec#item.attrs),
+                  io:format("Attrs is ~p~n", [Attrs])
+          end,
+    mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid reverse index", _Idx) -> ok;
 fix3(_Site, "Invalid zinf (type 1)", _Idx) -> ok;
 fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.
