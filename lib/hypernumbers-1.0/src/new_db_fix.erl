@@ -231,13 +231,14 @@ fix3(_Site, "Invalid Object (page) (type 5) (old adding in css/js)",
 fix3(_Site, "Invalid Object (type 6)", _Idx) -> ok;
 fix3(Site, "Invalid types", Idx) ->
     io:format("fixing Invalid types ~p ~p~n", [Site, Idx]),
-    Tbl1 = new_db_wu:trans(Site, local_obj),
-    Fun = fun() ->
-                  [Rec] = mnesia:read(Tbl1, Idx, write),
-                  Rec2 = Rec#local_obj{type = gurl},
-                  mnesia:write(Tbl1, Rec2, write)
-          end,
-    mnesia:activity(transaction, Fun);
+    %Tbl1 = new_db_wu:trans(Site, local_obj),
+    %Fun = fun() ->
+    %              [Rec] = mnesia:read(Tbl1, Idx, write),
+    %              Rec2 = Rec#local_obj{type = gurl},
+    %              mnesia:write(Tbl1, Rec2, write)
+    %      end,
+    %mnesia:activity(transaction, Fun);
+    ok;
 fix3(Site, "Invalid grid (type 1)", Idx) ->
     io:format("deleting Invalid grid (type 1) ~p ~p~n", [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
