@@ -256,6 +256,8 @@
       <a class="separator"></a>
       <a title="Make Wiki Input" class="toolbar-item" id="inlineinput"></a>
       <a title="Make Wiki Dropdown" class="toolbar-item" id="inlinedropdown"></a>
+      <a class="separator hn_hidden"></a>
+      <a title="User Defined Functions" class="toolbar-item hn_hidden" id="hn_userdeffns"></a>
       <div id="typepanel">
           <div id="expandviews" class="expand">
           <span><em>Views</em></span>
@@ -460,6 +462,23 @@
 
     <!-- DIALOG BOXES -->
 
+    <div id="hn_makeuserdeffns" class="dialog">
+      <h2>$txt:{User Defined Functions}$</h2>
+      <a id="hn_makeuserdeffnsclose">x</a>
+      <p id="hn_makeuserdeffnsblurb">Use this dialog box to define user defined functions. (It will probably be easier if you use on a page you have created from the <em>User Defined Functions</em> page template.</p>
+      <div class="hn_uf_txt">Function Name</div>
+      <input type="text" class="hn_uf_inp" id="hn_uf_fnname" />
+      <div class="hn_uf_txt">Function Description</div>
+      <input type="text" class="hn_uf_inp" id="hn_uf_fndesc" />
+      <div id="hn_uf_params">
+        <div class="hn_uf_txt">Parameter:</div>
+        <input type="text" class="hn_uf_inp" id="hn_uf_fnpname" />
+        <input type="text" class="hn_uf_inp" id="hn_uf_fndesc" />
+        <input type="text" class="hn_uf_inp" id="hn_uf_fncell" />
+      </div>
+      <div class="hn_uf_txt">Return Value:</div>
+      <input type="text" class="hn_uf_inp" id="hn_uf_retcell" />
+    </div>
     <div id="hn_makewikiselect" class="mdialog">
         <h2>$txt:{Wiki Select Box}$</h2>
         <div>
@@ -472,7 +491,7 @@
           <input type="text" id="hn_insertwikiselect" />
           <input type="button", id="hn_wikiselectsubmit" value="Submit" />
         </div>
-        </div>
+    </div>
     <div id="insertimagedialog" class="mdialog">
       <span>Enter the URL of the image:</span>
       <form id="imageform">
@@ -499,31 +518,31 @@
 	  <input type="submit" class="button action" value="Insert Link"  />
 	  <input type="button" class="button cancel" value="Cancel" />
 	</div>
-      </form>
-    </div>
+  </form>
+  </div>
 
-    <div id="funwiz" class="dialog">
-     <h2>$txt:{Function Wizard}$ &mdash; $txt:{inserting into cell}$: <span id="cellid"></span></h2>
-     <a id="wizclose">x</a>
-     <div>
-      <div id="funwizwrapper">
-	<select id="wizcatlist"></select>
-	<div><select id="wizfunlist" size="12"></select></div>
-      </div>
-      <div id="wizselectedfun">
-	<h4 id="wizfunname"></h4>
-	<p id="wizfundesc"></p>
-          <div id="wizfunargs" class="scrollable">
-        </div>
-        <div id="wizstatus">
-         <textarea id="wiztext" readonly="readonly"></textarea>
-         <div id="wizbuttons">
-          <button id="wizcanc" type="button">Cancel</button>
-          <button id="wizdone" type="button">Done</button>
-         </div>
-        </div>
-      </div>
+  <div id="funwiz" class="dialog">
+    <h2>$txt:{Function Wizard}$ &mdash; $txt:{inserting into cell}$: <span id="cellid"></span></h2>
+    <a id="wizclose">x</a>
+    <div>
+     <div id="funwizwrapper">
+       <select id="wizcatlist"></select>
+       <div><select id="wizfunlist" size="12"></select></div>
      </div>
+  <div id="wizselectedfun">
+    <h4 id="wizfunname"></h4>
+    <p id="wizfundesc"></p>
+    <div id="wizfunargs" class="scrollable">
+  </div>
+  <div id="wizstatus">
+    <textarea id="wiztext" readonly="readonly"></textarea>
+    <div id="wizbuttons">
+      <button id="wizcanc" type="button">Cancel</button>
+      <button id="wizdone" type="button">Done</button>
+    </div>
+  </div>
+  </div>
+      </div>
      <div class="footer">
       <span id="cellx" class="datastore"></span>
       <span id="celly" class="datastore"></span>

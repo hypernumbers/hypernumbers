@@ -134,7 +134,7 @@ html,body {
     position : absolute;
 }
 
-#funwiz, #hn_makewikiselect {
+#funwiz, #hn_makewikiselect, #hn_makeuserdeffns {
     overflow           : visible;
     display            : none;
     background         : white;
@@ -899,6 +899,7 @@ a.toolbar-item {
 
 #inlineinput { background-position: -205px -104px; }
 #inlinedropdown { background-position: -228px -103px; }
+#hn_userdeffns { background-position: -228px -82px; }
 
 /* used in the tour */
 .inlineinput {
