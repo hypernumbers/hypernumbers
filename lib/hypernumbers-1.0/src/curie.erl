@@ -220,7 +220,7 @@ walk_helper_cellref(NewRef, _Ref, Params, Site, Path)	->
                 valid   ->
                     case update_cellref_offset(AST, OffsetX, OffsetY, []) of
                         {error, Msg} -> {error, Msg};
-                        Succes       -> Succes
+                        Success      -> Success
                     end
             end
     end.
@@ -244,10 +244,12 @@ update_cellref_offset([], _, _, Acc)	->
 update_cellref_offset([H | T], X, Y, Acc) when is_list(H)	->
     NewAcc = [ update_cellref_offset(H , X, Y, []) | Acc],
     update_cellref_offset(T, X, Y, NewAcc);
-update_cellref_offset([#cellref{col = {offset, OldX}, row = {offset, OldY}} = Ref | T],
+update_cellref_offset([#cellref{col = {offset, OldX},
+                                row = {offset, OldY}} = Ref | T],
                        X, Y, Acc)	->
-    update_cellref_offset(T, X, Y, [Ref#cellref{col = {offset, OldX + X},
-                                                row = {offset, OldY + Y}} | Acc]);
+    NewAcc = [Ref#cellref{col = {offset, OldX + X},
+                          row = {offset, OldY + Y}} | Acc],
+    update_cellref_offset(T, X, Y, NewAcc);
 update_cellref_offset([H | T], X, Y , Acc)	->
     update_cellref_offset(T, X, Y , [H | Acc]);
 update_cellref_offset(#cellref{col = {offset, OldX},
@@ -334,7 +336,7 @@ read_cell_attrs(Cell, Site, Path)	->
 refine_string_list([H | T], Result)	->
     case H of
         []	-> refine_string_list(T, Result);
-        _	-> refine_string_list(T, [H | Result])
+        _	  -> refine_string_list(T, [H | Result])
     end;
 refine_string_list([], Result)	->
     lists:reverse(Result).
