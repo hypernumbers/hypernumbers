@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_api_table_2011_11_03/0,
          show_ranges_2011_10_20/0,
          fix_up_row_col_revidxs_2011_10_20/0,
          do_z_parents_exist_2011_10_20/0,
@@ -64,6 +65,15 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+add_api_table_2011_11_03() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fields = record_info(fields, api),
+                   make_table(Site, api, Fields, disc_copies)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 show_ranges_2011_10_20() ->
     Sites = hn_setup:get_sites(),

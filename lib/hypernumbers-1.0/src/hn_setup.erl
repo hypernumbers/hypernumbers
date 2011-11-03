@@ -196,7 +196,8 @@ create_site_tables(Site, Type)->
 -define(TBL(N, T, I, S), {N, record_info(fields, N), T, I, S}).
 tables() ->
     [
-     ?TBL(kvstore       , set, [],                disc_only_copies),
+     ?TBL(api,            set, [],                disc_copies),
+     ?TBL(kvstore,        set, [],                disc_only_copies),
      ?TBL(dirty_for_zinf, set, [],                disc_copies),
      ?TBL(dirty_zinf,     set, [],                disc_copies),
      ?TBL(dirty_queue,    set, [],                disc_copies),
