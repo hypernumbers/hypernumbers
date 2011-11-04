@@ -168,11 +168,11 @@ rl(flatten_as_str, {range,X}) ->
 rl(flatten_as_str, {array,[X]}) ->
     {list, col(X, [ignore_blanks, cast_str, cast_num, ignore_strings])};
 
-rl(flatten, {range,X}) ->
+rl(flatten, {range, X}) ->
     {list, flat(X, [])};
-rl(flatten, {array,X}) ->
+rl(flatten, {array, X}) ->
     {list, flat(X,[])};
-rl(flatten, {list,X}) ->
+rl(flatten, {list, X}) ->
     {list, X};
 
 rl({flatten, range}, {range,X}) ->
@@ -253,7 +253,7 @@ rl(fetch_z_all, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
     {_Paths, Vs} = lists:unzip(L),
     {range, [Vs]};
 
-rl(fetch_z_no_errs, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
+rl(fetch_z_no_errs, Ref) when ?is_zcellref(Ref) orelse ?is_zrangeref(Ref) ->
     case muin:fetch(Ref) of
         {zeds, L, _, []}   -> {_Paths, Vs} = lists:unzip(L),
                               {range, [Vs]};
