@@ -13,6 +13,7 @@
                   format_util,
                   generate_help,
                   gui_generator_sup,
+                  hmac_api_lib,
                   hn_archive,
                   hn_db_admin,
                   hn_db_upgrade,
