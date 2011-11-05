@@ -248,14 +248,22 @@ rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
 rl(fetch_z_debug, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
     muin:fetch(Ref);
 
-rl(fetch_z_all, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
+rl(fetch_z_all, Ref) when ?is_zcellref(Ref) orelse ?is_zrangeref(Ref)->
     {zeds, L, _, _} = muin:fetch(Ref),
-    {_Paths, Vs} = lists:unzip(L),
+    L2 = case ?is_zrangeref(Ref) of
+             true  -> lists:flatten(L);
+             false -> L
+         end,
+    {_Paths, Vs} = lists:unzip(L2),
     {range, [Vs]};
 
 rl(fetch_z_no_errs, Ref) when ?is_zcellref(Ref) orelse ?is_zrangeref(Ref) ->
     case muin:fetch(Ref) of
-        {zeds, L, _, []}   -> {_Paths, Vs} = lists:unzip(L),
+        {zeds, L, _, []}   -> L2 = case ?is_zrangeref(Ref) of
+                                       true  -> lists:flatten(L);
+                                       false -> L
+                                   end,
+                              {_Paths, Vs} = lists:unzip(L2),
                               {range, [Vs]};
         {zeds, _, _, Errs} -> {error, _, Err} = hd(lists:reverse(Errs)),
                               {range, [Err]}

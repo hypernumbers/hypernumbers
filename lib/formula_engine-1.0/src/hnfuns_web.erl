@@ -7,6 +7,7 @@
          'horizontal.line.'/1,
          'vertical.line.'/1,
          include/1,
+         'ztable.'/1,
          'table.'/1,
          %background/1,
          link/1,
@@ -278,6 +279,44 @@ img([Src]) ->
 %    muin_collect:col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
 %        fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
+'ztable.'([W, H, Headers, Z]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    funs_util:check_size(Width, Height),
+    Hds = ["Links" | typechecks:html_box_contents([Headers])],
+    [Z2] = typechecks:std_strs([Z]),
+    put(recompile, true),
+    ZRef = case muin:parse(Z2, {?mx, ?my}) of
+               {ok, AST} ->
+                   case muin:external_eval(AST) of
+                      X when ?is_zcellref(X);
+                             ?is_zrangeref(X) -> X;
+                       _Else                  -> ?ERRVAL_REF
+                   end;
+              {error, syntax_error} -> ?ERRVAL_REF
+          end,
+    Rules = [fetch_z_debug],
+    Passes = [],
+    [{zeds, Ranges, _, _}] = muin_collect:col([ZRef], Rules, Passes),
+    Ranges2 = fix_upzrange(Ranges, []),
+    Cols1 = length(Hds),
+    Cols2 = length(hd(Ranges2)),
+    case Cols1 of
+        Cols2 -> table_(Width, Height, [Hds | Ranges2], -99);
+        _     -> ?ERRVAL_VAL
+    end.
+
+fix_upzrange([], Acc) -> lists:reverse(Acc);
+fix_upzrange([H | T], Acc) ->
+    {Paths, Vals} = lists:unzip(H),
+    {Path, _} = hd(Paths),
+    Vals2 = lists:reverse(lists:foldl(fun fix_upz2/2, [], Vals)),
+    NewAcc = ["<a href=\"" ++ Path ++"\">Link</a>" | Vals2],
+    fix_upzrange(T, [NewAcc | Acc]).
+
+fix_upz2({errval, Err}, Acc) -> [atom_to_list(Err) | Acc];
+fix_upz2(X, Acc)             -> [tconv:to_s(X) | Acc].
+
 'table.'([W, H, Ref]) ->
     'table.'([W, H, Ref, -99]); % negative number means no sorting
 'table.'([W, H, #rangeref{height = Len} = Ref, Sort]) ->
@@ -359,9 +398,9 @@ get_preview(Width, Height) ->
 
 has_circref({range, List}) -> has_c1(List).
 
-has_c1([])                                -> false;
+has_c1([])                                 -> false;
 has_c1([[{errval, '#CIRCREF!'} , _] | _T]) -> true;
-has_c1([_H | T])                          -> has_c1(T).
+has_c1([_H | T])                           -> has_c1(T).
 
 table_(W, H, [THead | Range], Sort) ->
     Id = "tbl_" ++ muin_util:create_name(),
@@ -372,10 +411,8 @@ table_(W, H, [THead | Range], Sort) ->
 
     Rows = [ ["<tr>", [ ["<td>", Cell,"</td>"] || Cell <- Row ],"</tr>"]
               || Row <- Range ],
-
-    Script = ["$(\"#", Id,
-              "\").tablesorter({headers: { sortList:[[",
-              integer_to_list(Sort), ",0]]}});"],
+    Script = ["$(\".tablesorter\").tablesorter({ sortList:[[",
+              integer_to_list(Sort), ",0]]});"],
     Js = "/hypernumbers/jquery.tablesorter.min.js",
     Script2 = lists:flatten(Script),
     Incs = #incs{js = [Js], js_reload = [Script2]},

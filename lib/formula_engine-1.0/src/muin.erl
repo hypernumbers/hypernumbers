@@ -278,6 +278,9 @@ transform("link.box." ++ R, Args) ->
 transform("table." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("table."), [W , H | Args]};
+transform("ztable." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("ztable."), [W , H | Args]};
 % single parameter stuff
 transform("tim.headline." ++ R, Args) ->
     {list_to_atom("tim.headline."), [R | Args]};
@@ -606,12 +609,21 @@ fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     NewInfinites = ordsets:add_element({local, XRefX}, Infinites),
     put(infinite, NewInfinites),
     {zeds, Vals, NoMatch, Err};
-% pinch it off from working
-% error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
-% ?ERRVAL_ERR;
-fetch(Ref) when ?is_zrangeref(Ref) ->
-    error_logger:info_msg("(from muin) Somebody tried a z-order rangeref~n"),
-    ?ERRVAL_ERR;
+fetch(#zrangeref{zpath = Z, rangeref = R} = ZR)
+  when is_record(R, rangeref) ->
+    {zpath, ZList} = Z,
+    ZP = make_zpath(ZList, []),
+    NewPath = muin_util:walk_zpath(?mpath, ZList),
+    PageTree = page_srv:get_pages(?msite),
+    {MPaths, NoMatch, Err} = match(?msite, PageTree, NewPath),
+    {XRefXs, Ranges} = fetch_ranges(MPaths, ZP, R),
+    Infinites = get(infinite),
+    Fun = fun(X, Acc) ->
+                  ordsets:add_element({local, X}, Acc)
+          end,
+    NewInfinites = lists:foldl(Fun, Infinites, lists:flatten(XRefXs)),
+    put(infinite, NewInfinites),
+    {zeds, Ranges, NoMatch, Err};
 fetch(N) when ?is_namedexpr(N) ->
     ?ERRVAL_NAME;
 fetch(#cellref{col = Col, row = Row, path = Path}) ->
@@ -989,6 +1001,26 @@ zeval2(XRefX, Toks) ->
     put(retvals, {Errs, ZRetVals ++ OrigRetVals}),
     Return.
 
+fetch_ranges(Paths, ZPath, Range) ->
+    ExpRange = expand(Range),
+    fetch_r1(Paths, ExpRange, ZPath, [], []).
+
+fetch_r1([], _Ranges, _ZPath, Acc1, Acc2) ->
+    {lists:reverse(Acc1), lists:reverse(Acc2)};
+fetch_r1([H | T], Ranges, ZPath, Acc1, Acc2) ->
+    Path = hn_util:list_to_path(H),
+    {NewAcc1, NewAcc2} = fetch_r2(Ranges, Path, ZPath, [], []),
+    fetch_r1(T, Ranges, ZPath, [NewAcc1 | Acc1], [NewAcc2 | Acc2]).
+
+fetch_r2([], _Path, _ZPath, Acc1, Acc2) ->
+    {lists:reverse(Acc1), lists:reverse(Acc2)};
+fetch_r2([{cell, {X, Y}} | T], Path, ZPath, Acc1, Acc2) ->
+    Cell = tconv:to_b26(X) ++ integer_to_list(Y),
+    NewAcc1 = make_inf_xrefX(ZPath, Cell),
+    URL = {Path, Cell},
+    NewAcc2 = do_cell(Path, Y, X, infinite),
+    fetch_r2(T, Path, ZPath, [NewAcc1 | Acc1], [{URL, NewAcc2} | Acc2]).
+
 fetch_vals(Paths, Row, Col) -> fetch_v1(Paths, Row, Col, []).
 
 fetch_v1([], _Row, _Col, Acc) -> lists:reverse(Acc);
@@ -1073,3 +1105,28 @@ test_xfl() ->
          end,
     [Fun(X) || X <- Exprs],
     ok.
+
+expand(#rangeref{tl = {{_, C1}, {_, R1}}, br = {{_, C2}, {_, R2}}}) ->
+    X = ?mx,
+    Y = ?my,
+    X1 = X + C1,
+    Y1 = Y + R1,
+    X2 = X + C2,
+    Y2 = Y + R2,
+    expand2(X1, X1, Y1, X2, Y2, []).
+
+expand2(_, X, Y, X, Y, Acc) ->
+    lists:reverse([{cell, {X, Y}} | Acc]);
+expand2(StartX, X, Y1, X, Y2, Acc) ->
+    NewAcc = [{cell, {X, Y1}} | Acc],
+    expand2(StartX, StartX, Y1 + 1, X, Y2, NewAcc);
+expand2(StartX, X1, Y1, X2, Y2, Acc) ->
+    NewAcc = [{cell, {X1, Y1}} | Acc],
+    expand2(StartX, X1 + 1, Y1, X2, Y2, NewAcc).
+
+make_zpath([], Acc) ->
+    hn_util:list_to_path(lists:reverse(Acc));
+make_zpath([{seg, Seg} | T], Acc) ->
+    make_zpath(T, [Seg | Acc]);
+make_zpath([{zseg, _, ZSeg} | T], Acc) ->
+    make_zpath(T, [ZSeg | Acc]).
