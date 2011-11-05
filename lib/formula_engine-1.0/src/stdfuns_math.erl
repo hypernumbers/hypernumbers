@@ -242,7 +242,9 @@ sumz(List) -> zsum(List).
 
 zsum(List) ->
     put(recompile, true),
+    io:format("List is ~p~n", [List]),
     Strs = typechecks:std_strs(List),
+    io:format("Strs is ~p~n", [Strs]),
     Zs = zsum_(Strs, []),
     muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
                           {cast, bool, num}, fetch, fetch_z_no_errs,
@@ -254,15 +256,15 @@ zsum(List) ->
 zsum_([], Acc) -> Acc;
 zsum_([H | T], Acc) ->
     NewAcc = case muin:parse(H, {?mx, ?my}) of
-              {ok, Ast} ->
-                  case muin:external_eval(Ast) of
-                      X when ?is_cellref(X);
-                             ?is_rangeref(X);
-                             ?is_zcellref(X) -> X;
-                      _Else                  -> ?ERRVAL_REF
-                  end;
-              {error, syntax_error} -> ?ERRVAL_REF
-          end,
+                 {ok, Ast} ->
+                     case muin:external_eval(Ast) of
+                         X when ?is_cellref(X);
+                                ?is_rangeref(X);
+                                ?is_zcellref(X) -> X;
+                         _Else                  -> ?ERRVAL_REF
+                     end;
+                 {error, syntax_error} -> ?ERRVAL_REF
+             end,
     zsum_(T, [NewAcc | Acc]).
 
 sum(Vs) ->
