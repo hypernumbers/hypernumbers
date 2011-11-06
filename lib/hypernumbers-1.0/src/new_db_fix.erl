@@ -146,15 +146,15 @@ fix_dups4([Idx| T], Master, Site) ->
             %[Item] = mnesia:read(Tbl3, Idx, write),
             %A = binary_to_term(Item#item.attrs),
             %io:format("Item to delete is ~p~n", [A]);
-            mnesia:delete(Tbl1, Idx, write),
-            mnesia:delete(Tbl2, Idx, write),
-            mnesia:delete(Tbl3, Idx, write);
+            ok = mnesia:delete(Tbl1, Idx, write),
+            ok = mnesia:delete(Tbl2, Idx, write),
+            ok = mnesia:delete(Tbl3, Idx, write);
         _ ->
             %io:format("Non-cell to delete is ~p~n", [Rec])
-            mnesia:delete(Tbl1, Idx, write),
+            ok = mnesia:delete(Tbl1, Idx, write),
             case mnesia:read(Tbl3, Idx, write) of
                 []   -> ok;
-                [_I] -> mnesia:delete(Tbl3, Idx, write)
+                [_I] -> ok = mnesia:delete(Tbl3, Idx, write)
             end
     end,
     fix_dups4(T, Master, Site).
@@ -168,8 +168,8 @@ fix3(Site, "Invalid tables (type 1)", Idx) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Tbl2 = new_db_wu:trans(Site, relation),
     Fun = fun() ->
-                  mnesia:delete(Tbl1, Idx, write),
-                  mnesia:delete(Tbl2, Idx, write)
+                  ok = mnesia:delete(Tbl1, Idx, write),
+                  ok = mnesia:delete(Tbl2, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid tables (type 2) (don't fix)", _Idx) -> ok;
@@ -200,7 +200,7 @@ fix3(Site, "Invalid timer", Idx) ->
     io:format("Deleting ~p ~p Invalid timer~n", [Site, Idx]),
     Tbl = new_db_wu:trans(Site, timer),
     Fun = fun() ->
-                  mnesia:delete(Tbl, Idx, write)
+                  ok = mnesia:delete(Tbl, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid form", _Idx) -> ok;
@@ -211,18 +211,18 @@ fix3(Site, "Invalid formula (type 2)", Idx) ->
     Tbl2 = new_db_wu:trans(Site, local_obj),
     Tbl3 = new_db_wu:trans(Site, relation),
     Fun = fun() ->
-                  mnesia:delete(Tbl1, Idx, write),
-                  mnesia:delete(Tbl2, Idx, write),
-                  mnesia:delete(Tbl3, Idx, write)
+                  ok = mnesia:delete(Tbl1, Idx, write),
+                  ok = mnesia:delete(Tbl2, Idx, write),
+                  ok = mnesia:delete(Tbl3, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid Object (cell) (type 1)", _Idx) -> ok;
 fix3(Site, "Invalid Object (cell) (type 2)", Idx) ->
-    io:format("deleteing Invalid Object (cell) (type 2) ~p ~p~n",
+    io:format("deleting Invalid Object (cell) (type 2) ~p ~p~n",
               [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Fun = fun() ->
-                  mnesia:delete(Tbl1, Idx, write)
+                  ok = mnesia:delete(Tbl1, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid Object (row) (type 3)", _Idx) -> ok;
@@ -236,7 +236,7 @@ fix3(Site, "Invalid types", Idx) ->
     Fun = fun() ->
                   [Rec] = mnesia:read(Tbl1, Idx, write),
                   Rec2 = Rec#local_obj{type = gurl},
-                  mnesia:write(Tbl1, Rec2, write)
+                  ok = mnesia:write(Tbl1, Rec2, write)
           end,
     mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid grid (type 1)", Idx) ->
@@ -244,15 +244,15 @@ fix3(Site, "Invalid grid (type 1)", Idx) ->
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Tbl2 = new_db_wu:trans(Site, item),
     Fun = fun() ->
-                  mnesia:delete(Tbl1, Idx, write),
-                  mnesia:delete(Tbl2, Idx, write)
+                  ok = mnesia:delete(Tbl1, Idx, write),
+                  ok = mnesia:delete(Tbl2, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid grid (type 2)", Idx) ->
     io:format("deleting Invalid grid (type 2) ~p ~p~n", [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Fun = fun() ->
-                  mnesia:delete(Tbl1, Idx, write)
+                  ok = mnesia:delete(Tbl1, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid grid (type 3)", Idx) ->
