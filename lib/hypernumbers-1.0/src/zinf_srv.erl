@@ -498,13 +498,16 @@ dump_f([H | T], Path, Acc) ->
                   RevIdx = P2 ++ Ref,
                   RevB = term_to_binary(RevIdx),
                   Pattern = {local_obj, '_', '_', '_', '_', RevB},
-                  [Rec] =  mnesia:index_match_object(Tbl, Pattern, 6, read),
-                  Rec#local_obj.idx
+                  Recs =  mnesia:index_match_object(Tbl, Pattern, 6, read),
+                  [X#local_obj.idx || X <- Recs]
           end,
-    Idx = mnesia:activity(transaction, Fun),
-    String = io_lib:format("{~p,~p,~p,~p}.",
-                           [Site, Idx, P2 ++ Ref, List]),
-    dump_string(String, File),
+    Idxs = mnesia:activity(transaction, Fun),
+    Fun = fun(X) ->
+                  String = io_lib:format("{~p,~p,~p,~p}.",
+                                         [Site, X, P2 ++ Ref, List]),
+                  dump_string(String, File)
+          end,
+    [Fun(X) || X <- Idxs],
     dump_f(T, Path, Acc).
 
 verify2([], _Path, Acc)     -> Acc;
