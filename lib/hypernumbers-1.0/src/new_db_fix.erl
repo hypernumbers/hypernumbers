@@ -177,6 +177,7 @@ fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) ->
     ok;
 % fixing invalid tables type 4 is handled by Invalid Object (cell) (type 2)
 fix3(_Site, "Invalid tables (type 4)", _Idx) -> ok;
+fix3(_Site, "Invalid tables (type 5)", _Idx) -> ok;
 fix3(Site, "Invalid relations (type 1)", Idx) ->
 %% io:format("(SHOULD) recalcing Invalid relations (type 1) for ~p ~p~n",
 %%           [Site, Idx]),

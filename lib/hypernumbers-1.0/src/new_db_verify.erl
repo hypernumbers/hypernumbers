@@ -82,8 +82,8 @@ dump_tables() ->
 
 read_verification() ->
     Dir = "/home/gordon/hypernumbers/priv/verification/",
-    VerFile = "verification.01_Nov_11_11_33_52.terms",
-    ZinfFile = "zinf.01_Nov_11_11_33_52.terms",
+    VerFile = "verification.05_Nov_11_13_00_26.terms",
+    ZinfFile = "zinf.05_Nov_11_13_00_26.terms",
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
@@ -102,9 +102,8 @@ read_verification(Dir, VerFile, ZinfFile) ->
     [_Prefix, Stamp, FileType] = string:tokens(VerFile, "."),
     DataFile = "verification_data" ++ "." ++ Stamp ++ "." ++ FileType,
     garbage_collect(self()),
-    Terms = make_terms(Data2, []),
     delete_file(Dir ++ DataFile),
-    ok = file:write_file(Dir ++ DataFile, Terms),
+    ok = write_terms(Data2, Dir ++ DataFile),
     io:format("Written out processed data to ~p~n", [DataFile]),
     garbage_collect(self()),
     FileName = "errors."  ++ Stamp ++ "." ++ FileType,
@@ -364,8 +363,12 @@ verify_tables(Site, FileId, {Idx, #ver{relation = null,
     Str = "Invalid tables (type 3) (old adding in css/js)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
-verify_tables(Site, FileId, {Idx, #ver{local_obj = exists} = V}, Acc) ->
+verify_tables(Site, FileId, {Idx, #ver{local_obj = exists, type = url} = V}, Acc) ->
     Str = "Invalid tables (type 4)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_tables(Site, FileId, {Idx, #ver{local_obj = exists, type = gurl} = V}, Acc) ->
+    Str = "Invalid tables (type 5)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_tables(_Site, _FileId, {_Idx, _H}, Acc) ->
@@ -467,6 +470,7 @@ verify_formula(_Site, _FileId, {_Idx, #ver{local_obj = exists,
                                            obj = {{cell, _}, _},
                                            type = url}}, Acc) ->
     Acc;
+% it is a formula but has a type 'gurl' not a type 'url'
 verify_formula(Site, FileId, {Idx, #ver{relation = exists,
                                         local_obj = exists,
                                         item = exists,
@@ -1104,11 +1108,20 @@ fix_up([H | T], Acc) ->
 snip([{'>', N} | T], Acc) -> {T, [{atom, N, removed} | Acc]};
 snip([_H | T], Acc)       -> snip(T, Acc).
 
-make_terms([], Acc) ->
-    lists:flatten(lists:reverse(Acc));
-make_terms([H | T], Acc) ->
-    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
-    make_terms(T, [NewAcc | Acc]).
+write_terms(Data, File) ->
+        _Return = filelib:ensure_dir(File),
+    case file:open(File, [append]) of
+        {ok, Id} ->
+            Return = write_t2(Data, Id),
+            file:close(Id),
+            Return;
+        _ ->
+            error
+    end.
+
+write_t2([], _Id)     -> ok;
+write_t2([H | T], Id) -> io:fwrite(Id, "~p.~n", [H]),
+                         write_t2(T, Id).
 
 delete_file(File) ->
     case file:delete(File) of
