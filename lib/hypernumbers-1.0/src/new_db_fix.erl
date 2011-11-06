@@ -136,21 +136,13 @@ fix_dups4([Idx| T], Master, Site) ->
     Tbl2 = new_db_wu:trans(Site, relation),
     Tbl3 = new_db_wu:trans(Site, item),
     [Rec] = mnesia:read(Tbl1, Idx, write),
-    #local_obj{path = P, obj = O} = Rec,
+    #local_obj{obj = O} = Rec,
     case O of
         {cell, _} ->
-            %io:format("Cell to delete is ~p ~p ~p~n",
-            %          [Site, binary_to_term(P), O]),
-            %[Rel] = mnesia:read(Tbl2, Idx, write),
-            %io:format("Rel to delete is ~p~n", [Rel]),
-            %[Item] = mnesia:read(Tbl3, Idx, write),
-            %A = binary_to_term(Item#item.attrs),
-            %io:format("Item to delete is ~p~n", [A]);
             ok = mnesia:delete(Tbl1, Idx, write),
             ok = mnesia:delete(Tbl2, Idx, write),
             ok = mnesia:delete(Tbl3, Idx, write);
         _ ->
-            %io:format("Non-cell to delete is ~p~n", [Rec])
             ok = mnesia:delete(Tbl1, Idx, write),
             case mnesia:read(Tbl3, Idx, write) of
                 []   -> ok;
@@ -179,16 +171,15 @@ fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) ->
 fix3(_Site, "Invalid tables (type 4)", _Idx) -> ok;
 fix3(_Site, "Invalid tables (type 5)", _Idx) -> ok;
 fix3(Site, "Invalid relations (type 1)", Idx) ->
-%% io:format("(SHOULD) recalcing Invalid relations (type 1) for ~p ~p~n",
-%%           [Site, Idx]),
-%% Tbl1 = new_db_wu:trans(Site, relation),
-%% Fun = fun() ->
-%%               [Rel] = mnesia:read(Tbl1, Idx),
-%%               #relation{infparents = Dirties} = Rel,
-%%               [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties]
-%%       end,
-%% mnesia:activity(transaction, Fun);
-    ok;
+    io:format("(SHOULD) recalcing Invalid relations (type 1) for ~p ~p~n",
+           [Site, Idx]),
+    Tbl1 = new_db_wu:trans(Site, relation),
+    Fun = fun() ->
+               [Rel] = mnesia:read(Tbl1, Idx),
+               #relation{infparents = Dirties} = Rel,
+               [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties]
+       end,
+    mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid include (type 1)", _Idx) -> ok;
@@ -255,8 +246,7 @@ fix3(Site, "Invalid grid (type 2)", Idx) ->
                   ok = mnesia:delete(Tbl1, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
-fix3(Site, "Invalid grid (type 3)", Idx) ->
-    ok;
+fix3(_Site, "Invalid grid (type 3)", _Idx) -> ok;
 fix3(_Site, "Invalid reverse index", _Idx) -> ok;
 fix3(_Site, "Invalid zinf (type 1)", _Idx) -> ok;
 fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.
