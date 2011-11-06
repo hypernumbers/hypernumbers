@@ -505,12 +505,12 @@ dump_f([H | T], Path, Acc) ->
                   end
           end,
     Idxs = mnesia:activity(transaction, Fun),
-    Fun = fun(X) ->
+    Fun2 = fun(X) ->
                   String = io_lib:format("{~p,~p,~p,~p}.",
                                          [Site, X, P2 ++ Ref, List]),
                   dump_string(String, File)
           end,
-    [Fun(X) || X <- Idxs],
+    [Fun2(X) || X <- Idxs],
     dump_f(T, Path, Acc).
 
 verify2([], _Path, Acc)     -> Acc;
