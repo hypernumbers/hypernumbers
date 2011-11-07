@@ -57,7 +57,7 @@
          mark_these_idxs_dirtyD/3,
          mark_dirty_for_inclD/2,
          idx_to_xrefXD/2,
-         get_cell_for_muin/2,
+         get_cell_for_muin/3,
          delete_cells/3,
          shift_cellsD/5,
          shift_rows_and_columnsD/4,
@@ -1072,18 +1072,20 @@ del_a1([H | T], L, Acc)             ->
         false -> del_a1(T, L, [H | Acc])
     end.
 
--spec get_cell_for_muin(#refX{}, [finite | infinite]) -> {any(), any(), any()}.
+-spec get_cell_for_muin(#refX{}, [finite | infinite], list()) ->
+    {any(), any(), any()}.
 %% @doc this function is called by muin during recalculation and should
 %%      not be used for any other purpose
 %% takes a  #refX{} and not an xrefX{} because it is spat out of the compiler
 %% and I don't know what the idx is, or if it exists yet
-get_cell_for_muin(#refX{} = RefX, Type) ->
+get_cell_for_muin(#refX{} = RefX, Type, ValType)
+  when ValType == "value" orelse ValType == "__rawvalue" ->
     XRefX = refX_to_xrefX_createD(RefX),
     Attrs = case read_ref(XRefX, inside, write) of
                              [{XRefX, A}] -> A;
                              []           -> orddict:new()
             end,
-    Value = case orddict:find("__rawvalue", Attrs) of
+    Value = case orddict:find(ValType, Attrs) of
                 {ok, {datetime, _, [N]}} ->
                     muin_date:from_gregorian_seconds(N);
                 {ok, V} ->

@@ -84,7 +84,7 @@ casts(Val, Type, [die_on_err | Rules]) ->
 casts(Val, Type, [fetch_refs | Rules]) when ?is_namedexpr(Val) ->
     casts(?ERRVAL_NAME, Type, Rules);
 casts(Ref, Type, [fetch_refs | Rules]) when ?is_cellref(Ref) ->
-    casts(muin:fetch(Ref), Type, Rules);
+    casts(muin:fetch(Ref, "__rawvalue"), Type, Rules);
 casts([Fun | Args], Type, [fetch_refs | Rules]) when ?is_fn(Fun) ->
     casts(muin:external_eval([Fun | Args]), Type, Rules);
 casts(Val, Type, [fetch_refs | Rules])  ->
@@ -94,7 +94,7 @@ casts(Val, Type, [fetch_refs | Rules])  ->
 casts(Val, Type, [fetch_refs_as_bool | Rules]) when ?is_namedexpr(Val) ->
     casts(?ERRVAL_NAME, Type, Rules);
 casts(Ref, Type, [fetch_refs_as_bool | Rules]) when ?is_cellref(Ref) ->
-    Val = case muin:fetch(Ref) of
+    Val = case muin:fetch(Ref, "__rawvalue") of
               X when X == "0"; X == false; X == "FALSE" -> false;
               blank -> blank;
               _Else -> true

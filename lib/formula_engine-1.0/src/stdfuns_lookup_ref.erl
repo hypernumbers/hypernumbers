@@ -219,7 +219,7 @@ match([V1, V2, V3]) ->
     if ?is_area(V2) ->
             match1(V1, area_util:to_list(V2), MatchType);
        ?is_rangeref(V2) ->
-            {range, DList} = muin:fetch(V2),
+            {range, DList} = muin:fetch(V2, "__rawvalue"),
             match1(V1, lists:concat(DList), MatchType);
        true ->
             ?ERR_VAL
@@ -256,7 +256,7 @@ vlookup([V, A, I]) ->
 vlookup([V, IA, I0, IB]) ->
 
     I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
-    A = if ?is_rangeref(IA) -> muin:fetch(IA);
+    A = if ?is_rangeref(IA) -> muin:fetch(IA, "__rawvalue");
            true             -> IA
         end,
     B = ?bool(IB, [cast_numbers, cast_dates, cast_blanks, ban_strings]),
@@ -285,7 +285,7 @@ hlookup([V, A, I]) ->
 hlookup([V, IA, I0, B]) ->
 
     I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
-    A = if ?is_rangeref(IA) -> muin:fetch(IA);
+    A = if ?is_rangeref(IA) -> muin:fetch(IA, "__rawvalue");
            true             -> IA
         end,
 

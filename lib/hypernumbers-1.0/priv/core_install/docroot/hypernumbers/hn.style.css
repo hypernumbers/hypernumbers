@@ -19,7 +19,6 @@ table {
     height : 100%;
 }
 
-
 h1 { font-size: 220%; }
 h2 { font-size: 180%; }
 h3 { font-size: 160%; }
@@ -321,6 +320,12 @@ label {
 #forgotten_pwd {
     margin-left: 5px;
 }
+
+.hn_overflow {
+               min-height: 100%;
+               overflow: auto;
+               clear: both;
+ }
 
 .inlineform {
     background: url(/hypernumbers/sprite.png) -64px -1px;

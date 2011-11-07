@@ -280,11 +280,21 @@ img([Src]) ->
 %        fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
 'ztable.'([W, H, Headers, Z]) ->
+    'ztable.'([W, H, Headers, Z, true]);
+'ztable.'([W, H, Headers, Z, HasLink]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     funs_util:check_size(Width, Height),
-    Hds = ["Links" | typechecks:html_box_contents([Headers])],
+    Hds = case HasLink of
+              true  -> ["Links" | typechecks:html_box_contents([Headers])];
+              false -> typechecks:html_box_contents([Headers])
+          end,
     [Z2] = typechecks:std_strs([Z]),
+    case HasLink of
+        true  -> ok;
+        false -> ok;
+        _     -> ?ERR_VAL
+    end,
     put(recompile, true),
     ZRef = case muin:parse(Z2, {?mx, ?my}) of
                {ok, AST} ->
@@ -295,26 +305,30 @@ img([Src]) ->
                    end;
               {error, syntax_error} -> ?ERRVAL_REF
           end,
-    Rules = [fetch_z_debug],
+    Rules = [fetch_ztable],
     Passes = [],
     [{zeds, Ranges, _, _}] = muin_collect:col([ZRef], Rules, Passes),
-    Ranges2 = fix_upzrange(Ranges, []),
+    Ranges2 = fix_upzrange(Ranges, HasLink, []),
     Cols1 = length(Hds),
     Cols2 = length(hd(Ranges2)),
     case Cols1 of
-        Cols2 -> table_(Width, Height, [Hds | Ranges2], -99);
+        Cols2 -> table_("ZTable ", Width, Height, [Hds | Ranges2], -99);
         _     -> ?ERRVAL_VAL
     end.
 
-fix_upzrange([], Acc) -> lists:reverse(Acc);
-fix_upzrange([H | T], Acc) ->
+fix_upzrange([], _HasLink, Acc) -> lists:reverse(Acc);
+fix_upzrange([H | T], HasLink, Acc) ->
     {Paths, Vals} = lists:unzip(H),
     {Path, _} = hd(Paths),
     Vals2 = lists:reverse(lists:foldl(fun fix_upz2/2, [], Vals)),
-    NewAcc = ["<a href=\"" ++ Path ++"\">Link</a>" | Vals2],
-    fix_upzrange(T, [NewAcc | Acc]).
+    NewAcc = case HasLink of
+                 true  -> ["<a href=\"" ++ Path ++"\">Link</a>" | Vals2];
+                 false -> Vals2
+             end,
+   fix_upzrange(T, HasLink, [NewAcc | Acc]).
 
 fix_upz2({errval, Err}, Acc) -> [atom_to_list(Err) | Acc];
+fix_upz2(blank, Acc)         -> [""| Acc];
 fix_upz2(X, Acc)             -> [tconv:to_s(X) | Acc].
 
 'table.'([W, H, Ref]) ->
@@ -331,7 +345,7 @@ table2(W, H, Len, Ref, Sort) when ?is_rangeref(Ref) ->
     funs_util:check_size(Width, Height),
     % DIRTY HACK. This forces muin to setup dependencies, and checks
     %% for circ errors.
-    Ret = muin:fetch(Ref),
+    Ret = muin:fetch(Ref, "__rawvalue"), % this can be made to work properly now
     case has_circref(Ret) of
         true  -> {errval, '#CIRCREF'};
         false ->
@@ -339,7 +353,7 @@ table2(W, H, Len, Ref, Sort) when ?is_rangeref(Ref) ->
             SubLen = trunc(length(Ref2)/Len),
             Ref3 = make_ref3(Ref2, SubLen, []),
             [Sort2] = typechecks:std_ints([Sort]),
-            table_(Width, Height, Ref3, Sort2 - 1) % users sort from 1 not 0
+            table_("Table ", Width, Height, Ref3, Sort2 - 1) % users sort from 1 not 0
     end.
 
 %background([Url]) -> background([Url, ""]);
@@ -359,7 +373,7 @@ include([CellRef]) when ?is_cellref(CellRef) ->
 include([RelRan]) when ?is_rangeref(RelRan) ->
     %% DIRTY HACK. This forces muin to setup dependencies, and checks
     %% for circ errors.
-    Ret = muin:fetch(RelRan),
+    Ret = muin:fetch(RelRan, "__rawvalue"),
     case has_circref(Ret) of
         true  -> {errval, '#CIRCREF'};
         false ->
@@ -402,7 +416,7 @@ has_c1([])                                 -> false;
 has_c1([[{errval, '#CIRCREF!'} , _] | _T]) -> true;
 has_c1([_H | T])                           -> has_c1(T).
 
-table_(W, H, [THead | Range], Sort) ->
+table_(Title, W, H, [THead | Range], Sort) ->
     Id = "tbl_" ++ muin_util:create_name(),
 
     Head = ["<thead><tr>",
@@ -411,19 +425,26 @@ table_(W, H, [THead | Range], Sort) ->
 
     Rows = [ ["<tr>", [ ["<td>", Cell,"</td>"] || Cell <- Row ],"</tr>"]
               || Row <- Range ],
-    Script = ["$(\".tablesorter\").tablesorter({ sortList:[[",
-              integer_to_list(Sort), ",0]]});"],
+    Script = if
+                 Sort <  0 ->
+                     ["$(\".tablesorter\").tablesorter();",
+                     "$(\".tablesorter\").parent().css('overflow', 'auto');"];
+                 Sort >= 0 ->
+                     ["$(\".tablesorter\").tablesorter({ sortList:[[",
+                      integer_to_list(Sort), ",0]]});",
+                      "$(\".tablesorter\").parent().css('overflow', 'auto');"]
+             end,
     Js = "/hypernumbers/jquery.tablesorter.min.js",
     Script2 = lists:flatten(Script),
     Incs = #incs{js = [Js], js_reload = [Script2]},
     HTML = lists:flatten(["<table id='", Id,"' class='tablesorter'>",
                           Head, Rows, "</table>"]),
-    {include, {"Table ", W, H, Incs}, HTML}.
+    {include, {Title, W, H, Incs}, HTML}.
 
 make_ref3([], _SubLen, Acc) -> lists:reverse(Acc);
 make_ref3(List, SubLen, Acc) ->
     {Row, Rest} = lists:split(SubLen, List),
-    make_ref3(Rest, SubLen,[Row | Acc]).
+    make_ref3(Rest, SubLen, [Row | Acc]).
 
 table_collect(Ref) ->
     case ?is_rangeref(Ref) of

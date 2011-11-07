@@ -54,6 +54,7 @@
 %%%                             returns the matchs, no matchs and errors all with
 %%%                             their paths
 %%% * fetch_z_debug             fetch for debug_z
+%%% * fetch_ztable              fetch "value"s (not "__rawvalue"s) for ztable
 %%% * cast_def                  NOT A REAL CAST - USED INTERNALLY
 %%% * {cast, Type}              casts all values to 'Type' (see ignore_type)
 %%% * {cast, From, To}          only casts some types to the the 'To' type
@@ -197,13 +198,13 @@ rl(str_as_bool, Str) when ?is_string(Str) ->
 rl(err_as_str, {errval, Err}) -> atom_to_list(Err);
 
 rl(ref_as_bool, Ref) when ?is_cellref(Ref) ->
-    case muin:fetch(Ref) of
+    case muin:fetch(Ref, "__rawvalue") of
         blank                     -> blank;
         X when X == 0; X == false -> false;
         _Else                     -> true
     end;
 rl(fetch_ref, Ref) when ?is_cellref(Ref) orelse ?is_rangeref(Ref) ->
-    muin:fetch(Ref);
+    muin:fetch(Ref, "__rawvalue");
 
 rl({cast_def, _Type, _Def}, X) when ?is_errval(X) ->
     X;
@@ -245,11 +246,14 @@ rl(fetch_name, Name) when ?is_namedexpr(Name) ->
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 
+rl(fetch_ztable, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
+    muin:fetch(Ref, "value");
+
 rl(fetch_z_debug, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
-    muin:fetch(Ref);
+    muin:fetch(Ref, "__rawvalue");
 
 rl(fetch_z_all, Ref) when ?is_zcellref(Ref) orelse ?is_zrangeref(Ref)->
-    {zeds, L, _, _} = muin:fetch(Ref),
+    {zeds, L, _, _} = muin:fetch(Ref, "__rawvalue"),
     L2 = case ?is_zrangeref(Ref) of
              true  -> lists:flatten(L);
              false -> L
@@ -258,7 +262,7 @@ rl(fetch_z_all, Ref) when ?is_zcellref(Ref) orelse ?is_zrangeref(Ref)->
     {range, [Vs]};
 
 rl(fetch_z_no_errs, Ref) when ?is_zcellref(Ref) orelse ?is_zrangeref(Ref) ->
-    case muin:fetch(Ref) of
+    case muin:fetch(Ref, "__rawvalue") of
         {zeds, L, _, []}   -> L2 = case ?is_zrangeref(Ref) of
                                        true  -> lists:flatten(L);
                                        false -> L
@@ -272,18 +276,18 @@ rl(fetch_z_no_errs, Ref) when ?is_zcellref(Ref) orelse ?is_zrangeref(Ref) ->
 rl(fetch, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 rl(fetch, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref)  ->
-    muin:fetch(Ref);
+    muin:fetch(Ref, "__rawvalue");
 
 %% WTF? (why are ranges tagged as arrays)
 rl(fetch, {array, [[Ref]]}) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
-    muin:fetch(Ref);
+    muin:fetch(Ref, "__rawvalue");
 
 rl(fetchdb, Ref) when ?is_rangeref(Ref) ->
     case {Ref#rangeref.height, Ref#rangeref.width} of
         {1, _} ->
             0;
         {_, 1} ->
-            {range, Rows} = muin:fetch(Ref),
+            {range, Rows} = muin:fetch(Ref, "__rawvalue"),
             {_,{offset, X}} = Ref#rangeref.tl,
             [Val] = lists:nth(erlang:abs(X) + 1, Rows),
             Val;
@@ -292,7 +296,7 @@ rl(fetchdb, Ref) when ?is_rangeref(Ref) ->
     end;
 
 rl(fetchdb, Ref) when ?is_cellref(Ref) ->
-    muin:fetch(Ref);
+    muin:fetch(Ref, "__rawvalue");
 
 rl({conv, Type, Val}, {Area, Rows}=Va) when ?is_area(Va) ->
     {Area, [ muin_collect:col(X, [{conv, Type, Val}]) || X <- Rows ]};

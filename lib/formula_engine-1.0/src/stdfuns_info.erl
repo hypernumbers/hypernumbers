@@ -55,7 +55,7 @@ cell([V1, V2]) ->
             _                                      -> ?ERR_REF
         end,
     muin:do_cell(R#cellref.path, muin:row_index(R#cellref.row),
-                 muin:col_index(R#cellref.col), finite),
+                 muin:col_index(R#cellref.col), finite, "__rawtype"),
     Path = muin_util:walk_path(muin:context_setting(path), R#cellref.path),
     RefX = #refX{site = muin:context_setting(site),
                  type = url,
