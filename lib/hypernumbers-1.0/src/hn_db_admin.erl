@@ -46,16 +46,8 @@ force_recalc() ->
     [force_recalc(X) || X <- Sites].
 
 force_recalc(Site) ->
-    Fun1 = fun(X, []) ->
-                   case X of
-                       #relation{children = [], parents = [],
-                                 infparents = [], z_parents = []} ->
-                           ok;
-                       #relation{cellidx = Idx, children = []} ->
-                           new_db_api:mark_idx_dirty(Site, Idx);
-                       _X ->
-                           ok
-                   end,
+    Fun1 = fun(#relation{cellidx = Idx}, []) ->
+                   new_db_api:mark_idx_dirty(Site, Idx),
                    []
            end,
     Fun2 = fun() ->
