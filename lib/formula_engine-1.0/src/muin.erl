@@ -135,7 +135,7 @@ eval_formula(Fcode) ->
         Value ->
             case Value of
                 R when ?is_cellref(R) ->
-                    case muin_util:attempt(?MODULE, fetch, [R]) of
+                    case muin_util:attempt(?MODULE, fetch, [R, "__rawvalue"]) of
                         {ok,    blank}              -> 0;
                         {error, {aborted, _} = Err} -> exit(Err);
                         {ok,    Other}              -> Other;
