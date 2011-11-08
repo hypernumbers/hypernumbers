@@ -228,16 +228,28 @@ mk_f([{str, _, S} | T], {St, A}) ->
     mk_f(T, {St, [$", S, $" | A]});
 
 mk_f([{recalc, S} | T], {_St, A}) ->
-                         mk_f(T, {dirty, [S | A]});
+    mk_f(T, {dirty, [S | A]});
 
-                  mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
-                         mk_f(T, {dirty, ["INDIRECT" | A]});
+mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["INDIRECT" | A]});
 
-                  mk_f([{name, _, S} | T], {St, A}) ->
-                         mk_f(T, {St, [S | A]});
+mk_f([{name, _, "CELL"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["CELL" | A]});
 
-                  mk_f([{H, _} | T], {St, A}) ->
-                         mk_f(T, {St, [atom_to_list(H) | A]}).
+mk_f([{name, _, "ADDRESS"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["ADDRESS" | A]});
+
+mk_f([{name, _, "ROW"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["ROW" | A]});
+
+mk_f([{name, _, "COLUMN"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["COLUMN" | A]});
+
+mk_f([{name, _, S} | T], {St, A}) ->
+    mk_f(T, {St, [S | A]});
+
+mk_f([{H, _} | T], {St, A}) ->
+    mk_f(T, {St, [atom_to_list(H) | A]}).
 
 
 -spec extract_name_from_email(string()) -> string().
