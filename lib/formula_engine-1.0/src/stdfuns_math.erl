@@ -242,9 +242,7 @@ sumz(List) -> zsum(List).
 
 zsum(List) ->
     put(recompile, true),
-    io:format("List is ~p~n", [List]),
     Strs = typechecks:std_strs(List),
-    io:format("Strs is ~p~n", [Strs]),
     Zs = zsum_(Strs, []),
     muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
                           {cast, bool, num}, fetch, fetch_z_no_errs,
