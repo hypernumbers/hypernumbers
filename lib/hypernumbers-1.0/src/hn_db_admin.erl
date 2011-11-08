@@ -49,7 +49,7 @@ force_recalc(Site) ->
     Fun1 = fun(X, []) ->
                    case X of
                        #relation{children = [], parents = [],
-                                 infparents = []} ->
+                                 infparents = [], z_parents = []} ->
                            ok;
                        #relation{cellidx = Idx, children = []} ->
                            new_db_api:mark_idx_dirty(Site, Idx);
