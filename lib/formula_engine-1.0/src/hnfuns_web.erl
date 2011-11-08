@@ -280,16 +280,20 @@ img([Src]) ->
 %        fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
 'ztable.'([W, H, Headers, Z]) ->
-    'ztable.'([W, H, Headers, Z, true]);
-'ztable.'([W, H, Headers, Z, HasLink]) ->
+    'ztable.'([W, H, Headers, Z, -99, true]);
+'ztable.'([W, H, Headers, Z, Sort]) ->
+    'ztable.'([W, H, Headers, Z, Sort, true]);
+'ztable.'([W, H, Headers, Z, Sort, HasLink]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     funs_util:check_size(Width, Height),
-    Hds = case HasLink of
-              true  -> ["Links" | typechecks:html_box_contents([Headers])];
-              false -> typechecks:html_box_contents([Headers])
+    Hds1 = lists:reverse(typechecks:html_box_contents([Headers])),
+    Hds2 = case HasLink of
+               true  -> ["Links" | Hds1];
+               false -> Hds1
           end,
     [Z2] = typechecks:std_strs([Z]),
+    [Sort2] = typechecks:std_ints([Sort]),
     case HasLink of
         true  -> ok;
         false -> ok;
@@ -309,10 +313,10 @@ img([Src]) ->
     Passes = [],
     [{zeds, Ranges, _, _}] = muin_collect:col([ZRef], Rules, Passes),
     Ranges2 = fix_upzrange(Ranges, HasLink, []),
-    Cols1 = length(Hds),
+    Cols1 = length(Hds2),
     Cols2 = length(hd(Ranges2)),
     case Cols1 of
-        Cols2 -> table_("ZTable ", Width, Height, [Hds | Ranges2], -99);
+        Cols2 -> table_("ZTable ", Width, Height, [Hds2 | Ranges2], Sort2);
         _     -> ?ERRVAL_VAL
     end.
 
