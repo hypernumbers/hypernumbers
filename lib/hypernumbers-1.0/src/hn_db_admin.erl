@@ -51,11 +51,8 @@ force_recalc(Site) ->
                        #relation{parents = [], infparents = [],
                                 z_parents = []} ->
                            ok;
-                       #relation{parents = Pr, infparents = IPr,
-                                z_parents = ZPr} ->
-                           Prs = lists:merge([Pr, IPr, ZPr]),
-                           [ok = new_db_api:mark_idx_dirty(Site, Y)
-                            || Y <- Prs]
+                       #relation{cellidx = Idx} ->
+                           ok = new_db_api:mark_idx_dirty(Site, Idx)
                    end,
                    []
            end,
