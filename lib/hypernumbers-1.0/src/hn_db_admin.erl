@@ -7,6 +7,8 @@
 
 -module(hn_db_admin).
 
+-include("spriki.hrl").
+
 -define(CACHEABLE_TABLES, [
                            "api",
                            "dirty_for_zinf",
@@ -25,6 +27,8 @@
                           ]).
 
 -export([
+         force_recalc/0,
+         force_recalc/1,
          create_table/7,
          mem_only/1,
          mem_only/2,
@@ -36,6 +40,29 @@
          restore/2,
          copy_site/2
         ]).
+
+force_recalc() ->
+    Sites = hn_setup:get_sites(),
+    [force_recalc(X) || X <- Sites].
+
+force_recalc(Site) ->
+    Fun1 = fun(X, []) ->
+                   case X of
+                       #relation{children = [], parents = []} ->
+                           ok;
+                       #relation{cellidx = Idx, children = []} ->
+                           new_db_api:mark_idx_dirty(Site, Idx);
+                       _X ->
+                           ok
+                   end,
+                   []
+           end,
+    Fun2 = fun() ->
+                   Tbl = new_db_wu:trans(Site, relation),
+                   mnesia:foldl(Fun1, [], Tbl)
+           end,
+    mnesia:activity(transaction, Fun2),
+    ok.
 
 -spec copy_site(string(), string()) -> ok.
 copy_site(FromSite, ToSite) ->
