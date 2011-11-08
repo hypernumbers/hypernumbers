@@ -48,7 +48,8 @@ force_recalc() ->
 force_recalc(Site) ->
     Fun1 = fun(X, []) ->
                    case X of
-                       #relation{children = [], parents = []} ->
+                       #relation{children = [], parents = [],
+                                 infparents = []} ->
                            ok;
                        #relation{cellidx = Idx, children = []} ->
                            new_db_api:mark_idx_dirty(Site, Idx);
