@@ -12,7 +12,8 @@
          textarea/1,
          button/1,
          radio/1,
-         select/1
+         select/1,
+         fixedval/1
         ]).
 
 -include("spriki.hrl").
@@ -25,6 +26,15 @@
 
 %-define(default_str_rules, [first_array, cast_numbers, cast_bools,
 %                            cast_blanks, cast_dates ]).
+
+fixedval([Label, Val]) -> fixedval([Label, Val, true]);
+fixedval([Label, Val, Show]) ->
+    Label2 = muin_collect:col([Label], [first_array, fetch, {cast,str}],
+                [return_errors, {all, fun muin_collect:is_string/1}]),
+    Val2 = muin_collect:col([Val], [first_array, fetch, {cast,str}],
+                [return_errors, {all, fun muin_collect:is_string/1}]),
+    Show2 = typechecks:std_bools([Show]),
+    muin_util:run_or_err([Label2, Val2, Show2], fun fixedval_/1).
 
 input([])   -> input([""]);
 input([V1]) ->
@@ -72,6 +82,22 @@ radio([V1, V2]) ->
 %%% Internal Functions
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+fixedval_([Label, Val, Show]) ->
+    Trans = common,
+    Form = #form{id ={Trans, Label}, kind = fixedval, restrictions = [Val]},
+    Html = case Show of
+               true  -> "<input type='text' readonly class='hnfixedval'"
+                            ++ "value=\""++ Val ++ "\""
+                            ++" data-name='default'"
+                            ++ "data-label='" ++ Label ++ "' />";
+               false -> "<input type='text' readonly class='hnfixedval'"
+                            ++ "value=\""++ Val ++ "\""
+                            ++ "style='display:none;'"
+                            ++" data-name='default'"
+                            ++ "data-label='" ++ Label ++ "' />"
+           end,
+    {rawform, Form, Html}.
+
 -spec input_([string()], string(), trans()) -> {rawform, #form{}, html()}.
 input_(Label) -> input_(Label, "", common).
 %input_(Label, Default) -> input_(Label, Default, common).
@@ -140,3 +166,4 @@ make_radio(Name, Opt) ->
     ID = "id_"++muin_util:create_name(),
     "<div class='radio'><label for='"++ID++"'>" ++ Opt ++ "</label><input id='"++ID++
         "' type='radio' value='" ++ Opt ++ "' name='" ++ Name ++ "' /></div>".
+

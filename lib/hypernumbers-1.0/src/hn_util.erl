@@ -12,6 +12,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         esc/1,
          log/2,
          log_terms/2,
          get_templates/1,
@@ -88,6 +89,13 @@
          % Formula utilities
          make_formula/2
         ]).
+
+esc(List) -> esc2(List, []).
+
+esc2([], Acc)       -> lists:flatten(lists:reverse(Acc));
+esc2([$< | T], Acc) -> esc2(T, ["&lt;" | Acc]);
+esc2([$> | T], Acc) -> esc2(T, ["&gt;" | Acc]);
+esc2([H | T],  Acc) -> esc2(T, [H | Acc]).
 
 log_terms(Terms, File) ->
     Str = lists:flatten(io_lib:format("~p.~n", [Terms])),

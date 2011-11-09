@@ -810,9 +810,11 @@ ipost(Ref=#refX{path=["_user"]}, _Qry,
 
 %% ipost for inline editable cells
 ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
-      Env=#env{body = [{"postinline", {struct, [{"formula", _}] = Attrs}}],
+      Env=#env{body = [{"postinline", {struct, [{"formula", Val}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
+    % escape the attributes to prevent script injection, etc
+    Attrs = [{"formula", hn_util:esc(Val)}],
     case new_db_api:read_attribute(Ref, "input") of
         [{#xrefX{}, "inline"}] ->
             ok = new_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),

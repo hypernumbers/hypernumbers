@@ -1171,7 +1171,7 @@ allocate({Label, Value}, {S, P, Labels, Index, Ref, NLabels, Refs}) ->
             % Label already exists
             {S, P, Labels, Index, Ref, NLabels,
              [{#refX{site = S, type = gurl, path = P,
-                     obj = {column, {X, X}}}, esc(Value)} | Refs]};
+                     obj = {column, {X, X}}}, hn_util:esc(Value)} | Refs]};
         false  ->
             % Write new label
             X = Index + 1,
@@ -1179,7 +1179,7 @@ allocate({Label, Value}, {S, P, Labels, Index, Ref, NLabels, Refs}) ->
              [{#refX{site = S, type = url, path = P,
                      obj = {cell, {X, 1}}}, Label} | NLabels],
              [{#refX{site = S, type = gurl, path = P,
-                     obj = {column, {X, X}}}, esc(Value)} | Refs]}
+                     obj = {column, {X, X}}}, hn_util:esc(Value)} | Refs]}
     end.
 
 allocate_values(S, P, Values, Labels, Ref, Index) ->
@@ -1232,10 +1232,3 @@ unpack_1([H | T], Js, Js_r, CSS) ->
                _  -> lists:append([C, CSS])
            end,
     unpack_1(T, NewJ, NewR, NewC).
-
-esc(List) -> esc2(List, []).
-
-esc2([], Acc)       -> lists:flatten(lists:reverse(Acc));
-esc2([$< | T], Acc) -> esc2(T, ["&lt;" | Acc]);
-esc2([$> | T], Acc) -> esc2(T, ["&gt;" | Acc]);
-esc2([H | T],  Acc) -> esc2(T, [H | Acc]).
