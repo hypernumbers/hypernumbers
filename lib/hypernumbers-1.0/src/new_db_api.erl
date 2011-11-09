@@ -325,8 +325,8 @@ handle_form_post(#refX{site = S, path = P,
                   LastCol = get_last_col(OldLabs2),
                   {NewLabels, NVals} =
                       allocate_values(S, P, Values, OldLabs2, RefX, LastCol),
-
-                  NLbls = [ {Lref, [{"formula", Val}]} || {Lref, Val} <- NewLabels],
+                  NLbls = [ {Lref, [{"formula", Val}]}
+                            || {Lref, Val} <- NewLabels],
                   [begin
                        XRefX = new_db_wu:refX_to_xrefX_createD(X),
                        _Dict = new_db_wu:write_attrs(XRefX, A, PosterUid)
@@ -1165,12 +1165,13 @@ get_last_col(Labels) ->
     end.
 
 allocate({Label, Value}, {S, P, Labels, Index, Ref, NLabels, Refs}) ->
+    % escape the values to prevent script injection etc, etc
     case lists:keyfind(Label, 2, Labels) of
         {#xrefX{obj = {cell, {X, _Y}}}, Label} ->
             % Label already exists
             {S, P, Labels, Index, Ref, NLabels,
              [{#refX{site = S, type = gurl, path = P,
-                     obj = {column, {X, X}}}, Value} | Refs]};
+                     obj = {column, {X, X}}}, esc(Value)} | Refs]};
         false  ->
             % Write new label
             X = Index + 1,
@@ -1178,7 +1179,7 @@ allocate({Label, Value}, {S, P, Labels, Index, Ref, NLabels, Refs}) ->
              [{#refX{site = S, type = url, path = P,
                      obj = {cell, {X, 1}}}, Label} | NLabels],
              [{#refX{site = S, type = gurl, path = P,
-                     obj = {column, {X, X}}}, Value} | Refs]}
+                     obj = {column, {X, X}}}, esc(Value)} | Refs]}
     end.
 
 allocate_values(S, P, Values, Labels, Ref, Index) ->
@@ -1231,3 +1232,10 @@ unpack_1([H | T], Js, Js_r, CSS) ->
                _  -> lists:append([C, CSS])
            end,
     unpack_1(T, NewJ, NewR, NewC).
+
+esc(List) -> esc2(List, []).
+
+esc2([], Acc)       -> lists:flatten(lists:reverse(Acc));
+esc2([$< | T], Acc) -> esc2(T, ["&lt;" | Acc]);
+esc2([$> | T], Acc) -> esc2(T, ["&gt;" | Acc]);
+esc2([H | T],  Acc) -> esc2(T, [H | Acc]).
