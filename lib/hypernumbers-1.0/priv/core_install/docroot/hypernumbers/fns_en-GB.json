@@ -4820,6 +4820,34 @@
         ]
     },
     {
+        "fn": "fixedval",
+        "category": "HN Forms",
+        "desc": "Allows a calculated valued to be specified in a form.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/web-forms/fixedval.html",
+        "args": [
+             {
+                 "name": "Label",
+                 "desc": "Some text.",
+                 "type": "finite"
+             },
+             {
+                 "name": "Value",
+                 "desc": "The value to be posted.",
+                 "type": "finite"
+             },
+             {
+                 "name": "Show Control",
+                 "desc": "TRUE or FALSE",
+                 "type": "optional"
+             }
+        ]
+    },
+    {
         "fn": "input",
         "category": "HN Forms",
         "desc": "Create a single line text input for a form.",
