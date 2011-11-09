@@ -319,7 +319,7 @@ handle_form_post(#refX{site = S, path = P,
                              || X <- LabXs],
                   OldLabs2 = lists:flatten(OldLabs),
 
-                  Values = [ {"submitted", dh_date:format("Y/m/d h:i:s")} |
+                  Values = [ {"submitted", dh_date:format("d/m/Y h:i:s")} |
                              lists:reverse(lists:foldl(fun generate_labels/2, [],
                                                        Array)) ],
                   LastCol = get_last_col(OldLabs2),
