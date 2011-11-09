@@ -64,7 +64,7 @@ html,body {
     border             : solid thin #808080;
 }
 
-#funwiz .scrollable {
+#funwiz .scrollable, #hn_makeuserdeffns .scrollable {
     border: none;
 }
 
@@ -114,7 +114,7 @@ html,body {
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 
-#funwiz  {
+#funwiz, #hn_makeuserdeffns  {
     position           : static; /* changed dynamically */
     max-width          : none;
     min-width          : 500px;
@@ -256,7 +256,7 @@ img.wizrep {
   content: '*';
 }
 
-#functions h2, #funwiz h2, #columnmanagerdialog h2, #lineview h2, #hn_makewikiselect h2 {
+#functions h2, #funwiz h2, #columnmanagerdialog h2, #lineview h2, #hn_makewikiselect h2, #hn_makeuserdeffns h2 {
     display            : block;
     margin             : 0px;
     font               : bold 12px sans-serif;
@@ -893,6 +893,7 @@ a.toolbar-item {
 
 #forminput  { background-position:  -205px -82px; }
 #formtextarea  { background-position:  -205px -61px; }
+#formfixedval  { background-position:  -228px -61px; }
 #formselect  { background-position: -183px -104px; }
 #formradio  { background-position:  -161px -61px; }
 #formbutton  { background-position: -183px -82px; }
@@ -1282,7 +1283,7 @@ z-index     : 10000002;
     cursor:pointer;
 }
 
-#ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose, #hn_makewikiselectclose {
+#ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose, #hn_makewikiselectclose, #hn_makeuserdeffnsclose {
     cursor:pointer;
     color:white;
     font-weight:bold;
