@@ -83,12 +83,14 @@ get_z(Fun, Z, Style) ->
     end.
 
 zsubmenu2([], _, Acc) ->
+    Acc2 = lists:sort(Acc),
+    {_, Links} = lists:unzip(Acc2),
     "<ul class='first_level'>" ++
-        lists:flatten(lists:reverse(Acc)) ++ "</ul>";
+        lists:flatten(Links) ++ "</ul>";
 zsubmenu2([{{P, _}, _} | T], 0, Acc) ->
     P2 = hn_util:list_to_path(P),
-    NewAcc = "<li><a href='" ++ P2 ++ "'>"
-        ++ P2 ++ "</a></li>",
+    NewAcc = {P2, "<li><a href='" ++ P2 ++ "'>"
+        ++ P2 ++ "</a></li>"},
     zsubmenu2(T, 0, [NewAcc | Acc]);
 zsubmenu2([{{P, _}, V} | T], 1, Acc) ->
     P2 = hn_util:list_to_path(P),
@@ -96,26 +98,28 @@ zsubmenu2([{{P, _}, V} | T], 1, Acc) ->
              blank -> "";
              _     -> tconv:to_s(V)
          end,
-    NewAcc = "<li><a href='" ++ P2 ++ "'>"
-        ++ V2 ++ "</a></li>",
+    NewAcc = {V2, "<li><a href='" ++ P2 ++ "'>"
+        ++ V2 ++ "</a></li>"},
     zsubmenu2(T, 1, [NewAcc | Acc]);
 zsubmenu2([{{P, _}, _} | T], 2, Acc) ->
     P2 = hn_util:list_to_path(P),
     V = lists:last(P),
-    NewAcc = "<li><a href='" ++ P2 ++ "'>"
-        ++ V ++ "</a></li>",
+    NewAcc = {V, "<li><a href='" ++ P2 ++ "'>"
+        ++ V ++ "</a></li>"},
     zsubmenu2(T, 2, [NewAcc | Acc]).
 
 links2([], 2, Acc) ->
-    "<table>"
-        ++ lists:flatten(lists:reverse(Acc))
-        ++ "</table>";
+    Acc2 = lists:sort(Acc),
+    {_, Links} = lists:unzip(Acc2),
+    "<table>" ++ lists:flatten(Links) ++ "</table>";
 links2([], _St, Acc) ->
-    lists:flatten(lists:reverse(Acc));
+    Acc2 = lists:sort(Acc),
+    {_, Links} = lists:unzip(Acc2),
+    lists:flatten(Links);
 links2([{{P, _}, _} | T], 0, Acc) ->
     P2 = hn_util:list_to_path(P),
-    NewAcc = "<div><a href='" ++ P2 ++ "'>"
-        ++ P2 ++ "</a></div>",
+    NewAcc = {P2, "<div><a href='" ++ P2 ++ "'>"
+        ++ P2 ++ "</a></div>"},
     links2(T, 0, [NewAcc | Acc]);
 links2([{{P, _}, V} | T], 1, Acc) ->
     P2 = hn_util:list_to_path(P),
@@ -123,8 +127,8 @@ links2([{{P, _}, V} | T], 1, Acc) ->
              blank -> "";
              _     -> tconv:to_s(V)
          end,
-    NewAcc = "<div><a href='" ++ P2 ++ "'>"
-        ++ V2 ++ "</a></div>",
+    NewAcc = {V2, "<div><a href='" ++ P2 ++ "'>"
+        ++ V2 ++ "</a></div>"},
     links2(T, 1, [NewAcc | Acc]);
 links2([{{P, _}, V} | T], 2, Acc) ->
     P2 = hn_util:list_to_path(P),
@@ -132,9 +136,9 @@ links2([{{P, _}, V} | T], 2, Acc) ->
              blank -> "";
              _     -> tconv:to_s(V)
          end,
-    NewAcc = "<tr><td><a href='" ++ P2 ++ "'>"
+    NewAcc = {P2, "<tr><td><a href='" ++ P2 ++ "'>"
         ++ P2 ++ "</a></td><td>" ++ V2
-        ++ "</td></tr>",
+        ++ "</td></tr>"},
     links2(T, 2, [NewAcc | Acc]).
 
 'html.headline.'([W, H, Text]) ->
