@@ -358,12 +358,17 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
     case has_circref(Ret) of
         true  -> {errval, '#CIRCREF'};
         false ->
+            [Sort2] = typechecks:std_ints([Sort]),
             Ref2 = table_collect(Ref),
             SubLen = trunc(length(Ref2)/Len),
             Ref3 = make_ref3(Ref2, SubLen, []),
-            [Sort2] = typechecks:std_ints([Sort]),
+            % negative sort index means reverse the natural order
+            Ref4 = if
+                       Sort2 <  0 -> lists:reverse(Ref3);
+                       Sort2 >= 0 -> Ref3
+                   end,
             [Dirc2] = typechecks:std_bools([Dirc]),
-            table_("Table ", Width, Height, Ref3, Sort2 - 1, Dirc2) % users sort from 1 not 0
+            table_("Table ", Width, Height, Ref4, Sort2 - 1, Dirc2) % users sort from 1 not 0
     end.
 
 %background([Url]) -> background([Url, ""]);
