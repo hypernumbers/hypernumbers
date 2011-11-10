@@ -280,7 +280,7 @@ img([Src]) ->
 %        fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
 'ztable.'([W, H, Headers, Z]) ->
-    'ztable.'([W, H, Headers, Z, -99, true]);
+    'ztable.'([W, H, Headers, Z, 0, true]);
 'ztable.'([W, H, Headers, Z, Sort]) ->
     'ztable.'([W, H, Headers, Z, Sort, true]);
 'ztable.'([W, H, Headers, Z, Sort, HasLink]) ->
@@ -316,7 +316,7 @@ img([Src]) ->
     Cols1 = length(Hds2),
     Cols2 = length(hd(Ranges2)),
     case Cols1 of
-        Cols2 -> table_("ZTable ", Width, Height, [Hds2 | Ranges2], Sort2);
+        Cols2 -> table_("ZTable ", Width, Height, [Hds2 | Ranges2], Sort2, true);
         _     -> ?ERRVAL_VAL
     end.
 
@@ -336,14 +336,19 @@ fix_upz2(blank, Acc)         -> [""| Acc];
 fix_upz2(X, Acc)             -> [tconv:to_s(X) | Acc].
 
 'table.'([W, H, Ref]) ->
-    'table.'([W, H, Ref, -99]); % negative number means no sorting
+    'table.'([W, H, Ref, -99, false]); % negative number means no sorting
 'table.'([W, H, #rangeref{height = Len} = Ref, Sort]) ->
-    table2(W, H, Len, Ref, Sort);
+    table2(W, H, Len, Ref, Sort, true);
 'table.'([W, H, {range, R} = Ref, Sort]) ->
     Len = length(R),
-    table2(W, H, Len, Ref, Sort).
+    table2(W, H, Len, Ref, Sort, true);
+'table.'([W, H, #rangeref{height = Len} = Ref, Sort, Dirc]) ->
+    table2(W, H, Len, Ref, Sort, Dirc);
+'table.'([W, H, {range, R} = Ref, Sort, Dirc]) ->
+    Len = length(R),
+    table2(W, H, Len, Ref, Sort, Dirc).
 
-table2(W, H, Len, Ref, Sort) when ?is_rangeref(Ref) ->
+table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     funs_util:check_size(Width, Height),
@@ -357,7 +362,8 @@ table2(W, H, Len, Ref, Sort) when ?is_rangeref(Ref) ->
             SubLen = trunc(length(Ref2)/Len),
             Ref3 = make_ref3(Ref2, SubLen, []),
             [Sort2] = typechecks:std_ints([Sort]),
-            table_("Table ", Width, Height, Ref3, Sort2 - 1) % users sort from 1 not 0
+            [Dirc2] = typechecks:std_bools([Dirc]),
+            table_("Table ", Width, Height, Ref3, Sort2 - 1, Dirc2) % users sort from 1 not 0
     end.
 
 %background([Url]) -> background([Url, ""]);
@@ -420,7 +426,11 @@ has_c1([])                                 -> false;
 has_c1([[{errval, '#CIRCREF!'} , _] | _T]) -> true;
 has_c1([_H | T])                           -> has_c1(T).
 
-table_(Title, W, H, [THead | Range], Sort) ->
+table_(Title, W, H, [THead | Range], Sort, Dirc) ->
+    Dirc2 = case Dirc of
+                true  -> "0";
+                false -> "1"
+            end,
     Id = "tbl_" ++ muin_util:create_name(),
 
     Head = ["<thead><tr>",
@@ -432,11 +442,13 @@ table_(Title, W, H, [THead | Range], Sort) ->
     Script = if
                  Sort <  0 ->
                      ["$(\".tablesorter\").tablesorter();",
-                     "$(\".tablesorter\").parent().css('overflow', 'auto');"];
+                     "$(\".tablesorter\").parent().css('overflow', ",
+                      "'auto');"];
                  Sort >= 0 ->
                      ["$(\".tablesorter\").tablesorter({ sortList:[[",
-                      integer_to_list(Sort), ",0]]});",
-                      "$(\".tablesorter\").parent().css('overflow', 'auto');"]
+                      integer_to_list(Sort), ",", Dirc2, "]]});",
+                      "$(\".tablesorter\").parent().css('overflow', ",
+                      "'auto');"]
              end,
     Js = "/hypernumbers/jquery.tablesorter.min.js",
     Script2 = lists:flatten(Script),
@@ -448,7 +460,14 @@ table_(Title, W, H, [THead | Range], Sort) ->
 make_ref3([], _SubLen, Acc) -> lists:reverse(Acc);
 make_ref3(List, SubLen, Acc) ->
     {Row, Rest} = lists:split(SubLen, List),
-    make_ref3(Rest, SubLen, [Row | Acc]).
+    case is_blank(Row) of
+        true  -> make_ref3(Rest, SubLen, Acc);
+        false -> make_ref3(Rest, SubLen, [Row | Acc])
+    end.
+
+is_blank([])       -> true;
+is_blank([[] | T]) -> is_blank(T);
+is_blank(_List)    -> false.
 
 table_collect(Ref) ->
     case ?is_rangeref(Ref) of

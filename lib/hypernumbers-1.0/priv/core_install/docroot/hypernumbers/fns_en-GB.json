@@ -4199,6 +4199,11 @@
                 "name": "Sort Column",
                 "desc": "An integer.",
                 "type": "optional"
+             },
+             {
+                "name": "Sort Direction",
+                "desc": "TRUE or FALSE.",
+                "type": "optional"
             }
          ]
     },
