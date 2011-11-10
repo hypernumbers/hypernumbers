@@ -25,14 +25,15 @@
          cell/1
         ]).
 
-% fns without a test suite
-%-export([
-%         iseven/1,
-%         isodd/1,
-%         isref/1,
-%         isnonblank/1,
-%         info/1
-%        ]).
+% fns without a c test suite
+% but with a d_gnumeric one
+-export([
+         iseven/1,
+         isodd/1,
+         isref/1,
+         isnonblank/1, % (except me - no tests at all...)
+         info/1
+        ]).
 
 -export([rows/1,
          columns/1]).
