@@ -65,10 +65,13 @@ export_site(Dest, Site) ->
     ok = dump_groups(Site, Dest),
     io:format("about to dump perms~n"),
     ok = dump_perms(Site, Dest),
-    io:format("about to dump views, docroot, templates and etl files~n"),
+    io:format("about to dump views~n"),
     ok = dump_folder(Site, Dest, "views"),
+    io:format("about to dump docroot~n"),
     ok = dump_folder(Site, Dest, "docroot"),
+    io:format("about to templates~n"),
     ok = dump_folder(Site, Dest, "templates"),
+    io:format("about to dump etl files~n"),
     ok = dump_folder(Site, Dest, "etl"),
     io:format("export site completed~n"),
     ok.
@@ -105,7 +108,11 @@ dump_perms(Site, SiteDest) ->
 dump_folder(Site, SiteDest, Folder) ->
     Dest = ?join([SiteDest, Folder]),
     SiteFs   = hn_util:site_to_fs(Site),
-    Source   = ?join([code:priv_dir(hypernumbers), "../../../", "var", "sites", SiteFs, Folder]),
+    Source   = ?join([code:priv_dir(hypernumbers), "../../../", "var", "sites",
+                      SiteFs, Folder]),
+    % sometimes the folder might not exists, so ensure it
+    % add the junk file name 'cos you are only ensuring the directories exist...
+    ok = filelib:ensure_dir(Source ++ "/junk.txt"),
     hn_util:recursive_copy(Source, Dest).
 
 %% Import all sites found in the given directory.
