@@ -84,25 +84,33 @@ layout(Ref, Type, Cells, CWs, RHs, Palette) ->
 
 %% Emergency end of input
 %% End of input
-layout2(L, _Type, _Col, Row, PX, PY, H, _CWs, _RHs, Rec,  Acc)
+layout2(L, Type, Col, Row, PX, PY, H, CWs, RHs, Rec, Acc)
       when Row > 1000 ->
+    hn_util:log_terms({"emergency termination", L, Type, Col, Row, PX, PY, H, CWs},
+                "render_log.txt"),
     io:format("emergency exit from hn_render with head of L of ~p~n", [hd(L)]),
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% End of input
-layout2([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
+layout2([], Type, Col, Row, PX, PY, H, CWs, RHs, Rec,  Acc) ->
+    hn_util:log_terms({"normal termination", [], Type, Col, Row, PX, PY, H, CWs},
+                "render_log.txt"),
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 % dunno how this gets created
-layout2([{{0,0}, _L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout2([{{0,0}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+    hn_util:log_terms({"duff 00's", L, Type, C, R, PX, PY, H, CWs},
+                "render_log.txt"),
     layout2(T, Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc);
 
 %% Output the next cell value in the current row.
 layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+    hn_util:log_terms({"next cell in row", L, Type, C, R, PX, PY, H, CWs},
+                "render_log.txt"),
     Value = pget("value", L, ""),
     Input = case Type of
                 wikipage  -> pget("input", L);
@@ -125,12 +133,16 @@ layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     end;
 
 %% No cell for this column, but still haven't changed rows.
-layout2(Lst=[{{_,R},_}|_], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout2(Lst=[{{_,R},_} = L|_], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+    hn_util:log_terms({"blank column", L, Type, C, R, PX, PY, H, CWs},
+                "render_log.txt"),
     {W,CWs2} = col_width(C,CWs),
     layout2(Lst, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
 
 %% Wind back, and advance to the next row.
-layout2(Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
+layout2([L | _T] = Lst, Type, Col, Row, PX, PY, H, CWs, RHs, Rec, Acc) ->
+    hn_util:log_terms({"wind back", L, Type, Col, Row, PX, PY, H, CWs},
+                "render_log.txt"),
     PX2 = 0,
     PY2 = PY + H,
     Col2 = Rec#rec.startcol,
