@@ -473,9 +473,8 @@ label {
 
 #templateslist {
   background-color: #ffffff;
-  font-size:        80%;
-  width:            50px;
   color:            #555555;
+  width:            98px;
 }
 
 #newusermsg {
@@ -644,40 +643,32 @@ label {
   margin: 2px;
   }
 
-.hn_html_preview
+#hn_newpageform, #hn_saveastemplateform, #hn_douploadform, #hn_deletepageform
 {
-  font-size:        60%;
-  font-weight:      bold;
-  background-color: #EEE;
-  color:            #777;
-  margin:           2px;
-  padding:          1px 1px 1px 4px;
-  -moz-border-radius:    4px 4px 4px 4px;
-  -webkit-border-radius: 4px 4px 4px 4px;
-  border:           1px solid #E99;
-  }
-
-#hn_newpageform, #hn_saveastemplateform {
+  padding: 3px 3px 5px 3px;
+  float:left;
+  height: 70px;
   -moz-border-radius:    4px 4px 4px 4px;
   -webkit-border-radius: 4px 4px 4px 4px;
   border:  1px solid #aaa;
   background-color: #efefef;
-  margin:  0px 0px 5px 0px;
+  margin:  0px 2px 5px 0px;
 }
 
-#hn_newpageform, #hn_saveastemplateform, #hn_douploadform, #hn_deletepageform
-{
-  padding: 5px 3px 3px 4px;
-}
+#hn_buttonpanel {
+                  padding: 2px 0px 0px 2px;
+                  }
 
-#hn_douploadform, #hn_deletepageform
-{
-  margin:  0px 0px 2px 0px;
-}
+.hn_pagesbuttonbox {
+                     padding: 0px 2px 0px 2px;
+                     width: 99px;
+                     float: left;
+                }
 
-#hn_templateheader {
+#hn_pagesheader {
+    padding: 0px 0px 0px 12px;
     font-weight: bold;
-    text-align:  center;
+    text-align:  left;
 }
 
 .hn_debug_z {

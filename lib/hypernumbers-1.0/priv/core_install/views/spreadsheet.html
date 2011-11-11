@@ -609,38 +609,49 @@
 	  <div id="finder">
 	    <div class="panewrapper"><div class="pane"></div></div>
 	  </div>
-    <div style='float:right;'>
-      <div style='float:none;'>
         <span class="currentpageselection" style="display:none;"></span>
-        <form id="hn_newpageform">
+       <div id='hn_buttonpanel'>
+         <div id='hn_newpagewrapper'>
+         <form id="hn_newpageform">
+       <div class='hn_pagesbuttonbox'>
+         <div id="hn_pagesheader">New Pages</div>
         <div>
           <input id="newspreadsheet" type="submit" value="New" class="button" />
         </div>
-        <small>template:</small>
-        <span id="templates"></span>
+        <div>from template:</div>
+        </div>
+        <div class='hn_pagesbuttonbox'>
+        <small>eg <code>/my/home/</code></small>
         <div>
           <input type="text" id="newpage" value="" />
         </div>
-        <small>eg <code>/my/home/</code></small>
+        <span id="templates"></span>
+        </div>
+        </form>
+        </div>
+        <form id="hn_deletepageform">
+       <div class='hn_pagesbuttonbox'>
+         <div id="hn_pagesheader">Delete Page</div>
+        <input class="redbutton" id="ctrldelete" type="submit" value="Delete" />
+         </div>
         </form>
         <form id="hn_douploadform">
+       <div class='hn_pagesbuttonbox'>
+         <div id="hn_pagesheader">Upload .xls</div>
         <input type="submit" id="doupload" value="Upload"  />
         <div id="uploadresponse"></div>
-        </form>
-        <form id="hn_deletepageform">
-        <input class="redbutton" id="ctrldelete" type="submit" value="Delete" />
+        </div>
         </form>
         <form id="hn_saveastemplateform">
-        <div>
-          <div id="hn_templateheader">Templates</div>
+       <div class='hn_pagesbuttonbox'>
+         <div id="hn_pagesheader">Templates</div>
           <input class="redbutton" id="saveastemplate" type="submit" value="Save As..." />
-        </div>
         <div><input id="templatename" /></div>
         <span id="saveasfeedback"></span>
+        </div>
         </form>
         </div>
-     </div>
-     </div>
+       </div>
     	<div id="sitesettings" class="sitedialogwrapper">
 	    <h4>Set Password</h4>
 	    <form id="passwordform">

@@ -1349,6 +1349,7 @@ z-index     : 10000002;
 #newpage, #templatename
 {
   width: 96px;
+  padding: 2px 0px 0px 0px;
 }
 
 #newviewas a:hover {
