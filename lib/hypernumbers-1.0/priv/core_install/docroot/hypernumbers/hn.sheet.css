@@ -68,8 +68,13 @@ html,body {
     border: none;
 }
 
+#hn_makeuserdeffnsblurb {
+                          color  : #666;
+                          margin : 0px 0px 2px 0px;
+                          }
+
 .dialog .footer {
-    min-height         : 18pt; /* TODO fix for columnmanager */
+    min-height         : 4pt; /* TODO fix for columnmanager */
 }
 
 .resize {
@@ -77,6 +82,7 @@ html,body {
           z-index            : 999999;
           height             : 10px;
           width              : 10px;
+          float              : right;
           /*
              float              : right;
              vertical-align     : bottom;
@@ -90,7 +96,7 @@ html,body {
     color              : #666;
 }
 
-#funwiz .resize {
+.resize {
     position           : absolute;
     right              : 0px;
     bottom             : -2px; /* FIXME? */
@@ -114,12 +120,55 @@ html,body {
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 
-#funwiz, #hn_makeuserdeffns  {
+#funwiz  {
     position           : static; /* changed dynamically */
     max-width          : none;
     min-width          : 500px;
     max-height         : none;
     height             : 320px;
+}
+
+#hn_makeuserdeffns  {
+    position           : static; /* changed dynamically */
+    max-width          : none;
+    min-width          : 255px;
+    max-height         : none;
+    height             : 235px;
+}
+
+.hn_uf_inp {
+             width: 60px;
+             float: left;
+             }
+
+#hn_uf_params {
+    -moz-border-radius : 4px 4px 4px 4px;
+    -webkit-border-radius : 4px 4px 4px 4px;
+    padding            : 2px 0px 4px 0px;
+    margin             : 4px 2px 4px 2px;
+    height             : 90px;
+    width              : 225px;
+    border             : solid thin #dddddd;
+ }
+
+.hn_uf_txt, .hn_uf_insettxt {
+             width: 150px;
+             font-weight: bold;
+             float: left;
+             }
+
+.hn_uf_txt {
+             padding: 0px 0px 2px 4px;
+             }
+
+.hn_uf_insettxt {
+             padding: 0px 0px 2px 2px;
+             }
+
+
+.hn_uf_subhead {
+                 font-weight: bold;
+                 color: #666;
 }
 
 #hn_makewikiselect div {

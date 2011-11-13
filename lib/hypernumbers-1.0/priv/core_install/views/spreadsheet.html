@@ -464,24 +464,25 @@
 
     <!-- DIALOG BOXES -->
 
-    <div id="hn_makeuserdeffns" class="dialog">
+    <div id="hn_makeuserdeffns" class="dialog" style="width:100px;">
       <h2>$txt:{User Defined Functions}$</h2>
       <a id="hn_makeuserdeffnsclose">x</a>
-      <div>
-        <p id="hn_makeuserdeffnsblurb">Use this dialog box to define user defined functions. (It will probably be easier if you use on a page you have created from the <em>User Defined Functions</em> page template.</p>
+      <div class="scrollable">
         <div class="hn_uf_txt">Function Name</div>
         <input type="text" class="hn_uf_inp" id="hn_uf_fnname" />
+        <div class="clear"></div>
         <div class="hn_uf_txt">Function Description</div>
         <input type="text" class="hn_uf_inp" id="hn_uf_fndesc" />
+        <div class="clear"></div>
         <div id="hn_uf_params">
-          <div class="hn_uf_txt">Parameter:</div>
-          <input type="text" class="hn_uf_inp" id="hn_uf_fnpname" />
-          <input type="text" class="hn_uf_inp" id="hn_uf_fndesc" />
-          <input type="text" class="hn_uf_inp" id="hn_uf_fncell" />
+          <div id="hn_parameters"></div>
         </div>
+        <div class="clear"></div>
         <div class="hn_uf_txt">Return Value:</div>
-        <input type="text" class="hn_uf_inp" id="hn_uf_retcell" />
-      </div>
+          <input type="text" class="hn_uf_inp" id="hn_uf_retcell" />
+        </div>
+        <p id="hn_makeuserdeffnsblurb">(Tip: use the <em><code>user_def_fns</code></em> template)</p>
+        <div class="footer"><a class="resize"></a></div>
     </div>
     <div id="hn_makewikiselect" class="mdialog">
         <h2>$txt:{Wiki Select Box}$</h2>
@@ -552,35 +553,6 @@
       <span id="celly" class="datastore"></span>
       <a class="resize"></a>
      </div>
-    </div>
-
-    <div id="functions" class="dialog">
-      <h2>$txt:{Functions}$</h2>
-      <a id="funsclose">x</a>
-
-      <div id="funwrapper">
-	<select id="catlist"></select>
-	<div id="funlist"></div>
-      </div>
-      <div id="selectedfun">
-	<h4 id="funname"></h4><br />
-	<p id="fundesc"></p>
-	<!-- <h5>$txt:{Usage}$</h5>       <p id="funusage"></p> -->
-	<!-- <h5>$txt:{Examples}$</h5>    <p id="funexamples"></p> -->
-	<!-- <p>$txt:{Please use the}$  -->
-	<!--   <a href="http://office.microsoft.com/en-us/excel/CH062528191033.aspx"  -->
-	<!--      target="_blank">$txt:{Microsoft Help}$</a>  -->
-	<!--   $txt:{until we implement help properly}$.</p> -->
-	<!-- <input type="submit" value="Enter Formula" id="enterformula" /> -->
-	<br />
-
-	<p id="subtext">
-	  If you need help with anything else, please check
-	  <a href="http://hypernumbers.com/support/funs/" target="_blank">
-	    support</a>
-	</p>
-
-      </div>
     </div>
 
     <div id="overlay"></div>
@@ -892,6 +864,7 @@
     <script src="/hypernumbers/hn.site.js"></script>
     <script src="/hypernumbers/hn.main.js"></script>
     <script src="/hypernumbers/hn.dialog.js"></script>
+    <script src="/hypernumbers/hn.userdeffns.js"></script>
     <script src="/tooltip/jquery.tooltip.min.js"></script>
     <script src="/hypernumbers/jquery.scrollbarWidth.min.js"></script>
 </html>
