@@ -1806,7 +1806,11 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
                    ++ "Reason:~p~n Stack:~p~n",
                    [File, UserName, Reason,
                     erlang:get_stacktrace()]),
-            {ok, { {struct, [{"error", Reason}]},
+            Error = case Reason of
+                        {badmatch, {error, Err}} -> Err;
+                        _                        -> Reason
+                    end,
+            {ok, { {struct, [{"error", Error}]},
                    undefined}}
     end.
 
