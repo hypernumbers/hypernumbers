@@ -35,6 +35,7 @@
           valid_obj = false,
           valid_revidx = invalid,
           has_formula = false,
+          formula = [],
           has_include = false,
           has_include_fn = false,
           has_zinf = false,
@@ -87,7 +88,7 @@ read_verification() ->
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
-    {ok, Data}  = parse(Dir ++ VerFile),
+    {ok, Data} = parse(Dir ++ VerFile),
     io:format("in verification, data parsed...~n"),
     {ok, Zinfs} = case file:consult(Dir ++ ZinfFile) of
                       {error, enoent} ->
@@ -673,8 +674,15 @@ verify_grid(Site, FileId, {Idx, #ver{relation = null,
     Str = "Invalid grid (type 2)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
-verify_grid(Site, FileId, {Idx, #ver{valid_obj = false} = V}, Acc) ->
+verify_grid(Site, FileId, {Idx, #ver{relation = exists,
+                                     local_obj = exists,
+                                     item = null,
+                                     valid_obj = false} = V}, Acc) ->
     Str = "Invalid grid (type 3)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_grid(Site, FileId, {Idx, #ver{valid_obj = false} = V}, Acc) ->
+    Str = "Invalid grid (type 4)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc].
 
@@ -718,38 +726,40 @@ dump(Site, FileId, Str, [Idx, V]) ->
     io:fwrite(FileId, "~nDumping: ~p ~p~n", [Site, Idx]),
     io:fwrite(FileId, "------------------------------------------------~n", []),
     io:fwrite(FileId, "Reason: " ++ Str ++ "~n", []),
-    #ver{relation = RE,
-         local_obj = LE,
-         item = IE,
-         form = FE,
-         include = IncE,
-         timer = TE,
-         parents = P,
-         children = C,
-         infparents = IP,
-         rev_parents = RP,
-         rev_children = RC,
-         rev_infparents = RIP,
-         type = Ty,
-         valid_type = VT,
-         path = Path,
-         obj = O,
-         revidx = RevI,
-         valid_obj = VO,
-         valid_revidx = VR,
-         has_formula = HF,
-         has_include = HI,
-         has_include_fn = RHI,
-         has_zinf = Z,
-         zinf_path = ZPath
+    #ver{relation = RE,  %
+         local_obj = LE,       %
+         item = IE,            %
+         form = FE,            %
+         include = IncE,       %
+         timer = TE,           %
+         parents = P,          %
+         children = C,         %
+         infparents = IP,      %
+         rev_parents = RP,     %
+         rev_children = RC,    %
+         rev_infparents = RIP, %
+         type = Ty,            %
+         valid_type = VT,      %
+         path = Path,          %
+         obj = O,              %
+         revidx = RevI,        %
+         valid_obj = VO,       %
+         valid_revidx = VR,    %
+         has_formula = HF,     %
+         formula = F,
+         has_include = HI,     %
+         has_include_fn = RHI, %
+         has_zinf = Z,         %
+         zinf_path = ZPath     %
         } = V,
     case {Path, O} of
         {null, null} ->
             io:fwrite(FileId, "no path or obj ~nReversed: ~p Zinf Path: ~p Formula? ~p~n",
                       [RevI, ZPath, HF]);
         {List, {O1, O2}} when is_list(List) ->
-            io:fwrite(FileId, "~p (~p)~nReversed: ~p Zinf Path: ~p Formula? ~p~n",
-                      [Path ++ O2, O1, RevI, ZPath, HF])
+            io:fwrite(FileId, "~p (~p)~nReversed: ~p Zinf Path: ~p~n"
+                      ++"Formula? ~p ~p~n",
+                      [Path ++ O2, O1, RevI, ZPath, HF, F])
     end,
     io:fwrite(FileId, "Tables:~n"
               ++ "> relation:  ~p~n"
@@ -787,11 +797,14 @@ process_zinfs([], Acc) -> Acc;
 process_zinfs([H | T], Acc) ->
     {"http://" ++ Site, ZIdx, Path, List} = H,
     {ITree, RTree, NewAcc} = lookup(Site, Acc),
-    [Idx] = case gb_trees:lookup(Path, RTree) of
+    Idxs = case gb_trees:lookup(Path, RTree) of
                 none       -> exit("zinf doesn't exist...");
                 {value, V} -> V
             end,
-    NewAcc2 = process_z2(List, Site, Path, ZIdx, Idx, ITree, RTree, NewAcc),
+    Fun = fun(X, A) ->
+              process_z2(List, Site, Path, ZIdx, X, ITree, RTree, A)
+          end,
+    NewAcc2 = lists:foldl(Fun, NewAcc, Idxs),
     process_zinfs(T, NewAcc2).
 
 process_z2([], Site, _Path, _ZIDx, _Idx, ITree, RTree, Acc) ->
@@ -800,14 +813,18 @@ process_z2([H | T], Site, Path, ZIdx, Idx, ITree, RTree, Acc) ->
     % first put the idx of the zinf into the rev_infparents of the
     % record
     Rec = get_rec(H, ITree),
+    io:format("Rec is ~p~n", [Rec]),
     #ver{rev_infparents = List} = Rec,
     Rec2 = Rec#ver{rev_infparents = [Idx | List], has_zinf = true,
                    zinf_path = Path},
+    io:format("Rec2 is ~p~n", [Rec2]),
     ITree2 = gb_trees:enter(H, Rec2, ITree),
     % now do the reverse make the url the child of the zinf
     Rec3 = get_rec(ZIdx, ITree2),
+    io:format("Rec4 is ~p~n", [Rec3]),
     #ver{children = List3} = Rec3,
     Rec4 = Rec3#ver{children = [H | List3]},
+    io:format("Rec4 is ~p~n", [Rec4]),
     ITree4 = gb_trees:enter(ZIdx, Rec4, ITree2),
     process_z2(T, Site, Path, ZIdx, Idx, ITree4, RTree, Acc).
 
@@ -893,11 +910,16 @@ process3(Site, ITree, RTree, "item", Tuple, Acc) ->
     {_, Idx, Attrs} = Tuple,
     Attrs2 = binary_to_term(Attrs),
     HasFormula = has_attr("formula", Attrs2),
+    Formula = case HasFormula of
+                  false -> [];
+                  true  -> lists:keyfind("formula", 1, Attrs2)
+              end,
     HasInclude = has_attr("__hasincs", Attrs2),
     Record = get_rec(Idx, ITree),
     Rec2 = case Record#ver.item of
                null -> Record#ver{item = exists,
                                   has_formula = HasFormula,
+                                  formula = Formula,
                                   has_include = HasInclude};
                _    -> exit("duplicate item record (can't happen!)")
            end,
@@ -1109,7 +1131,7 @@ snip([{'>', N} | T], Acc) -> {T, [{atom, N, removed} | Acc]};
 snip([_H | T], Acc)       -> snip(T, Acc).
 
 write_terms(Data, File) ->
-        _Return = filelib:ensure_dir(File),
+    _Return = filelib:ensure_dir(File),
     case file:open(File, [append]) of
         {ok, Id} ->
             Return = write_t2(Data, Id),

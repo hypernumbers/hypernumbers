@@ -169,7 +169,12 @@ fix3(_Site, "Invalid tables (type 3) (old adding in css/js)", _Idx) ->
     ok;
 % fixing invalid tables type 4 is handled by Invalid Object (cell) (type 2)
 fix3(_Site, "Invalid tables (type 4)", _Idx) -> ok;
-fix3(_Site, "Invalid tables (type 5)", _Idx) -> ok;
+fix3(Site, "Invalid tables (type 5)", Idx) ->
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    Fun = fun() ->
+                  ok = mnesia:delete(Tbl1, Idx, write)
+          end,
+    mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid relations (type 1)", Idx) ->
     io:format("(SHOULD) recalcing Invalid relations (type 1) for ~p ~p~n",
            [Site, Idx]),
@@ -246,7 +251,15 @@ fix3(Site, "Invalid grid (type 2)", Idx) ->
                   ok = mnesia:delete(Tbl1, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
-fix3(_Site, "Invalid grid (type 3)", _Idx) -> ok;
+fix3(Site, "Invalid grid (type 3)", Idx) ->
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    Tbl2 = new_db_wu:trans(Site, relation),
+    Fun = fun() ->
+                  ok = mnesia:delete(Tbl1, Idx, write),
+                  ok = mnesia:delete(Tbl2, Idx, write)
+          end,
+    mnesia:activity(transaction, Fun);
+fix3(_Site, "Invalid grid (type 4)", _Idx) -> ok;
 fix3(_Site, "Invalid reverse index", _Idx) -> ok;
 fix3(_Site, "Invalid zinf (type 1)", _Idx) -> ok;
 fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.
