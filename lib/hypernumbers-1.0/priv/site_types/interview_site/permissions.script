@@ -1,0 +1,157 @@
+%%-*-erlang-*-
+{add_view,[{path,[]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,[]},{view,"wikipage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["[**]"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["abc-inc"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["abc-inc"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["abc-inc"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["abc-inc"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["abc-inc"]},{view,"wikipage"}]}.
+{add_view,[{path,["enter-name"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["enter-name"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["enter-name"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["enter-name"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["enter-name"]},{view,"wikipage"}]}.
+{add_view,[{path,["enter-name","job-0000001"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["enter-name","job-0000001"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["enter-name","job-0000001"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["enter-name","job-0000001"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["enter-name","job-0000001"]},{view,"wikipage"}]}.
+{add_view,[{path,["enter-name","job-0000001","0000001"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["enter-name","job-0000001","0000001"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["enter-name","job-0000001","0000001"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["enter-name","job-0000001","0000001"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["enter-name","job-0000001","0000001"]},
+               {view,"wikipage"}]}.
+{add_view,[{path,["xyz-ltd"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd"]},{view,"wikipage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd","job-0000001"]},{view,"wikipage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","0000001"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","0000001"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","0000001"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","0000001"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd","job-0000001","0000001"]},{view,"wikipage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","0000002"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","0000002"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","0000002"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","0000002"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd","job-0000001","0000002"]},{view,"wikipage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","all-scores"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","all-scores"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","all-scores"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","all-scores"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd","job-0000001","all-scores"]},
+               {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","bob"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","bob"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","bob"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","bob"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd","job-0000001","bob"]},{view,"wikipage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","fred"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","fred"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","fred"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000001","fred"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd","job-0000001","fred"]},{view,"wikipage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000002"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["xyz-ltd","job-0000002"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["xyz-ltd","job-0000002"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000002"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd","job-0000002"]},{view,"wikipage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000003"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["xyz-ltd","job-0000003"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["xyz-ltd","job-0000003"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000003"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd","job-0000003"]},{view,"wikipage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000004"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["xyz-ltd","job-0000004"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["xyz-ltd","job-0000004"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["xyz-ltd","job-0000004"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["xyz-ltd","job-0000004"]},{view,"wikipage"}]}.
