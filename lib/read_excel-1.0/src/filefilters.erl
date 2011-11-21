@@ -151,9 +151,9 @@ read_compound_file_header(<<?BIFF8_MAGIC_NUMBER:64/little-signed-integer,
     {ok,{ParsedDirectory,ParsedSAT,ParsedSSAT,SSAT_StartSID,
          SectorSize,ShortSectorSize,MinStreamSize}};
 read_compound_file_header(_Other,_FileIn) ->
-    io:format("This is not a valid Biff8 Microsoft Compound Document~n"++
-              "In other words it is not written by Microsoft Excel 97, "++
-              "2000 or 2003~n"),
+    %io:format("This is not a valid Biff8 Microsoft Compound Document~n"++
+    %          "In other words it is not written by Microsoft Excel 97, "++
+    %          "2000 or 2003~n"),
     {error,"Not valid Biff8 Microsoft Compound Document"}.
 
 %% This function translates the header file into the storage and stream
