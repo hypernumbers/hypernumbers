@@ -23,11 +23,12 @@ clock_12(Hour) when is_integer(Hour), (Hour > 12), (Hour =< 24) -> Hour-12;
 clock_12(Hour) when is_integer(Hour), (Hour >= 0), (Hour =< 12) -> Hour.
 
 pad_year(A) ->
+    io:format("in pad_year A is ~p~n", [A]),
     case length(A) of
         1 -> "000"++A;
         2 -> "00"++A;
         3 -> "0"++A;
-        4 -> A
+        _ -> A
     end.
 
 pad_calendar(A) ->
