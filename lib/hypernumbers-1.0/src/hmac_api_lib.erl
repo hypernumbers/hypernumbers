@@ -1,6 +1,7 @@
 -module(hmac_api_lib).
 
 -include("hmac_api.hrl").
+-include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
 -author("Hypernumbers Ltd <gordon@hypernumbers.com>").
@@ -27,7 +28,7 @@
 %%% THE AMAZON API MUNGES HOSTNAME AND PATHS IN A CUSTOM WAY
 %%% THIS IMPLEMENTATION DOESN'T
 -export([
-         authorize_request/1,
+         authorize_request/2,
          sign/5,
          get_api_keypair/0
         ]).
@@ -38,7 +39,7 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-authorize_request(Req) ->
+authorize_request(Site, Req) ->
     Method      = Req:get(method),
     Path        = Req:get(path),
     Headers     = normalise(mochiweb_headers:to_list(Req:get(headers))),
@@ -46,20 +47,23 @@ authorize_request(Req) ->
     ContentType = get_header(Headers, "content-type"),
     Date        = get_header(Headers, "date"),
     IncAuth     = get_header(Headers, "authorization"),
-    {_Schema, _PublicKey, _Sig} = breakout(IncAuth),
+    {Schema, PublicKey, Sig} = breakout(IncAuth),
     % normally you would use the public key to look up the private key
-    PrivateKey  = ?privatekey,
-    Signature = #hmac_signature{method = Method,
-                                contentmd5 = ContentMD5,
-                                contenttype = ContentType,
-                                date = Date,
-                                headers = Headers,
-                                resource = Path},
-    Signed = sign_data(PrivateKey, Signature),
-    {_, AuthHeader} = make_HTTPAuth_header(Signed),
-    case AuthHeader of
-        IncAuth -> "match";
-        _       -> "no_match"
+    case new_db_api:read_api(Site, PublicKey) of
+        []    -> "no key";
+        [Rec] -> #api{privatekey = PrivateKey, urls = URLS} = Rec,
+                 Signature = #hmac_signature{method = Method,
+                                             contentmd5 = ContentMD5,
+                                             contenttype = ContentType,
+                                             date = Date,
+                                             headers = Headers,
+                                             resource = Path},
+                 Signed = sign_data(PrivateKey, Signature),
+                 {_, AuthHeader} = make_HTTPAuth_header(Signed),
+                 case AuthHeader of
+                     IncAuth -> {"match", Rec};
+                     _       -> "no_match"
+                 end
     end.
 
 sign(PrivateKey, Method, URL, Headers, ContentType) ->

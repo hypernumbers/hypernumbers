@@ -1,11 +1,23 @@
 -module(hmac_api_client).
 
 -export([
-         fire/0
+         fire/0,
+         load_keys/0
        ]).
 
 -include("hmac_api.hrl").
+-include("spriki.hrl").
 -author("Hypernumbers Ltd <gordon@hypernumbers.com>").
+
+load_keys() ->
+    PublicKey = ?publickey,
+    PrivateKey = ?privatekey,
+    Site = "http://hypernumbers.dev:9000",
+    RefX = #refX{site = Site, type = url,
+                 path = ["some", "page", "yeah"], obj = {page, "/"}},
+    Urls = [RefX],
+    API = #api{privatekey = PrivateKey, publickey = PublicKey, urls = Urls},
+    new_db_api:write_api(Site, API).
 
 fire() ->
     URL = "http://hypernumbers.dev:9000/some/page/yeah/",
@@ -13,7 +25,7 @@ fire() ->
     % the examples from the RFC are:
     % Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
     % Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
-    % Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
+    % Sun Nov 6 08:49:37 1994        ; ANSI C's asctime() format
 
     % Dates can be conveniently generated using dh_date.erl
     % https://github.com/daleharvey/dh_date
@@ -30,5 +42,6 @@ fire() ->
     Body = "",
     HTTPAuthHeader = hmac_api_lib:sign(?privatekey, Method, URL,
                                        Headers, ContentType),
+    io:format("firing...~n"),
     httpc:request(Method, {URL, [HTTPAuthHeader | Headers],
                            ContentType, Body}, [], []).
