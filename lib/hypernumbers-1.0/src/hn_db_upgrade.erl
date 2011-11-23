@@ -10,7 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
-         debug_page_srv_2011_11_23/0,
+         fix_page_srv_2011_11_23/0,
          upgrade_etl_2011_11_23/0,
          add_api_table_2011_11_03/0,
          show_ranges_2011_10_20/0,
@@ -68,17 +68,17 @@
          %% upgrade_1776/0
         ]).
 
-debug_page_srv_2011_11_23() ->
+fix_page_srv_2011_11_23() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
                    [{kvstore, ?pages, P}] = new_db_api:read_kv(Site, ?pages),
                    case P of
-                       [] -> io:format("Borked pages server in ~p~n", [Site]);
+                       [] ->
+                           P2 = dh_tree:new(),
+                           ok = new_db_api:write_kv(Site, ?pages, P2),
+                           io:format("Page server for ~p updated~n", [Site]);
                        _  -> ok
                    end
-                   % P2 = dh_tree:create(P),
-                   % ok = new_db_api:write_kv(Site, ?pages, P2),
-                   % io:format("Page server for ~p updated~n", [Site])
            end,
     lists:foreach(Fun1, Sites),
     ok.
