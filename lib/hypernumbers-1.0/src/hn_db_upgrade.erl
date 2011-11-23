@@ -72,7 +72,10 @@ debug_page_srv_2011_11_23() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
                    [{kvstore, ?pages, P}] = new_db_api:read_kv(Site, ?pages),
-                   io:format("In ~p Pages is ~p~n", [Site, P])
+                   case P of
+                       [] -> io:format("Borked pages server in ~p~n", [Site]);
+                       _  -> ok
+                   end
                    % P2 = dh_tree:create(P),
                    % ok = new_db_api:write_kv(Site, ?pages, P2),
                    % io:format("Page server for ~p updated~n", [Site])
