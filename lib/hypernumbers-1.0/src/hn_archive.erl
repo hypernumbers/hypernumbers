@@ -69,7 +69,7 @@ export_site(Dest, Site) ->
     ok = dump_folder(Site, Dest, "views"),
     io:format("about to dump docroot~n"),
     ok = dump_folder(Site, Dest, "docroot"),
-    io:format("about to templates~n"),
+    io:format("about to dump templates~n"),
     ok = dump_folder(Site, Dest, "templates"),
     io:format("about to dump etl files~n"),
     ok = dump_folder(Site, Dest, "etl"),
