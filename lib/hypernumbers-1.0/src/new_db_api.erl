@@ -13,6 +13,7 @@
 -include("syslib.hrl").
 
 -export([
+         does_page_exist/1,
          delete_api/2,
          write_api/2,
          read_api/2,
@@ -204,6 +205,14 @@ process_dirties_for_zinf(Site, Tree, CheckFun) ->
     RefX = #refX{site = Site},
     write_activity(RefX, Fun, "quiet", Report),
     ok.
+
+does_page_exist(#refX{obj = {page, "/"}} = RefX) ->
+    Report = mnesia_mon:get_stamp("does_page_exists"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:does_page_exist(RefX)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 delete_api(Site, PublicKey) ->
     Report = mnesia_mon:get_stamp("delete_api"),

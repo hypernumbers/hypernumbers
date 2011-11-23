@@ -81,7 +81,7 @@ body {
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
 }
-.hninput, .hn-webcontrol, .hn-maprows, .hn-mapsheet, .hnfixedval {
+.hninput, .hn-webcontrol, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hnfixedval {
     font-size:inherit;
     width:100%;
     height:100%;

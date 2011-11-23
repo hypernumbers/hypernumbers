@@ -15,6 +15,7 @@
         ]).
 
 -export([
+         etl_to_custom/3,
          etl_to_row_append/3,
          etl_to_row/3,
          etl_to_sheet/3,
@@ -52,7 +53,7 @@ etl_to_row_append(FileName, Site, Type) ->
                 csv -> read_csv(FileName);
                 xls -> read_xls(FileName)
             end,
-    Chunk = chunk(Input),
+    Chunk = chunk(Input, false), % mebbies do something about header rows?
     write_rows(Chunk, Site).
 
 write_rows([], _Site) -> ok;
@@ -87,6 +88,14 @@ etl_to_row(FileName, Site, Map) ->
         {error, enoent} -> exit("map " ++ Map ++ " doesn't exist")
     end.
 
+% used for custom etl
+etl_to_custom(FileName, Site, Map) ->
+    case file:consult(Map) of
+        {ok, Terms}     -> etl_custom(Site, Terms, FileName);
+        {error, enoent} -> {not_valid, "Map " ++ Map
+                            ++ "doesn't exist"}
+    end.
+
 % only used for 'sheet' type maps (destination must be supplied)
 etl_to_sheet(FileName, Destination, Map) ->
     case file:consult(Map) of
@@ -95,14 +104,61 @@ etl_to_sheet(FileName, Destination, Map) ->
                             ++ " doesn't exist"}
     end.
 
-etl_row(Site, Terms, FileName) ->
-    {Input, {Head, _Pages, Validation, Mapping}}
+etl_custom(Site, Terms, FileName) ->
+    {Input, {Head, Templates, _Pages, Validation, Mapping}}
         = get_data(Terms, FileName),
     Type = Head#head.type,
+    HasHeaders = Head#head.has_headers,
+    Overwrite = Head#head.overwrite,
+    Mod = Head#head.pagemod,
+    Fn = Head#head.pagefn,
+    Args = Head#head.pagefnargs,
     case Type of
-        "sheet" -> {not_valid, "Map has sheet type not row type"};
+        "custom" ->
+            Chunked = chunk(Input, HasHeaders),
+            Chunked2 = get_pages(Chunked, Mod, Fn, Args),
+            case custom_validation(Chunked2, Site, Overwrite, Validation,
+                                   [], []) of
+                {valid, Pages} ->
+                    io:format("Pages is ~p~n", [Pages]),
+                    case write2(map_custom(Chunked2, Site, Mapping),
+                                Site, Pages, Head#head.overwrite,
+                                Head#head.template) of
+                        ok ->
+                            #templates{templates = Tps} = Templates,
+                            ok = load_parent_tps(flatten(Pages, []), Tps, Site);
+                        Err ->
+                            Err
+                    end;
+                {not_valid, Msg} ->
+                    {not_valid, Msg}
+            end;
+        Other ->
+            {not_valid, "Map has " ++ Other ++ " type not custom type"}
+    end.
+
+load_parent_tps([], _, _) ->
+    ok;
+load_parent_tps([H | T], Templates, Site) ->
+    ok = load_t2(Templates, H, Site),
+    load_parent_tps(T, Templates, Site).
+
+load_t2([], _, _) ->
+    ok;
+load_t2([{Page1, Template} | T], Page2, Site) ->
+    NewPath = muin_util:walk_path(string:tokens(Page2, "/"), Page1),
+    RefX = #refX{site = Site, path = NewPath, obj = {page, "/"}},
+    ok = hn_templates:load_template_if_no_page(RefX, Template),
+    load_t2(T, Page2, Site).
+
+etl_row(Site, Terms, FileName) ->
+    {Input, {Head, _Templates, _Pages, Validation, Mapping}}
+        = get_data(Terms, FileName),
+    Type = Head#head.type,
+    HasHeaders = Head#head.has_headers,
+    case Type of
         "row"   ->
-            Chunked = chunk(Input),
+            Chunked = chunk(Input, HasHeaders),
             case validate_rows(Site, Head#head.overwrite,
                                Validation, Chunked) of
                 {valid, Pages} ->
@@ -111,15 +167,16 @@ etl_row(Site, Terms, FileName) ->
                            Head#head.template);
                 {not_valid, Msg} ->
                     {not_valid, Msg}
-            end
+            end;
+        Other ->
+            {not_valid, "Map has " ++ Other ++ " type not row type"}
     end.
 
 etl_sheet(Terms, FileName, Dest) ->
-    {Input, {Head, Pages, Validation, Mapping}}
+    {Input, {Head, _Templates, Pages, Validation, Mapping}}
         = get_data(Terms, FileName),
     Type = Head#head.type,
     case Type of
-        "row"   -> {not_valid, "Map has row type not sheet type"};
         "sheet" ->
             case validate_sheet(Validation, Input) of
                 valid ->
@@ -128,17 +185,19 @@ etl_sheet(Terms, FileName, Dest) ->
                           Head#head.template);
                 {not_valid, Msg} ->
                     {not_valid, Msg}
-            end
+            end;
+        Other ->
+            {not_valid, "Map has " ++ Other ++ " type not sheet type"}
     end.
 
 get_data(Terms, FileName) ->
-    {Head, Pages, Validation, Mapping}
-        = split_map(Terms, [], [], [], []),
+    {Head, Templates, Pages, Validation, Mapping}
+        = split_map(Terms, [], [], [], [], []),
     Input = case Head#head.filetype of
                 "csv" -> read_csv(FileName);
                 "xls" -> read_xls(FileName)
             end,
-    {Input, {Head, Pages, Validation, Mapping}}.
+    {Input, {Head, Templates, Pages, Validation, Mapping}}.
 
 csv_file(Url, FileName) ->
 
@@ -364,19 +423,37 @@ normalise({value, date, {datetime, X}}) -> tconv:to_s(X);
 normalise({_, X})                       -> tconv:to_s(X);
 normalise({_, _, X})                    -> tconv:to_s(X).
 
-split_map([], Hd, P, V, M) ->
-    {Hd, P, V, M};
+split_map([], Hd, Tps, P, V, M) ->
+    {Hd, Tps, P, V, M};
 % there should only be one head record
-split_map([#head{} = Head | T], [], P, V, M) ->
-    split_map(T, Head, P, V, M);
-split_map([#validation{} = Vld | T], Hd, P, V, M) ->
+split_map([#head{} = Head | T], [], Tps, P, V, M) ->
+    split_map(T, Head, Tps, P, V, M);
+% there should only be one templates record
+split_map([#templates{} = Templates | T], Hd, [], P, V, M) ->
+    split_map(T, Hd, Templates, P, V, M);
+split_map([#validation{} = Vld | T], Hd, Tps, P, V, M) ->
     Sh2 = excel_util:esc_tab_name(Vld#validation.sheet),
     P2 = add(Sh2, P),
-    split_map(T, Hd, P2, [Vld#validation{sheet = Sh2} | V], M);
-split_map([#mapping{} = Map | T], Hd, P, V, M) ->
+    split_map(T, Hd, Tps, P2, [Vld#validation{sheet = Sh2} | V], M);
+split_map([#mapping{} = Map | T], Hd, Tps, P, V, M) ->
     Sh2 = excel_util:esc_tab_name(Map#mapping.sheet),
     P2 = add(Sh2, P),
-    split_map(T, Hd, P2, V, [Map#mapping{sheet = Sh2} | M]).
+    split_map(T, Hd, Tps, P2, V, [Map#mapping{sheet = Sh2} | M]).
+
+map_custom(Chunks, Site, Map) ->
+    map_c2(Chunks, Site, Map, []).
+
+map_c2([], _Site, _Map, Acc) -> Acc;
+map_c2([{Sheet, List} | T], Site, Map, Acc) ->
+    NewAcc = map_c3(List, Site, Sheet, Map, Acc),
+    map_c2(T, Site, Map, NewAcc).
+
+map_c3([], _Site, _Sheet, _Mapping, Acc) ->
+    Acc;
+map_c3([{_Row, Cells, Path} | T], Site, Sheet, Mapping, Acc) ->
+    % use map_r4 now 'cos we have eliminated the custom stuff
+    NewAcc = map_c_and_r4(Mapping, Site, Sheet, Cells, Path, Acc),
+    map_c3(T, Site, Sheet, Mapping, NewAcc).
 
 map_row(Chunks, Site, Mapping) -> map_r2(Chunks, Site, Mapping, []).
 
@@ -386,17 +463,17 @@ map_r2([{Sheet, H} | T], Site, Mapping, Acc) ->
     map_r2(T, Site, Mapping, NewAcc).
 
 map_r3([], _Site, _Sheet, _Mapping, Acc) -> Acc;
-map_r3([{Y, H} | T], Site, Sheet, Mapping, Acc) ->
+map_r3([{_Y, H} | T], Site, Sheet, Mapping, Acc) ->
     Page = case lists:keysearch(1, 1, H) of
                false              -> [];
                {value, {1, Path}} -> Path
            end,
-    NewAcc = map_r4(Mapping, Site, Sheet, Y, H, Page, Acc),
+    NewAcc = map_c_and_r4(Mapping, Site, Sheet, H, Page, Acc),
     map_r3(T, Site, Sheet, Mapping, NewAcc).
 
-map_r4([], _Site, _Sheet, _Y, _Cells, _Page, Acc) -> Acc;
-map_r4([{mapping, Sheet, From, To} | T], Site,
-       Sheet, Y, Cells, Page, Acc) ->
+map_c_and_r4([], _Site, _Sheet, _Cells, _Page, Acc) -> Acc;
+map_c_and_r4([{mapping, Sheet, From, To} | T], Site,
+       Sheet, Cells, Page, Acc) ->
     {column, {X, X}} = hn_util:parse_ref(From),
     To2 = hn_util:parse_ref(To),
     Path = string:tokens(Page, "/"),
@@ -405,9 +482,9 @@ map_r4([{mapping, Sheet, From, To} | T], Site,
                  false             -> Acc;
                  {value, {X, Val}} -> [{RefX, Val} | Acc]
              end,
-    map_r4(T, Site, Sheet, Y, Cells, Page, NewAcc);
-map_r4([_H | T], Site, Sheet, Y, Cells, Page, Acc) ->
-    map_r4(T, Site, Sheet, Y, Cells, Page, Acc).
+    map_c_and_r4(T, Site, Sheet, Cells, Page, NewAcc);
+map_c_and_r4([_H | T], Site, Sheet, Cells, Page, Acc) ->
+    map_c_and_r4(T, Site, Sheet, Cells, Page, Acc).
 
 map(Map, Dest, Pages, Data) -> map2(Map, Dest, Pages, Data, []).
 
@@ -438,12 +515,47 @@ map2([#mapping{} = Map | T], Dest, Pages, Input, Acc) ->
              end,
     map2(T, Dest, Pages, Input, NewAcc).
 
+custom_validation([], _S, _O, _V, Acc1, Acc2) ->
+    case lists:merge(Acc2) of
+        []   -> {valid, Acc1};
+        Msgs -> {not_valid, Msgs}
+    end;
+custom_validation([{Type, Chunks} | T], S, "overwrite", V, Acc1, Acc2) ->
+    {OldChunks, Pages} = lists:unzip([{{X, Y}, Z} || {X, Y, Z} <- Chunks]),
+    Checks = val_r1(V, Type, OldChunks, []),
+    custom_validation(T, S, "overwrite", V, [Pages | Acc1], [Checks | Acc2]);
+custom_validation([{Type, Chunks} | T], S, "dont_overwrite", V, Acc1, Acc2) ->
+    {OldChunks, Pages} = lists:unzip([{{X, Y}, Z} || {X, Y, Z} <- Chunks]),
+    Checks1 = check_for_custom_dups(Pages, []),
+    Checks2 = check_no_custom_page(Pages, S, []),
+    Checks3 = val_r1(V, Type, OldChunks, []),
+    custom_validation(T, S, "dont_overwrite", V, [Pages | Acc1],
+                      [Checks1, Checks2, Checks3 | Acc2]).
+
 validate_rows(S, O, V, Chunked) ->
-    {Msgs, Pages} = lists:unzip([validate_row(S, O, V, X)
-                                 || X <- Chunked]),
+    {Msgs, Pages} = lists:unzip([validate_row(S, O, V, X) || X <- Chunked]),
     case lists:merge(Msgs) of
         []   -> {valid, Pages};
         Msgs -> {not_valid, io_lib:format("~p", [Msgs])}
+    end.
+
+get_pages([{Type, Chunks}], Mod, Fn, Args) ->
+    [{Type, get_pages2(Chunks, Mod, Fn, Args, [])}].
+
+get_pages2([], _Mod, _Fn, _Args, Acc) ->
+    lists:reverse(Acc);
+get_pages2([{N, List} | T], Mod, Fn, Args, Acc) ->
+    Args2 = [tconv:b26_to_i(X) || X <- Args],
+    Args3 = [lookup(X, List) || X <- Args2],
+    Page = erlang:apply(Mod, Fn, Args3),
+    Page2 = string:to_lower(Page),
+    NewAcc = {N, List, Page2},
+    get_pages2(T, Mod, Fn, Args, [NewAcc | Acc]).
+
+lookup(N, List) ->
+    case lists:keyfind(N, 1, List) of
+        {N, V} -> V;
+        false  -> ""
     end.
 
 validate_row(Site, "dont_overwrite", Validation, {Sheet, Chunk}) ->
@@ -461,6 +573,15 @@ check_uniq_col_a(List, Acc) ->
         {Msg, Pages} -> {[Msg | Acc], Pages}
     end.
 
+check_for_custom_dups([], Acc) ->
+    Acc;
+check_for_custom_dups([H  | T], Acc) ->
+    NewAcc = case lists:member(H, T) of
+                 true -> [{duplicate, H} | Acc];
+                 false -> Acc
+             end,
+    check_for_custom_dups(T, NewAcc).
+
 check_for_dups([], Pages, Acc)     -> {Acc, Pages};
 check_for_dups([H | T], Pages, Acc) ->
     {_, [Page | _R]} = lists:unzip(H),
@@ -473,10 +594,22 @@ has_dups(Page, Pages, Acc) ->
         false -> {Acc, [Page | Pages]}
     end.
 
+check_no_custom_page([], _Site, Acc) ->
+    lists:reverse(Acc);
+check_no_custom_page([Page | T], Site, Acc) ->
+    Page2 = string:tokens(Page, "/"),
+    RefX = #refX{site = Site, path = Page2, obj = {page, "/"}},
+    NewAcc = case new_db_api:does_page_exist(RefX) of
+        true  -> [{page_exists, Page2} | Acc];
+        false -> Acc
+    end,
+    check_no_custom_page(T, Site, NewAcc).
+
 check_no_pages([], _, Acc) -> Acc;
 check_no_pages([{{cell, {1, _}}, Page} | T], Site, Acc) ->
     Page2 = string:tokens(Page, "/"),
-    NewAcc = case page_srv:does_page_exist(Site, Page2) of
+    RefX = #refX{site = Site, path = Page2, obj = {page, "/"}},
+    NewAcc = case new_db_api:does_page_exist(RefX) of
                  true  -> [{page_exists, Page2} | Acc];
                  false -> Acc
              end,
@@ -558,8 +691,8 @@ write([], _, _) -> ok;
 write(Recs, Overwrite, Template) ->
     Refs = transform_recs(Recs),
     Fun = fun({X, _F} = Ref) ->
-                  #refX{site = S, path = P} = X,
-                  case {Overwrite, page_srv:does_page_exist(S, P)} of
+                  #refX{obj = {page, "/"}} = X,
+                  case {Overwrite, new_db_api:does_page_exist(X)} of
                       {"dont_overwrite", true} -> ok;
                       _                        ->
                           case Template of
@@ -603,13 +736,14 @@ load_records([{RefX, V} | T]) ->
     ok = new_db_api:write_attributes([{RefX, [{"formula", V}]}]),
     load_records(T).
 
-load_templates([], _, _) -> ok;
+load_templates([], _, _) ->
+    ok;
 load_templates([H | T], "overwrite", Template) ->
     hn_templates:load_template(H, Template),
     ok = load_templates(T, "overwrite", Template);
 load_templates([H | T], "dont_overwrite", Template) ->
-    #refX{site = S, type = url, path = P} = H,
-    case page_srv:does_page_exist(S, P) of
+    #refX{path = P} = H,
+    case new_db_api:does_page_exist(H) of
         true  -> {error, {hn_util:list_to_path(P) ++ " exists"}};
         false -> ok = hn_templates:load_template(H, Template),
                  load_templates(T, "dont_overwrite", Template)
@@ -713,7 +847,12 @@ check_c2(Val, "is_date") ->
         {error, bad_date}      -> false
     end.
 
-chunk(List) -> [{Sheet, chunk2(X)} || {Sheet, X} <- List].
+chunk(List, HasHeaders) ->
+    Chunks = [{Sheet, chunk2(X)} || {Sheet, X} <- List],
+    case HasHeaders of
+        false -> Chunks;
+        true  -> [{X, lists:keydelete(1, 1, Y)} || {X, Y} <- Chunks]
+    end.
 
 chunk2(List) -> L2 = lists:sort(fun row_sort/2, List),
                {{cell, {_X, Y}}, _V} = hd(L2),

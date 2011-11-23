@@ -396,7 +396,11 @@ authorize_upload_again(#refX{site = _S, path = _P} = RefX,
 authorize_upload_again(#refX{site = _S, path = _P} = RefX,
                        {sheet, Map, Page}, _Uid) ->
     Expected = new_db_api:matching_forms(RefX, 'map-sheet-button'),
-    has_map_sheet(Expected, Map, Page).
+    has_map_sheet(Expected, Map, Page);
+authorize_upload_again(#refX{site = _S, path = _P} = RefX,
+                       {custom, Map}, _Uid) ->
+    Expected = new_db_api:matching_forms(RefX, 'map-custom-button'),
+    has_map_custom(Expected, Map).
 
 has_map_sheet([], _Map, _Page) -> false;
 has_map_sheet([H | T], Map, Page) ->
@@ -412,6 +416,14 @@ has_map_row([H | T], Map) ->
         {form, _, {_, 'map-rows-button', _}, _, _,
          {struct, [{"map", Map}]}} -> true;
         _ -> has_map_row(T, Map)
+    end.
+
+has_map_custom([], _Map) -> false;
+has_map_custom([H | T], Map) ->
+    case H of
+        {form, _, {_, 'map-custom-button', _}, _, _,
+         {struct, [{"map", Map}]}} -> true;
+        _ -> has_map_custom(T, Map)
     end.
 
 has_appropriate_view([])                -> false;
@@ -1785,11 +1797,20 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
                     ok ->
                         {ok, { {struct, [{"location", Loc}]}, File}}
                 end;
+            {{custom, Map}, _} ->
+                Dir = hn_util:etlroot(S),
+                MapFile = Dir ++ "/" ++ Map ++ ".map",
+                case hn_import:etl_to_custom(File, S, MapFile) of
+                    {not_valid, Msg} ->
+                        {ok, { {struct, [{error, Msg}]}, File}};
+                    ok ->
+                        {ok, { {struct, [{"location", Loc}]}, File}}
+                end;
             {{sheet, Map, Page}, _} ->
                 Dir = hn_util:etlroot(S),
                 MapFile = Dir ++ "/" ++ Map ++ ".map",
                 Page2 = case muin_util:walk_path(Ref#refX.path, Page) of
-                            [] -> "/";
+                            [] -> [];
                             Pg -> Pg
                         end,
                 Page3 = Ref#refX.site ++ hn_util:list_to_path(Page2),
@@ -1818,6 +1839,7 @@ get_type(Data) -> get_t2(lists:sort(Data)).
 
 get_t2([])                                                -> file;
 get_t2([{"map", Map}, {"type", "row"}])                   -> {row, Map};
+get_t2([{"map", Map}, {"type", "custom"}])                -> {custom, Map};
 get_t2([{"map", Map}, {"page", Page}, {"type", "sheet"}]) -> {sheet, Map, Page}.
 
 expand_height(#refX{obj = {row, {Y1, Y1}}} = Ref, Attr, PAr, VAr) ->

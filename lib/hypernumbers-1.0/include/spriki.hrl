@@ -332,7 +332,7 @@
           publickey,
           privatekey,
           urls = []
-          }).
+         }).
 
 -record(api_urls,
         {
@@ -344,20 +344,32 @@
 
 % records for data upload maps
 -record(head,
-        {type,
-         filetype,
-         template,
-         overwrite
-        }).
+        {
+          type,
+          filetype,
+          template,
+          overwrite,
+          has_headers = false,
+          pagemod = null,
+          pagefn = null,
+          pagefnargs = []
+         }).
+
+-record(templates,
+        {
+          templates = []
+         }).
 
 -record(validation,
-        {sheet,
-         cell,
-         constraint
-        }).
+        {
+          sheet,
+          cell,
+          constraint
+         }).
 
 -record(mapping,
-        {sheet,
-         from,
-         to
-        }).
+        {
+          sheet,
+          from,
+          to
+         }).

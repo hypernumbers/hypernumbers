@@ -10,11 +10,33 @@
 -export([
          'create.button'/1,
          'map.rows.button'/1,
-         'map.sheet.button'/1
+         'map.sheet.button'/1,
+         'map.custom.button'/1
         ]).
 
 -include("spriki.hrl").
 -include("errvals.hrl").
+
+'map.custom.button'(List) ->
+    [Title, Map] = typechecks:std_strs(List),
+    Maps = hn_util:get_maps(get(site)),
+    Id = "id_" ++ muin_util:create_name(),
+    case lists:member(Map, Maps) of
+        false -> ?ERRVAL_VAL;
+        true  -> Js = ["/hypernumbers/ajaxfileupload.js",
+                       "/webcomponents/hn.mapcustom.js"],
+                 Reload = ["HN.MapCustom.reload();"],
+                 Incs = #incs{js = Js, js_reload = Reload},
+                 Payload = {struct, [{"map", Map}]},
+                 Form = #form{id = {'map-custom-button', Title},
+                              kind = "map-custom-button",
+                              attrs = Payload},
+                 Html = "<input id='" ++ Id ++ "' type='submit' "
+                     ++ "class='hn-mapcustom' value='"
+                     ++ Title ++ "' data-map-type='custom' data-map='"
+                     ++ Map ++ "' />",
+                 {webcontrol, {Form, {Title, 1, 1, Incs}}, Html}
+    end.
 
 'map.sheet.button'(List) ->
     [Title, Page, Map] = typechecks:std_strs(List),

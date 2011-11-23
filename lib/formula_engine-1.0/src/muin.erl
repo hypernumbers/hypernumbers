@@ -9,9 +9,9 @@
 -include("hypernumbers.hrl").
 -include("muin_proc_dict.hrl").
 
--define(notincfns, [include, tick, snapshot, input, textarea, button, radio,
-                    select, 'create.button', 'map.rows.button',
-                    'map.sheet.button']).
+-define(notincfns, [include, tick, snapshot, input, fixedval, textarea,
+                    button, radio, select, 'create.button', 'map.rows.button',
+                    'map.sheet.button', 'map.custom.button']).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -959,8 +959,12 @@ zeval_from_zinf(Site, Path, Toks) ->
 zeval(Site, Path, Toks) ->
     X = ?mx,
     Y = ?my,
-    RefX = #refX{site = Site, type = url, path = Path, obj = {cell, {X, Y}}},
-    [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX]),
+    XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {X, Y}}},
+    %XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {0, 0}}},
+    %[XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX]),
+    % NOTE that we create an xrefX{} with a fake idx this xrefX{}
+    % doesn't go anywhere near the database
+    %XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {0, 0}}},
     zeval2(XRefX, Toks).
 
 %% the execution context for expressions is stored in the process dictionary

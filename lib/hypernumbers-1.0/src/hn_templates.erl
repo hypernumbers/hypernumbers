@@ -49,10 +49,11 @@ save_template(#refX{site = S}=RefX, Name)  ->
     ok = remoting_reg:notify_site(S).
 
 % race condition not managed by a db transaction here
-load_template_if_no_page(#refX{site = S, path = P} = RefX, Name) ->
-    case page_srv:does_page_exist(S, P) of
+load_template_if_no_page(#refX{path = P} = RefX, Name) ->
+    case new_db_api:does_page_exist(RefX) of
         false -> load_template(RefX, Name);
-        true  -> ok
+        true  -> io:format("Page ~p already  exists~n", [P]),
+                 ok
     end.
 
 load_template(RefX, Name) -> load_template(RefX, Name, nil).

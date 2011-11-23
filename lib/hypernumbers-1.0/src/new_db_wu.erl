@@ -25,6 +25,7 @@
 -include_lib("stdlib/include/ms_transform.hrl").
 
 -export([
+         does_page_exist/1,
          has_cell_been_deletedD/2,
          proc_dirties_for_zinfD/3,
          proc_dirty_zinfsD/4,
@@ -91,6 +92,12 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+does_page_exist(#refX{obj = {page , "/"}} = RefX) ->
+    case read_objs(RefX, inside) of
+        []    -> false;
+        _Recs -> true
+    end.
+
 has_cell_been_deletedD(Site, Idx) ->
     Tbl = trans(Site, del_local),
     case mnesia:read(Tbl, Idx, read) of
