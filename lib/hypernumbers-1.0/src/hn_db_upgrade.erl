@@ -10,6 +10,8 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         debug_page_srv_2011_11_23/0,
+         upgrade_etl_2011_11_23/0,
          add_api_table_2011_11_03/0,
          show_ranges_2011_10_20/0,
          fix_up_row_col_revidxs_2011_10_20/0,
@@ -65,6 +67,45 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+debug_page_srv_2011_11_23() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   [{kvstore, ?pages, P}] = new_db_api:read_kv(Site, ?pages),
+                   io:format("In ~p Pages is ~p~n", [Site, P])
+                   % P2 = dh_tree:create(P),
+                   % ok = new_db_api:write_kv(Site, ?pages, P2),
+                   % io:format("Page server for ~p updated~n", [Site])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
+upgrade_etl_2011_11_23() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Root = hn_util:etlroot(Site),
+                   Files = filelib:wildcard(Root ++ "/*.map"),
+                   io:format("Root is ~p Files is ~p~n", [Root, Files]),
+                   [upgrade_etl(X) || X <- Files]
+
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
+upgrade_etl(File) ->
+    {ok, Terms} = file:consult(File),
+    Terms2 = upgrade_etl2(Terms, []),
+    IoData = lists:flatten([io_lib:format("~p.~n", [X]) || X <- Terms2]),
+    ok = file:write_file(File, IoData),
+    ok.
+
+upgrade_etl2([], Acc) ->
+    lists:reverse(Acc);
+upgrade_etl2([{head, Ty, Ft, Tp, Ov} | T], Acc) ->
+    NewHead = #head{type = Ty, filetype = Ft, template = Tp, overwrite = Ov},
+    upgrade_etl2(T, [NewHead | Acc]);
+upgrade_etl2([H | T], Acc) ->
+    upgrade_etl2(T, [H | Acc]).
 
 add_api_table_2011_11_03() ->
     Sites = hn_setup:get_sites(),
