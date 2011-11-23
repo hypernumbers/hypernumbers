@@ -286,12 +286,6 @@ weekday([V1, V2]) ->
         {Err, _Else}       -> Err
     end.
 
-%    io:format("hello?~n"),
-%    Dt = muin_col_DEPR:collect_date(V1, ?cast_all),
-%    Rettype = ?int(V2, ?cast_all),
-%% io:format("Dt ~p", [Dt]),
-%% weekday1(Dt, Rettype).
-
 weekday1(Dt, 1) ->
     case (calendar:day_of_the_week(Dt#datetime.date) + 1) rem 7 of
         0 -> 7;
