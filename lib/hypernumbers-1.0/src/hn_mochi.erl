@@ -1792,6 +1792,8 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
                 Dir = hn_util:etlroot(S),
                 MapFile = Dir ++ "/" ++ Map ++ ".map",
                 case hn_import:etl_to_row(File, S, MapFile) of
+                    {error, Msg} ->
+                        {ok, { {struct, [{error, Msg}]}, File}};
                     {not_valid, Msg} ->
                         {ok, { {struct, [{error, Msg}]}, File}};
                     ok ->
@@ -1801,6 +1803,8 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
                 Dir = hn_util:etlroot(S),
                 MapFile = Dir ++ "/" ++ Map ++ ".map",
                 case hn_import:etl_to_custom(File, S, MapFile) of
+                    {error, Msg} ->
+                        {ok, { {struct, [{error, Msg}]}, File}};
                     {not_valid, Msg} ->
                         {ok, { {struct, [{error, Msg}]}, File}};
                     ok ->

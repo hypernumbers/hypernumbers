@@ -16,7 +16,7 @@
 
 -export([
          etl_to_custom/3,
-         etl_to_row_append/3,
+         % etl_to_row_append/3,
          etl_to_row/3,
          etl_to_sheet/3,
          xls_file/3,
@@ -48,37 +48,37 @@ save_map(Site, Name, Head, Validation, Mapping) ->
 
 %% only used for 'row_append' operations - there is no mapping
 %% each row is loaded to the page that appears in column 'A'
-etl_to_row_append(FileName, Site, Type) ->
-    Input = case Type of
-                csv -> read_csv(FileName);
-                xls -> read_xls(FileName)
-            end,
-    Chunk = chunk(Input, false), % mebbies do something about header rows?
-    write_rows(Chunk, Site).
+%% etl_to_row_append(FileName, Site, Type) ->
+%%     Input = case Type of
+%%                 csv -> read_csv(FileName);
+%%                 xls -> read_xls(FileName)
+%%             end,
+%%     Chunk = chunk(Input, false), % mebbies do something about header rows?
+%%     write_rows(Chunk, Site).
 
-write_rows([], _Site) -> ok;
-write_rows([{_, Rows} | T], Site) ->
-    ok = write_row(Rows, Site),
-    write_rows(T, Site).
+%% write_rows([], _Site) -> ok;
+%% write_rows([{_, Rows} | T], Site) ->
+%%     ok = write_row(Rows, Site),
+%%     write_rows(T, Site).
 
-write_row([], _Site) -> ok;
-write_row([H | T], Site) ->
-    {_Y, List} = H,
-    RefXs = make_refXs(Site, List),
-    ok = new_db_api:append_row(RefXs, nil, nil),
-    syslib:limiter(Site),
-    write_row(T, Site).
+%% write_row([], _Site) -> ok;
+%% write_row([H | T], Site) ->
+%%     {_Y, List} = H,
+%%     RefXs = make_refXs(Site, List),
+%%     ok = new_db_api:append_row(RefXs, nil, nil),
+%%     syslib:limiter(Site),
+%%     write_row(T, Site).
 
-make_refXs(Site, List) ->
-    {1, Path} = lists:keyfind(1, 1, List),
-    [make_r2(Site, hn_util:path_tokens(Path), X) || X <- List].
+%% make_refXs(Site, List) ->
+%%     {1, Path} = lists:keyfind(1, 1, List),
+%%     [make_r2(Site, hn_util:path_tokens(Path), X) || X <- List].
 
-make_r2(Site, Path, {1, _}) ->
-    RefX = #refX{site = Site, type = gurl, path = Path, obj = {column, {1, 1}}},
-    {RefX, "=now()"};
-make_r2(Site, Path, {X, Val}) ->
-    RefX = #refX{site = Site, type = gurl, path = Path, obj = {column, {X, X}}},
-    {RefX, Val}.
+%% make_r2(Site, Path, {1, _}) ->
+%%     RefX = #refX{site = Site, type = gurl, path = Path, obj = {column, {1, 1}}},
+%%     {RefX, "=now()"};
+%% make_r2(Site, Path, {X, Val}) ->
+%%     RefX = #refX{site = Site, type = gurl, path = Path, obj = {column, {X, X}}},
+%%     {RefX, Val}.
 
 %% only used for 'row' type maps (file contains the destination)
 %% a 'row' type map has one record per line
@@ -113,14 +113,14 @@ etl_custom(Site, Terms, FileName) ->
     Mod = Head#head.pagemod,
     Fn = Head#head.pagefn,
     Args = Head#head.pagefnargs,
+    LoadPages = get_load_pages(Mapping),
     case Type of
         "custom" ->
-            Chunked = chunk(Input, HasHeaders),
+            Chunked = chunk(Input, LoadPages, HasHeaders),
             Chunked2 = get_pages(Chunked, Mod, Fn, Args),
             case custom_validation(Chunked2, Site, Overwrite, Validation,
                                    [], []) of
                 {valid, Pages} ->
-                    io:format("Pages is ~p~n", [Pages]),
                     case write2(map_custom(Chunked2, Site, Mapping),
                                 Site, Pages, Head#head.overwrite,
                                 Head#head.template) of
@@ -136,6 +136,9 @@ etl_custom(Site, Terms, FileName) ->
         Other ->
             {not_valid, "Map has " ++ Other ++ " type not custom type"}
     end.
+
+get_load_pages(Mapping) ->
+    hslists:uniq([X || {_, X, _, _} <- Mapping]).
 
 load_parent_tps([], _, _) ->
     ok;
@@ -156,9 +159,10 @@ etl_row(Site, Terms, FileName) ->
         = get_data(Terms, FileName),
     Type = Head#head.type,
     HasHeaders = Head#head.has_headers,
+    LoadPages = get_load_pages(Mapping),
     case Type of
         "row"   ->
-            Chunked = chunk(Input, HasHeaders),
+            Chunked = chunk(Input, LoadPages, HasHeaders),
             case validate_rows(Site, Head#head.overwrite,
                                Validation, Chunked) of
                 {valid, Pages} ->
@@ -516,9 +520,10 @@ map2([#mapping{} = Map | T], Dest, Pages, Input, Acc) ->
     map2(T, Dest, Pages, Input, NewAcc).
 
 custom_validation([], _S, _O, _V, Acc1, Acc2) ->
-    case lists:merge(Acc2) of
-        []   -> {valid, Acc1};
-        Msgs -> {not_valid, Msgs}
+    case lists:flatten(lists:merge(Acc2)) of
+        []    -> {valid, Acc1};
+        Msgs2 -> [M2] = io_lib:format("~s", [Msgs2]),
+                 {not_valid, M2}
     end;
 custom_validation([{Type, Chunks} | T], S, "overwrite", V, Acc1, Acc2) ->
     {OldChunks, Pages} = lists:unzip([{{X, Y}, Z} || {X, Y, Z} <- Chunks]),
@@ -534,9 +539,10 @@ custom_validation([{Type, Chunks} | T], S, "dont_overwrite", V, Acc1, Acc2) ->
 
 validate_rows(S, O, V, Chunked) ->
     {Msgs, Pages} = lists:unzip([validate_row(S, O, V, X) || X <- Chunked]),
-    case lists:merge(Msgs) of
-        []   -> {valid, Pages};
-        Msgs -> {not_valid, io_lib:format("~p", [Msgs])}
+    case lists:flatten(lists:merge(Msgs)) of
+        []    -> {valid, Pages};
+        Msgs2 -> [M2] = io_lib:format("~s", [Msgs2]),
+                 {not_valid, M2}
     end.
 
 get_pages([{Type, Chunks}], Mod, Fn, Args) ->
@@ -582,7 +588,8 @@ check_for_custom_dups([H  | T], Acc) ->
              end,
     check_for_custom_dups(T, NewAcc).
 
-check_for_dups([], Pages, Acc)     -> {Acc, Pages};
+check_for_dups([], Pages, Acc) ->
+    {Acc, Pages};
 check_for_dups([H | T], Pages, Acc) ->
     {_, [Page | _R]} = lists:unzip(H),
     {NewAcc, NewPages} = has_dups(Page, Pages, Acc),
@@ -590,7 +597,7 @@ check_for_dups([H | T], Pages, Acc) ->
 
 has_dups(Page, Pages, Acc) ->
     case lists:member(Page, Pages) of
-        true  -> {[Page ++ " is duplicated" | Acc], Pages};
+        true  -> {[Page ++ " is duplicated. " | Acc], Pages};
         false -> {Acc, [Page | Pages]}
     end.
 
@@ -711,7 +718,7 @@ write2(Recs, Site, Pages, Overwrite, Template) ->
     Pages2 = [refX_from_page(Site, X) || X <- flatten(Pages, [])],
     case load_templates(Pages2, Overwrite, Template) of
         ok           -> load_records(Recs);
-        {error, Msg} -> Msg
+        {error, Msg} -> {error, Msg}
     end.
 
 refX_from_page(Site, Page) ->
@@ -744,7 +751,7 @@ load_templates([H | T], "overwrite", Template) ->
 load_templates([H | T], "dont_overwrite", Template) ->
     #refX{path = P} = H,
     case new_db_api:does_page_exist(H) of
-        true  -> {error, {hn_util:list_to_path(P) ++ " exists"}};
+        true  -> {error, hn_util:list_to_path(P) ++ " exists"};
         false -> ok = hn_templates:load_template(H, Template),
                  load_templates(T, "dont_overwrite", Template)
     end.
@@ -847,16 +854,17 @@ check_c2(Val, "is_date") ->
         {error, bad_date}      -> false
     end.
 
-chunk(List, HasHeaders) ->
+chunk(List, LoadPages, HasHeaders) ->
     Chunks = [{Sheet, chunk2(X)} || {Sheet, X} <- List],
+    Chunks2 = remove_nonload_pages(Chunks, LoadPages, []),
     case HasHeaders of
-        false -> Chunks;
-        true  -> [{X, lists:keydelete(1, 1, Y)} || {X, Y} <- Chunks]
+        false -> Chunks2;
+        true  -> [{X, lists:keydelete(1, 1, Y)} || {X, Y} <- Chunks2]
     end.
 
 chunk2(List) -> L2 = lists:sort(fun row_sort/2, List),
-               {{cell, {_X, Y}}, _V} = hd(L2),
-               chunk3(L2, Y, Y, [], []).
+                {{cell, {_X, Y}}, _V} = hd(L2),
+                chunk3(L2, Y, Y, [], []).
 
 % gonnae return lists of {X, Val} all tagged with the common Y
 % this algorithm assumes the data is sorted in row (ie Y) order
@@ -868,6 +876,15 @@ chunk3([{{cell, {X, Y}}, Val} | T], Y, OldY, Acc1, Acc2) ->
     chunk3(T, Y, OldY, [{X, Val} | Acc1], Acc2);
 chunk3([{{cell, {X, Y}}, Val}  | T], _Y1, OldY, Acc1, Acc2) ->
     chunk3(T, Y, Y, [{X, Val}], [{OldY, lists:reverse(Acc1)} | Acc2]).
+
+remove_nonload_pages([], _LoadPages, Acc) ->
+   Acc;
+remove_nonload_pages([{Sheet, Cells} | T], LoadPages, Acc) ->
+    NewAcc = case lists:member(Sheet, LoadPages) of
+                 true  -> [{Sheet, Cells} | Acc];
+                 false -> Acc
+             end,
+    remove_nonload_pages(T, LoadPages, NewAcc).
 
 row_sort({{cell, {_, Y1}}, _}, {{cell, {_, Y2}}, _}) when Y1 >= Y2 -> true;
 row_sort({{cell, {_, Y1}}, _}, {{cell, {_, Y2}}, _}) when Y1 <  Y2 -> false.
