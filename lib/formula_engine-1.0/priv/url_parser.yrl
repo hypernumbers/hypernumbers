@@ -132,7 +132,7 @@ make_refX("http://"++URL) ->
         {error, Err} -> error_logger:error_msg("url parsing of ~p~n~p~n"
                                                ++ "failed with ~p~n",
                                                [URL, Toks, Err]),
-                        exit(wiggo)
+                        exit(invalid_url)
     end.
 
 %%% Tests:
