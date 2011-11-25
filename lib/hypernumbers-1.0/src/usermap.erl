@@ -26,6 +26,8 @@
 -include_lib("eunit/include/eunit.hrl").
 
 pret("mps/" ++ MPAN, Date) ->
+    pret(MPAN, Date);
+pret(MPAN, Date) ->
     [Year, Month, Day] = lists:reverse(string:tokens(Date, "/")),
     {WeekNo, DayNo} = get_pret_week(Year, Month, Day),
     Path = ["stores", lookup(MPAN), "electricity", Year, tconv:to_s(WeekNo),
