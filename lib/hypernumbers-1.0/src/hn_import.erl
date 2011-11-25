@@ -15,6 +15,7 @@
         ]).
 
 -export([
+         load_template_file/3,
          etl_to_custom/3,
          % etl_to_row_append/3,
          etl_to_row/3,
@@ -79,6 +80,14 @@ save_map(Site, Name, Head, Validation, Mapping) ->
 %% make_r2(Site, Path, {X, Val}) ->
 %%     RefX = #refX{site = Site, type = gurl, path = Path, obj = {column, {X, X}}},
 %%     {RefX, Val}.
+
+%% used to load a file of pages and apply a template to each of them
+load_template_file(File, Template, Site) ->
+    {ok, Lines} = hn_util:read_lines(File),
+    Lines2 = [string:strip(X, both, 10) || X <- Lines],
+    RefXs = make_refXs(Lines2, Site, []),
+    [ok = hn_templates:load_template_if_no_page(X, Template) || X <- RefXs],
+    ok.
 
 %% only used for 'row' type maps (file contains the destination)
 %% a 'row' type map has one record per line
@@ -895,6 +904,12 @@ int_sort({A, _}, {B, _}) ->
     if A1 >  B1 -> false;
        A1 =< B1 -> true
     end.
+
+make_refXs([], _Site, Acc) -> Acc;
+make_refXs([H | T], Site, Acc) ->
+    Url = Site ++ H,
+    RefX = hn_util:url_to_refX(Url),
+    make_refXs(T, Site, [RefX | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

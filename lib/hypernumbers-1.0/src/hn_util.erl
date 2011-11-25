@@ -12,6 +12,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         read_lines/1,
          esc/1,
          log/2,
          log_terms/2,
@@ -89,6 +90,19 @@
          % Formula utilities
          make_formula/2
         ]).
+
+read_lines(File) ->
+    case file:open(File, read) of
+        {error, Err} -> {error, Err};
+        {ok, Id}     -> read_l2(Id, [])
+    end.
+
+read_l2(Id, Acc) ->
+    case file:read_line(Id) of
+        {ok, Data}   -> read_l2(Id, [Data | Acc]);
+        {error, Err} -> {error, Err};
+        eof          -> {ok, lists:reverse(Acc)}
+    end.
 
 esc(List) -> esc2(List, []).
 

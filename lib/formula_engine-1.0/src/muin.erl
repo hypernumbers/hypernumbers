@@ -11,7 +11,8 @@
 
 -define(notincfns, [include, tick, snapshot, input, fixedval, textarea,
                     button, radio, select, 'create.button', 'map.rows.button',
-                    'map.sheet.button', 'map.custom.button']).
+                    'map.sheet.button', 'map.custom.button',
+                    'load.template.button']).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to

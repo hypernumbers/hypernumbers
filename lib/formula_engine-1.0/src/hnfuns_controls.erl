@@ -11,11 +11,33 @@
          'create.button'/1,
          'map.rows.button'/1,
          'map.sheet.button'/1,
-         'map.custom.button'/1
+         'map.custom.button'/1,
+         'load.templates.button'/1
         ]).
 
 -include("spriki.hrl").
 -include("errvals.hrl").
+
+'load.templates.button'(List) ->
+    [Title, Template] = typechecks:std_strs(List),
+    Templates = hn_util:get_templates(get(site)),
+    Id = "id_" ++ muin_util:create_name(),
+    case lists:member(Template, Templates) of
+        false -> ?ERRVAL_VAL;
+        true  -> Js = ["/hypernumbers/ajaxfileupload.js",
+                       "/webcomponents/hn.loadtemplates.js"],
+                 Reload = ["HN.LoadTemplates.reload();"],
+                 Incs = #incs{js = Js, js_reload = Reload},
+                 Payload = {struct, [{"load_templates", Template}]},
+                 Form = #form{id = {'load-template-button', Title},
+                              kind = "load-template-button",
+                              attrs = Payload},
+                 Html = "<input id='" ++ Id ++ "'type='submit' "
+                     ++ "class='hn-loadtemplate' value='"
+                     ++ Title ++ "' data-template='"
+                     ++ Template ++ "' />",
+                 {webcontrol, {Form, {Title, 1, 1, Incs}}, Html}
+    end.
 
 'map.custom.button'(List) ->
     [Title, Map] = typechecks:std_strs(List),

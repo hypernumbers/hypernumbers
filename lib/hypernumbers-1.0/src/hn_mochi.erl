@@ -390,6 +390,10 @@ authorize_upload_again(#refX{site = S, path = P}, file, Uid) ->
     Views = auth_srv:get_views(S, P, Uid),
     lists:member(?SHEETVIEW, Views);
 authorize_upload_again(#refX{site = _S, path = _P} = RefX,
+                       {load_templates, Template}, _Uid) ->
+    Expected = new_db_api:matching_forms(RefX, 'load-template-button'),
+    has_load_templates(Expected, Template);
+authorize_upload_again(#refX{site = _S, path = _P} = RefX,
                        {row, Map}, _Uid) ->
     Expected = new_db_api:matching_forms(RefX, 'map-rows-button'),
     has_map_row(Expected, Map);
@@ -402,28 +406,44 @@ authorize_upload_again(#refX{site = _S, path = _P} = RefX,
     Expected = new_db_api:matching_forms(RefX, 'map-custom-button'),
     has_map_custom(Expected, Map).
 
+has_load_templates([], _Template) -> false;
+has_load_templates([H | T], Template) ->
+    case H of
+        {form, _, {_, 'load-template-button', _}, _, _,
+         {struct, [{"load_templates", Template}]}} ->
+            true;
+        _ ->
+            has_load_templates(T, Template)
+    end.
+
 has_map_sheet([], _Map, _Page) -> false;
 has_map_sheet([H | T], Map, Page) ->
     case H of
         {form, _, {_, 'map-sheet-button', _}, _, _,
-         {struct, [{"map", Map}, {"page", Page}]}} -> true;
-        _ -> has_map_sheet(T, Map, Page)
+         {struct, [{"map", Map}, {"page", Page}]}} ->
+            true;
+        _ ->
+            has_map_sheet(T, Map, Page)
     end.
 
 has_map_row([], _Map) -> false;
 has_map_row([H | T], Map) ->
     case H of
         {form, _, {_, 'map-rows-button', _}, _, _,
-         {struct, [{"map", Map}]}} -> true;
-        _ -> has_map_row(T, Map)
+         {struct, [{"map", Map}]}} ->
+            true;
+        _ ->
+            has_map_row(T, Map)
     end.
 
 has_map_custom([], _Map) -> false;
 has_map_custom([H | T], Map) ->
     case H of
         {form, _, {_, 'map-custom-button', _}, _, _,
-         {struct, [{"map", Map}]}} -> true;
-        _ -> has_map_custom(T, Map)
+         {struct, [{"map", Map}]}} ->
+            true;
+        _ ->
+            has_map_custom(T, Map)
     end.
 
 has_appropriate_view([])                -> false;
@@ -1788,12 +1808,19 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
                 Url = NRef#refX.site ++ Loc,
                 ok = hn_import:csv_file(Url, File),
                 {ok, { {struct, [{"location", Loc}]}, File}};
+            {{load_templates, Template}, _} ->
+                case hn_import:load_template_file(File, Template, S) of
+                    {error, Msg} ->
+                         {ok, { {struct, [{error, Msg}]}, File}};
+                    ok ->
+                        {ok, { {struct, [{"location", Loc}]}, File}}
+                end;
             {{row, Map}, _} ->
                 Dir = hn_util:etlroot(S),
                 MapFile = Dir ++ "/" ++ Map ++ ".map",
                 case hn_import:etl_to_row(File, S, MapFile) of
                     {error, Msg} ->
-                        {ok, { {struct, [{error, Msg}]}, File}};
+                         {ok, { {struct, [{error, Msg}]}, File}};
                     {not_valid, Msg} ->
                         {ok, { {struct, [{error, Msg}]}, File}};
                     ok ->
@@ -1841,10 +1868,16 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
 
 get_type(Data) -> get_t2(lists:sort(Data)).
 
-get_t2([])                                                -> file;
-get_t2([{"map", Map}, {"type", "row"}])                   -> {row, Map};
-get_t2([{"map", Map}, {"type", "custom"}])                -> {custom, Map};
-get_t2([{"map", Map}, {"page", Page}, {"type", "sheet"}]) -> {sheet, Map, Page}.
+get_t2([]) ->
+    file;
+get_t2([{"load_templates", Template}]) ->
+    {load_templates, Template};
+get_t2([{"map", Map}, {"type", "row"}]) ->
+    {row, Map};
+get_t2([{"map", Map}, {"type", "custom"}]) ->
+    {custom, Map};
+get_t2([{"map", Map}, {"page", Page}, {"type", "sheet"}]) ->
+    {sheet, Map, Page}.
 
 expand_height(#refX{obj = {row, {Y1, Y1}}} = Ref, Attr, PAr, VAr) ->
     ok = new_db_api:write_attributes([{Ref, Attr}], PAr, VAr);
