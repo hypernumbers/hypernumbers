@@ -50,14 +50,14 @@ content(Ref, Type) ->
     Open = "<link rel='stylesheet' href='",
     {_, CSSList2} = lists:unzip(CSSList),
     {_, JSList2}  = lists:unzip(JSList),
-    CSS3 = [Open ++ X ++ "'type='text/css' />"
+    CSS3 = [Open ++ X ++ "'type='text/css' />\n"
             || X <- lists:merge(CSSList2, CSS2)],
-    JS3 = ["<script src='" ++ X ++ "'></script>"
+    JS3 = ["<script src='" ++ X ++ "'></script>\n"
            || X <- lists:merge(JSList2, Js2)],
     Js_r2 = "<script type='text/javascript'>HN.Includes = {}; "
         ++ "HN.Includes.reload = function () { "
         ++ lists:flatten(Js_reload) ++ "};</script>",
-    Title = ["<title>" ++ X ++ "</title>" || {_, X} <- TitleList],
+    Title = ["<title>" ++ X ++ "</title>\n" || {_, X} <- TitleList],
     Addons = #render{css=CSS3, js=JS3, js_reload = Js_r2, title=Title},
     {layout(Ref, Type, Cells, ColWs, RowHs, Palette), Addons}.
 
@@ -279,7 +279,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'",
                                [TotalWidth, TotalHeight]),
     Title = case Addons#render.title of
-                [] -> "<title>Hypernumbers - the team spreadsheet</title>";
+                [] -> "<title>Hypernumbers - the team spreadsheet</title>\n";
                 T  -> T
             end,
 
