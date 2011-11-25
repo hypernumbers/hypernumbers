@@ -68,11 +68,6 @@ html,body {
     border: none;
 }
 
-#hn_makeuserdeffnsblurb {
-                          color  : #666;
-                          margin : 0px 0px 2px 0px;
-                          }
-
 .dialog .footer {
     min-height         : 4pt; /* TODO fix for columnmanager */
 }
@@ -133,7 +128,7 @@ html,body {
     max-width          : none;
     min-width          : 255px;
     max-height         : none;
-    height             : 235px;
+    height             : 240px;
 }
 
 .hn_uf_inp {
@@ -149,6 +144,11 @@ html,body {
     height             : 90px;
     width              : 225px;
     border             : solid thin #dddddd;
+ }
+
+.hn_uf_addparam, .hn_uf_delparam {
+     position: relative;
+     top: 2px;
  }
 
 .hn_uf_txt, .hn_uf_insettxt {
@@ -1386,9 +1386,14 @@ z-index     : 10000002;
     font-style:     italic;
 }
 
-#doupload, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol {
+#doupload, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn {
     cursor:pointer;
 }
+
+.hn_userdef_btn {
+                  position: relative;
+                  left: 160px;
+                  }
 
 #users {
     width:300px;
@@ -1590,7 +1595,7 @@ z-index     : 10000002;
     width: 100px
 }
 
-.button, .tournavigate, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc {
+.button, .tournavigate, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc {
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;
