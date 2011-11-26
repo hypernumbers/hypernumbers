@@ -92,10 +92,18 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-does_page_exist(#refX{obj = {page , "/"}} = RefX) ->
+does_page_exist(#refX{site = S, obj = {page , "/"}} = RefX) ->
     case read_objs(RefX, inside) of
-        []    -> false;
-        _Recs -> true
+        []   -> false;
+        Recs -> do_items_existD(Recs, S)
+    end.
+
+do_items_existD([], _Site) -> false;
+do_items_existD([#local_obj{idx = Idx} | T], Site) ->
+    Tbl = trans(Site, item),
+    case mnesia:read(Tbl, Idx, read) of
+        [] -> do_items_existD(T, Site);
+        _  -> true
     end.
 
 has_cell_been_deletedD(Site, Idx) ->

@@ -86,7 +86,11 @@ load_template_file(File, Template, Site) ->
     {ok, Lines} = hn_util:read_lines(File),
     Lines2 = [string:strip(X, both, 10) || X <- Lines],
     RefXs = make_refXs(Lines2, Site, []),
-    [ok = hn_templates:load_template_if_no_page(X, Template) || X <- RefXs],
+    Fun = fun(X) ->
+                  ok = hn_templates:load_template_if_no_page(X, Template),
+                  syslib:limiter(Site)
+          end,
+    [Fun(X) || X <- RefXs],
     ok.
 
 %% only used for 'row' type maps (file contains the destination)
