@@ -535,7 +535,7 @@ map2([#mapping{} = Map | T], Dest, Pages, Input, Acc) ->
 custom_validation([], _S, _O, _V, Acc1, Acc2) ->
     case lists:flatten(lists:merge(Acc2)) of
         []    -> {valid, Acc1};
-        Msgs2 -> [M2] = io_lib:format("~s", [Msgs2]),
+        Msgs2 -> [M2] = io_lib:format("~p", [Msgs2]),
                  {not_valid, M2}
     end;
 custom_validation([{Type, Chunks} | T], S, "overwrite", V, Acc1, Acc2) ->
@@ -554,7 +554,7 @@ validate_rows(S, O, V, Chunked) ->
     {Msgs, Pages} = lists:unzip([validate_row(S, O, V, X) || X <- Chunked]),
     case lists:flatten(lists:merge(Msgs)) of
         []    -> {valid, Pages};
-        Msgs2 -> [M2] = io_lib:format("~s", [Msgs2]),
+        Msgs2 -> [M2] = io_lib:format("~p", [Msgs2]),
                  {not_valid, M2}
     end.
 
