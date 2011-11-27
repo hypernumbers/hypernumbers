@@ -838,7 +838,7 @@ check_constraint(Sheet, {X, List}, Y, Cons, Acc) ->
                                             Ref = util2:make_ref({X, Y}),
                                             Ref2 = Sheet ++ "/" ++ Ref,
                                             [Ref2 ++ " is " ++ Val ++
-                                             " not " ++ Cons | Acc]
+                                             " not " ++ Cons ++ " " | Acc]
                                     end;
                false             -> Acc
            end,
