@@ -535,7 +535,7 @@ map2([#mapping{} = Map | T], Dest, Pages, Input, Acc) ->
 custom_validation([], _S, _O, _V, Acc1, Acc2) ->
     case lists:flatten(lists:merge(Acc2)) of
         []    -> {valid, Acc1};
-        Msgs2 -> [M2] = io_lib:format("~p", [Msgs2]),
+        Msgs2 -> [M2] = io_lib:format("~s", [Msgs2]),
                  {not_valid, M2}
     end;
 custom_validation([{Type, Chunks} | T], S, "overwrite", V, Acc1, Acc2) ->
@@ -554,7 +554,7 @@ validate_rows(S, O, V, Chunked) ->
     {Msgs, Pages} = lists:unzip([validate_row(S, O, V, X) || X <- Chunked]),
     case lists:flatten(lists:merge(Msgs)) of
         []    -> {valid, Pages};
-        Msgs2 -> [M2] = io_lib:format("~p", [Msgs2]),
+        Msgs2 -> M2 = io_lib:format("~s", [Msgs2]),
                  {not_valid, M2}
     end.
 
@@ -620,8 +620,10 @@ check_no_custom_page([Page | T], Site, Acc) ->
     Page2 = string:tokens(Page, "/"),
     RefX = #refX{site = Site, path = Page2, obj = {page, "/"}},
     NewAcc = case new_db_api:does_page_exist(RefX) of
-        true  -> [{page_exists, Page2} | Acc];
-        false -> Acc
+                 true  -> P2 = string:join(Page2, "/"),
+                          Msg = io_lib:format("page ~p exists~n", [P2]),
+                          [Msg | Acc];
+                 false -> Acc
     end,
     check_no_custom_page(T, Site, NewAcc).
 
@@ -630,7 +632,9 @@ check_no_pages([{{cell, {1, _}}, Page} | T], Site, Acc) ->
     Page2 = string:tokens(Page, "/"),
     RefX = #refX{site = Site, path = Page2, obj = {page, "/"}},
     NewAcc = case new_db_api:does_page_exist(RefX) of
-                 true  -> [{page_exists, Page2} | Acc];
+                 true  -> P2 = string:join(Page2, "/"),
+                          Msg = io_lib:format("page ~p exists~n", [P2]),
+                          [Msg | Acc];
                  false -> Acc
              end,
     check_no_pages(T, Site, NewAcc);
