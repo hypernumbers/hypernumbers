@@ -734,7 +734,7 @@ write(Recs, Overwrite, Template) ->
 write2(Recs, Site, Pages, Overwrite, Template) ->
     Pages2 = [refX_from_page(Site, X) || X <- flatten(Pages, [])],
     case load_templates(Pages2, Overwrite, Template) of
-        ok           -> load_records(Recs);
+        ok           -> load_records(Recs, Site);
         {error, Msg} -> {error, Msg}
     end.
 
@@ -755,10 +755,10 @@ refX_from_page(Site, Page) ->
 flatten([], Acc)      -> Acc;
 flatten([H | T], Acc) -> flatten(T, lists:merge([H, Acc])).
 
-load_records(List) -> Recs = load_r2(List, []),
-                      ok = new_db_api:write_attributes(Recs),
-                      syslib:limiter(),
-                      ok.
+load_records(List, Site) -> Recs = load_r2(List, []),
+                            ok = new_db_api:write_attributes(Recs),
+                            syslib:limiter(Site),
+                            ok.
 
 load_r2([], Acc)              -> Acc;
 load_r2([{RefX, V} | T], Acc) -> load_r2(T, [{RefX, [{"formula", V}]} | Acc]).
