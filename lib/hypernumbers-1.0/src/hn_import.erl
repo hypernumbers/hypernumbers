@@ -755,10 +755,13 @@ refX_from_page(Site, Page) ->
 flatten([], Acc)      -> Acc;
 flatten([H | T], Acc) -> flatten(T, lists:merge([H, Acc])).
 
-load_records([]) -> ok;
-load_records([{RefX, V} | T]) ->
-    ok = new_db_api:write_attributes([{RefX, [{"formula", V}]}]),
-    load_records(T).
+load_records(List) -> Recs = load_r2(List, []),
+                      ok = new_db_api:write_attributes(Recs),
+                      syslib:limiter(),
+                      ok.
+
+load_r2([], Acc)              -> Acc;
+load_r2([{RefX, V} | T], Acc) -> load_r2(T, [{RefX, [{"formula", V}]} | Acc]).
 
 load_templates([], _, _) ->
     ok;
