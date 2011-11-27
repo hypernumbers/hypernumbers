@@ -830,9 +830,9 @@ check_exists(Sheet, {Y, List}, X, Acc) ->
                      [Msg | Acc]
     end.
 
-check_constraint(Sheet, {X, List}, Y, Cons, Acc) ->
-    NAcc = case lists:keysearch(Y, 1, List) of
-               {value, {Y, Val}} -> case check_c2(Val, Cons) of
+check_constraint(Sheet, {Y, List}, X, Cons, Acc) ->
+    NAcc = case lists:keysearch(X, 1, List) of
+               {value, {X, Val}} -> case check_c2(Val, Cons) of
                                         true  -> Acc;
                                         false ->
                                             Ref = util2:make_ref({X, Y}),
