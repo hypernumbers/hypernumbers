@@ -860,6 +860,8 @@ write_attributes([], _PAr, _VAr) -> ok;
 write_attributes(List, PAr, VAr) ->
     [ok = page_srv:page_written(S, P) ||
         {#refX{site = S, path = P}, _} <- List],
+    Pgs = hslists:uniq([{S, P} || {#refX{site = S, path = P}, _} <- List]),
+    [ok = page_srv:page_written(S, P) || {S, P} <- Pgs],
     Report = mnesia_mon:get_stamp("write_attributes"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
