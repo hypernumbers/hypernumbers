@@ -751,6 +751,9 @@ flatten([], Acc)      -> Acc;
 flatten([H | T], Acc) -> flatten(T, lists:merge([H, Acc])).
 
 load_records(List, Site) -> Recs = load_r2(List, []),
+                            [{#refX{path = P}, _} | _T] = Recs,
+                            URL = Site ++ string:join(P, "/"),
+                            io:format("Writing ~p~n", [URL]),
                             ok = new_db_api:write_attributes(Recs),
                             syslib:limiter(Site),
                             ok.
