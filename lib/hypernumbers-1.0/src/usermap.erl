@@ -10,7 +10,8 @@
 -module(usermap).
 
 -export([
-         pret/2
+         pret/2,
+         pret_preprocess/2
          ]).
 
 % debugging
@@ -111,3 +112,75 @@ unit_test_() ->
     %{setup, Setup, Cleanup,
     {setup, Setup, [{with, [], SeriesA}]}.
 
+pret_preprocess(Dir, FileName) ->
+    [Header | Rows] = parse_csv:parse_file(Dir ++ FileName),
+    Rows2 = filter(Rows, []),
+    [_IssueDate, Postfix] = string:tokens(FileName, " "),
+    ok = write(Rows2, Header, Dir, Postfix).
+
+filter([], Acc) -> chunk(Acc);
+filter([H | T], Acc) ->
+    List = tuple_to_list(H),
+    {Head, _Tail} = lists:split(51, List),
+    case lists:member("null", Head) of
+        true  -> filter(T, Acc);
+        false -> filter(T, [H | Acc])
+    end.
+
+chunk(List) ->
+    Fun = fun(A, B) ->
+                  if
+                      element(3, A) >  element(3, B) -> false;
+                      element(3, A) =< element(3, B) -> true
+                  end
+          end,
+    SortedList = lists:sort(Fun, List),
+    chunk2(SortedList, []).
+
+chunk2([], Acc) ->
+    Acc;
+% first one through gets their own clause
+chunk2([H | T], []) ->
+    Key = element(3, H),
+    chunk2(T, [{Key, [H]}]);
+chunk2([H1 | T1], [{K2, V2} | T2] = Acc) ->
+    Date1 = element(3, H1),
+    Date2 = K2,
+    if
+        Date1 == Date2 -> chunk2(T1, [{K2, [H1 | V2]} | T2]);
+        Date1 /= Date2 -> chunk2(T1, [{element(3, H1), [H1]} | Acc])
+    end.
+
+write([], _, _, _) ->
+    ok;
+write([{Date, Recs} | T], Header, Dir, Postfix) ->
+    ok = write2(Dir, Date, Postfix, Header, Recs),
+    write(T, Header, Dir, Postfix).
+
+write2(Dir, Date, Postfix, Header, Recs) ->
+    Date2 = string:join(string:tokens(Date, "/"), "_"),
+    File = "processed_" ++ Date2 ++ "_" ++ Postfix,
+    case file:open(Dir ++ File, [exclusive, append]) of
+        {ok, IODevice} ->
+            io:fwrite(IODevice, "~s~n", [make(Header)]),
+            [io:fwrite(IODevice, "~s~n", [make(X)]) || X <- Recs],
+            file:close(IODevice);
+        {error, eexist} ->
+            io:format("You have already processed this file. "
+                      ++ "Delete the output and retry if you like.~n"),
+            exit({error, eexist})
+    end,
+    ok.
+
+make(Tuple) ->
+    List = tuple_to_list(Tuple),
+    mk2(List, []).
+
+mk2([], Acc) ->
+    Ret = lists:flatten(lists:reverse(Acc)),
+    Len = length(Ret),
+    {Ret2, _Discard} = lists:split(Len - 2, Ret),
+    Ret2;
+mk2([H | T], Acc)  ->
+    Str = io_lib:format("~s,", [H]),
+    mk2(T, [Str | Acc]).
