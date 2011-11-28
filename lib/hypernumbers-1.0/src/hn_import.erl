@@ -282,14 +282,14 @@ json_file(Url, FileName, Uid) ->
     Styles = make_styles(StyleStrs, []),
 
     ok = new_db_api:clear(Ref, all, Uid),
-    Writes1 = lists:flatten([rows(Ref, X, Styles, row,    fun collect_col_row/3)
-                             || X <- Rows]),
-    Writes2 = lists:flatten([rows(Ref, X, Styles, column, fun collect_col_row/3)
-                             || X <- Cols]),
-    Writes3 = lists:flatten([rows(Ref, X, Styles, cell,   fun collect_cells/3)
-                             || X <- lists:sort(fun int_sort/2, Cells)]),
-    Writes4 = lists:merge([Writes1, Writes2, Writes3]),
-    ok = new_db_api:write_attributes(Writes4, Uid).
+    [rows(Ref, X, Styles, row,    fun write_col_row/4, Uid)
+     || X <- Rows],
+    [rows(Ref, X, Styles, column, fun write_col_row/4, Uid)
+     || X <- Cols],
+
+    [rows(Ref, X, Styles, cell,   fun write_cells/4,   Uid)
+     || X <- lists:sort(fun int_sort/2, Cells)],
+    ok.
 
 make_styles([], Acc) -> Acc;
 make_styles([{Idx, Str} | T], Acc) ->
@@ -307,28 +307,30 @@ set_view(Site, Path, {View, {struct, Propslist}}) ->
                            {"groups",   Groups},
                            {"everyone", Everyone}]).
 
-rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun) ->
-    lists:flatten([cells(Ref, Row, X, Styles, Type, Fun) || X <- Cells]).
+rows(#refX{site = S} = Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
+    Cells2 = lists:sort(fun int_sort/2, Cells),
+    syslib:limiter(S),
+    [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells2],
+    ok.
 
-cells(Ref, Row, {Col, {struct, Attrs}},
-       Styles, Type, Fun) ->
+cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun, Uid) ->
     NRef = case Type of
-               cell   -> Ref#refX{type = url, obj = {Type, {ltoi(Col), ltoi(Row)}}};
+               cell   -> Ref#refX{type = url,  obj = {Type, {ltoi(Col), ltoi(Row)}}};
                row    -> Ref#refX{type = gurl, obj = {Type, {ltoi(Col), ltoi(Row)}}};
                column -> Ref#refX{type = gurl, obj = {Type, {ltoi(Col), ltoi(Row)}}}
            end,
-    Fun(NRef, Styles, Attrs).
+    Fun(NRef, Styles, Attrs, Uid),
+    ok.
 
-collect_col_row(_NRef, _, [])   -> ok;
-collect_col_row(NRef, _, Attrs) -> {NRef, Attrs}.
+write_col_row(_NRef, _, [], _) ->
+    ok;
+write_col_row(NRef, _, Attrs, Uid) ->
+    new_db_api:write_attributes([{NRef, Attrs}], Uid).
 
-collect_cells(Ref, Styles, Attrs) ->
-    Attrs2 = copy_attrs(Attrs, [], Styles, ["merge",
-                                              "formula",
-                                              "style",
-                                              "format",
-                                              "input"]),
-   {Ref, Attrs2}.
+write_cells(Ref, Styles, Attrs, Uid) ->
+    Attrs2 = copy_attrs(Attrs, [], Styles, ["merge", "formula", "style",
+                                            "format", "input"]),
+    new_db_api:write_attributes([{Ref, Attrs2}], Uid).
 
 copy_attrs(_Source, Dest, _Styles, []) -> Dest;
 copy_attrs(Source, Dest, Styles, ["style" = Key | T]) ->
@@ -751,9 +753,6 @@ flatten([], Acc)      -> Acc;
 flatten([H | T], Acc) -> flatten(T, lists:merge([H, Acc])).
 
 load_records(List, Site) -> Recs = load_r2(List, []),
-                            [{#refX{path = P}, _} | _T] = Recs,
-                            URL = Site ++ "/" ++ string:join(P, "/") ++ "/",
-                            io:format("Writing ~p~n", [URL]),
                             ok = new_db_api:write_attributes(Recs),
                             syslib:limiter(Site),
                             ok.
@@ -764,13 +763,15 @@ load_r2([{RefX, V} | T], Acc) -> load_r2(T, [{RefX, [{"formula", V}]} | Acc]).
 load_templates([], _, _) ->
     ok;
 load_templates([H | T], "overwrite", Template) ->
-    hn_templates:load_template(H, Template),
+    io:format("loading ~p on ~p~n", [Template, H]),
+    ok = hn_templates:load_template(H, Template),
     ok = load_templates(T, "overwrite", Template);
 load_templates([H | T], "dont_overwrite", Template) ->
     #refX{path = P} = H,
     case new_db_api:does_page_exist(H) of
         true  -> {error, hn_util:list_to_path(P) ++ " exists"};
-        false -> ok = hn_templates:load_template(H, Template),
+        false -> io:format("loading ~p on ~p~n", [Template, H]),
+                 ok = hn_templates:load_template(H, Template),
                  load_templates(T, "dont_overwrite", Template)
     end.
 
