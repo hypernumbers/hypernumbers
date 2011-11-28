@@ -282,14 +282,14 @@ json_file(Url, FileName, Uid) ->
     Styles = make_styles(StyleStrs, []),
 
     ok = new_db_api:clear(Ref, all, Uid),
-    [rows(Ref, X, Styles, row,    fun write_col_row/4, Uid)
-     || X <- Rows],
-    [rows(Ref, X, Styles, column, fun write_col_row/4, Uid)
-     || X <- Cols],
-
-    [rows(Ref, X, Styles, cell,   fun write_cells/4,   Uid)
-     || X <- lists:sort(fun int_sort/2, Cells)],
-    ok.
+    Writes1 = lists:flatten([rows(Ref, X, Styles, row,    fun collect_col_row/3)
+                             || X <- Rows]),
+    Writes2 = lists:flatten([rows(Ref, X, Styles, column, fun collect_col_row/3)
+                             || X <- Cols]),
+    Writes3 = lists:flatten([rows(Ref, X, Styles, cell,   fun collect_cells/3)
+                             || X <- lists:sort(fun int_sort/2, Cells)]),
+    Writes4 = lists:merge([Writes1, Writes2, Writes3]),
+    ok = new_db_api:write_attributes(Writes4, Uid).
 
 make_styles([], Acc) -> Acc;
 make_styles([{Idx, Str} | T], Acc) ->
@@ -307,33 +307,28 @@ set_view(Site, Path, {View, {struct, Propslist}}) ->
                            {"groups",   Groups},
                            {"everyone", Everyone}]).
 
-rows(#refX{site = S} = Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
-    Cells2 = lists:sort(fun int_sort/2, Cells),
-    syslib:limiter(S),
-    [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells2],
-    ok.
+rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun) ->
+    lists:flatten([cells(Ref, Row, X, Styles, Type, Fun) || X <- Cells]).
 
 cells(Ref, Row, {Col, {struct, Attrs}},
-       Styles, Type, Fun, Uid) ->
+       Styles, Type, Fun) ->
     NRef = case Type of
                cell   -> Ref#refX{type = url, obj = {Type, {ltoi(Col), ltoi(Row)}}};
                row    -> Ref#refX{type = gurl, obj = {Type, {ltoi(Col), ltoi(Row)}}};
                column -> Ref#refX{type = gurl, obj = {Type, {ltoi(Col), ltoi(Row)}}}
            end,
-    Fun(NRef, Styles, Attrs, Uid),
-    ok.
+    Fun(NRef, Styles, Attrs).
 
-write_col_row(_NRef, _, [], _)   -> ok;
-write_col_row(NRef, _, Attrs, Uid) ->
-    new_db_api:write_attributes([{NRef, Attrs}], Uid).
+collect_col_row(_NRef, _, [])   -> ok;
+collect_col_row(NRef, _, Attrs) -> {NRef, Attrs}.
 
-write_cells(Ref, Styles, Attrs, Uid) ->
+collect_cells(Ref, Styles, Attrs) ->
     Attrs2 = copy_attrs(Attrs, [], Styles, ["merge",
                                               "formula",
                                               "style",
                                               "format",
                                               "input"]),
-    new_db_api:write_attributes([{Ref, Attrs2}], Uid).
+   {Ref, Attrs2}.
 
 copy_attrs(_Source, Dest, _Styles, []) -> Dest;
 copy_attrs(Source, Dest, Styles, ["style" = Key | T]) ->
