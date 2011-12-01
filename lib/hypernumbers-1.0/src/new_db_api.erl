@@ -914,20 +914,21 @@ init_front_end_notify() ->
     ok.
 
 -spec read_activity(#refX{}, fun(), list()) -> any().
-read_activity(#refX{site=Site}, Op, Report) ->
+read_activity(#refX{site = Site}, Op, Report) ->
     Activity = fun() -> mnesia_mon:log_act(transaction, Op, Report) end,
     dbsrv:read_only_activity(Site, Activity).
 
--spec write_activity(#refX{}, fun(), string() | quiet, list()) -> ok.
+-spec write_activity(#refX{}, fun(), string(), list()) -> ok.
 write_activity(#refX{site = Site} = RefX, Op, FrontEnd, Report) ->
+    % still keep the notification of the db server for the mo
     Activity = fun() ->
-                       Ret = mnesia_mon:log_act(transaction, Op, Report),
-                       tell_front_end(FrontEnd, RefX),
-                       Ret
+                        Ret = mnesia_mon:log_act(transaction, Op, Report),
+                        tell_front_end(FrontEnd, RefX),
+                        Ret
                end,
     dbsrv:write_activity(Site, Activity).
 
-tell_front_end(quiet, _RefX) ->
+tell_front_end("quiet", _RefX) ->
     ok;
 tell_front_end(Type, #refX{path = P} = RefX)
   when Type == "move" orelse Type == "refresh" ->
