@@ -55,7 +55,11 @@ read_only_activity(Site, Activity) ->
 
 write_activity(Site, Activity) ->
     Id = hn_util:site_to_atom(Site, "_dbsrv"),
-    Id ! {write_activity, Activity},
+    Id ! {write_activity, self(), Activity},
+    receive
+        {response, ok} ->
+            ok
+    end,
     ok.
 
 is_busy(Site) ->
@@ -146,12 +150,14 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
             From ! {dbsrv_reply, Reply},
             check_messages(Site, Since, QTbl, WorkPlan, Graph);
 
-        {write_activity, Activity} ->
+        {write_activity, From, Activity} ->
             Activity(),
             case new_db_api:load_dirty_since(Since, QTbl) of
                 {Since2, []} ->
+                    From ! {response, ok},
                     {Since2, WorkPlan};
                 {Since2, Dirty} ->
+                    From ! {response, ok},
                     WorkPlan2 = build_workplan(Site, Dirty, Graph),
                     {Since2, WorkPlan2}
             end;
