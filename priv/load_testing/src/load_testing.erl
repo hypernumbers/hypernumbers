@@ -23,6 +23,7 @@
                       zinf,
                       dbsrv
                      ]).
+
 -define(localnames, [
                      sitemaster_sup,
                      service_sup,
@@ -91,21 +92,21 @@ test_SPAWN() ->
                        [{run, [
                                trash_db,
                                %z_test
-                               %load_data,
-                               %load_calcs,
-                               load_zs
-                               %afterz_data
-                               %afterz_calcs
+                               load_data,
+                               load_calcs,
+                               load_zs,
+                               afterz_data,
+                               aftexrz_calcs
                               ]}
-                       ]),
-    load_testing:load(Stamp, disc_only,
-                      [{run, [
-                              afterz_zs
-                             ]},
-                       {fprof, [
-                                all
-                               ]}
-                      ]).
+                       ]).
+    %% load_testing:load(Stamp, disc_only,
+    %%                   [{run, [
+    %%                           afterz_zs
+    %%                          ]},
+    %%                    {fprof, [
+    %%                             all
+    %%                            ]}
+    %%                   ]).
 
 profile_zinf_srv() ->
     TraceFile = zinf_srv:start_fprof(?site),
@@ -182,7 +183,7 @@ test_z2(Max, N) ->
     EndTime = get_time(),
     Msg = io_lib:format("~p,~p", [Max - N + 1,
                                   EndTime - StartTime]),
-    log(Msg, ?zquery_profile_page ++ ".csv"),
+    ok = log(Msg, ?zquery_profile_page ++ ".csv"),
     test_z2(Max, N - 1).
 
 load_2(Stamp, Type, Spec) when Type == disc_only orelse Type == disc_and_mem ->
@@ -270,7 +271,7 @@ force_recalc_test(Label, Prefix, Max, N) ->
     EndTime = get_time(),
     Msg = io_lib:format("~p,~p", [Max - N + 1,
                                   EndTime - StartTime]),
-    log(Msg, Label ++ ".csv"),
+    ok = log(Msg, Label ++ ".csv"),
     force_recalc_test(Label, Prefix, Max, N - 1).
 
 force_zquery_test(_Label, _Prefix, _Max, 0) -> ok;
@@ -285,7 +286,7 @@ force_zquery_test(Label, Prefix, Max, N) ->
     EndTime = get_time(),
     Msg = io_lib:format("~p,~p", [Max - N + 1,
                                   EndTime - StartTime]),
-    log(Msg, Label ++ ".csv"),
+    ok = log(Msg, Label ++ ".csv"),
     force_zquery_test(Label, Prefix, Max, N - 1).
 
 force_page_del_test(_, _, _, _, 0) -> ok;
@@ -301,7 +302,7 @@ force_page_del_test(Label, Page, Template, Max, N) ->
     Msg = io_lib:format("~p,~p,~p", [Max - N + 1,
                                      MidTime - StartTime,
                                      EndTime - StartTime]),
-    log(Msg, Label ++ ".csv"),
+    ok = log(Msg, Label ++ ".csv"),
     force_page_del_test(Label, Page, Template, Max, N - 1).
 
 build_zs(_LoadLabel, _RunLabel, _LoadTemplate, _RunTemplate,
@@ -323,7 +324,7 @@ build_zs(LoadLabel, RunLabel, LoadTemplate, RunTemplate, LoadPrefix,
     LoadMsg = io_lib:format("~p,~p,~p", [Max - N + 1,
                                          LoadMidTime - LoadStartTime,
                                          LoadEndTime - LoadStartTime]),
-    log(LoadMsg, LoadLabel ++ ".csv"),
+    ok = log(LoadMsg, LoadLabel ++ ".csv"),
     io:format("~p: (~p) loading ~p as ~p ~n",
               [RunLabel, Max - N + 1, RunTemplate,
                hn_util:list_to_path(RunPath)]),
@@ -335,7 +336,7 @@ build_zs(LoadLabel, RunLabel, LoadTemplate, RunTemplate, LoadPrefix,
     RunMsg = io_lib:format("~p,~p,~p", [Max - N + 1,
                                         RunMidTime - RunStartTime,
                                         RunEndTime - RunStartTime]),
-    log(RunMsg, RunLabel ++ ".csv"),
+    ok = log(RunMsg, RunLabel ++ ".csv"),
     build_zs(LoadLabel, RunLabel, LoadTemplate, RunTemplate,
              LoadPrefix, RunPrefix, Max, N - 1).
 
@@ -354,7 +355,7 @@ load_pages(Label, Template, Prefix, Max, N) ->
     Msg = io_lib:format("~p,~p,~p", [Max - N + 1,
                                      MidTime - StartTime,
                                      EndTime - StartTime]),
-    log(Msg, Label ++ ".csv"),
+    ok = log(Msg, Label ++ ".csv"),
     load_pages(Label, Template, Prefix, Max, N - 1).
 
 get_time() -> util2:get_timestamp()/1000000.
@@ -367,7 +368,8 @@ log(String, File) ->
     case file:open(Dir ++ File, [append]) of
         {ok, Id} ->
             io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
-            file:close(Id);
+            file:close(Id),
+            ok;
         _ ->
             error
     end.
