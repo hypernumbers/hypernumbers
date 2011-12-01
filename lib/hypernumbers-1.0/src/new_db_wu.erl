@@ -1547,7 +1547,8 @@ get_childrenD(#xrefX{obj = {Type, _}} = Ref)
 
 -spec deref_formula(string(), #xrefX{}, atom(), auth_srv:uid()) ->
     {clean | dirty, #refX{}}.
-deref_formula(XRefX, DelRef, Disp, Uid) ->
+% only deref if the orig and delref are on the same page
+deref_formula(#xrefX{path = P} = XRefX, #xrefX{path = P} = DelRef, Disp, Uid) ->
     Op = fun(Attrs) ->
                  case orddict:find("formula", Attrs) of
                      {ok, F1} ->
@@ -1558,7 +1559,9 @@ deref_formula(XRefX, DelRef, Disp, Uid) ->
                  end
          end,
     {Status, _} = apply_to_attrsD(XRefX, Op, deref, Uid, ?NONTRANSFORMATIVE),
-    {Status, XRefX}.
+    {Status, XRefX};
+deref_formula(XRefX, _DelRef, _Disp, _Uid) ->
+    {clean, XRefX}.
 
 %% dereferences a formula
 deref(XChildX, [$= |Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
