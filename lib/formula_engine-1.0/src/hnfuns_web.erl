@@ -362,9 +362,10 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
             Ref2 = table_collect(Ref),
             SubLen = trunc(length(Ref2)/Len),
             Ref3 = make_ref3(Ref2, SubLen, []),
+            [Hd | Body] = Ref3,
             % negative sort index means reverse the natural order
             Ref4 = if
-                       Sort2 <  0 -> lists:reverse(Ref3);
+                       Sort2 <  0 -> [Hd | lists:reverse(Body)];
                        Sort2 >= 0 -> Ref3
                    end,
             [Dirc2] = typechecks:std_bools([Dirc]),
