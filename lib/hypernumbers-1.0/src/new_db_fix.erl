@@ -116,6 +116,8 @@ fix_dups3({RevIdx, _List}, Site) ->
                 Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
                 Ret = mnesia:index_match_object(Tbl1, Pattern, 6, read),
                 [Master | Rest] = lists:reverse(lists:sort(Ret)),
+                io:format("Master is ~p~n", [Master]),
+                new_db_DEBUG:raw_idx(Site, Master#local_obj.idx),
                 RX = [X || #local_obj{idx = X} <- Rest],
                 fix_dups4(RX, Master, Site)
         end,
@@ -131,16 +133,17 @@ fix_dups4([Idx| T], Master, Site) ->
     #local_obj{obj = O} = Rec,
     case O of
         {cell, _} ->
-            io:format("Should be deleting cell ~p ~p~n", [Site, Rec]);
+            io:format("Should be deleting cell ~p ~p~n", [Site, Rec]),
+            new_db_DEBUG:raw_idx(Site, Idx);
             % ok = mnesia:delete(Tbl1, Idx, write),
             % ok = mnesia:delete(Tbl2, Idx, write),
             % ok = mnesia:delete(Tbl3, Idx, write);
-        _ ->
-            ok = mnesia:delete(Tbl1, Idx, write),
-            case mnesia:read(Tbl3, Idx, write) of
-                []   -> ok;
-                [_I] -> ok = mnesia:delete(Tbl3, Idx, write)
-            end
+        _ -> ok
+            %ok = mnesia:delete(Tbl1, Idx, write),
+            %case mnesia:read(Tbl3, Idx, write) of
+            %    []   -> ok;
+            %    [_I] -> ok = mnesia:delete(Tbl3, Idx, write)
+            %end
     end,
     fix_dups4(T, Master, Site).
 
