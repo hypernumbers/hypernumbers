@@ -116,7 +116,7 @@ fix_dups3({RevIdx, _List}, Site) ->
                 Pattern = {local_obj, '_', '_', '_', '_', term_to_binary(RevIdx)},
                 Ret = mnesia:index_match_object(Tbl1, Pattern, 6, read),
                 [Master | Rest] = lists:reverse(lists:sort(Ret)),
-                case Master#local_obj.type of
+                case Master#local_obj.obj of
                     {cell, _} ->
                         io:format("Master is ~p~n", [Master]),
                         new_db_DEBUG:raw_idx(Site, Master#local_obj.idx);
