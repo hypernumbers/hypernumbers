@@ -139,7 +139,9 @@ fix_dups4([Idx| T], Master, Site) ->
     case O of
         {cell, _} ->
             io:format("Should be deleting cell ~p ~p~n", [Site, Rec]),
-            new_db_DEBUG:raw_idx(Site, Idx);
+            %new_db_DEBUG:raw_idx(Site, Idx);
+            [Rec2] = mnesia:read(Tbl2, idx, write),
+            io:format("Relations is ~p~n", [Rec2]);
             % ok = mnesia:delete(Tbl1, Idx, write),
             % ok = mnesia:delete(Tbl2, Idx, write),
             % ok = mnesia:delete(Tbl3, Idx, write);
