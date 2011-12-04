@@ -446,7 +446,6 @@ check_bk_tree(Tree, PathAcc, Acc) ->
           end,
     mnesia:activity(transaction, Fun).
 
-
 verify_tree(Tree, PathAcc, Acc) ->
     Fun = fun() ->
                   Iter = gb_trees:iterator(Tree),
@@ -578,7 +577,7 @@ match_seg({zseg, S1},   S,   Site,  Htap) ->
         {match, false}          -> match;
         {nomatch, false}        -> nomatch;
         {{errval, _Err}, false} -> error;
-        {{error, _}, false}     -> error   % Old style errs from fns
+        {{error, _}, false}     -> error % Old style errs from fns
                                    % (shouldn't exist!)
     end.
 
@@ -611,10 +610,7 @@ expand_zrefs(#xrefX{path = P, site = S, obj = O}) ->
     % we need to create #xrefX{}s for each expanded zref in the path
     % so lets pass in a #refX{} to make it cleaner down the line
     RefX = #refX{site = S, type = url, path = P, obj = O},
-    io:format("ZSegs is ~p~n", [ZSegs]),
-    ZRefs = expandp(ZSegs, RefX, [], []),
-    io:format("Expanded ZRefs is ~p~n", [ZRefs]),
-    ZRefs.
+    expandp(ZSegs, RefX, [], []).
 
 expandp([], _, _, Acc) ->
     hslists:uniq(lists:merge(Acc));
@@ -622,7 +618,6 @@ expandp([{seg, S} | T], X, Htap, Acc) ->
     expandp(T, X, [S | Htap], Acc);
 expandp([{zseg, Z} | T], X, Htap, Acc) ->
     {ok, Toks} = xfl_lexer:lex(Z, {0, 0}),
-    io:format("Toks is ~p~n", [Toks]),
     NewAcc = walk(Toks, X, ["[true]" | Htap], []),
     expandp(T, X, [Z | Htap], [NewAcc | Acc]).
 
@@ -633,7 +628,6 @@ walk([{cellref, _, {cellref, _, _, Path, Ref}} | T], RefX, Htap, Acc) ->
     Obj = hn_util:parse_ref(Ref2),
     RefX2 = RefX#refX{path = NewPath, obj = Obj},
     [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX2]),
-    io:format("in zinf_srv:walk (1) XRefX is ~p~n", [XRefX]),
     walk(T, RefX, Htap, [XRefX | Acc]);
 walk([{rangeref, _, {rangeref, _, Path, _, _, _, _, Ref}} | T],
      RefX, Htap, Acc) ->
@@ -642,7 +636,6 @@ walk([{rangeref, _, {rangeref, _, Path, _, _, _, _, Ref}} | T],
     Obj = hn_util:parse_ref(Ref2),
     RefX2 = RefX#refX{path = NewPath, obj = Obj},
     [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX2]),
-    io:format("in zinf_srv:walk (2) XRefX is ~p~n", [XRefX]),
     walk(T, RefX, Htap, [XRefX | Acc]);
 walk([_ | T], RefX, Htap, Acc) ->
     walk(T, RefX, Htap, Acc).
