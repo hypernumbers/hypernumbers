@@ -104,8 +104,8 @@ read_verification(Dir, VerFile, ZinfFile) ->
     DataFile = "verification_data" ++ "." ++ Stamp ++ "." ++ FileType,
     garbage_collect(self()),
     delete_file(Dir ++ DataFile),
-    ok = write_terms(Data2, Dir ++ DataFile),
-    io:format("Written out processed data to ~p~n", [DataFile]),
+    %ok = write_terms(Data2, Dir ++ DataFile),
+    %io:format("Written out processed data to ~p~n", [DataFile]),
     garbage_collect(self()),
     FileName = "errors."  ++ Stamp ++ "." ++ FileType,
     delete_file(Dir ++ FileName),
@@ -813,18 +813,14 @@ process_z2([H | T], Site, Path, ZIdx, Idx, ITree, RTree, Acc) ->
     % first put the idx of the zinf into the rev_infparents of the
     % record
     Rec = get_rec(H, ITree),
-    io:format("Rec is ~p~n", [Rec]),
     #ver{rev_infparents = List} = Rec,
     Rec2 = Rec#ver{rev_infparents = [Idx | List], has_zinf = true,
                    zinf_path = Path},
-    io:format("Rec2 is ~p~n", [Rec2]),
     ITree2 = gb_trees:enter(H, Rec2, ITree),
     % now do the reverse make the url the child of the zinf
     Rec3 = get_rec(ZIdx, ITree2),
-    io:format("Rec4 is ~p~n", [Rec3]),
     #ver{children = List3} = Rec3,
     Rec4 = Rec3#ver{children = [H | List3]},
-    io:format("Rec4 is ~p~n", [Rec4]),
     ITree4 = gb_trees:enter(ZIdx, Rec4, ITree2),
     process_z2(T, Site, Path, ZIdx, Idx, ITree4, RTree, Acc).
 
