@@ -18,7 +18,8 @@
 % debugging exports
 -export([
          fix/0,
-         uncouple_dups/0
+         uncouple_dups/0,
+         fix_DEBUG/2
         ]).
 
 % spawning api
@@ -42,6 +43,8 @@ uncouple_dups() ->
 
 fix_dups(Dir, File) ->
     fix_dups_SPAWN(Dir, File).
+
+fix_DEBUG(Dir, File) -> fix_SPAWN(Dir, File).
 
 fix(Dir, File) ->
     spawn(new_db_fix, fix_SPAWN, [Dir, File]).
