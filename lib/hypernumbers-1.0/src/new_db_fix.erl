@@ -250,9 +250,13 @@ fix3(Site, "Invalid types", Idx) ->
     io:format("fixing Invalid types ~p ~p~n", [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
     Fun = fun() ->
-                  [Rec] = mnesia:read(Tbl1, Idx, write),
-                  Rec2 = Rec#local_obj{type = gurl},
-                  ok = mnesia:write(Tbl1, Rec2, write)
+                  case mnesia:read(Tbl1, Idx, write) of
+                      [Rec] ->
+                          Rec2 = Rec#local_obj{type = gurl},
+                          ok = mnesia:write(Tbl1, Rec2, write);
+                      [] ->
+                          ok
+                  end
           end,
     mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid grid (type 1)", Idx) ->
