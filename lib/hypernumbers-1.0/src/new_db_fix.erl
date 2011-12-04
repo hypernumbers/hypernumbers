@@ -188,9 +188,13 @@ fix3(Site, "Invalid relations (type 1)", Idx) ->
            [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, relation),
     Fun = fun() ->
-               [Rel] = mnesia:read(Tbl1, Idx),
-               #relation{infparents = Dirties} = Rel,
-               [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties]
+               case  mnesia:read(Tbl1, Idx) of
+                   [Rel] ->
+                       #relation{infparents = Dirties} = Rel,
+                       [new_db_api:mark_idx_dirty(Site, X) || X <- Dirties];
+                   [] ->
+                       ok
+               end
        end,
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
