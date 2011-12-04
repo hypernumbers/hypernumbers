@@ -11,22 +11,21 @@
 % main api
 -export([
          fix/2,
-         uncouple_dups/2
+         uncouple_dups/2,
+         fix_dups/2
         ]).
 
 % debugging exports
 -export([
          fix/0,
-         uncouple_dups/0,
-         fix_DEBUG/2,
-         uncouple_dups_DEBUG/2,
-         fix_dups_DEBUG/2
+         uncouple_dups/0
         ]).
 
 % spawning api
 -export([
          fix_SPAWN/2,
-         uncouple_dups_SPAWN/2
+         uncouple_dups_SPAWN/2,
+         fix_dups_SPAWN/2
         ]).
 
 -include("spriki.hrl").
@@ -41,15 +40,8 @@ uncouple_dups() ->
     File = "fixable_errors.20_Oct_11_13_27_19.terms",
     uncouple_dups(Dir, File).
 
-fix_DEBUG(Dir, File) ->
-    fix_SPAWN(Dir, File).
-
-uncouple_dups_DEBUG(Dir, File) ->
-    uncouple_dups_SPAWN(Dir, File).
-
-fix_dups_DEBUG(Dir, File) ->
+fix_dups(Dir, File) ->
     fix_dups_SPAWN(Dir, File).
-
 
 fix(Dir, File) ->
     spawn(new_db_fix, fix_SPAWN, [Dir, File]).
@@ -79,7 +71,7 @@ uncouple_dups2([], _Site)     -> ok;
 uncouple_dups2([H | T], Site) -> ok = uncouple_dups3(H, "http://" ++ Site),
                                  uncouple_dups2(T, Site).
 
-uncouple_dups3({RevIdx, List}, Site) ->
+uncouple_dups3({RevIdx, _List}, Site) ->
     % io:format("Fix up ~p ~p ~p~n", [Site, RevIdx, length(List)]),
     F = fun() ->
                 Tbl1 = new_db_wu:trans(Site, local_obj),
@@ -117,7 +109,7 @@ fix_dups2([], _Site)     -> ok;
 fix_dups2([H | T], Site) -> ok = fix_dups3(H, "http://" ++ Site),
                                  fix_dups2(T, Site).
 
-fix_dups3({RevIdx, List}, Site) ->
+fix_dups3({RevIdx, _List}, Site) ->
     % io:format("Fix up ~p ~p ~p~n", [Site, RevIdx, length(List)]),
     F = fun() ->
                 Tbl1 = new_db_wu:trans(Site, local_obj),
@@ -212,7 +204,15 @@ fix3(Site, "Invalid formula (type 2)", Idx) ->
                   ok = mnesia:delete(Tbl3, Idx, write)
           end,
     mnesia:activity(transaction, Fun);
-fix3(_Site, "Invalid Object (cell) (type 1)", _Idx) -> ok;
+fix3(Site, "Invalid Object (cell) (type 1)", Idx) ->
+    io:format("Deleting ~p ~p Invalid Object (cell) (type 1)~n", [Site, Idx]),
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    Tbl2 = new_db_wu:trans(Site, relation),
+    Fun = fun() ->
+                  ok = mnesia:delete(Tbl1, Idx, write),
+                  ok = mnesia:delete(Tbl2, Idx, write)
+          end,
+    mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid Object (cell) (type 2)", Idx) ->
     io:format("deleting Invalid Object (cell) (type 2) ~p ~p~n",
               [Site, Idx]),
