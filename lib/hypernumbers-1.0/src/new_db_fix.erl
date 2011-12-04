@@ -11,7 +11,7 @@
 % main api
 -export([
          fix/2,
-         uncouple_dups/2,
+         uncouple_dups/2, % not sure if this is tested!
          fix_dups/2
         ]).
 
@@ -131,15 +131,17 @@ fix_dups4([Idx| T], Master, Site) ->
     #local_obj{obj = O} = Rec,
     case O of
         {cell, _} ->
-            ok = mnesia:delete(Tbl1, Idx, write),
-            ok = mnesia:delete(Tbl2, Idx, write),
-            ok = mnesia:delete(Tbl3, Idx, write);
+            io:format("Should be deleting cell ~p ~p~n", [Site, Rec]);
+            % ok = mnesia:delete(Tbl1, Idx, write),
+            % ok = mnesia:delete(Tbl2, Idx, write),
+            % ok = mnesia:delete(Tbl3, Idx, write);
         _ ->
-            ok = mnesia:delete(Tbl1, Idx, write),
-            case mnesia:read(Tbl3, Idx, write) of
-                []   -> ok;
-                [_I] -> ok = mnesia:delete(Tbl3, Idx, write)
-            end
+            io:format("Should be deleting ~p ~p~n", [Site, Rec])
+            % ok = mnesia:delete(Tbl1, Idx, write),
+            % case mnesia:read(Tbl3, Idx, write) of
+            %    []   -> ok;
+            %    [_I] -> ok = mnesia:delete(Tbl3, Idx, write)
+            % end
     end,
     fix_dups4(T, Master, Site).
 
