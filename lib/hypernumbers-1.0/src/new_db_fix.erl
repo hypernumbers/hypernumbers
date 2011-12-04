@@ -136,12 +136,11 @@ fix_dups4([Idx| T], Master, Site) ->
             % ok = mnesia:delete(Tbl2, Idx, write),
             % ok = mnesia:delete(Tbl3, Idx, write);
         _ ->
-            io:format("Should be deleting ~p ~p~n", [Site, Rec])
-            % ok = mnesia:delete(Tbl1, Idx, write),
-            % case mnesia:read(Tbl3, Idx, write) of
-            %    []   -> ok;
-            %    [_I] -> ok = mnesia:delete(Tbl3, Idx, write)
-            % end
+            ok = mnesia:delete(Tbl1, Idx, write),
+            case mnesia:read(Tbl3, Idx, write) of
+                []   -> ok;
+                [_I] -> ok = mnesia:delete(Tbl3, Idx, write)
+            end
     end,
     fix_dups4(T, Master, Site).
 
