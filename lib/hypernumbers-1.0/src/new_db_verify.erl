@@ -658,6 +658,12 @@ verify_objs(Site, FileId, {Idx, V}, Acc) ->
 
 verify_types(_Site, _FileId, {_Idx, #ver{valid_type = true}}, Acc) ->
     Acc;
+verify_types(Site, FileId, {Idx, #ver{relation = null,
+                                      local_obj = null,
+                                      item = null} = V}, Acc) ->
+    Str = "Invalid Type 1 (zinf)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
 verify_types(Site, FileId, {Idx, V}, Acc) ->
     Str = "Invalid types",
     dump(Site, FileId, Str, [Idx, V]),
@@ -725,7 +731,6 @@ verify_zinfs(Site, FileId, {Idx, #ver{relation = null,
         _    -> Str = "Invalid zinf (type 1)",
                 dump(Site, FileId, Str, [Idx, V]),
                 NewAcc = add_rcs(RC, Idx, Acc),
-                io:format("Acc is ~p NewAcc is ~p~n", [Acc, NewAcc]),
                 [{Idx, Str} | NewAcc]
     end;
 verify_zinfs(Site, FileId, {Idx, #ver{type = gurl,

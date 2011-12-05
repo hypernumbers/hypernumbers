@@ -248,6 +248,7 @@ fix3(_Site, "Invalid Object (column) (type 4)", _Idx) -> ok;
 fix3(_Site, "Invalid Object (page) (type 5) (old adding in css/js)",
      _Idx) -> ok;
 fix3(_Site, "Invalid Object (type 6)", _Idx) -> ok;
+fix3(_Site, "Invalid Type 1 (zinf)", _Idx) -> ok;
 fix3(Site, "Invalid types", Idx) ->
     io:format("fixing Invalid types ~p ~p~n", [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
