@@ -56,7 +56,7 @@ email(Details, To, CC, From, Subject, Msg) ->
     send_no_receive(Socket, "From: "++From),
     send_no_receive(Socket, "To: "++To),
     if (CC =/= "") -> send_no_receive(Socket, "Cc: "++CC);
-       (CC == "") -> ok
+       (CC == "")  -> ok
     end,
     %% debugging for emails
     send_no_receive(Socket, "Bcc: debug@hypernumbers.com"),
