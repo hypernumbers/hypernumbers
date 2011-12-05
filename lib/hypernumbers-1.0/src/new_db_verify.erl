@@ -707,7 +707,8 @@ verify_zinfs(Site, FileId, {Idx, #ver{relation = null,
                                       rev_infparents = [],
                                       has_formula = false,
                                       type = gurl,
-                                      obj = {{cell, _}, _}} = V}, Acc) ->
+                                      obj = {{cell, _}, _},
+                                      zinf_path = null} = V}, Acc) ->
     case same(C, RC) of
         true -> Acc;
         _    -> Str = "Invalid zinf (type 1)",
