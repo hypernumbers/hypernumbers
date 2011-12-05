@@ -140,6 +140,12 @@ summarise([], Site, Data2, Acc) ->
                                 io:format("~p multiple local_objs~n", [N])
                         end
     end;
+summarise([{_Idx, {Type, _}} | T], Site, Data2, Acc) ->
+    NewAcc = case lists:keyfind(Type, 1, Acc) of
+                 false     -> [{Type, 1} | Acc];
+                 {Type, N} -> lists:keyreplace(Type, 1, Acc, {Type, N + 1})
+             end,
+    summarise(T, Site, Data2, NewAcc);
 summarise([{_Idx, Type} | T], Site, Data2, Acc) ->
     NewAcc = case lists:keyfind(Type, 1, Acc) of
                  false     -> [{Type, 1} | Acc];
@@ -147,9 +153,14 @@ summarise([{_Idx, Type} | T], Site, Data2, Acc) ->
              end,
     summarise(T, Site, Data2, NewAcc).
 
-print_summary([])                  -> ok;
-print_summary([{Type, Count} | T]) -> io:format("~p " ++ Type ++ "~n", [Count]),
-                                      print_summary(T).
+print_summary([]) ->
+    ok;
+print_summary([{{Type, _}, Count} | T]) ->
+    io:format("~p " ++ Type ++ "~n", [Count]),
+    print_summary(T);
+print_summary([{Type, Count} | T]) ->
+    io:format("~p " ++ Type ++ "~n", [Count]),
+    print_summary(T).
 
 process_data(Data, Dir, FileName) ->
     _Return = filelib:ensure_dir(Dir ++ FileName),
@@ -713,7 +724,9 @@ verify_zinfs(Site, FileId, {Idx, #ver{relation = null,
         true -> Acc;
         _    -> Str = "Invalid zinf (type 1)",
                 dump(Site, FileId, Str, [Idx, V]),
-                [{Idx, Str} | Acc]
+                NewAcc = add_rcs(RC, Idx, Acc),
+                io:format("Acc is ~p NewAcc is ~p~n", [Acc, NewAcc]),
+                [{Idx, Str} | NewAcc]
     end;
 verify_zinfs(Site, FileId, {Idx, #ver{type = gurl,
                                       obj = {{cell, _}, _}} = V}, Acc) ->
@@ -722,6 +735,10 @@ verify_zinfs(Site, FileId, {Idx, #ver{type = gurl,
     [{Idx, Str} | Acc];
 verify_zinfs(_Site, _FileId, {_Idx, _V}, Acc) ->
     Acc.
+
+add_rcs([], _Idx, Acc)     -> Acc;
+add_rcs([H | T], Idx, Acc) -> NewAcc = [{H, {"delete zinf", Idx}} | Acc],
+                              add_rcs(T, Idx, NewAcc).
 
 dump(Site, FileId, Str, [Idx, V]) ->
     io:fwrite(FileId, "~nDumping: ~p ~p~n", [Site, Idx]),

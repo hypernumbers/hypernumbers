@@ -163,6 +163,8 @@ fix2([], _)                   -> ok;
 fix2([{Idx, Type} | T], Site) -> fix3("http://" ++ Site, Type, Idx),
                                  fix2(T, Site).
 
+fix3(Site, {"delete zinf", ZIdx}, Idx) ->
+    io:format("Should delete zinf_parent ~p from ~p on ~p~n", [ZIdx, Idx, Site]);
 fix3(Site, "Invalid tables (type 1)", Idx) ->
     io:format("Deleting ~p ~p Invalid tables (type 1)~n", [Site, Idx]),
     Tbl1 = new_db_wu:trans(Site, local_obj),
@@ -285,5 +287,6 @@ fix3(Site, "Invalid grid (type 3)", Idx) ->
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid grid (type 4)", _Idx) -> ok;
 fix3(_Site, "Invalid reverse index", _Idx) -> ok;
-fix3(_Site, "Invalid zinf (type 1)", _Idx) -> ok;
+fix3(_Site, "Invalid zinf (type 1)", _Idx) ->
+    ok;
 fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.
