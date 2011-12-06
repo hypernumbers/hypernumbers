@@ -43,7 +43,7 @@ find_rel(Site, Idx) ->
                       true  -> io:format("~p is included in ~p~n", [Idx, R])
                   end
           end,
-    mnesia:fold(Fun, [], Tbl).
+    mnesia:foldl(Fun, [], Tbl).
 
 -spec dump_site_table(string(), string()) -> ok.
 %% just dumps a table to the shell
