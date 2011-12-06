@@ -8,8 +8,12 @@
 -module(syslib).
 
 -export([
+         check_supervisors/0,
+         check_supervisors/1,
+         dump_queues/0,
          dump_queues/1,
          dump_queues/2,
+         show_queues/0,
          show_queues/1,
          process_dump/0,
          top5/0,
@@ -29,6 +33,43 @@
         ]).
 
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
+
+check_supervisors() ->
+    Sites = hn_setup:get_sites(),
+    Globals = global:registered_names(),
+    Locals = registered(),
+    Sups =
+    [check_super2(X, Globals, Locals) || X <- Sites],
+    ok.
+
+check_supervisors(X) ->
+    Globals = global:registered_names(),
+    Locals = registered(),
+    check_super2(X, Globals, Locals).
+
+check_super2(Site, Globals, Locals) ->
+    GlobalSups = get_sups(Site, global),
+    LocalSups = get_sups(Site, local),
+    [check(X, Globals) || X <- GlobalSups],
+    [check(X, Locals) || X <- LocalSups],
+    ok.
+
+get_sups(Site, global) ->
+    get_sups2(["_status", "_auth", "_tick", "_remoting",
+                     "_dbsrv_sup", "_pages", "_sup", "_zinf"], Site, []);
+get_sups(Site, local) ->
+    get_sups2(["_dbsrv"], Site, []).
+
+get_sups2([], _Site, Acc) -> Acc;
+get_sups2([H | T], Site, Acc) ->
+    NewAcc = hn_util:site_to_atom(Site, H),
+    get_sups2(T, Site, [NewAcc | Acc]).
+
+check(Sup, List) ->
+    case lists:member(Sup, List) of
+        true  -> ok;
+        false -> io:format("~p does not exist~n", [Sup])
+    end.
 
 log_process(Pid) when is_pid(Pid) ->
     {Pid, Fn, Length, Heap, Reductions} = info(Pid),
@@ -78,6 +119,11 @@ sample_(Log, N) when is_integer(N) andalso N > 0 ->
     timer:sleep(Rand),
     sample_(Log, N - 1).
 
+dump_queues() ->
+    Sites = hn_setup:get_sites(),
+    [dump_queues(X) || X <- Sites],
+    ok.
+
 dump_queues(Site) -> dump_queues(Site, ?qs).
 
 dump_queues(_Site, [])     -> ok;
@@ -95,6 +141,11 @@ dump(Site, Table) ->
                   mnesia:foldl(Fun1, [], Tab2)
           end,
     mnesia:transaction(Fun).
+
+show_queues() ->
+    Sites = hn_setup:get_sites(),
+    [show_queues(X) || X <- Sites],
+    ok.
 
 show_queues(Site) ->
     Qs = [new_db_wu:trans(Site, X) || X <- ?qs],
