@@ -19,6 +19,7 @@
          url/2,
          idx/2,
          idx/3,
+         find_rel/2,
          raw_idx/2,
          raw_url/1,
          dump_site_table/2,
@@ -30,6 +31,20 @@
 %%% Debug Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-spec find_rel(string(), integer()) -> ok.
+% walks the rel table looking for an idx
+find_rel(Site, Idx) ->
+    Tbl = new_db_wu:trans(Site, relation),
+    Fun = fun(#relation{children = C, parents = P,
+                        infparents = IP, z_parents = ZP} = R) ->
+                  All = lists:merge([C, P, IP, ZP]),
+                  case lists:member(Idx, All) of
+                      false -> ok;
+                      true  -> io:format("~p is included in ~p~n", [Idx, R])
+                  end
+          end,
+    mnesia:fold(Fun, [], Tbl).
+
 -spec dump_site_table(string(), string()) -> ok.
 %% just dumps a table to the shell
 dump_site_table(Site, Table) ->
