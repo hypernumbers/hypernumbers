@@ -169,7 +169,9 @@ fix3(Site, {"delete zinf", ZIdx}, Idx) ->
     Tbl1 = new_db_wu:trans(Site, relation),
     Fun = fun() ->
                   [Rec] = mnesia:read(Tbl1, Idx),
-                  io:format("Rec is ~p ZIdx is ~p~n", [Rec, ZIdx])
+                  NewZ_Parents = lists:delete(ZIdx, Rec#relation.z_parents),
+                  Rec2 = Rec#relation{z_parents = NewZ_Parents},
+                  ok = mnesia:write(Tbl1, Rec2, write)
           end,
     mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid tables (type 1)", Idx) ->
