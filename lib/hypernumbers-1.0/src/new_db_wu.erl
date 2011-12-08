@@ -119,7 +119,8 @@ proc_dirties_for_zinfD(Site, Tree, CheckFun) ->
     L2 = shrink(L),
     Dirties = [CheckFun(Tree, X) || X <- L2],
     D1 = hslists:uniq(lists:flatten(Dirties)),
-    ok = case D1 of % this construction takes the call out of cprof!
+    % this construction takes the call to mark_these_idxs_dirtyD out of cprof!
+    ok = case D1 of
              []   -> ok;
              List -> mark_these_idxs_dirtyD(List, Site, nil)
          end,
