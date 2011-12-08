@@ -45,15 +45,24 @@ force_dbsrv(Site) ->
 % walks the rel table looking for an idx
 find_rel(Site, Idx) ->
     Tbl = new_db_wu:trans(Site, relation),
-    Fun = fun(#relation{children = C, parents = P,
-                        infparents = IP, z_parents = ZP} = R) ->
-                  All = lists:merge([C, P, IP, ZP]),
-                  case lists:member(Idx, All) of
-                      false -> ok;
-                      true  -> io:format("~p is included in ~p~n", [Idx, R])
-                  end
-          end,
-    mnesia:foldl(Fun, [], Tbl).
+    F1 = fun() ->
+                 F2 = fun(R, Acc) ->
+                              #relation{children = C, parents = P,
+                                        infparents = IP, z_parents = ZP} = R,
+                              All = lists:merge([C, P, IP, ZP]),
+                              case lists:member(Idx, All) of
+                                  false ->
+                                      ok;
+                                  true  ->
+                                      io:format("~p is included in ~p~n",
+                                                [Idx, R])
+                              end,
+                              Acc
+                      end,
+                 mnesia:foldl(F2, [], Tbl)
+         end,
+    [] = mnesia:activity(transaction, F1),
+    ok.
 
 -spec dump_site_table(string(), string()) -> ok.
 %% just dumps a table to the shell
