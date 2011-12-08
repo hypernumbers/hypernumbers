@@ -56,6 +56,12 @@
          delete_by_rows/4
         ]).
 
+% the write_activty fun is exposed for use in debugging only
+% should not be called directly from outside this module
+-export([
+         write_activity_DEBUG/4
+        ]).
+
 % fns for logging
 -export([
          get_logs/1
@@ -917,6 +923,10 @@ init_front_end_notify() ->
 read_activity(#refX{site = Site}, Op, Report) ->
     Activity = fun() -> mnesia_mon:log_act(transaction, Op, Report) end,
     dbsrv:read_only_activity(Site, Activity).
+
+% expose for debugging only
+write_activity_DEBUG(RefX, Op, FrontEnd, Report) ->
+    write_activity(RefX, Op, FrontEnd, Report).
 
 -spec write_activity(#refX{}, fun(), string(), list()) -> ok.
 write_activity(#refX{site = Site} = RefX, Op, FrontEnd, Report) ->

@@ -10,6 +10,7 @@
 -include("spriki.hrl").
 
 -export([
+         force_dbsrv/1,
          dump_lost_idxs/1,
          tick/0,
          timer/1,
@@ -31,6 +32,15 @@
 %%% Debug Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-spec force_dbsrv(string()) -> ok.
+force_dbsrv(Site) ->
+    % use a spoof RefX
+    RefX = #refX{site = Site, path = [], type = url, obj = {cell, {1,1}}},
+    Op = fun() ->
+                 io:format("Forcing dbsrv on ~p~n", [Site])
+         end,
+    new_db_api:write_activity_DEBUG(RefX, Op, "quiet", "Forced dbsrv").
+
 -spec find_rel(string(), integer()) -> ok.
 % walks the rel table looking for an idx
 find_rel(Site, Idx) ->
