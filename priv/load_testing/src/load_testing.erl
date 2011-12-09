@@ -89,30 +89,29 @@ test() -> spawn(load_testing, test_SPAWN, []).
 test_SPAWN() ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
     load_testing:load(Stamp, disc_only,
-                       [{run, [
-                               trash_db,
-                               %z_test
-                               load_data,
-                               load_calcs,
-                               load_zs,
-                               afterz_data,
-                               aftexrz_calcs
-                              ]}
-                       ]).
-    %% load_testing:load(Stamp, disc_only,
-    %%                   [{run, [
-    %%                           afterz_zs
-    %%                          ]},
-    %%                    {fprof, [
-    %%                             all
-    %%                            ]}
-    %%                   ]).
+                      [{run, [
+                              trash_db,
+                              %z_test
+                              load_data,
+                              load_calcs,
+                              load_zs,
+                              afterz_data,
+                              afterz_calcs
+                             ]}
+                      ]).
+%% load_testing:load(Stamp, disc_only,
+%%                   [{run, [
+%%                           afterz_zs
+%%                          ]},
+%%                    {fprof, [
+%%                             all
+%%                            ]}
+%%                   ]).
 
 profile_zinf_srv() ->
     TraceFile = zinf_srv:start_fprof(?site),
     load(),
     zinf_srv:stop_fprof(?site, TraceFile).
-
 
 load() ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
@@ -121,10 +120,10 @@ load() ->
                                      bulk_pages,
                                      load_data,
                                      load_calcs,
-                                     load_zs,
-                                     afterz_data,
-                                     afterz_calcs,
-                                     tests
+                                     load_zs
+                                     %afterz_data,
+                                     %afterz_calcs,
+                                     %tests
                                     ]}
                              ]).
 
@@ -255,7 +254,7 @@ bulk_pages(Max, I, J, K, 0) -> syslib:limit_global_mq(?site, "_pages"),
 bulk_pages(Max, I, J, K, L) ->
     Path = [hn_webcontrols:pad(I), hn_webcontrols:pad(J),
             hn_webcontrols:pad(K), hn_webcontrols:pad(L)],
-    RefX = #refX{site = ?site, path = Path, obj = {cell, {1,2}}},
+    RefX = #refX{site = ?site, type = url, path = Path, obj = {cell, {1,2}}},
     new_db_api:write_attributes([{RefX, [{"formula", "xxx"}]}]),
     bulk_pages(Max, I, J, K, L - 1).
 
@@ -499,6 +498,12 @@ trash_db(Type) ->
         false -> ok
     end,
     hn_setup:site(?site, load_testing, []),
+
+    % add a test user
+    {ok, _, U} = passport:get_or_create_user("test@hypernumbers.com"),
+    passport:validate_uid(U),
+    hn_groups:add_user(?site, "admin", U),
+
     case Type of
         disc_only    -> io:format("~nSetting the site to run from disc only~n"),
                         hn_db_admin:disc_only(?site);
