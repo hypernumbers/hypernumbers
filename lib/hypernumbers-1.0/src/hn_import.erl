@@ -87,8 +87,8 @@ load_template_file(File, Template, Site) ->
     Lines2 = [string:strip(X, both, 10) || X <- Lines],
     RefXs = make_refXs(Lines2, Site, []),
     Fun = fun(X) ->
-                  ok = hn_templates:load_template_if_no_page(X, Template),
-                  syslib:limiter(Site)
+                  ok = hn_templates:load_template_if_no_page(X, Template)
+                  %syslib:limiter(Site)
           end,
     [Fun(X) || X <- RefXs],
     ok.
@@ -309,7 +309,7 @@ set_view(Site, Path, {View, {struct, Propslist}}) ->
 
 rows(#refX{site = S} = Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
     Cells2 = lists:sort(fun int_sort/2, Cells),
-    syslib:limiter(S),
+    %syslib:limiter(S),
     [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells2],
     ok.
 
@@ -754,7 +754,7 @@ flatten([H | T], Acc) -> flatten(T, lists:merge([H, Acc])).
 
 load_records(List, Site) -> Recs = load_r2(List, []),
                             ok = new_db_api:write_attributes(Recs),
-                            syslib:limiter(Site),
+                            %syslib:limiter(Site),
                             ok.
 
 load_r2([], Acc)              -> Acc;

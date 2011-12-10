@@ -30,6 +30,7 @@
          proc_dirties_for_zinfD/3,
          proc_dirty_zinfsD/4,
          maybe_write_zinftreeD/2,
+         len_dirty_zinf_qD/1,
          reset_dirty_zinfsD/1,
          read_timersD/1,
          has_forms/1,
@@ -116,22 +117,31 @@ has_cell_been_deletedD(Site, Idx) ->
 proc_dirties_for_zinfD(Site, Tree, CheckFun) ->
     Tbl = trans(Site, dirty_for_zinf),
     L = mnesia:dirty_match_object(Tbl, #dirty_for_zinf{_='_'}),
-    L2 = shrink(L),
-    Dirties = [CheckFun(Tree, X) || X <- L2],
-    D1 = hslists:uniq(lists:flatten(Dirties)),
-    % this construction takes the call to mark_these_idxs_dirtyD out of cprof!
-    ok = case D1 of
-             []   -> ok;
-             List -> mark_these_idxs_dirtyD(List, Site, nil)
-         end,
-    [ok = mnesia:delete(Tbl, Id, write)
-     || #dirty_for_zinf{id = Id} <- L].
+    case L of
+        [] ->
+            zinf_srv:subscribe_to_dirty_for_zinf(Site);
+        _ ->
+            L2 = shrink(L),
+            Dirties = [CheckFun(Tree, X) || X <- L2],
+            D1 = hslists:uniq(lists:flatten(Dirties)),
+            % this construction takes the call to mark_these_idxs_dirtyD
+            % out of cprof figures when you are profiling!
+            ok = case D1 of
+                     []   -> ok;
+                     List -> mark_these_idxs_dirtyD(List, Site, nil)
+                 end,
+            [ok = mnesia:delete(Tbl, Id, write)
+             || #dirty_for_zinf{id = Id} <- L],
+            % now get the zinf server to check again
+            ok = zinf_srv:check_zinfs(Site),
+            ok
+    end.
 
 proc_dirty_zinfsD(Site, Tree, AddFun, DelFun) ->
     Tbl = trans(Site, dirty_zinf),
     Fun = fun(DirtyZinf, Tr) ->
-                   #dirty_zinf{dirtycellidx = CI, old = OldP,
-                               new = NewP} = DirtyZinf,
+                  #dirty_zinf{dirtycellidx = CI, old = OldP,
+                              new = NewP} = DirtyZinf,
                   % expand the new and old parents
                   NewP2 = lists:zip(NewP, lists:duplicate(length(NewP), CI)),
                   OldP2 = lists:zip(OldP, lists:duplicate(length(OldP), CI)),
@@ -143,13 +153,21 @@ proc_dirty_zinfsD(Site, Tree, AddFun, DelFun) ->
           end,
     Spec = #dirty_zinf{_='_', processed = false},
     L = mnesia:match_object(Tbl, Spec, write),
-    % need to apply the dirty zinfs in the order
-    % they were added
-    L2 = lists:sort(L),
-    NewTree = lists:foldl(Fun, Tree, L2),
-    [ok = mnesia:write(Tbl, X#dirty_zinf{processed = true},
-                                      write) || X  <- L],
-    NewTree.
+    case L of
+        [] ->
+            zinf_srv:subscribe_to_dirty_zinf(Site),
+            Tree;
+        _ ->
+            % need to apply the dirty zinfs in the order
+            % they were added
+            L2 = lists:sort(L),
+            NewTree = lists:foldl(Fun, Tree, L2),
+            [ok = mnesia:write(Tbl, X#dirty_zinf{processed = true},
+                               write) || X  <- L],
+            % now get the zinf server to check again
+            ok = zinf_srv:process_zinfs(Site),
+            NewTree
+    end.
 
 maybe_write_zinftreeD(Site, Tree) ->
     Tbl = trans(Site, dirty_zinf),
@@ -159,6 +177,12 @@ maybe_write_zinftreeD(Site, Tree) ->
     [ok = mnesia:delete(Tbl, Id, write)
      || #dirty_zinf{id = Id} <- L],
     ok.
+
+len_dirty_zinf_qD(Site) ->
+    Tbl = trans (Site, dirty_zinf),
+    Spec = #dirty_zinf{_='_', processed = false},
+    L = mnesia:match_object(Tbl, Spec, write),
+    length(L).
 
 reset_dirty_zinfsD(Site) ->
     Tbl = trans(Site, dirty_zinf),
@@ -864,7 +888,7 @@ get_prefix("http://"++Site) ->
 mark_dirty_for_zinfD(#xrefX{site = S, obj = {cell, _}} = XRefX) ->
     Tbl = trans(S, dirty_for_zinf),
     ok = mnesia:write(Tbl, #dirty_for_zinf{dirty = XRefX}, write),
-    ok = zinf_srv:check_zinfs(S),
+    %ok = zinf_srv:check_zinfs(S),
     ok;
 % any other refs ignore 'em
 mark_dirty_for_zinfD(XRefX) when is_record(XRefX, xrefX) -> ok.
@@ -1009,7 +1033,8 @@ handle_infsD(CellIdx, Site, NewInfParents, OldInfParents) ->
     Rec = #dirty_zinf{type = infinite, dirtycellidx = CellIdx,
                       old = OldInfParents, new = NewInfParents},
     ok = mnesia:write(Tbl, Rec, write),
-    ok = zinf_srv:process_zinfs(Site).
+    %ok = zinf_srv:process_zinfs(Site).
+    ok.
 
 %% Last chance to apply any default styles and formats.
 -spec post_process(#xrefX{}, ?dict) -> ?dict.

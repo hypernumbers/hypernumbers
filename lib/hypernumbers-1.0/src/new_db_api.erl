@@ -68,6 +68,7 @@
         ]).
 
 -export([
+         length_dirty_zinf_q/1,
          reset_dirty_zinfs/1,
          maybe_write_zinftree/3,
          wait_for_dirty/1,
@@ -163,6 +164,15 @@ load_dirty_since(Since, QTbl) ->
                DirtyL = lists:usort(lists:flatten(DirtyLL)),
                {Since2, DirtyL}
     end.
+
+% this fn is used in subscribing/unsubscribe operations for dirty_zinf
+length_dirty_zinf_q(Site) ->
+    Report = mnesia_mon:get_stamp("length_dirty_zinf_q"),
+    Fun  = fun() ->
+                   mnesia_mon:report(Report),
+                   new_db_wu:len_dirty_zinf_qD(Site)
+           end,
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 %% this function marks all dirty zinfs as unprocessed
 %% designed to be used for zinf_srv initing in case of
@@ -789,19 +799,19 @@ delete(#refX{obj = {R, _}} = RefX, Disp, Ar)
 delete_by_rows(N, Min, RefX) -> delete_by_rows(N, Min, RefX, nil).
 
 delete_by_rows(Min, Min, _, _) -> ok;
-delete_by_rows(N, Min, #refX{site = S} = RefX, Ar) ->
+delete_by_rows(N, Min, #refX{site = _S} = RefX, Ar) ->
     NewRefX = RefX#refX{obj = {row, {N, N}}},
     move(NewRefX, delete, vertical, Ar, "delete", false),
-    syslib:limiter(S),
+    %syslib:limiter(S),
     delete_by_rows(N - 1, Min, RefX, Ar).
 
 clear_by_rows(N, Min, RefX, Type) -> clear_by_rows(N, Min, RefX, Type, nil).
 
 clear_by_rows(Min, Min, _, _, _) -> ok;
-clear_by_rows(N, Min, #refX{site = S} = RefX, Type, Ar) ->
+clear_by_rows(N, Min, #refX{site = _S} = RefX, Type, Ar) ->
     NewRefX = RefX#refX{obj = {row, {N, N}}},
     clear(NewRefX, Type, Ar),
-    syslib:limiter(S),
+    %syslib:limiter(S),
     clear_by_rows(N - 1, Min, RefX, Type,Ar).
 
 -spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> list().

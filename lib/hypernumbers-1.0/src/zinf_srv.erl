@@ -28,6 +28,8 @@
 
 %% Programatic API
 -export([
+         subscribe_to_dirty_zinf/1,
+         subscribe_to_dirty_for_zinf/1,
          process_zinfs/1,
          check_zinfs/1,
          dump/1,
@@ -84,6 +86,18 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
+% if the table is empty this server needs to subscribe to getting
+% it to know when to next process it
+subscribe_to_dirty_zinf(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:cast({global, Id}, subscribe_to_dirty_zinf).
+
+% if the table is empty this server needs to subscribe to getting
+% it to know when to next process it
+subscribe_to_dirty_for_zinf(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    gen_server:cast({global, Id}, subscribe_to_dirty_for_zinf).
+
 % you process a zinf when you know it is dirty because a cell whose
 % path matches the pattern has been changed
 process_zinfs(Site) ->
@@ -168,13 +182,9 @@ init([Site]) ->
     % if there are any then it is beause the zinf server terminated abnormally
     % SOOO, go to that table and mark all processed records as unprocessed
     % and then tell this server to process zinfs...
-    Tbl = new_db_wu:trans(Site, dirty_zinf),
-    Size = mnesia:table_info(Tbl, size),
-    if
-        Size == 0 -> ok;
-        Size >  0 -> ok = new_db_api:reset_dirty_zinfs(Site),
-                     ok = process_zinfs(Site)
-    end,
+    ok = sub_dirty_zinf(Site, init),
+    ok = sub_dirty_for_zinf(Site),
+
     {ok, #state{site = Site, zinf_tree = Zinf_tree}}.
 
 %%--------------------------------------------------------------------
@@ -238,6 +248,14 @@ handle_cast({stop_fprof, TraceFile}, State) ->
     Root = filename:rootname(TraceFile),
     fprof:analyse([{dest, Root ++ ".analysis"}]),
     {noreply, State};
+handle_cast(subscribe_to_dirty_zinf, State) ->
+    #state{site = S} = State,
+    ok = sub_dirty_zinf(S, sub),
+    {noreply, State};
+handle_cast(subscribe_to_dirty_for_zinf, State) ->
+    #state{site = S} = State,
+    ok = sub_dirty_for_zinf(S),
+    {noreply, State};
 handle_cast(Msg, State) ->
     #state{site = S, zinf_tree = Tree} = State,
     {Act, NewT} =
@@ -265,7 +283,18 @@ handle_cast(Msg, State) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_info(_Info, State) ->
+handle_info(Info, State) ->
+    #state{site = S} = State,
+    Tbl1 = new_db_wu:trans(S, dirty_zinf),
+    Tbl2 = new_db_wu:trans(S, dirty_for_zinf),
+    case Info of
+        {mnesia_table_event, {write, {Tbl1, _, _, _, _, _, _}, _}} ->
+            {ok , _} = mnesia:unsubscribe({table, Tbl1, simple}),
+            ok = zinf_srv:process_zinfs(S);
+        {mnesia_table_event, {write, {Tbl2, _, _}, _}} ->
+             {ok , _} = mnesia:unsubscribe({table, Tbl2, simple}),
+            ok = zinf_srv:check_zinfs(S)
+    end,
     {noreply, State}.
 
 %%--------------------------------------------------------------------
@@ -639,6 +668,79 @@ walk([{rangeref, _, {rangeref, _, Path, _, _, _, _, Ref}} | T],
     walk(T, RefX, Htap, [XRefX | Acc]);
 walk([_ | T], RefX, Htap, Acc) ->
     walk(T, RefX, Htap, Acc).
+
+sub_dirty_zinf(Site, When) ->
+    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Size = mnesia:table_info(Tbl, size),
+    if
+        Size == 0 ->
+            % don't check the return value mebbies we are resubscribing...
+            mnesia:subscribe({table, Tbl, simple}),
+            ok;
+        Size >  0 ->
+            case When of
+                init ->
+                    ok = new_db_api:reset_dirty_zinfs(Site),
+                    ok = process_zinfs(Site);
+                _ ->
+                    % this case checks for a race condition
+                    % first subscribe but don't check the return value
+                    % mebbies we are resubscribing...
+                    mnesia:subscribe({table, Tbl, simple}),
+                    % then check if anything has been written since the
+                    % message was sent telling us to subscrive
+                    case new_db_api:length_dirty_zinf_q(Site) of
+                        0 ->
+                            ok;
+                        _N ->
+                            % oops, race is on! so unsubscribe and go round
+                            % again, yip, yip!
+                            {ok , _} = mnesia:unsubscribe({table, Tbl, simple}),
+                            ok = process_zinfs(Site)
+                    end,
+                    ok
+            end
+    end.
+
+sub_dirty_for_zinf(Site) ->
+    Tbl = new_db_wu:trans(Site, dirty_for_zinf),
+    Size = mnesia:table_info(Tbl, size),
+    if
+        Size == 0 ->
+            % don't check the return value mebbies we are resubscribing...
+            mnesia:subscribe({table, Tbl, simple}),
+            ok;
+        Size >  0 ->
+            ok = check_zinfs(Site)
+    end.
+
+dump_string(String, File) ->
+    _Return = filelib:ensure_dir(File),
+    case file:open(File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [String]),
+            file:close(Id);
+        _ ->
+            error
+    end.
+
+log(String, File) ->
+    Dir = "/media/logging/",
+    _Return = filelib:ensure_dir(Dir ++ File),
+    Date = dh_date:format("d_M_y_G_i_s"),
+
+    case file:open(Dir ++ File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
+            file:close(Id);
+        _ ->
+            error
+    end.
+
+get_time() -> util2:get_timestamp()/1000000.
+
+write(verbose, Msg, Data) -> io:format(Msg, Data);
+write(_, _, _)            -> ok.
 
 %%%===================================================================
 %%% EUnit Tests
@@ -1537,30 +1639,3 @@ perf3(Stamp, N, Tree, Idx, S, P, Obj) ->
     %log(AddMsg, "zinf_loading" ++ Stamp ++ ".csv"),
     perf3(Stamp, N - 1, NewTree, Idx + 1, S, P, Obj).
 
-dump_string(String, File) ->
-    _Return = filelib:ensure_dir(File),
-    case file:open(File, [append]) of
-        {ok, Id} ->
-            io:fwrite(Id, "~s~n", [String]),
-            file:close(Id);
-        _ ->
-            error
-    end.
-
-log(String, File) ->
-    Dir = "/media/logging/",
-    _Return = filelib:ensure_dir(Dir ++ File),
-    Date = dh_date:format("d_M_y_G_i_s"),
-
-    case file:open(Dir ++ File, [append]) of
-        {ok, Id} ->
-            io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
-            file:close(Id);
-        _ ->
-            error
-    end.
-
-get_time() -> util2:get_timestamp()/1000000.
-
-write(verbose, Msg, Data) -> io:format(Msg, Data);
-write(_, _, _)            -> ok.
