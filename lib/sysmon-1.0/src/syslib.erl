@@ -38,7 +38,6 @@ check_supervisors() ->
     Sites = hn_setup:get_sites(),
     Globals = global:registered_names(),
     Locals = registered(),
-    Sups =
     [check_super2(X, Globals, Locals) || X <- Sites],
     ok.
 
@@ -144,16 +143,30 @@ dump(Site, Table) ->
 
 show_queues() ->
     Sites = hn_setup:get_sites(),
-    [show_queues(X) || X <- Sites],
+    [show_queues(X, notverbose) || X <- Sites],
     ok.
 
-show_queues(Site) ->
-    Qs = [new_db_wu:trans(Site, X) || X <- ?qs],
-    showq(Qs).
+show_queues(Site) -> show_queues(Site, verbose).
 
-showq([])      -> ok;
-showq([H | T]) -> io:format("~p ~p~n", [H, mnesia:table_info(H, size)]),
-                  showq(T).
+show_queues(Site, Verbose) ->
+    Qs = [new_db_wu:trans(Site, X) || X <- ?qs],
+    showq(Qs, Verbose).
+
+showq([], Verbose) ->
+    ok;
+showq([H | T], Verbose) ->
+    N = mnesia:table_info(H, size),
+    case N of
+        0 -> case Verbose of
+                 verbose ->
+                     io:format("~p ~p~n", [H, N]);
+                 _ ->
+                     ok
+             end;
+        _ ->
+            io:format("~p ~p~n", [H, N])
+        end,
+    showq(T, Verbose).
 
 show_registered() ->
     Globals = [{global:whereis_name(X), global, X} ||
