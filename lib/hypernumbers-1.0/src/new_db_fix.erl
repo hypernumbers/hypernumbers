@@ -358,8 +358,10 @@ clean_up_dirty_for_zinfs(Site) ->
                                   case Dirty of
                                       false -> [X | Acc];
                                       _     -> #xrefX{idx = Idx} = Dirty,
-                                               clean_up2(Tbl2, Idx),
-                                               Acc
+                                               case exists(Tbl2, Idx) of
+                                                   true  -> Acc;
+                                                   false -> [X | Acc]
+                                               end
                                   end
                           end,
                    Duffs = mnesia:foldl(Fun2, [], Tbl),
@@ -367,10 +369,11 @@ clean_up_dirty_for_zinfs(Site) ->
            end,
     mnesia:activity(transaction, Fun1).
 
-clean_up2(Tbl, Idx) ->
+exists(Tbl, Idx) ->
     case mnesia:read(Tbl, Idx, write) of
         [] ->
-            io:format("No local obj for ~p ~p~n", [Tbl, Idx]);
+            io:format("No local obj for ~p ~p~n", [Tbl, Idx]),
+            false;
         _ ->
-            ok
+            true
     end.
