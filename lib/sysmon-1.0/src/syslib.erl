@@ -152,7 +152,7 @@ show_queues(Site, Verbose) ->
     Qs = [new_db_wu:trans(Site, X) || X <- ?qs],
     showq(Qs, Verbose).
 
-showq([], Verbose) ->
+showq([], _Verbose) ->
     ok;
 showq([H | T], Verbose) ->
     N = mnesia:table_info(H, size),
