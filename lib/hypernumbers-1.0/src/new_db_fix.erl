@@ -18,7 +18,9 @@
 % clean up dirty zinfs
 -export([
          clean_up_dirty_zinfs/0,
-         clean_up_dirty_zinfs/1
+         clean_up_dirty_zinfs/1,
+         clean_up_dirty_for_zinfs/0,
+         clean_up_dirty_for_zinfs/1
         ]).
 
 % debugging exports
@@ -341,3 +343,26 @@ clean_up([{error, id_not_found, _} = H | T], Acc) ->
     clean_up(T, Acc);
 clean_up([H | T], Acc) ->
     clean_up(T, [H | Acc]).
+
+clean_up_dirty_for_zinfs() ->
+    Sites = hn_setup:get_sites(),
+    [clean_up_dirty_for_zinfs(X) || X <- Sites],
+    ok.
+
+clean_up_dirty_for_zinfs(Site) ->
+    Tbl1 = new_db_wu:trans(Site, dirty_for_zinf),
+    Tbl2 = new_db_wu:trans(Site, local_obj),
+    Fun1 = fun() ->
+                   Fun2 = fun(X, Acc) ->
+                                  #xrefX{idx = Idx} = X,
+                                  case mnesia:read(Tbl2, Idx, write) of
+                                      [] ->
+                                          io:format("Invalid xrefX ~p~n", [X]);
+                                      [_Rec] ->
+                                          ok
+                                  end,
+                                  Acc
+                          end,
+                   mnesia:foldl(Fun2, [], Tbl1)
+           end,
+    mnesia:activity(transaction, Fun1).
