@@ -394,7 +394,7 @@ clean_up_dirty_queue(Site) ->
     Fun1 = fun() ->
                    Fun2 = fun(X, Acc) ->
                                   io:format("X is ~p~n", [X]),
-                                  #dirty_queue{dirty = Dirty},
+                                  #dirty_queue{dirty = Dirty} = X,
                                   NewDirty = clean_up_queue(Dirty, Site, []),
                                   Acc
                           end,
@@ -412,6 +412,6 @@ clean_up_queue([H | T], Site, Acc) ->
 %                 _  -> [H | Acc]
 %             end,
     NewAcc = [H | Acc],
-    clean_up_queue(T, NewAcc).
+    clean_up_queue(T, Site, NewAcc).
 
 
