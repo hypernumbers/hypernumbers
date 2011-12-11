@@ -8,6 +8,7 @@
 -module(syslib).
 
 -export([
+         overview/1,
          check_supervisors/0,
          check_supervisors/1,
          dump_queues/0,
@@ -33,6 +34,11 @@
         ]).
 
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
+
+overview(Site) ->
+    dump_queues(Site),
+    check_supervisors(Site),
+    show_queues(Site).
 
 check_supervisors() ->
     Sites = hn_setup:get_sites(),
