@@ -323,11 +323,12 @@ clean_up_dirty_zinfs(Site) ->
     Tbl = new_db_wu:trans(Site, dirty_zinf),
     Fun1 = fun() ->
                    Fun2 = fun(X, Acc) ->
-                                  io:format("X is ~p~n", [X]),
                                   New = X#dirty_zinf.new,
                                   Old = X#dirty_zinf.old,
-                                  NewNew = clean_up(New, []),
-                                  NewOld = clean_up(Old, []),
+                                  NewN = clean_up(New, []),
+                                  NewO = clean_up(Old, []),
+                                  Rec2 = X#dirty_zinf{new = NewN, old = NewO},
+                                  mnesia:write(Tbl, Rec2, write),
                                   Acc
                           end,
                    mnesia:foldl(Fun2, [], Tbl)
