@@ -351,15 +351,26 @@ clean_up_dirty_for_zinfs() ->
 
 clean_up_dirty_for_zinfs(Site) ->
     Tbl = new_db_wu:trans(Site, dirty_for_zinf),
+    Tbl2 = new_db_wu:trans(Site, local_obj),
     Fun1 = fun() ->
                    Fun2 = fun(X, Acc) ->
                                   #dirty_for_zinf{dirty = Dirty} = X,
                                   case Dirty of
                                       false -> [X | Acc];
-                                      _     -> Acc
+                                      _     -> #xrefX{idx = Idx} = Dirty,
+                                               clean_up2(Tbl2, Idx),
+                                               Acc
                                   end
                           end,
                    Duffs = mnesia:foldl(Fun2, [], Tbl),
                    [mnesia:delete(Tbl, X, write) || X <- Duffs]
            end,
     mnesia:activity(transaction, Fun1).
+
+clean_up2(Tbl, Idx) ->
+    case mnesia:read(Tbl, Idx, write) of
+        [] ->
+            io:format("No local obj for ~p ~p~n", [Tbl, Idx]);
+        _ ->
+            ok
+    end.
