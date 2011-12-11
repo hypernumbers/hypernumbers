@@ -173,15 +173,11 @@ fix2([], _)                   -> ok;
 fix2([{Idx, Type} | T], Site) -> fix3("http://" ++ Site, Type, Idx),
                                  fix2(T, Site).
 
-fix3(Site, {"delete zinf", ZIdx}, Idx) ->
-    io:format("delete zinf_parent ~p from ~p on ~p~n",
+fix3(Site, {"refresh zinf", ZIdx}, Idx) ->
+    io:format("refresh zinf_parent ~p from ~p on ~p~n",
               [ZIdx, Idx, Site]),
-    Tbl1 = new_db_wu:trans(Site, relation),
     Fun = fun() ->
-                  [Rec] = mnesia:read(Tbl1, Idx),
-                  NewZ_Parents = lists:delete(ZIdx, Rec#relation.z_parents),
-                  Rec2 = Rec#relation{z_parents = NewZ_Parents},
-                  ok = mnesia:write(Tbl1, Rec2, write)
+                  new_db_api:mark_idx_dirty(Site, Idx)
           end,
     mnesia:activity(transaction, Fun);
 fix3(Site, "Invalid tables (type 1)", Idx) ->
@@ -407,7 +403,6 @@ clean_up_dirty_queues(Site) ->
 clean_up_queue([], _Site, Acc) ->
     Acc;
 clean_up_queue([H | T], Site, Acc) ->
-    io:format("H is ~p~n", [H]),
     Tbl = new_db_wu:trans(Site, local_obj),
     NewAcc = case mnesia:read(Tbl, H, write) of
                  [] -> io:format("~p doesn't exists...~n", [H]),

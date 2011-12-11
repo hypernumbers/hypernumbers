@@ -758,7 +758,7 @@ verify_zinfs(_Site, _FileId, {_Idx, _V}, Acc) ->
     Acc.
 
 add_rcs([], _Idx, Acc)     -> Acc;
-add_rcs([H | T], Idx, Acc) -> NewAcc = [{H, {"delete zinf", Idx}} | Acc],
+add_rcs([H | T], Idx, Acc) -> NewAcc = [{H, {"refresh zinf", Idx}} | Acc],
                               add_rcs(T, Idx, NewAcc).
 
 dump(Site, FileId, Str, [Idx, V]) ->
