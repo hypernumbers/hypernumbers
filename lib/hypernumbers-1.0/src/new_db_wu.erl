@@ -1999,7 +1999,8 @@ delete_relationD(#xrefX{site = Site} = Cell) ->
     case mnesia:read(Tbl, Cell#xrefX.idx, write) of
         [R] ->
             % delete infinite relations and stuff
-            OldInfPs = [idx_to_xrefXD(Site, X) || X <- R#relation.infparents],
+            OldInfPs = [#xrefX{} = idx_to_xrefXD(Site, X)
+                        || X <- R#relation.infparents],
             ok = handle_infsD(Cell#xrefX.idx, Site, [], OldInfPs),
             [del_childD(P, Cell#xrefX.idx, Tbl) ||
                 P <- R#relation.parents],
