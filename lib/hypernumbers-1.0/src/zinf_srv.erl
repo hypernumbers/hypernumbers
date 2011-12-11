@@ -345,6 +345,10 @@ add({XRefX, Idx}, Tree) ->
     #xrefX{path = P, obj = Obj} = XRefX,
     alter_tree(Tree, hn_util:parse_zpath(P), add_selector(Idx, Obj)).
 
+% fix up for borked idxs
+del({error, id_not_found, Idx}, Tree) ->
+    io:format("Not deleting ~p~n", [Idx]),
+    Tree;
 del({XRefX, Idx}, Tree) ->
     #xrefX{path = P, obj = Obj} = XRefX,
     alter_tree(Tree, hn_util:parse_zpath(P), delete_selector(Idx, Obj)).
