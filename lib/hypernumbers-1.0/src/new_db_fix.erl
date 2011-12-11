@@ -17,6 +17,8 @@
 
 % clean up dirty zinfs
 -export([
+         clean_up_dirty_queue/0,
+         clean_up_dirty_queue/1,
          clean_up_dirty_zinfs/0,
          clean_up_dirty_zinfs/1,
          clean_up_dirty_for_zinfs/0,
@@ -381,3 +383,35 @@ exists(Tbl, Idx) ->
 del(Tbl, X) ->
     io:format("deleting ~p ~p~n", [Tbl, X]),
     ok = mnesia:delete_object(Tbl, X, write).
+
+clean_up_dirty_queue() ->
+    Sites = hn_setup:get_sites(),
+    [clean_up_dirty_queue(X) || X <- Sites],
+    ok.
+
+clean_up_dirty_queue(Site) ->
+    Tbl = new_db_wu:trans(Site, dirty_queue),
+    Fun1 = fun() ->
+                   Fun2 = fun(X, Acc) ->
+                                  io:format("X is ~p~n", [X]),
+                                  #dirty_queue{dirty = Dirty},
+                                  NewDirty = clean_up_queue(Dirty, Site, []),
+                                  Acc
+                          end,
+                   mnesia:foldl(Fun2, [], Tbl)
+           end,
+    mnesia:activity(transaction, Fun1).
+
+clean_up_queue([], Site, Acc) ->
+    Acc;
+clean_up_queue([H | T], Site, Acc) ->
+    io:format("H is ~p~n", [H]),
+%    Tbl = new_db_wu(Site, local_obj),
+%    NewAcc = case mnesia:read(Tbl, H, write) of
+%                 [] -> Acc;
+%                 _  -> [H | Acc]
+%             end,
+    NewAcc = [H | Acc],
+    clean_up_queue(T, NewAcc).
+
+
