@@ -396,19 +396,21 @@ clean_up_dirty_queues(Site) ->
                                   io:format("X is ~p~n", [X]),
                                   #dirty_queue{dirty = Dirty} = X,
                                   NewDirty = clean_up_queue(Dirty, Site, []),
+                                  Rec2 = X#dirty_queue{dirty = NewDirty},
+                                  mnesia:write(Tbl, Rec2, write),
                                   Acc
                           end,
                    mnesia:foldl(Fun2, [], Tbl)
            end,
     mnesia:activity(transaction, Fun1).
 
-clean_up_queue([], Site, Acc) ->
+clean_up_queue([], _Site, Acc) ->
     Acc;
 clean_up_queue([H | T], Site, Acc) ->
     io:format("H is ~p~n", [H]),
     Tbl = new_db_wu:trans(Site, local_obj),
     NewAcc = case mnesia:read(Tbl, H, write) of
-                 [] -> io:format("~p doens't exists...~n", [H]),
+                 [] -> io:format("~p doesn't exists...~n", [H]),
                        Acc;
                  _  -> [H | Acc]
              end,
