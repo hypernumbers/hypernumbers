@@ -17,8 +17,8 @@
 
 % clean up dirty zinfs
 -export([
-         clean_up_dirty_queue/0,
-         clean_up_dirty_queue/1,
+         clean_up_dirty_queues/0,
+         clean_up_dirty_queues/1,
          clean_up_dirty_zinfs/0,
          clean_up_dirty_zinfs/1,
          clean_up_dirty_for_zinfs/0,
@@ -384,12 +384,12 @@ del(Tbl, X) ->
     io:format("deleting ~p ~p~n", [Tbl, X]),
     ok = mnesia:delete_object(Tbl, X, write).
 
-clean_up_dirty_queue() ->
+clean_up_dirty_queues() ->
     Sites = hn_setup:get_sites(),
-    [clean_up_dirty_queue(X) || X <- Sites],
+    [clean_up_dirty_queues(X) || X <- Sites],
     ok.
 
-clean_up_dirty_queue(Site) ->
+clean_up_dirty_queues(Site) ->
     Tbl = new_db_wu:trans(Site, dirty_queue),
     Fun1 = fun() ->
                    Fun2 = fun(X, Acc) ->
@@ -406,12 +406,12 @@ clean_up_queue([], Site, Acc) ->
     Acc;
 clean_up_queue([H | T], Site, Acc) ->
     io:format("H is ~p~n", [H]),
-%    Tbl = new_db_wu(Site, local_obj),
-%    NewAcc = case mnesia:read(Tbl, H, write) of
-%                 [] -> Acc;
-%                 _  -> [H | Acc]
-%             end,
-    NewAcc = [H | Acc],
+    Tbl = new_db_wu:trans(Site, local_obj),
+    NewAcc = case mnesia:read(Tbl, H, write) of
+                 [] -> io:format("~p doens't exists...~n", [H]),
+                       Acc;
+                 _  -> [H | Acc]
+             end,
     clean_up_queue(T, Site, NewAcc).
 
 
