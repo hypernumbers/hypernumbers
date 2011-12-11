@@ -354,7 +354,8 @@ clean_up_dirty_for_zinfs(Site) ->
     Tbl2 = new_db_wu:trans(Site, local_obj),
     Fun1 = fun() ->
                    Fun2 = fun(X, Acc) ->
-                                  #xrefX{idx = Idx} = X,
+                                  #dirty_for_zinf{dirty = Dirty} = X,
+                                  #xrefX{idx = Idx} = Dirty,
                                   case mnesia:read(Tbl2, Idx, write) of
                                       [] ->
                                           io:format("Invalid xrefX ~p~n", [X]);
