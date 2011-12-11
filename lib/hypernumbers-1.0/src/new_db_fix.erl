@@ -380,4 +380,4 @@ exists(Tbl, Idx) ->
 
 del(Tbl, X) ->
     io:format("deleting ~p ~p~n", [Tbl, X]),
-    mnesia:delete(Tbl, X, write).
+    ok = mnesia:delete_object(Tbl, X, write).
