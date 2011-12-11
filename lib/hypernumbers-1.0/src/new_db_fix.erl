@@ -365,7 +365,7 @@ clean_up_dirty_for_zinfs(Site) ->
                                   end
                           end,
                    Duffs = mnesia:foldl(Fun2, [], Tbl),
-                   [mnesia:delete(Tbl, X, write) || X <- Duffs]
+                   [del(Tbl, X) || X <- Duffs]
            end,
     mnesia:activity(transaction, Fun1).
 
@@ -377,3 +377,7 @@ exists(Tbl, Idx) ->
         _ ->
             true
     end.
+
+del(Tbl, X) ->
+    io:format("deleting ~p ~p~n", [Tbl, X]),
+    mnesia:delete(Tbl, X, write).
