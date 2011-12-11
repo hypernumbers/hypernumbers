@@ -15,6 +15,12 @@
          fix_dups/2
         ]).
 
+% clean up dirty zinfs
+-export([
+         clean_up_dirty_zinfs/0,
+         clean_up_dirty_zinfs/1
+        ]).
+
 % debugging exports
 -export([
          fix/0,
@@ -164,7 +170,7 @@ fix2([{Idx, Type} | T], Site) -> fix3("http://" ++ Site, Type, Idx),
                                  fix2(T, Site).
 
 fix3(Site, {"delete zinf", ZIdx}, Idx) ->
-    io:format("Should delete zinf_parent ~p from ~p on ~p~n",
+    io:format("delete zinf_parent ~p from ~p on ~p~n",
               [ZIdx, Idx, Site]),
     Tbl1 = new_db_wu:trans(Site, relation),
     Fun = fun() ->
@@ -307,3 +313,30 @@ fix3(_Site, "Invalid zinf (type 1)", _Idx) -> ok;
     %%       end,
     %% mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.
+
+clean_up_dirty_zinfs() ->
+    Sites = hn_setup:get_sites(),
+    [ok = clean_up_dirty_zinfs(X) || X <- Sites],
+    ok.
+
+clean_up_dirty_zinfs(Site) ->
+    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Fun1 = fun() ->
+                   Fun2 = fun(X, Acc) ->
+                                  io:format("X is ~p~n", [X]),
+                                  New = X#dirty_zinf.new,
+                                  Old = X#dirty_zinf.old,
+                                  NewNew = clean_up(New, []),
+                                  NewOld = clean_up(Old, []),
+                                  Acc
+                          end,
+                   mnesia:foldl(Fun2, [], Tbl)
+           end,
+    mnesia:activity(transaction, Fun1).
+
+clean_up([], Acc) -> Acc;
+clean_up([{error, id_not_found, _} = H | T], Acc) ->
+    io:format("Duff ~p~n", [H]),
+    clean_up(T, Acc);
+clean_up([H | T], Acc) ->
+    clean_up(T, [H | Acc]).
