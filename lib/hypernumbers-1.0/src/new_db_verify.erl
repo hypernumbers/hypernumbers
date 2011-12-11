@@ -395,13 +395,29 @@ verify_relations(Site, FileId, {Idx, #ver{relation = exists,
                                           rev_children = RC,
                                           rev_parents = RP,
                                           rev_infparents = RIP} = V}, Acc) ->
-    case {same(C, RC), same(P, RP), same(I, RIP)} of
-        {true, true, true} ->
-            Acc;
+    NewAcc1 = case same(C, RC) of
+                  true ->
+                      Acc;
+                  _ ->
+                      Str1 = "Invalid relations (type 1a)",
+                      dump(Site, FileId, Str1, [Idx, V]),
+                      [{Idx, Str1} | Acc]
+    end,
+    NewAcc2 = case same(P, RP) of
+                  true ->
+                      NewAcc1;
+                  _ ->
+                      Str2 = "Invalid relations (type 1b)",
+                      dump(Site, FileId, Str2, [Idx, V]),
+                      [{Idx, Str2} | NewAcc1]
+              end,
+    case same(I, RIP) of
+        true ->
+            NewAcc2;
         _ ->
-            Str = "Invalid relations (type 1)",
-            dump(Site, FileId, Str, [Idx, V]),
-            [{Idx, Str} | Acc]
+            Str3 = "Invalid relations (type 1c)",
+            dump(Site, FileId, Str3, [Idx, V]),
+            [{Idx, Str3} | NewAcc2]
     end;
 verify_relations(Site, FileId, {Idx, #ver{relation = exists,
                                           local_obj = exists,
