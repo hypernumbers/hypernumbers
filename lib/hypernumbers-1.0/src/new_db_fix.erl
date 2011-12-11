@@ -316,7 +316,7 @@ fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.
 
 clean_up_dirty_zinfs() ->
     Sites = hn_setup:get_sites(),
-    [ok = clean_up_dirty_zinfs(X) || X <- Sites],
+    [clean_up_dirty_zinfs(X) || X <- Sites],
     ok.
 
 clean_up_dirty_zinfs(Site) ->
