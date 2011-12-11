@@ -300,10 +300,10 @@ fix3(Site, "Invalid grid (type 3)", Idx) ->
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid grid (type 4)", _Idx) -> ok;
 fix3(_Site, "Invalid reverse index", _Idx) -> ok;
-fix3(Site, "Invalid zinf (type 1)", Idx) ->
-    Tbl1 = new_db_wu:trans(Site, local_obj),
-    Fun = fun() ->
-                 ok = mnesia:delete(Tbl1, Idx, write)
-          end,
-    mnesia:activity(transaction, Fun);
+fix3(_Site, "Invalid zinf (type 1)", _Idx) -> ok;
+    %% Tbl1 = new_db_wu:trans(Site, local_obj),
+    %% Fun = fun() ->
+    %%              ok = mnesia:delete(Tbl1, Idx, write)
+    %%       end,
+    %% mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.
