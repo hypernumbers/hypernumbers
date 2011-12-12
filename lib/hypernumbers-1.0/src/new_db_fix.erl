@@ -25,6 +25,12 @@
          clean_up_dirty_for_zinfs/1
         ]).
 
+% checking out the zinf stuff
+-export([
+         verify_zinfs/0,
+         fix_zinfs/0
+        ]).
+
 % debugging exports
 -export([
          fix/0,
@@ -428,4 +434,18 @@ clean_up_queue([H | T], Site, Acc) ->
              end,
     clean_up_queue(T, Site, NewAcc).
 
+verify_zinfs() ->
+    Sites = hn_setup:get_sites(),
+    Fun = fun(Site) ->
+                  io:format("Verifing the zinfs of ~p~n", [Site]),
+                  zinf_srv:verify(Site, verbose, dontfix)
+           end,
+    lists:foreach(Fun, Sites).
 
+fix_zinfs() ->
+    Sites = hn_setup:get_sites(),
+    Fun = fun(Site) ->
+                  io:format("Fixing the zinfs of ~p~n", [Site]),
+                  zinf_srv:verify(Site, verbose, fix)
+           end,
+    lists:foreach(Fun, Sites).
