@@ -547,15 +547,15 @@ dump_f([H | T], Path, Acc) ->
 
 verify2([], _Path, Acc)     -> Acc;
 verify2([H | T], Path, Acc) -> {_, List} = H,
-                               NewAcc = verify3(List, Acc),
+                               NewAcc = verify3(List, Path, Acc),
                                verify2(T, Path, NewAcc).
 
-verify3([], Acc) -> Acc;
-verify3([H | T], {Site, Verbose, Fix, Acc}) ->
+verify3([], _Path, Acc) -> Acc;
+verify3([H | T], Path, {Site, Verbose, Fix, Acc}) ->
     Tbl = new_db_wu:trans(Site, local_obj),
     NewAcc = case mnesia:read(Tbl, H, read) of
                  []   -> write(Verbose, "zinf ~p doesn't "
-                               ++ "exist~n", [H]),
+                               ++ "exist on ~p~n", [H, Path]),
                          [H | Acc];
                  [_R] -> Acc;
                  List -> write(Verbose, "zinf ~p should have "
@@ -563,7 +563,7 @@ verify3([H | T], {Site, Verbose, Fix, Acc}) ->
                                [List]),
                          [H | Acc]
              end,
-    verify3(T, {Site, Verbose, Fix, NewAcc}).
+    verify3(T, Path, {Site, Verbose, Fix, NewAcc}).
 
 check_bk2([], _Path, Acc)     -> Acc;
 check_bk2([H | T], Path, Acc) -> {_, List} = H,
