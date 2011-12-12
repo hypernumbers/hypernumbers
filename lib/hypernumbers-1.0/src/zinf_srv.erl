@@ -210,7 +210,11 @@ handle_call(start_fprof, _From, State) ->
     {reply, TraceFile, State};
 handle_call({verify, Site, Verbose, Fix}, _From, State) ->
     #state{site = Site, zinf_tree = Tree} = State,
-    {reply, verify_zs(Tree, Site, Verbose, Fix), State};
+    {Reply, NewTree} = verify_zs(Tree, Site, Verbose, Fix),
+    % force the writing of the new zinf tree by setting max queue size to 0
+    new_db_api:maybe_write_zinftree(Site, NewTree, 0),
+    NewState = State#state{zinf_tree = NewTree},
+    {reply, Reply, NewState};
 handle_call({check_borked, Site, Verbose, Fix, Borked}, _From, State) ->
     #state{site = Site, zinf_tree = Tree} = State,
     {reply, check_bk_zs(Tree, Site, Verbose, Fix, Borked), State};
@@ -293,7 +297,9 @@ handle_info(Info, State) ->
             ok = zinf_srv:process_zinfs(S);
         {mnesia_table_event, {write, {Tbl2, _, _}, _}} ->
              {ok , _} = mnesia:unsubscribe({table, Tbl2, simple}),
-            ok = zinf_srv:check_zinfs(S)
+            ok = zinf_srv:check_zinfs(S);
+        {mnesia_table_event, _} ->
+            ok
     end,
     {noreply, State}.
 
@@ -365,9 +371,15 @@ dump_to_f(Tree, Site, File) ->
     ok.
 
 verify_zs(Tree, Site, Verbose, Fix) ->
-    Ret = verify_tree(Tree, [], {Site, Verbose, Fix, []}),
-    {_, _, _, Acc} = Ret,
-    Acc.
+    {_, _, _, Borked} = verify_tree(Tree, [], {Site, Verbose, Fix, []}),
+    case Fix of
+        fix ->
+            FakeX = #xrefX{idx = 111, site = Site},
+            NewTree = del_borked(Borked, FakeX, Tree),
+            {ok, NewTree};
+        _ ->
+            {ok, Tree}
+    end.
 
 check_bk_zs(Tree, Site, Verbose, Fix, Borked) ->
     Ret = check_bk_tree(Tree, [], {Site, Verbose, Fix, Borked, []}),
@@ -546,24 +558,24 @@ dump_f([H | T], Path, Acc) ->
     dump_f(T, Path, Acc).
 
 verify2([], _Path, Acc)     -> Acc;
-verify2([H | T], Path, Acc) -> {_, List} = H,
-                               NewAcc = verify3(List, Path, Acc),
+verify2([H | T], Path, Acc) -> {Obj, List} = H,
+                               NewAcc = verify3(List, Path, Obj, Acc),
                                verify2(T, Path, NewAcc).
 
-verify3([], _Path, Acc) -> Acc;
-verify3([H | T], Path, {Site, Verbose, Fix, Acc}) ->
+verify3([], _Path, _Obj, Acc) -> Acc;
+verify3([H | T], Path, Obj, {Site, Verbose, Fix, Acc}) ->
     Tbl = new_db_wu:trans(Site, local_obj),
     NewAcc = case mnesia:read(Tbl, H, read) of
                  []   -> write(Verbose, "zinf ~p doesn't "
                                ++ "exist on ~p~n", [H, Path]),
-                         [H | Acc];
+                         [{Path, Obj, H} | Acc];
                  [_R] -> Acc;
                  List -> write(Verbose, "zinf ~p should have "
                                ++ "one local_obj only ~p~n",
                                [List]),
-                         [H | Acc]
+                         [{Path, Obj, H} | Acc]
              end,
-    verify3(T, Path, {Site, Verbose, Fix, NewAcc}).
+    verify3(T, Path, Obj, {Site, Verbose, Fix, NewAcc}).
 
 check_bk2([], _Path, Acc)     -> Acc;
 check_bk2([H | T], Path, Acc) -> {_, List} = H,
@@ -745,6 +757,11 @@ get_time() -> util2:get_timestamp()/1000000.
 
 write(verbose, Msg, Data) -> io:format(Msg, Data);
 write(_, _, _)            -> ok.
+
+del_borked([], _, Tree) -> Tree;
+del_borked([{Path, Obj, Idx} | T], FakeX, Tree) ->
+    NewTree = del({FakeX#xrefX{path = Path, obj = Obj}, Idx}, Tree),
+    del_borked(T, FakeX, NewTree).
 
 %%%===================================================================
 %%% EUnit Tests
@@ -1642,4 +1659,3 @@ perf3(Stamp, N, Tree, Idx, S, P, Obj) ->
     %AddMsg = io_lib:format("~p", [AddEnd - AddStart]),
     %log(AddMsg, "zinf_loading" ++ Stamp ++ ".csv"),
     perf3(Stamp, N - 1, NewTree, Idx + 1, S, P, Obj).
-
