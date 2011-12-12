@@ -221,10 +221,10 @@ fix3(_Site, "Invalid relations (type 2a)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 2b)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 2c)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 3a)", _Idx) -> ok;
-fix3(_Site, "Invalid relations (type 3b)", _Idx) -> ok;
-fix3(Site, "Invalid relations (type 3c)", Idx) ->
-    % mark dirty
+fix3(Site, "Invalid relations (type 3b)", Idx) ->
+        % mark dirty
     new_db_api:mark_idx_dirty(Site, Idx);
+fix3(_Site, "Invalid relations (type 3c)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 4a)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 4b)", _Idx) -> ok;
 fix3(_Site, "Invalid relations (type 4c)", _Idx) -> ok;
