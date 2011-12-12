@@ -889,7 +889,7 @@ write_attributes(List, PAr, VAr) ->
           end,
     % assumes all refX's are for the same site and page, hmmm...
     {Ref, _} = hd(List),
-    write_activity(Ref, Fun, "quiet", Report).
+    write_activity(Ref, Fun, "write attrs", Report).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
