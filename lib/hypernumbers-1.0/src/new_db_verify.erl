@@ -39,7 +39,7 @@
           has_include = false,
           has_include_fn = false,
           has_zinf = false,
-          zinf_path = null
+          zinf_path = []
          }).
 
 % main api
@@ -395,48 +395,114 @@ verify_relations(Site, FileId, {Idx, #ver{relation = exists,
                                           rev_children = RC,
                                           rev_parents = RP,
                                           rev_infparents = RIP} = V}, Acc) ->
-    NewAcc1 = case same(C, RC) of
-                  true ->
+    NewAcc1 = case {same(C, RC), is_empty(C), is_empty(RC)}  of
+                  {true, _, _} ->
                       Acc;
-                  _ ->
+                  {false, false, true} ->
                       Str1 = "Invalid relations (type 1a)",
+                      dump(Site, FileId, Str1, [Idx, V]),
+                      [{Idx, Str1} | Acc];
+                  {false, true, false} ->
+                      Str1 = "Invalid relations (type 1b)",
+                      dump(Site, FileId, Str1, [Idx, V]),
+                      [{Idx, Str1} | Acc];
+                  _ ->
+                      Str1 = "Invalid relations (type 1c)",
                       dump(Site, FileId, Str1, [Idx, V]),
                       [{Idx, Str1} | Acc]
     end,
-    NewAcc2 = case same(P, RP) of
-                  true ->
+    NewAcc2 = case {same(P, RP), is_empty(P), is_empty(RP)} of
+                  {true, _, _} ->
                       NewAcc1;
+                  {false, false, true} ->
+                      Str2 = "Invalid relations (type 2a)",
+                      dump(Site, FileId, Str2, [Idx, V]),
+                      [{Idx, Str2} | NewAcc1];
+                  {false, true, false} ->
+                      Str2 = "Invalid relations (type 2b)",
+                      dump(Site, FileId, Str2, [Idx, V]),
+                      [{Idx, Str2} | NewAcc1];
                   _ ->
-                      Str2 = "Invalid relations (type 1b)",
+                      Str2 = "Invalid relations (type 2c)",
                       dump(Site, FileId, Str2, [Idx, V]),
                       [{Idx, Str2} | NewAcc1]
               end,
-    case same(I, RIP) of
-        true ->
+    case {same(I, RIP), is_empty(I), is_empty(RIP)} of
+        {true, _, _} ->
             NewAcc2;
+        {false, true, false} ->
+            Str3 = "Invalid relations (type 3a)",
+            dump(Site, FileId, Str3, [Idx, V]),
+            Dirty = add_dirty_zinfs(Idx, RIP),
+            [{Idx, Str3}, {Idx, {"clear inf parents", Dirty}}
+             | NewAcc2];
+        {false, false, true} ->
+            Str3 = "Invalid relations (type 3b)",
+            dump(Site, FileId, Str3, [Idx, V]),
+            [{Idx, Str3} | NewAcc2];
         _ ->
-            Str3 = "Invalid relations (type 1c)",
+            Str3 = "Invalid relations (type 3c)",
             dump(Site, FileId, Str3, [Idx, V]),
             [{Idx, Str3} | NewAcc2]
     end;
 verify_relations(Site, FileId, {Idx, #ver{relation = exists,
                                           local_obj = exists,
-                                          item = null,
                                           children = C,
-                                          parents = [],
-                                          infparents = [],
+                                          parents = P,
+                                          infparents = I,
                                           rev_children = RC,
-                                          rev_parents = []} = V}, Acc) ->
-    case same(C, RC) of
-        true ->
-            Acc;
+                                          rev_parents = RP,
+                                          rev_infparents = RIP} = V}, Acc) ->
+    NewAcc1 = case {same(C, RC), is_empty(C), is_empty(RC)}  of
+                  {true, _, _} ->
+                      Acc;
+                  {false, false, true} ->
+                      Str1 = "Invalid relations (type 4a)",
+                      dump(Site, FileId, Str1, [Idx, V]),
+                      [{Idx, Str1} | Acc];
+                  {false, true, false} ->
+                      Str1 = "Invalid relations (type 4b)",
+                      dump(Site, FileId, Str1, [Idx, V]),
+                      [{Idx, Str1} | Acc];
+                  _ ->
+                      Str1 = "Invalid relations (type 4c)",
+                      dump(Site, FileId, Str1, [Idx, V]),
+                      [{Idx, Str1} | Acc]
+    end,
+    NewAcc2 = case {same(P, RP), is_empty(P), is_empty(RP)} of
+                  {true, _, _} ->
+                      NewAcc1;
+                  {false, false, true} ->
+                      Str2 = "Invalid relations (type 5a)",
+                      dump(Site, FileId, Str2, [Idx, V]),
+                      [{Idx, Str2} | NewAcc1];
+                  {false, true, false} ->
+                      Str2 = "Invalid relations (type 5b)",
+                      dump(Site, FileId, Str2, [Idx, V]),
+                      [{Idx, Str2} | NewAcc1];
+                  _ ->
+                      Str2 = "Invalid relations (type 5c)",
+                      dump(Site, FileId, Str2, [Idx, V]),
+                      [{Idx, Str2} | NewAcc1]
+              end,
+    case {same(I, RIP), is_empty(I), is_empty(RIP)} of
+        {true, _, _} ->
+            NewAcc2;
+        {false, true, false} ->
+            Str3 = "Invalid relations (type 6a)",
+            dump(Site, FileId, Str3, [Idx, V]),
+            [{Idx, Str3} | NewAcc2];
+        {false, false, true} ->
+            Str3 = "Invalid relations (type 6b)",
+            dump(Site, FileId, Str3, [Idx, V]),
+            [{Idx, Str3} | NewAcc2];
         _ ->
-            Str = "Invalid relations (type 2)",
-            dump(Site, FileId, Str, [Idx, V]),
-            [{Idx, Str} | Acc]
+            Str3 = "Invalid relations (type 6c)",
+            dump(Site, FileId, Str3, [Idx, V]),
+            [{Idx, Str3} | NewAcc2]
     end;
 verify_relations(Site, FileId, {Idx, #ver{relation = exists} = V}, Acc) ->
-    Str = "Invalid relations (type 3)",
+    Str = "Invalid relations (type 7)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_relations(_Site, _FileId, {_Idx, _H}, Acc) ->
@@ -734,6 +800,26 @@ verify_zinfs(Site, FileId, {Idx, #ver{relation = null,
                                       timer = null,
                                       children = C,
                                       parents = [],
+                                      rev_children = [],
+                                      infparents = [],
+                                      rev_parents = [],
+                                      rev_infparents = [],
+                                      has_formula = false,
+                                      type = gurl,
+                                      obj = {{cell, _}, _},
+                                      zinf_path = []} = V}, Acc)
+  when C =/= [] ->
+    Str = "Invalid zinf (type 1)",
+    dump(Site, FileId, Str, [Idx, V]),
+    [{Idx, Str} | Acc];
+verify_zinfs(Site, FileId, {Idx, #ver{relation = null,
+                                      local_obj = exists,
+                                      item = null,
+                                      form = null,
+                                      include = null,
+                                      timer = null,
+                                      children = C,
+                                      parents = [],
                                       rev_children = RC,
                                       infparents = [],
                                       rev_parents = [],
@@ -741,17 +827,17 @@ verify_zinfs(Site, FileId, {Idx, #ver{relation = null,
                                       has_formula = false,
                                       type = gurl,
                                       obj = {{cell, _}, _},
-                                      zinf_path = null} = V}, Acc) ->
+                                      zinf_path = []} = V}, Acc) ->
     case same(C, RC) of
         true -> Acc;
-        _    -> Str = "Invalid zinf (type 1)",
+        _    -> Str = "Invalid zinf (type 2)",
                 dump(Site, FileId, Str, [Idx, V]),
                 NewAcc = add_rcs(RC, Idx, Acc),
                 [{Idx, Str} | NewAcc]
     end;
 verify_zinfs(Site, FileId, {Idx, #ver{type = gurl,
                                       obj = {{cell, _}, _}} = V}, Acc) ->
-    Str = "Invalid zinf (type 2)",
+    Str = "Invalid zinf (type 3)",
     dump(Site, FileId, Str, [Idx, V]),
     [{Idx, Str} | Acc];
 verify_zinfs(_Site, _FileId, {_Idx, _V}, Acc) ->
@@ -852,9 +938,9 @@ process_z2([H | T], Site, Path, ZIdx, Idx, ITree, RTree, Acc) ->
     % first put the idx of the zinf into the rev_infparents of the
     % record
     Rec = get_rec(H, ITree),
-    #ver{rev_infparents = List} = Rec,
+    #ver{rev_infparents = List, zinf_path = ZPath} = Rec,
     Rec2 = Rec#ver{rev_infparents = [Idx | List], has_zinf = true,
-                   zinf_path = Path},
+                   zinf_path = [Path | ZPath]},
     ITree2 = gb_trees:enter(H, Rec2, ITree),
     % now do the reverse make the url the child of the zinf
     Rec3 = get_rec(ZIdx, ITree2),
@@ -1186,3 +1272,11 @@ delete_file(File) ->
         {error, enoent} -> ok; % file doesn't exist
         Other           -> exit(Other)
     end.
+
+is_empty([]) -> true;
+is_empty(_)  -> false.
+
+add_dirty_zinfs(Idx, Parents) ->
+    Old = ordsets:from_list(Parents),
+    New = ordsets:from_list([]),
+    #dirty_zinf{type = infinite, dirtycellidx = Idx, old = Old, new = New}.

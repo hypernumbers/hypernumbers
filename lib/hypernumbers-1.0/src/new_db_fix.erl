@@ -217,8 +217,24 @@ fix3(Site, "Invalid relations (type 1a)", Idx) ->
 fix3(_Site, "Invalid relations (type 1b)", _Idx) -> ok;
 % fixed by delete zinf
 fix3(_Site, "Invalid relations (type 1c)", _Idx) -> ok;
-fix3(_Site, "Invalid relations (type 2)", _Idx) -> ok;
-fix3(_Site, "Invalid relations (type 3)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 2a)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 2b)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 2c)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 3a)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 3b)", _Idx) -> ok;
+fix3(Site, "Invalid relations (type 3c)", Idx) ->
+    % mark dirty
+    new_db_api:mark_idx_dirty(Site, Idx);
+fix3(_Site, "Invalid relations (type 4a)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 4b)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 4c)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 5a)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 5b)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 5c)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 6a)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 6b)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type bc)", _Idx) -> ok;
+fix3(_Site, "Invalid relations (type 7)", _Idx) -> ok;
 fix3(_Site, "Invalid include (type 1)", _Idx) -> ok;
 fix3(Site, "Invalid include (type 2)", Idx) ->
     io:format("Marking dirty ~p ~p Invalid include (type 2)~n",
@@ -306,13 +322,14 @@ fix3(Site, "Invalid grid (type 3)", Idx) ->
     mnesia:activity(transaction, Fun);
 fix3(_Site, "Invalid grid (type 4)", _Idx) -> ok;
 fix3(_Site, "Invalid reverse index", _Idx) -> ok;
-fix3(_Site, "Invalid zinf (type 1)", _Idx) -> ok;
-    %% Tbl1 = new_db_wu:trans(Site, local_obj),
-    %% Fun = fun() ->
-    %%              ok = mnesia:delete(Tbl1, Idx, write)
-    %%       end,
-    %% mnesia:activity(transaction, Fun);
-fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok.
+fix3(Site, "Invalid zinf (type 1)", Idx) ->
+    Tbl1 = new_db_wu:trans(Site, local_obj),
+    Fun = fun() ->
+                  ok = mnesia:delete(Tbl1, Idx, write)
+          end,
+    mnesia:activity(transaction, Fun);
+fix3(_Site, "Invalid zinf (type 2)", _Idx) -> ok;
+fix3(_Site, "Invalid zinf (type 3)", _Idx) -> ok.
 
 clean_up_dirty_zinfs() ->
     Sites = hn_setup:get_sites(),
