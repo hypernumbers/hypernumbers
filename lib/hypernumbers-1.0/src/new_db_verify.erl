@@ -434,7 +434,7 @@ verify_relations(Site, FileId, {Idx, #ver{relation = exists,
             Str3 = "Invalid relations (type 3a)",
             dump(Site, FileId, Str3, [Idx, V]),
             Dirty = add_dirty_zinfs(Idx, RIP),
-            [{Idx, Str3}, {Idx, {"clear inf parents", Dirty}}
+            [{Idx, Str3}, {Idx, {"refresh zinf", Dirty}}
              | NewAcc2];
         {false, false, true} ->
             Str3 = "Invalid relations (type 3b)",
