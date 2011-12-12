@@ -120,7 +120,7 @@ dump(Site) ->
 
 verify(Site, Verbose, Fix) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    gen_server:call({global, Id}, {verify, Site, Verbose, Fix}).
+    gen_server:call({global, Id}, {verify, Site, Verbose, Fix}, 20000).
 
 check_borked(Site, Verbose, Fix, Borked) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
