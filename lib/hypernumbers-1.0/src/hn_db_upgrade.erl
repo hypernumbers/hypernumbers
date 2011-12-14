@@ -74,19 +74,26 @@ recalc_includes() ->
     Fun1 = fun(Site) ->
                    io:format("~nForcing recalcs on includes in ~p~n", [Site]),
                    Tbl2 = new_db_wu:trans(Site, relation),
-                   Fun2 = fun(X, Acc) ->
+                   Fun2 = fun(X, N) ->
                                   case X#relation.include of
                                       false ->
+                                          io:format("."),
                                           ok;
                                       true  ->
-                                          io:format("."),
+                                          io:format("*"),
                                           [new_db_api:mark_idx_dirty(Site, Y)
                                            || Y <- X#relation.children]
                                   end,
-                                  Acc
+                                  if
+                                      N > 80 ->
+                                          io:format("n"),
+                                          1;
+                                      N =< 80 ->
+                                          N
+                                  end
                           end,
                    Fun3 = fun() ->
-                                  mnesia:foldl(Fun2, [], Tbl2)
+                                  mnesia:foldl(Fun2, 1, Tbl2)
                           end,
                    mnesia:activity(transaction, Fun3)
            end,
