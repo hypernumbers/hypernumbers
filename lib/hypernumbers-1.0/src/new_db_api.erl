@@ -942,9 +942,9 @@ write_activity_DEBUG(RefX, Op, FrontEnd, Report) ->
 write_activity(#refX{site = Site} = RefX, Op, FrontEnd, Report) ->
     % still keep the notification of the db server for the mo
     Activity = fun() ->
-                        Ret = mnesia_mon:log_act(transaction, Op, Report),
-                        tell_front_end(FrontEnd, RefX),
-                        Ret
+                       Ret = mnesia_mon:log_act(transaction, Op, Report),
+                       tell_front_end(FrontEnd, RefX),
+                       Ret
                end,
     dbsrv:write_activity(Site, Activity).
 
