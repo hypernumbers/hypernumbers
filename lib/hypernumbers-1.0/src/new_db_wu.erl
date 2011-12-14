@@ -1414,7 +1414,7 @@ expunge_refsD(S, Refs) ->
 mark_dirty_for_inclD([], _) -> ok;
 mark_dirty_for_inclD(Refs = [#xrefX{site = Site}|_], AReq) ->
     %% TODO check out this stuff
-    %% not sure all the has inlude stuff is needed...
+    %% not sure all the has include stuff is needed...
     Idxs = lists:flatten([C#xrefX.idx || R <- Refs, C <- expand_ref(R)]),
     Dirties = [Idx || Idx <- Idxs, has_includeD(Site, Idx)],
     case Dirties of
@@ -2438,7 +2438,7 @@ shrink2([#dirty_for_zinf{dirty = D} | T], Acc) -> shrink2(T, [D | Acc]).
 %%     get_z2(T, CI, [NewAcc | Acc]).
 
 clean_up(#xrefX{} = XRefX, Attrs) ->
-    case lists:keymber("__hasform", 1, Attrs) of
+    case lists:keymember("__hasform", 1, Attrs) of
         true  -> ok = unattach_formD(XRefX);
         false -> ok
     end,
