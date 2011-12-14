@@ -72,12 +72,14 @@
 recalc_includes() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
+                   io:format("~nForcing recalcs on includes in ~p~n", [Site]),
                    Tbl2 = new_db_wu:trans(Site, relation),
                    Fun2 = fun(X, Acc) ->
                                   case X#relation.include of
                                       false ->
                                           ok;
                                       true  ->
+                                          io:format("."),
                                           [new_db_api:mark_idx_dirty(Site, Y)
                                            || Y <- X#relation.children]
                                   end,
