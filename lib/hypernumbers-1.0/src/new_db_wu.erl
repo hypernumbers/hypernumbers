@@ -9,6 +9,11 @@
 
 -include("syslib.hrl").
 -include("keyvalues.hrl").
+-include("spriki.hrl").
+-include("muin_records.hrl").
+-include("hypernumbers.hrl").
+
+-include_lib("stdlib/include/ms_transform.hrl").
 
 -define(to_refX, hn_util:refX_from_index).
 
@@ -17,12 +22,6 @@
 -define(dict, orddict:orddict()).
 -define(TRANSFORMATIVE, true).
 -define(NONTRANSFORMATIVE, false).
-
--include("spriki.hrl").
--include("muin_records.hrl").
--include("hypernumbers.hrl").
-
--include_lib("stdlib/include/ms_transform.hrl").
 
 -export([
          does_page_exist/1,
@@ -389,15 +388,8 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                              true ->
                                  % set relations to handle other cells
                                  ok = set_relationsD(XRefX, [], [], false),
-                                 ok = unattach_formD(XRefX),
-                                 ok = delete_incsD(XRefX),
+                                 ok = clean_up(XRefX, Attrs),
                                  ok = mark_these_dirtyD([XRefX], nil);
-                             false ->
-                                 ok
-                         end,
-                         case lists:keymember("__hasincs", 1, Attrs) of
-                             true ->
-                                 mark_dirty_for_inclD([XRefX], nil);
                              false ->
                                  ok
                          end,
@@ -446,13 +438,8 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             % do anything else...
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
 
-            % trash any includes that might pertain
-            % TODO this contains a lot of reads...
-            [ok = delete_incsD(X) || X <- Cells],
-
-            % trash any timers that might pertain
-            % TODO this contains lot of reads
-            [ok = delete_timerD(X) || X <- Cells],
+            % now clean up includes, timers, and forms.
+            [ok = clean_up(X) || X <- Cells],
 
             % Rewrite formulas
             Status = [deref_formula(X, DelX, Disp, Uid) || X <- LocalChildren3],
@@ -523,6 +510,7 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                  Has_Form = orddict:is_key("__hasform", Attrs),
                  Has_Incs = orddict:is_key("__hasincs", Attrs),
                  Has_Timer = orddict:is_key("__hastimer", Attrs),
+                 Is_In_IncFn = orddict:is_key("__in_includeFn", Attrs),
                  Attrs2 = case Is_Formula of
                               true ->
                                   A3 = case Has_Form of
@@ -548,6 +536,10 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                                   end;
                               false -> Attrs
                           end,
+                 case Is_In_IncFn of
+                     true  -> mark_dirty_for_inclD([XRefX], AReq);
+                     false -> ok
+                 end,
                  {clean, process_attrs(NewAs, XRefX, AReq, Attrs2)}
          end,
     apply_to_attrsD(XRefX, Op, write, AReq, ?NONTRANSFORMATIVE).
@@ -746,7 +738,23 @@ set_relationsD(#xrefX{idx = CellIdx, site = Site}, FiniteParents,
               []  -> #relation{cellidx = CellIdx}
           end,
     Rel2 = set_parents(Tbl, Site, Rel, FiniteParents, InfParents, IsIncl),
+    case IsIncl of
+        true  -> [mark_in_includeFn(Site, X) || X <- Rel2#relation.parents];
+        false -> ok
+    end,
     mnesia:write(Tbl, Rel2, write).
+
+mark_in_includeFn(Site, Idx) ->
+    XRefX = idx_to_xrefXD(Site, Idx),
+    Op = fun(Attrs) ->
+                 case orddict:find("__in_includeFn", Attrs) of
+                     {ok, true}  ->
+                         {clean, Attrs};
+                     error ->
+                         {clean, orddict:store("__in_includeFn", true, Attrs)}
+                 end
+         end,
+    apply_to_attrsD(XRefX, Op, include, nil, ?NONTRANSFORMATIVE).
 
 -spec set_parents(atom(), list(), #relation{}, [#xrefX{}],
                   [#xrefX{}], boolean()) -> #relation{}.
@@ -2428,3 +2436,28 @@ shrink2([#dirty_for_zinf{dirty = D} | T], Acc) -> shrink2(T, [D | Acc]).
 %%     Zs2 = lists:merge([H], Zs),
 %%     NewAcc = [{X, CI} || X <- Zs2],
 %%     get_z2(T, CI, [NewAcc | Acc]).
+
+clean_up(#xrefX{} = XRefX, Attrs) ->
+    case lists:keymber("__hasform", 1, Attrs) of
+        true  -> ok = unattach_formD(XRefX);
+        false -> ok
+    end,
+    case lists:keymember("__hasincs", 1, Attrs) of
+        true  -> ok = delete_incsD(XRefX);
+        false -> ok
+    end,
+    case lists:keymember("__hastimer", 1, Attrs) of
+        true  -> ok = delete_timerD(XRefX);
+        false -> ok
+    end.
+
+clean_up(#xrefX{} = XRefX) ->
+    % trash any includes that might pertain
+    % TODO this contains a lot of reads...
+    ok = delete_incsD(XRefX),
+    % trash any timers that might pertain
+    % TODO this contains lot of reads
+    ok = delete_timerD(XRefX),
+    % trash any forms that might pertain
+    % TODO this contains a lot of reads
+    ok = unattach_formD(XRefX).
