@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         recalc_includes/0,
          fix_page_srv_2011_11_23/0,
          upgrade_etl_2011_11_23/0,
          add_api_table_2011_11_03/0,
@@ -59,14 +60,36 @@
          upgrade_pages_2011_01_26/0,
          upgrade_zinf_2011_01_17/0,
          upgrade_2011_01_07/0
-         %% upgrade_1519/0,
-         %% upgrade_1556/0,
-         %% upgrade_1630/0,
-         %% upgrade_1641/0,
-         %% upgrade_1743_A/0,
-         %% upgrade_1743_B/0,
-         %% upgrade_1776/0
+%% upgrade_1519/0,
+%% upgrade_1556/0,
+%% upgrade_1630/0,
+%% upgrade_1641/0,
+%% upgrade_1743_A/0,
+%% upgrade_1743_B/0,
+%% upgrade_1776/0
         ]).
+
+recalc_includes() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tbl2 = new_db_wu:trans(Site, relation),
+                   Fun2 = fun(X, Acc) ->
+                                  case X#relation.include of
+                                      false ->
+                                          ok;
+                                      true  ->
+                                          [new_db_api:mark_idx_dirty(Site, Y)
+                                           || Y <- X#relation.children]
+                                  end,
+                                  Acc
+                          end,
+                   Fun3 = fun() ->
+                                  mnesia:foldl(Fun2, [], Tbl2)
+                          end,
+                   mnesia:activity(transaction, Fun3)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 fix_page_srv_2011_11_23() ->
     Sites = hn_setup:get_sites(),
@@ -128,8 +151,8 @@ show_ranges_2011_10_20() ->
                                   #local_obj{obj = O, path = P} = X,
                                   case O of
                                       {range, _} ->
-                                  Pa = hn_util:list_to_path(binary_to_term(P)),
-                                  NO = hn_util:obj_to_ref(O),
+                                          Pa = hn_util:list_to_path(binary_to_term(P)),
+                                          NO = hn_util:obj_to_ref(O),
                                           io:format("Range in ~p ~p~n", [X, Pa ++ NO]);
                                       _ ->
                                           ok
@@ -186,7 +209,7 @@ do_z_parents_exist_2011_10_20() ->
                               end,
                               Acc
                       end,
-                                  F3 = fun() ->
+                 F3 = fun() ->
                               mnesia:foldl(F2, [], Tbl)
                       end,
                  mnesia:activity(transaction, F3)
@@ -219,10 +242,10 @@ type_local_objs_2011_10_13() ->
                                   end,
                                   case {O, T} of
                                       {{Ref, _}, gurl} when Ref == row
-                                                             orelse Ref == column ->
+                                                            orelse Ref == column ->
                                           ok;
                                       {{Ref, _}, _} when Ref == row
-                                                          orelse Ref == column ->
+                                                         orelse Ref == column ->
                                           io:format("string type url ~p ~p was ~p~n",
                                                     [Pa, O, T]),
                                           Rec2 = X#local_obj{type = gurl},
@@ -264,7 +287,7 @@ check_local_objs_2011_10_13() ->
                                   Ret2 = mnesia:read(Tbl2, Idx, read),
                                   case {Ret1, Ret2} of
                                       {[], []} -> %mnesia:delete(Tbl3, Idx,
-                                                  %              write);
+                                          %              write);
                                           P2 = binary_to_term(P),
                                           io:format("delete ~p ~p~n", [P2, O]);
                                       _ -> ok
@@ -349,7 +372,7 @@ make_revidx_2011_10_02() ->
                    Tbl1 = new_db_wu:trans(Site, local_obj),
                    Tbl2 = new_db_wu:trans(Site, revidx),
                    Fun2 = fun(LO, []) ->
-                                 #local_obj{idx = Idx, path = P, obj = O} = LO,
+                                  #local_obj{idx = Idx, path = P, obj = O} = LO,
                                   P2 = binary_to_term(P),
                                   RevIdx = hn_util:list_to_path(P2)
                                       ++ hn_util:obj_to_ref(O),
@@ -399,8 +422,8 @@ fix2(Sites, Verbosity, Fix) ->
                                  List ->
                                      write(Verbosity, "~p LO ~p ~p ~p "
                                            ++ "borked ~p~n",
-                                                       [N, Site, P2, O,
-                                                        length(List)]),
+                                           [N, Site, P2, O,
+                                            length(List)]),
                                      NewAcc = add(P, O, List, Acc),
                                      {N + 1, NewAcc}
                              end
@@ -465,17 +488,17 @@ fix_relation(Verb, Site, Borked) ->
                                             {infinite, Inf},
                                             {zs, Z}],
                                      D = case check_rels(Cks, Idx, Bkd, false) of
-                                         true  -> [Idx | DIdx];
-                                         false -> DIdx
-                                     end,
+                                             true  -> [Idx | DIdx];
+                                             false -> DIdx
+                                         end,
                                      D2 = check_children(C, Site, Bkd, []),
                                      {lists:merge(DIdx, D),
                                       lists:merge(DXRefX, D2)};
                             Tuple ->
                                 write(Verb, "in relation ~p  (should delete)~n",
-                                          [Tuple]),
+                                      [Tuple]),
                                 {DIdx, DXRefX}
-                   end,
+                        end,
                   {Borked, NDs}
           end,
     mnesia:foldl(Fun, {Borked, {[], []}}, Tbl).
@@ -493,7 +516,7 @@ check_rels([{Type, List} | T], Idx, Bkd, IsDirty) ->
     NewIsDirty = case check_rels2(List, Idx, Type, Bkd, false) of
                      false -> IsDirty;
                      true  -> true
-           end,
+                 end,
     check_rels(T, Idx, Bkd, NewIsDirty).
 
 check_rels2([], _Idx, _Type, _Borked, IsDirty) -> IsDirty;
@@ -680,10 +703,10 @@ bug_fix_for_row_cols_2011_06_25() ->
                       end,
                  Tbl1 = new_db_wu:trans(Site, local_obj),
                  Ret = mnesia:transform_table(Tbl1, F2, [idx, type, path,
-                                                   obj, revidx]),
+                                                         obj, revidx]),
                  io:format("Ret is ~p~n", [Ret]),
                  io:format("Table ~p transformed~n", [Tbl1])
-           end,
+         end,
     lists:foreach(F1, Sites).
 
 add_path_index_to_logs_2011_05_26() ->
@@ -766,8 +789,8 @@ upgrade_dirty_zinf_2011_05_02() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
                    Fun = fun({dirty_zinf, Id, Type, Dirty, O, N}) ->
-                                  {dirty_zinf, Id, Type, Dirty, O, N, false}
-                          end,
+                                 {dirty_zinf, Id, Type, Dirty, O, N, false}
+                         end,
                    Tbl = new_db_wu:trans(Site, dirty_zinf),
                    io:format("Table ~p transformed~n", [Tbl]),
                    Ret1 = mnesia:transform_table(Tbl, Fun,
@@ -856,7 +879,7 @@ fix_borked_binaries() ->
                          end,
                    Tbl = hn_db_wu:trans(Site, item),
                    Ret = mnesia:transform_table(Tbl, Fun,
-                                                 [idx, attrs]),
+                                                [idx, attrs]),
 
                    io:format("Table ~p transformed: ~p~n", [Tbl, Ret])
            end,
@@ -869,7 +892,7 @@ fix_borked_binaries() ->
                                             [Idx]),
                                   {local_obj, Idx, Type, binary_to_term(Path),
                                    Obj, binary_to_term(RevIdx)};
-                              ({local_obj, Idx, Type, Path, Obj, RevIdx}) ->
+                             ({local_obj, Idx, Type, Path, Obj, RevIdx}) ->
                                   ({local_obj, Idx, Type, Path, Obj, RevIdx})
                           end,
                    Tbl2 = hn_db_wu:trans(Site, local_obj),
@@ -907,11 +930,11 @@ upgrade_item_2011_03_14() ->
     Fun1 = fun(Site) ->
                    % first add stuff to the relations table
                    Fun = fun({item, Idx, Attrs}) ->
-                                  {item, Idx, term_to_binary(Attrs)}
-                          end,
+                                 {item, Idx, term_to_binary(Attrs)}
+                         end,
                    Tbl = hn_db_wu:trans(Site, item),
                    Ret = mnesia:transform_table(Tbl, Fun,
-                                                 [idx, attrs]),
+                                                [idx, attrs]),
 
                    io:format("Table ~p transformed: ~p~n", [Tbl, Ret])
            end,
@@ -924,13 +947,13 @@ upgrade_local_obj_2011_03_14() ->
     Fun1 = fun(Site) ->
                    % first add stuff to the relations table
                    Fun = fun({local_obj, Idx, Type, Path, Obj, RevIdx}) ->
-                                  {local_obj, Idx, Type, term_to_binary(Path),
-                                   Obj, term_to_binary(RevIdx)}
-                          end,
+                                 {local_obj, Idx, Type, term_to_binary(Path),
+                                  Obj, term_to_binary(RevIdx)}
+                         end,
                    Tbl = hn_db_wu:trans(Site, local_obj),
                    Ret = mnesia:transform_table(Tbl, Fun,
-                                                 [idx, type, path,
-                                                  obj, revidx]),
+                                                [idx, type, path,
+                                                 obj, revidx]),
 
                    io:format("Table ~p transformed: ~p~n", [Tbl, Ret])
            end,
@@ -948,19 +971,19 @@ upgrade_local_obj_2011_03_14() ->
 upgrade_auth_srv_2011_03_13() ->
     Sites = hn_setup:get_sites(),
     Fun = fun(Site) ->
-                    % Load stuff out of the dets table
-                    Table = hn_util:site_to_fs(Site),
-                    Dir = filename:join([code:lib_dir(hypernumbers), "..", "..",
-                           "var", "dets"]),
-                    filelib:ensure_dir([Dir,"/"]),
-                    {ok, _} = dets:open_file(Table, [{file, filename:join(Dir,Table)}]),
-                    Tree = case dets:lookup(Table, "auth_tree") of
-                                []                   -> gb_trees:empty();
-                                [{"auth_tree", Val}] -> Val
-                            end,
-                    % save it into the kv table
-                    ok = hn_db_api:write_kv(Site, ?auth_srv, Tree),
-                    ok = dets:close(Table)
+                  % Load stuff out of the dets table
+                  Table = hn_util:site_to_fs(Site),
+                  Dir = filename:join([code:lib_dir(hypernumbers), "..", "..",
+                                       "var", "dets"]),
+                  filelib:ensure_dir([Dir,"/"]),
+                  {ok, _} = dets:open_file(Table, [{file, filename:join(Dir,Table)}]),
+                  Tree = case dets:lookup(Table, "auth_tree") of
+                             []                   -> gb_trees:empty();
+                             [{"auth_tree", Val}] -> Val
+                         end,
+                  % save it into the kv table
+                  ok = hn_db_api:write_kv(Site, ?auth_srv, Tree),
+                  ok = dets:close(Table)
           end,
     lists:foreach(Fun, Sites),
     ok.
@@ -1100,7 +1123,7 @@ upgrade_zinf_2011_01_17() ->
                              {dirty_zinf, record_info(fields, dirty_zinf)},
                              {dirty_for_zinf, record_info(fields, dirty_for_zinf)},
                              {kvstore, record_info(fields, kvstore)}
-                             ],
+                            ],
                    [ok = make_table(Site, X, Y, disc_copies) || {X, Y} <- Tables],
                    ok = hn_db_api:write_kv(Site, ?zinf_tree, gb_trees:empty())
            end,
@@ -1128,16 +1151,16 @@ upgrade_2011_01_07() ->
     % multi-site upgrade
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
-                 Fun2 = fun({relation, Cellidx, Children, Parents}) ->
-                                {relation, Cellidx, Children, Parents, false}
-                        end,
+                   Fun2 = fun({relation, Cellidx, Children, Parents}) ->
+                                  {relation, Cellidx, Children, Parents, false}
+                          end,
                    Tbl = hn_db_wu:trans(Site, relation),
                    io:format("Table is ~p~n", [Tbl]),
                    Ret = mnesia:transform_table(Tbl, Fun2,
                                                 [cellidx, children,
                                                  parents, include]),
                    io:format("Ret is ~p~n", [Ret])
-         end,
+           end,
     lists:foreach(Fun1, Sites).
 
 %% upgrade_1519() ->
