@@ -537,12 +537,20 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                               false -> Attrs
                           end,
                  case Is_In_IncFn of
-                     true  -> mark_dirty_for_inclD([XRefX], AReq);
+                     true  -> mark_children_dirtyD(XRefX, AReq);
                      false -> ok
                  end,
                  {clean, process_attrs(NewAs, XRefX, AReq, Attrs2)}
          end,
     apply_to_attrsD(XRefX, Op, write, AReq, ?NONTRANSFORMATIVE).
+
+mark_children_dirtyD(#xrefX{site = S, idx = Idx}, AReq) ->
+    Tbl = trans(S, relation),
+    case mnesia:read(Tbl, Idx, read) of
+        []    -> ok;
+        [Rec] -> #relation{children = C} = Rec,
+                 mark_these_idxs_dirtyD(C, S, AReq)
+    end.
 
 -spec mark_these_idxs_dirtyD(list(), atom(),auth_srv:auth_spec()) -> ok.
 mark_these_idxs_dirtyD([], _Site, _) -> ok;
