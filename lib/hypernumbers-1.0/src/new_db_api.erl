@@ -920,7 +920,7 @@ write_attributes1(#xrefX{} = XRefX, List, PAr, VAr) ->
     end,
     % now do the include dirty stuff (ie this cell has had it's format updated)
     % so make any cells that use '=include(...)' on it redraw themselves
-    case lists:keymember("__hasincs", 1, List) of
+    case lists:keymember("__in_includeFn", 1, List) of
         true -> new_db_wu:mark_dirty_for_inclD([XRefX], VAr);
         false -> ok
     end.
