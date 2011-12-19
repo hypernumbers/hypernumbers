@@ -51,7 +51,6 @@ run(Args, Fun) ->
         false         -> Fun(Args)
     end.
 
-
 run_or_err(Args, Fun) ->
     case lists:keyfind(errval, 1, Args) of
         {errval, Val} ->
@@ -83,17 +82,16 @@ cast(Val, Type) ->
 
 %% X -> boolean
 cast(0, num, bool)   -> false;
-cast(0.0, num, bool)   -> false;
+cast(0.0, num, bool) -> false;
 cast(_, num, bool)   -> true;
 cast(_, date, bool)  -> true;
 cast(_, blank, bool) -> false;
-cast(X, str, bool) ->
-    case string:to_upper(X) of
-        "TRUE"  -> true;
-        "FALSE" -> false;
-        _       -> {error,  nab}
-    end;
-cast(_, _, bool) -> {error, nab};
+cast(X, str, bool)   -> case string:to_upper(X) of
+                            "TRUE"  -> true;
+                            "FALSE" -> false;
+                            _       -> {error,  nab}
+                        end;
+cast(_, _, bool)     -> {error, nab};
 
 cast(X, Type, int) ->
     case cast(X, Type, num) of
@@ -278,7 +276,8 @@ attempt(Mod, F, Args) ->
         Val -> {ok, Val}
     catch
         Error:Reason when Error =:= error orelse Error =:= throw ->
-            error_logger:info_msg("attempt to eval ~p/~p/~p failed~n- for ~p : ~p~n"
+            error_logger:info_msg("attempt to eval ~p/~p/~p failed~n"
+                                  ++ "- for ~p : ~p~n"
                                   "-with stacktrace of ~p~n",
                                   [Mod, F, Args, Error, Reason,
                                    erlang:get_stacktrace()]),
@@ -290,12 +289,12 @@ attempt(Fun) when is_function(Fun) ->
         Val -> {ok, Val}
     catch
         Error:Reason when Error =:= error orelse Error =:= throw ->
-            error_logger:error_msg("attempt to eval a fun failed~n- for ~p : ~p~n"
+            error_logger:error_msg("attempt to eval a fun failed~n"
+                                   ++ "- for ~p : ~p~n"
                                    "-with stacktrace of ~p~n",
                                    [Error, Reason, erlang:get_stacktrace()]),
             {error, Reason}
     end.
-
 
 %%% @doc Re-assemble a prettified and tidied up formula string from AST.
 %%% Normalizations performed:
@@ -330,7 +329,9 @@ normalize(false)                   -> "FALSE";
 normalize(C) when ?is_cellref(C)   -> string:to_upper(C#cellref.text);
 normalize(R) when ?is_rangeref(R)  -> string:to_upper(R#rangeref.text);
 normalize(N) when ?is_namedexpr(N) -> string:to_upper(N#namedexpr.text);
-normalize({F, OrigStr}) when is_float(F), ?is_string(OrigStr) -> string:to_lower(OrigStr);
+normalize({F, OrigStr})
+  when is_float(F),
+       ?is_string(OrigStr)         -> string:to_lower(OrigStr);
 normalize(A) when ?is_array(A)     ->
     {array, Rows} = A,
     RowsStr = lists:foldr(fun(Row, Acc) ->
@@ -341,6 +342,7 @@ normalize(A) when ?is_array(A)     ->
                     [],
                     Rows),
     "{" ++ string:join(RowsStr, "; ") ++ "}";
-normalize(S) when ?is_string(S)    -> string:concat("\"", string:concat(S, "\""));
+normalize(S) when ?is_string(S)    -> string:concat("\"",
+                                                    string:concat(S, "\""));
 normalize(E) when ?is_errval(E)    -> atom_to_list(element(2, E));
 normalize([])                      -> "()".
