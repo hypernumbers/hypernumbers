@@ -99,12 +99,15 @@ does_page_exist(#refX{site = S, obj = {page , "/"}} = RefX) ->
     end.
 
 do_items_existD([], _Site) -> false;
-do_items_existD([#local_obj{idx = Idx} | T], Site) ->
+do_items_existD([#local_obj{idx = Idx, obj = {cell, _}} | T], Site) ->
     Tbl = trans(Site, item),
     case mnesia:read(Tbl, Idx, read) of
         [] -> do_items_existD(T, Site);
         _  -> true
-    end.
+    end;
+% rows, cols, hell mend 'em
+do_items_existD([_H | T], Site) ->
+    do_items_existD(T, Site).
 
 has_cell_been_deletedD(Site, Idx) ->
     Tbl = trans(Site, del_local),

@@ -681,6 +681,7 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
 
         {Val, DepTree} ->
             F = fun({url, [{type, Type}], [Url2]}) ->
+                        % yeah parse_url is now deprecated...
                         Ref = hn_util:parse_url(Url2),
                         #refX{site = S, type = url, path = P,
                               obj = {cell, {X, Y}}} = Ref,
