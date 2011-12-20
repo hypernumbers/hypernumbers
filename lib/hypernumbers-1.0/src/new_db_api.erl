@@ -780,11 +780,12 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
     Report2 = mnesia_mon:get_stamp("clear off rows and cols "
                                    ++ "in a page delete"),
     Fun2 = fun() ->
-                   new_db_wu:delete_cells(RefX, vertical, Ar)
+                   ReWr = new_db_wu:delete_cells(RefX, vertical, Ar),
+                   ok = new_db_wu:mark_these_dirtyD(ReWr, Ar)
            end,
     % because we have cleared all the cells that have to be deleted
     % in advance we expect delete_cells to return an empty list
-    [] = mnesia_mon:log_act(transaction, Fun2, Report2),
+    ok = mnesia_mon:log_act(transaction, Fun2, Report2),
     ok = page_srv:page_deleted(S, P).
 
 %% @doc deletes a reference.
