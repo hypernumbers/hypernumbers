@@ -102,12 +102,15 @@ do_items_existD([], _Site) -> false;
 do_items_existD([#local_obj{idx = Idx, obj = {cell, _}} | T], Site) ->
     Tbl = trans(Site, item),
     case mnesia:read(Tbl, Idx, read) of
-        [] -> do_items_existD(T, Site);
-        _  -> true
-    end;
-% rows, cols, hell mend 'em
-do_items_existD([_H | T], Site) ->
-    do_items_existD(T, Site).
+        []       -> do_items_existD(T, Site);
+        [Items]  -> case Items of
+                        [{"__in_includeFn", _}] ->
+                            do_items_existD(T, Site);
+                         _ ->
+                            io:format("Items is ~p~n", [Items]),
+                            true
+                    end
+    end.
 
 has_cell_been_deletedD(Site, Idx) ->
     Tbl = trans(Site, del_local),
