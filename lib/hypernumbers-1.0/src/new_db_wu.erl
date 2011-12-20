@@ -107,7 +107,6 @@ do_items_existD([#local_obj{idx = Idx, obj = {cell, _}} | T], Site) ->
                         [{"__in_includeFn", _}] ->
                             do_items_existD(T, Site);
                          _ ->
-                            io:format("Items is ~p~n", [Items]),
                             true
                     end
     end.
