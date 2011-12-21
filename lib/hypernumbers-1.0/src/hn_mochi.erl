@@ -1445,7 +1445,8 @@ process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     syslib:log(io_lib:format("~p in process_user (a) for ~p", [Site, Auth]),
                ?auth),
-    syslib:log(io_lib:format("in (a) Env is ~p~n", [E]), ?auth),
+    syslib:log(io_lib:format("in (a) Env.headers is ~p~n", [E#env.headers]), ?auth),
+    syslib:log(io_lib:format("in (a) Env.mochi is ~p~n", [E#env.mochi]), ?auth),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
             Msg1 = io_lib:format("~p in process_user (b) for ~p ~p",
@@ -1570,7 +1571,7 @@ process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
         "/_sync/tell/?return="++QReturn++"&stamp="++QStamp,
     Redirect = {"Location", Redir},
     Msg2 = io_lib:format("leaving seek (2) with Redir of ~p QStamp of ~p "
-                         ++ " and Cookie of ~p~n",
+                         ++ "~n - and Cookie of ~p~n",
                         [Redir, QStamp, Cookie]),
     syslib:log(Msg2, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]};
@@ -1593,6 +1594,9 @@ process_sync(["reset"], E, QReturn, undefined) ->
     respond(500, Env).
 
 respond(Code, #env{mochi = Mochi, headers = Headers}) ->
+    Msg = io_lib:format("responding with ~p and headers of ~p~n",
+                        [Code, Headers]),
+    syslib:log(Msg, ?auth),
     Mochi:respond({Code, Headers, []}),
     ok.
 
