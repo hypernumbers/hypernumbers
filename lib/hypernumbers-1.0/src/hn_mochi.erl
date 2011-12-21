@@ -54,8 +54,9 @@ handle(MochiReq) ->
         Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
-        MsgX = io_lib:format("in handle Ref is ~p~n - Qry is ~p~n",
-                            [Ref, Qry]),
+        MsgX = io_lib:format("in handle Ref is ~p~n "
+                             ++ "- Qry.return is ~p Qry.stamp is ~p~n",
+                            [Ref, Qry#qry.return, Qry#qry.stamp]),
         syslib:log(MsgX, ?auth),
         handle_(Ref, Env, Qry)
     catch
