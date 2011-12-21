@@ -1445,7 +1445,7 @@ process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     syslib:log(io_lib:format("~p in process_user (a) for ~p", [Site, Auth]),
                ?auth),
-    syslib:log(io_lib:format("in (a) Env is ~p~n", [E])),
+    syslib:log(io_lib:format("in (a) Env is ~p~n", [E]), ?auth),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
             Msg1 = io_lib:format("~p in process_user (b) for ~p ~p",
