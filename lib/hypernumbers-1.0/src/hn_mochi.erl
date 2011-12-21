@@ -55,8 +55,12 @@ handle(MochiReq) ->
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
         MsgX = io_lib:format("in handle RealURI is ~p Ref is ~p~n "
+                             ++ "- Qry.permissions is ~p Qru.rawview is ~p~n "
                              ++ "- Qry.return is ~p Qry.stamp is ~p~n",
-                            [get_real_uri(MochiReq), Ref, Qry#qry.return,
+                            [get_real_uri(MochiReq), Ref,
+                             Qry#qry.permissions,
+                             Qry#qry.rawview,
+                             Qry#qry.return,
                              Qry#qry.stamp]),
         syslib:log(MsgX, ?auth),
         handle_(Ref, Env, Qry)
