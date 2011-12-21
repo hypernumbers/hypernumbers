@@ -1401,7 +1401,10 @@ process_query(#env{mochi = Mochi}) ->
     syslib:log(MsgX, ?auth),
     process_query_(List, #qry{}).
 
-process_query_([], Qry) -> Qry;
+process_query_([], Qry) ->
+    MsgX = io_lib:format("in process_query Qry is ~p~n", [Qry]),
+    syslib:log(MsgX, ?auth),
+    Qry;
 process_query_([{Param, Value} | Rest], Qry) ->
     Qry2 = case catch list_to_existing_atom(Param) of
                P when is_atom(P) ->
