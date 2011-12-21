@@ -90,11 +90,11 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
 handle_(#refX{site = S, path=["_sync" | Cmd]}, Env,
         #qry{return=QReturn, stamp=QStamp})
   when QReturn /= undefined ->
-    Env2 = process_sync(Cmd, Env, QReturn, QStamp),
     Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p"
                         ++ "QStamp of ~p",
                         [S, Cmd, QReturn, QStamp]),
     syslib:log(Msg, ?auth),
+    Env2 = process_sync(Cmd, Env, QReturn, QStamp),
     respond(303, Env2),
     throw(ok);
 
@@ -1555,7 +1555,7 @@ process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
     Stamp = case Mochi:get_cookie_value("auth") of
                 undefined -> passport:temp_stamp();
                 S         -> S end,
-    Msg = io_lib:format("in seek Stamp is ~p and Cookie is ~p~n",
+    Msg = io_lib:format("in seek (1)  Stamp is ~p and Cookie is ~p~n~n",
                         [Stamp, Mochi:get_cookie_value("auth")]),
     syslib:log(Msg, ?auth),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
@@ -1565,6 +1565,9 @@ process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
     Redir = hn_util:strip80(OrigSite) ++
         "/_sync/tell/?return="++QReturn++"&stamp="++QStamp,
     Redirect = {"Location", Redir},
+    Msg = io_lib:format("leaving seek with Redir of ~p QStamp of ~p~n~n",
+                        [Redir, QStamp]),
+    syslib:log(Msg, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]};
 process_sync(["reset"], E, QReturn, undefined) ->
     Cookie = hn_net_util:kill_cookie("auth"),
