@@ -1514,6 +1514,9 @@ cur_url(Site, #env{mochi=Mochi}) ->
 -spec try_sync([string()], string(), string(), string())
 -> {redir, string()} | on_sync.
 try_sync(Cmd0, Site, Return, Stamp) ->
+    Msg = io_lib:format("~p in try_sync for Site of SUrl of ~p~n~n",
+                        [Site, application:get_env(hypernumbers, sync_url)]),
+    syslib:log(Msg, ?auth),
     case application:get_env(hypernumbers, sync_url) of
         {ok, SUrl} when SUrl /= Site ->
             Cmd = string:join(Cmd0, "/"),
