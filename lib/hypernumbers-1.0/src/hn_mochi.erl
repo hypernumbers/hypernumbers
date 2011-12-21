@@ -87,14 +87,14 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-handle_(#refX{site = _S, path=["_sync" | Cmd]}, Env,
+handle_(#refX{site = S, path=["_sync" | Cmd]}, Env,
         #qry{return=QReturn, stamp=QStamp})
   when QReturn /= undefined ->
     Env2 = process_sync(Cmd, Env, QReturn, QStamp),
-    % Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p"
-    %                    ++ "QStamp of ~p",
-    %                    [S, Cmd, QReturn, QStamp]),
-    %syslib:log(Msg, ?auth),
+    Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p"
+                        ++ "QStamp of ~p",
+                        [S, Cmd, QReturn, QStamp]),
+    syslib:log(Msg, ?auth),
     respond(303, Env2),
     throw(ok);
 
@@ -376,7 +376,7 @@ authorize_p3(Site, Path, Env) ->
                 [{"delete_user_fn", _Args}]	-> allowed;
                 [{"write_user_fn", _Args}]	-> allowed;
                 _						        				-> denied
-			end
+            end
     end.
 
 authorize_upload(#refX{site = S, path = P}, _Qry,  #env{uid = Uid}) ->
@@ -1121,9 +1121,9 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
     end;
 
 ipost(#refX{site = Site, path = _P}, _Qry,
-		Env=#env{body = [{"read_user_fn", Entry}], uid = Uid}) ->
-	{struct, Args} = Entry,
-	case hn_web_admin:rpc(Uid, Site, "read_user_fn", Args) of
+      Env=#env{body = [{"read_user_fn", Entry}], uid = Uid}) ->
+    {struct, Args} = Entry,
+    case hn_web_admin:rpc(Uid, Site, "read_user_fn", Args) of
         {ok, Return}	-> json(Env, Return);
         {error, Reason} -> ?E("invalid curie request ~p~n", [Reason]),
                            json(Env, {struct, [{"failure", Reason}]})
@@ -1131,9 +1131,9 @@ ipost(#refX{site = Site, path = _P}, _Qry,
 
 
 ipost(#refX{site = Site, path = _P}, _Qry,
-		Env=#env{body = [{"delete_user_fn", Entry}], uid = Uid}) ->
-	{struct, Args} = Entry,
-	case hn_web_admin:rpc(Uid, Site, "delete_user_fn", Args) of
+      Env=#env{body = [{"delete_user_fn", Entry}], uid = Uid}) ->
+    {struct, Args} = Entry,
+    case hn_web_admin:rpc(Uid, Site, "delete_user_fn", Args) of
         {ok, Return}	-> json(Env, Return);
         {error, Reason} -> ?E("invalid curie request ~p~n", [Reason]),
                            json(Env, {struct, [{"failure", Reason}]})
@@ -1141,22 +1141,22 @@ ipost(#refX{site = Site, path = _P}, _Qry,
 
 
 ipost(#refX{site = Site, path = _P}, _Qry,
-		Env=#env{body = [{"write_user_fn", Entry}], uid = Uid}) ->
-	{struct, Args} = Entry,
-	case hn_web_admin:rpc(Uid, Site, "write_user_fn", Args) of
+      Env=#env{body = [{"write_user_fn", Entry}], uid = Uid}) ->
+    {struct, Args} = Entry,
+    case hn_web_admin:rpc(Uid, Site, "write_user_fn", Args) of
         {ok, Return}	-> json(Env, Return);
         {error, Reason} -> ?E("invalid curie request ~p~n", [Reason]),
                            json(Env, {struct, [{"failure", Reason}]})
     end;
 
 %~ ipost(_Ref, _Qry, Env=#env{body= [{"type", "user_defined_read"} | _T] = Json_Entry}) ->
-    %~ Return = curie:read_user_fn(Json_Entry),
-    %~ json(Env, Return);
+%~ Return = curie:read_user_fn(Json_Entry),
+%~ json(Env, Return);
 %~
 %~
 %~ ipost(_Ref, _Qry, Env=#env{body= [{"type", "user_defined_delete"} | _T] = Json_Entry}) ->
-    %~ Return = curie:delete_user_fn(Json_Entry),
-    %~ json(Env, Return);
+%~ Return = curie:delete_user_fn(Json_Entry),
+%~ json(Env, Return);
 
 ipost(Ref, Qry, Env) ->
     ?E("404~n-~p~n-~p~n",[Ref, Qry]),
@@ -1443,45 +1443,45 @@ process_environment(Mochi) ->
 -spec process_user(string(), #env{}) -> #env{} | no_return().
 process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
-    %syslib:log(io_lib:format("~p in process_user (a) for ~p", [Site, Auth]),
-    %           ?auth),
+    syslib:log(io_lib:format("~p in process_user (a) for ~p", [Site, Auth]),
+               ?auth),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
-            %Msg1 = io_lib:format("~p in process_user (b) for ~p ~p",
-            %                    [Site, Uid, Email]),
-            %syslib:log(Msg1, ?auth),
+            Msg1 = io_lib:format("~p in process_user (b) for ~p ~p",
+                                 [Site, Uid, Email]),
+            syslib:log(Msg1, ?auth),
             E#env{uid = Uid, email = Email};
         {error, no_stamp} ->
             Return = cur_url(Site, E),
-            %Msg2 = io_lib:format("~p in process_user (c) Return is ~p",
-            %                    [Site, Return]),
-            %syslib:log(Msg2, ?auth),
+            Msg2 = io_lib:format("~p in process_user (c) Return is ~p",
+                                 [Site, Return]),
+            syslib:log(Msg2, ?auth),
             case try_sync(["seek"], Site, Return, ?NO_STAMP) of
                 on_sync ->
                     Stamp = passport:temp_stamp(),
                     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
-                    %Msg3 = io_lib:format("~p in process_user (d) Stamp is ~p "
-                    %                     ++" Cookie is ~p~n",
-                    %                     [Site, Stamp, Cookie]),
-                    %syslib:log(Msg3, ?auth),
+                    Msg3 = io_lib:format("~p in process_user (d) Stamp is ~p "
+                                         ++" Cookie is ~p~n",
+                                         [Site, Stamp, Cookie]),
+                    syslib:log(Msg3, ?auth),
                     E#env{headers = [Cookie | E#env.headers]};
                 {redir, Redir} ->
-                    %Msg4 = io_lib:format("~p in process_user (e) Redir is ~p~n",
-                    %                     [Site, Redir]),
-                    %syslib:log(Msg4, ?auth),
+                    Msg4 = io_lib:format("~p in process_user (e) Redir is ~p~n",
+                                         [Site, Redir]),
+                    syslib:log(Msg4, ?auth),
                     E2 = E#env{headers = [{"location",Redir}|E#env.headers]},
                     respond(303, E2),
                     throw(ok)
             end;
-        {error, _Reason} ->
-            %Msg5 = io_lib:format("~p in process_user (f) Redir is ~p~n",
-            %                     [Site, Reason]),
-            %syslib:log(Msg5, ?auth),
+        {error, Reason} ->
+            Msg5 = io_lib:format("~p in process_user (f) Redir is ~p~n",
+                                 [Site, Reason]),
+            syslib:log(Msg5, ?auth),
             cleanup(Site, cur_url(Site, E), E)
     catch error:_ ->
-                                 %Msg6 = io_lib:format("~p in process_user (g) "
-                                 %                     ++ "cleanup",[Site]),
-                                 %syslib:log(Msg6, ?auth),
+                                 Msg6 = io_lib:format("~p in process_user (g) "
+                                                      ++ "cleanup",[Site]),
+                                 syslib:log(Msg6, ?auth),
                                  cleanup(Site, cur_url(Site, E), E)
                          end.
 
@@ -1492,14 +1492,14 @@ cleanup(Site, Return, E) ->
     E2 = E#env{headers = [Cookie | E#env.headers]},
     Redir = case try_sync(["reset"], Site, Return, ?NO_STAMP) of
                 on_sync    ->
-                    %Msg1 = io_lib:format("~p in cleanup Return with ~p",
-                    %                     [Site, Return]),
-                    %syslib:log(Msg1, ?auth),
+                    Msg1 = io_lib:format("~p in cleanup Return with ~p",
+                                         [Site, Return]),
+                    syslib:log(Msg1, ?auth),
                     Return;
                 {redir, R} ->
-                    %Msg2 = io_lib:format("~p in cleanup Redir with ~p",
-                    %                     [Site, R]),
-                    %syslib:log(Msg2, ?auth),
+                    Msg2 = io_lib:format("~p in cleanup Redir with ~p",
+                                         [Site, R]),
+                    syslib:log(Msg2, ?auth),
                     R
             end,
     E3 = E2#env{headers = [{"location",Redir}|E2#env.headers]},
@@ -1817,7 +1817,7 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
             {{load_templates, Template}, _} ->
                 case hn_import:load_template_file(File, Template, S) of
                     {error, Msg} ->
-                         {ok, { {struct, [{error, Msg}]}, File}};
+                        {ok, { {struct, [{error, Msg}]}, File}};
                     ok ->
                         {ok, { {struct, [{"location", Loc}]}, File}}
                 end;
@@ -1826,7 +1826,7 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
                 MapFile = Dir ++ "/" ++ Map ++ ".map",
                 case hn_import:etl_to_row(File, S, MapFile) of
                     {error, Msg} ->
-                         {ok, { {struct, [{error, Msg}]}, File}};
+                        {ok, { {struct, [{error, Msg}]}, File}};
                     {not_valid, Msg} ->
                         {ok, { {struct, [{error, Msg}]}, File}};
                     ok ->
