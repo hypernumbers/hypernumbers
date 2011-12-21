@@ -1569,8 +1569,9 @@ process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
     Redir = hn_util:strip80(OrigSite) ++
         "/_sync/tell/?return="++QReturn++"&stamp="++QStamp,
     Redirect = {"Location", Redir},
-    Msg2 = io_lib:format("leaving seek (2) with Redir of ~p QStamp of ~p~n~n",
-                        [Redir, QStamp]),
+    Msg2 = io_lib:format("leaving seek (2) with Redir of ~p QStamp of ~p "
+                         ++ " and Cookie of ~p~n",
+                        [Redir, QStamp, Cookie]),
     syslib:log(Msg2, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]};
 process_sync(["reset"], E, QReturn, undefined) ->
