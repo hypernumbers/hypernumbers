@@ -1555,12 +1555,17 @@ process_sync(["tell"], E, QReturn, QStamp) ->
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
+    Msg = io_lib:format("in tell (1) QReturn is ~p QStamp is ~p~n "
+                        ++ " - Cookie is ~p Return is ~p~n",
+                        [QReturn, QStamp, Cookie, Return]),
+    syslib:log(Msg, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]};
 process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
     Stamp = case Mochi:get_cookie_value("auth") of
                 undefined -> passport:temp_stamp();
-                S         -> S end,
-    Msg = io_lib:format("in seek (1)  Stamp is ~p and Cookie is ~p~n~n",
+                S         -> S
+            end,
+    Msg = io_lib:format("in seek (1) Stamp is ~p and Cookie is ~p~n~n",
                         [Stamp, Mochi:get_cookie_value("auth")]),
     syslib:log(Msg, ?auth),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
