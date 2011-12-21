@@ -1445,8 +1445,6 @@ process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     syslib:log(io_lib:format("~p in process_user (a) for ~p", [Site, Auth]),
                ?auth),
-    syslib:log(io_lib:format("in (a) Env.headers is ~p~n", [E#env.headers]), ?auth),
-    syslib:log(io_lib:format("in (a) Env.mochi is ~p~n", [E#env.mochi]), ?auth),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
             Msg1 = io_lib:format("~p in process_user (b) for ~p ~p",
@@ -1599,9 +1597,6 @@ process_sync(["reset"], E, QReturn, undefined) ->
     respond(500, Env).
 
 respond(Code, #env{mochi = Mochi, headers = Headers}) ->
-    Msg = io_lib:format("responding with ~p and headers of ~p~n",
-                        [Code, Headers]),
-    syslib:log(Msg, ?auth),
     Mochi:respond({Code, Headers, []}),
     ok.
 
