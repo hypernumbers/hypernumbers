@@ -99,6 +99,8 @@ handle_(#refX{site = S, path=["_sync" | Cmd]}, Env,
     throw(ok);
 
 handle_(Ref, Env, Qry) ->
+    Msg = io_lib:format("in handle_ (3) for ~p~n", [Ref]),
+    syslib:log(Msg, ?auth),
     case hn_setup:site_exists(Ref#refX.site) of
         true  -> case filename:extension((Env#env.mochi):get(path)) of
                      []  -> authorize_resource(Env, Ref, Qry);
