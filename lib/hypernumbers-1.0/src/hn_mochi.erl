@@ -1555,6 +1555,9 @@ process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
     Stamp = case Mochi:get_cookie_value("auth") of
                 undefined -> passport:temp_stamp();
                 S         -> S end,
+    Msg = io_lib:format("in seek Stamp is ~p and Cookie is ~p~n",
+                        [Stamp, Mochi:get_cookie_value("auth")]),
+    syslib:log(Msg, ?auth),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
     #refX{site = OrigSite} = hn_util:url_to_refX(Return),
