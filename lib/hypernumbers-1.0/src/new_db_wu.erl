@@ -109,7 +109,9 @@ do_items_existD([#local_obj{idx = Idx, obj = {cell, _}} | T], Site) ->
                          _ ->
                             true
                     end
-    end.
+    end;
+do_items_existD([_H | T], Site) ->
+    do_items_existD(T, Site).
 
 has_cell_been_deletedD(Site, Idx) ->
     Tbl = trans(Site, del_local),
