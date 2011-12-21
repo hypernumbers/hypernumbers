@@ -54,9 +54,10 @@ handle(MochiReq) ->
         Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
-        MsgX = io_lib:format("in handle Ref is ~p~n "
+        MsgX = io_lib:format("in handle RealURI is ~p Ref is ~p~n "
                              ++ "- Qry.return is ~p Qry.stamp is ~p~n",
-                            [Ref, Qry#qry.return, Qry#qry.stamp]),
+                            [get_real_uri(MochiReq), Ref, Qry#qry.return,
+                             Qry#qry.stamp]),
         syslib:log(MsgX, ?auth),
         handle_(Ref, Env, Qry)
     catch
@@ -1396,6 +1397,8 @@ pages_to_json(X, Dict) ->
 -spec process_query(#env{}) -> #qry{}.
 process_query(#env{mochi = Mochi}) ->
     List = Mochi:parse_qs(),
+    MsgX = io_lib:format("in process_query List is ~p~n", [List]),
+    syslib:log(MsgX, ?auth),
     process_query_(List, #qry{}).
 
 process_query_([], Qry) -> Qry;
