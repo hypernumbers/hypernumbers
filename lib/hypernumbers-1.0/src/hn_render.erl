@@ -298,6 +298,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
 "         <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
          <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
          </head>
+         <script src='/hypernumbers/err.remoterr.js'></script>
 
          <body data-view='" ++ PageType ++ "'>
 

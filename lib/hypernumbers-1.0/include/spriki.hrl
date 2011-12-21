@@ -244,6 +244,7 @@
           challenger,
           hypertag,
           mark,
+          jserr,
           map,
           pages,
           paths,

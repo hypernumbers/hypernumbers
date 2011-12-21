@@ -698,6 +698,12 @@ ipost(_Ref, #qry{mark = []},
       Env=#env{body = [{"set",{struct, [{"mark", _Msg}]}}]}) ->
     json(Env, "success");
 
+%% the purpose of this message is to log javascript errors into mochilog
+%% so we don't need to do anything with anything
+ipost(_Ref, #qry{jserr = []},
+      Env=#env{body = [{"set",{struct, [{"jserr", _Msg}]}}]}) ->
+    json(Env, "success");
+
 ipost(Ref, _Qry, Env=#env{body = [{"load_template", {_, [{"name", Name}]}}],
                           uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "created page from template "++Name),
