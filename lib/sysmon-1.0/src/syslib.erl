@@ -45,13 +45,17 @@ check_supervisors() ->
     Sites = hn_setup:get_sites(),
     Globals = global:registered_names(),
     Locals = registered(),
+    io:format("Checking all supervisors - " ++
+              "will report ones that don't exist...~n"),
     [check_super2(X, Globals, Locals) || X <- Sites],
     ok.
 
-check_supervisors(X) ->
+check_supervisors(Site) ->
     Globals = global:registered_names(),
     Locals = registered(),
-    check_super2(X, Globals, Locals).
+    io:format("checking supervisors for ~p (no news is good news)~n",
+              [Site]),
+    check_super2(Site, Globals, Locals).
 
 check_super2(Site, Globals, Locals) ->
     GlobalSups = get_sups(Site, global),
@@ -73,7 +77,7 @@ get_sups2([H | T], Site, Acc) ->
 
 check(Sup, List) ->
     case lists:member(Sup, List) of
-        true  -> io:format("Supervisor ~p is ok~n", [Sup]);
+        true  -> ok;
         false -> io:format("~p does not exist~n", [Sup])
     end.
 
@@ -143,7 +147,7 @@ dump_queues() ->
 
 dump_queues(Site) -> dump_queues(Site, ?qs).
 
-dump_queues(Site, [])      -> ok;
+dump_queues(_Site, [])     -> ok;
 dump_queues(Site, [H | T]) -> dump(Site, H),
                               dump_queues(Site, T).
 
