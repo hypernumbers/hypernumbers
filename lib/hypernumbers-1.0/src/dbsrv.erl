@@ -14,7 +14,8 @@
 
 %% Testing API - used to limit the feed of data in
 -export([
-         is_busy/1
+         is_busy/1,
+         dump_q_len/1
         ]).
 
 %% supervisor_bridge callbacks
@@ -61,6 +62,13 @@ write_activity(Site, Activity) ->
             ok
     end,
     ok.
+
+dump_q_len(Site) ->
+    Id = hn_util:site_to_atom(Site, "_dbsrv"),
+    Id ! {self(), dump_q_len},
+    receive
+        {dbsrv_reply, Reply} -> Reply
+    end.
 
 is_busy(Site) ->
     Id = hn_util:site_to_atom(Site, "_dbsrv"),
@@ -164,6 +172,10 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 
         {From, is_busy} ->
             From ! {dbsrv_reply, WorkPlan /= []},
+            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+
+        {From, dump_q_len} ->
+            From ! {dbsrv_reply, length(WorkPlan)},
             check_messages(Site, Since, QTbl, WorkPlan, Graph);
 
         _Other ->
