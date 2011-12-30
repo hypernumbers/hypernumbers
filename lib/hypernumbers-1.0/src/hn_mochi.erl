@@ -235,7 +235,6 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
     allowed;
 
 % shows sites, pages and stats
-% should make this admin only, yeah
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json})
   when X == "_site";
        X == "_pages";
@@ -513,7 +512,10 @@ iget(#refX{path=["_pages"]} = Ref, page, _Qry, Env) ->
     json(Env, Return);
 
 iget(#refX{site=S, path=["_statistics"]}, page, _Qury, Env) ->
-    text_html(Env, syslib:make_stats_page(S));
+    case hn_groups:is_member(Env#env.uid, S, ["admin"]) of
+        true  -> text_html(Env, syslib:make_stats_page(S));
+        false -> serve_html(401, Env, [hn_util:viewroot(S), "/401.html"])
+    end;
 
 iget(#refX{site=S, path=["_logout"]}, page,
      #qry{return=QReturn}, Env) when QReturn /= undefined ->
