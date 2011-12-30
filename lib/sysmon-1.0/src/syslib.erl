@@ -50,17 +50,20 @@ make_stats_page(Site) ->
     Memory = convert_lf(os:cmd("free")),
     CPU = convert_lf(os:cmd("top -b -n 1 -u hypernumbers")),
     "<html><head></head><body><div style='font-family:monospace'>" ++
-        "<h1>Statistics for " ++ Site ++ "</h1>" ++
-        "<h2>Are any supervisors borked?</h2>" ++
+        "<h1 style='color:#ffcc00'>(Logical) Site And (Physical) " ++
+        "Server Statistics</h1>" ++
+        "<h2 style='color:#ffcc00'>" ++ Site ++ " Specific Stuff</h2>" ++
+        "<h3>Are any supervisors borked?</h3>" ++
         "<small>(no news is good news here)</small><br />" ++
         Sups ++
-        "<h2>Status Of Queues</h2>" ++
+        "<h3>Status Of Queues</h3>" ++
         "<small>(less than 250 OK for dirty_zinf)</small><br />" ++
         Qs ++
-        "<h2>Memory Utilisation</h2>" ++
+        "<h2 style='color:#ffcc00'>Server Specific Stuff</h2>" ++
+        "<h3>Memory Utilisation</h3>" ++
         "<small>(Look for non-trivail swap usage)</small></br>" ++
         Memory ++
-        "<h2>Top Snapshot</h2>" ++
+        "<h3>Top Snapshot</h3>" ++
         CPU ++
         "</div></body></html>".
 
