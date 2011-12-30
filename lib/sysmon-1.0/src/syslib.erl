@@ -11,6 +11,8 @@
          overview/1,
          check_supervisors/0,
          check_supervisors/1,
+         %tail_queues/1,
+         %tail_queues/2,
          dump_queues/0,
          dump_queues/1,
          dump_queues/2,
@@ -36,7 +38,6 @@
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
 
 overview(Site) ->
-    dump_queues(Site),
     check_supervisors(Site),
     show_queues(Site).
 
@@ -72,7 +73,7 @@ get_sups2([H | T], Site, Acc) ->
 
 check(Sup, List) ->
     case lists:member(Sup, List) of
-        true  -> ok;
+        true  -> io:format("Supervisor ~p is ok~n", [Sup]);
         false -> io:format("~p does not exist~n", [Sup])
     end.
 
@@ -124,6 +125,17 @@ sample_(Log, N) when is_integer(N) andalso N > 0 ->
     timer:sleep(Rand),
     sample_(Log, N - 1).
 
+%% tail_queues(Site) -> tail_queues(Site, ?qs).
+
+%% tail_queues(Site, [H | T]) ->
+%%     tail_(Site, H),
+%%     tail_queues(Site, T).
+
+%% tail_(Site, Q) ->
+%%     Tab2 = new_db_wu:trans(Site, Q),
+%%     io:format("Tailing table ~p~n", [Tab2]),
+%%     ok.
+
 dump_queues() ->
     Sites = hn_setup:get_sites(),
     [dump_queues(X) || X <- Sites],
@@ -131,7 +143,7 @@ dump_queues() ->
 
 dump_queues(Site) -> dump_queues(Site, ?qs).
 
-dump_queues(_Site, [])     -> ok;
+dump_queues(Site, [])      -> ok;
 dump_queues(Site, [H | T]) -> dump(Site, H),
                               dump_queues(Site, T).
 
@@ -156,6 +168,8 @@ show_queues(Site) -> show_queues(Site, verbose).
 
 show_queues(Site, Verbose) ->
     Qs = [new_db_wu:trans(Site, X) || X <- ?qs],
+    QLen = dbsrv:dump_q_len(Site),
+    io:format("The dbsrv workplan has ~p cells in it~n", [QLen]),
     showq(Qs, Verbose).
 
 showq([], _Verbose) ->
