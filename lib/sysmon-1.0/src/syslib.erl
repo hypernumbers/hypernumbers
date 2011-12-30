@@ -47,7 +47,6 @@ overview(Site) ->
 make_stats_page(Site) ->
     Sups = convert_lf(check_supervisors(Site)),
     Qs = convert_lf(show_queues(Site)),
-    Memory = convert_lf(os:cmd("free")),
     CPU = convert_lf(os:cmd("top -b -n 1 -u hypernumbers")),
     "<html><head></head><body><div style='font-family:monospace'>" ++
         "<h1 style='color:#ffcc00'>(Logical) Site And (Physical) " ++
@@ -60,9 +59,6 @@ make_stats_page(Site) ->
         "<small>(less than 250 OK for dirty_zinf)</small><br />" ++
         Qs ++
         "<h2 style='color:#ffcc00'>Server Specific Stuff</h2>" ++
-        "<h3>Memory Utilisation</h3>" ++
-        "<small>(Look for non-trivail swap usage)</small></br>" ++
-        Memory ++
         "<h3>Top Snapshot</h3>" ++
         CPU ++
         "</div></body></html>".
