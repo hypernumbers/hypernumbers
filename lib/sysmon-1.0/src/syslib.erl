@@ -56,7 +56,7 @@ make_stats_page(Site) ->
         "<small>(no news is good news here)</small><br />" ++
         Sups ++
         "<h3>Status Of Queues</h3>" ++
-        "<small>(should mostly be 0 but less than 250 is OK" ++
+        "<small>(should mostly be 0 but less than 250 is OK " ++
         "for dirty_zinf)</small><br />" ++
         Qs ++
         "<h2 style='color:#ffcc00'>Server Specific Stuff</h2>" ++
