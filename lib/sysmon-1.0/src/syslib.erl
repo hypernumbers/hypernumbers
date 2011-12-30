@@ -9,6 +9,7 @@
 
 -export([
          overview/1,
+         make_stats_page/1,
          check_supervisors/0,
          check_supervisors/1,
          %tail_queues/1,
@@ -38,8 +39,30 @@
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
 
 overview(Site) ->
-    check_supervisors(Site),
-    show_queues(Site).
+    Msg1 = check_supervisors(Site),
+    Msg2 = show_queues(Site),
+    Msg3 = lists:flatten(lists:merge(Msg1, Msg2)),
+    io:format(Msg3).
+
+make_stats_page(Site) ->
+    Sups = convert_lf(check_supervisors(Site)),
+    Qs = convert_lf(show_queues(Site)),
+    Memory = convert_lf(os:cmd("free")),
+    CPU = convert_lf(os:cmd("top -b -n 1 -u hypernumbers")),
+    "<html><head></head><body><div style='font-family:monospace'>" ++
+        "<h1>Statistics for " ++ Site ++ "</h1>" ++
+        "<h2>Are any supervisors borked?</h2>" ++
+        "<small>(no news is good news here)</small><br />" ++
+        Sups ++
+        "<h2>Status Of Queues</h2>" ++
+        "<small>(less than 250 OK for dirty_zinf)</small><br />" ++
+        Qs ++
+        "<h2>Memory Utilisation</h2>" ++
+        "<small>(Look for non-trivail swap usage)</small></br>" ++
+        Memory ++
+        "<h2>Top Snapshot</h2>" ++
+        CPU ++
+        "</div></body></html>".
 
 check_supervisors() ->
     Sites = hn_setup:get_sites(),
@@ -47,8 +70,9 @@ check_supervisors() ->
     Locals = registered(),
     io:format("Checking all supervisors - " ++
               "will report ones that don't exist...~n"),
-    [check_super2(X, Globals, Locals) || X <- Sites],
-    ok.
+    Msg = [check_super2(X, Globals, Locals) || X <- Sites],
+    Msg2 = lists:flatten(Msg),
+    io:format(Msg2).
 
 check_supervisors(Site) ->
     Globals = global:registered_names(),
@@ -60,9 +84,9 @@ check_supervisors(Site) ->
 check_super2(Site, Globals, Locals) ->
     GlobalSups = get_sups(Site, global),
     LocalSups = get_sups(Site, local),
-    [check(X, Globals) || X <- GlobalSups],
-    [check(X, Locals) || X <- LocalSups],
-    ok.
+    Ret1 = [check(X, Globals) || X <- GlobalSups],
+    Ret2 = [check(X, Locals) || X <- LocalSups],
+    lists:flatten(lists:merge(lists:flatten(Ret1), lists:flatten(Ret2))).
 
 get_sups(Site, global) ->
     get_sups2(["_status", "_auth", "_tick", "_remoting",
@@ -77,8 +101,8 @@ get_sups2([H | T], Site, Acc) ->
 
 check(Sup, List) ->
     case lists:member(Sup, List) of
-        true  -> ok;
-        false -> io:format("~p does not exist~n", [Sup])
+        true  -> [];
+        false -> io_lib:format("~p does not exist~n", [Sup])
     end.
 
 log_process(Pid) when is_pid(Pid) ->
@@ -165,32 +189,37 @@ dump(Site, Table) ->
 
 show_queues() ->
     Sites = hn_setup:get_sites(),
-    [show_queues(X, notverbose) || X <- Sites],
-    ok.
+    Msg = [show_queues(X, notverbose) || X <- Sites],
+    Msg2 = lists:flatten(Msg),
+    io:format(Msg2).
 
 show_queues(Site) -> show_queues(Site, verbose).
 
 show_queues(Site, Verbose) ->
     Qs = [new_db_wu:trans(Site, X) || X <- ?qs],
     QLen = dbsrv:dump_q_len(Site),
-    io:format("The dbsrv workplan has ~p cells in it~n", [QLen]),
-    showq(Qs, Verbose).
+    Msg1 = io_lib:format("The dbsrv workplan has ~p cells in it~n", [QLen]),
+    Msg2 = showq(Qs, Verbose, []),
+    lists:flatten(lists:merge(Msg1, Msg2)).
 
-showq([], _Verbose) ->
-    ok;
-showq([H | T], Verbose) ->
+showq([], _Verbose, Acc) ->
+    lists:reverse(Acc);
+showq([H | T], Verbose, Acc) ->
     N = mnesia:table_info(H, size),
-    case N of
-        0 -> case Verbose of
-                 verbose ->
-                     io:format("~p ~p~n", [H, N]);
+    NewAcc = case N of
+                 0 -> case Verbose of
+                          verbose ->
+                              io_lib:format("Queue ~p has ~p records~n",
+                                            [H, N]);
+                          _ ->
+                              []
+                      end;
+                 1 ->
+                     io_lib:format("Queue ~p has ~p record~n", [H, N]);
                  _ ->
-                     ok
-             end;
-        _ ->
-            io:format("~p ~p~n", [H, N])
-        end,
-    showq(T, Verbose).
+                     io_lib:format("Queue ~p has ~p records~n", [H, N])
+             end,
+    showq(T, Verbose, [NewAcc | Acc]).
 
 show_registered() ->
     Globals = [{global:whereis_name(X), global, X} ||
@@ -342,4 +371,15 @@ limit_global_mq(Site, Q) ->
                      limit_global_mq(Site, Q);
         true      -> ok
     end.
+
+convert_lf(String) ->
+    conv(String, []).
+
+% turns line feeds '\n' ie ASCII Char 10 into br's
+conv([], Acc)       -> lists:flatten(lists:reverse(Acc));
+conv([10 | T], Acc) -> conv(T, ["<br />" | Acc]);
+conv([32 | T], Acc) -> conv(T, ["&nbsp;" | Acc]);
+conv([9 | T], Acc)  -> conv(T, ["&nbsp;&nbsp;&nbsp;&nbsp;" ++
+                                "&nbsp;&nbsp;&nbsp;&nbsp;" | Acc]);
+conv([H | T], Acc)  -> conv(T, [H | Acc]).
 

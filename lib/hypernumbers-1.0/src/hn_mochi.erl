@@ -234,8 +234,12 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
        X == "_logout" ->
     allowed;
 
+% shows sites, pages and stats
+% should make this admin only, yeah
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json})
-  when X == "_site" orelse X == "_pages" ->
+  when X == "_site";
+       X == "_pages";
+       X == "_statistics" ->
     allowed;
 
 %% Only some sites have a forgotten password box
@@ -507,6 +511,9 @@ iget(#refX{path=["_pages"]} = Ref, page, _Qry, Env) ->
     Pages     = {"pages", pages(Ref#refX{path=[]})},
     Return    = {struct, [Pages]},
     json(Env, Return);
+
+iget(#refX{site=S, path=["_statistics"]}, page, _Qury, Env) ->
+    text_html(Env, syslib:make_stats_page(S));
 
 iget(#refX{site=S, path=["_logout"]}, page,
      #qry{return=QReturn}, Env) when QReturn /= undefined ->
