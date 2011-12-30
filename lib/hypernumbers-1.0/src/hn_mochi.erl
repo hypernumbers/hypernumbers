@@ -234,11 +234,10 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
        X == "_logout" ->
     allowed;
 
-% shows sites, pages and stats
+% shows sites and pages
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json})
   when X == "_site";
-       X == "_pages";
-       X == "_statistics" ->
+       X == "_pages" ->
     allowed;
 
 %% Only some sites have a forgotten password box
