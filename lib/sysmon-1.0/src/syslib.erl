@@ -12,6 +12,8 @@
          make_stats_page/1,
          check_supervisors/0,
          check_supervisors/1,
+         table_status/0,
+         table_status/1,
          %tail_queues/1,
          %tail_queues/2,
          dump_queues/0,
@@ -41,12 +43,14 @@
 overview(Site) ->
     Msg1 = check_supervisors(Site),
     Msg2 = show_queues(Site),
-    Msg3 = lists:flatten(lists:merge(Msg1, Msg2)),
-    io:format(Msg3).
+    Msg3 = table_status(Site),
+    Output = lists:flatten(lists:merge([Msg1, Msg2, Msg3])),
+    io:format(Output).
 
 make_stats_page(Site) ->
     Sups = convert_lf(check_supervisors(Site)),
     Qs = convert_lf(show_queues(Site)),
+    TableInfo = convert_lf(table_status(Site)),
     CPU = convert_lf(os:cmd("top -b -n 1 -u hypernumbers")),
     "<html><head></head><body><div style='font-family:monospace'>" ++
         "<h1 style='color:#ffcc00'>(Logical) Site And (Physical) " ++
@@ -59,10 +63,54 @@ make_stats_page(Site) ->
         "<small>(should mostly be 0 but less than 250 is OK " ++
         "for dirty_zinf)</small><br />" ++
         Qs ++
+        "<h3>Status Of Tables</h3>" ++
+        TableInfo ++
         "<h2 style='color:#ffcc00'>Server Specific Stuff</h2>" ++
         "<h3>Top Snapshot</h3>" ++
         CPU ++
         "</div></body></html>".
+
+table_status() ->
+    Sites = hn_setup:get_sites(),
+    Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
+    Msg = lists:flatten([table_s2(X, Tables) || X <- Sites]),
+    io:format(Msg).
+
+table_status(Site) ->
+    Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
+    lists:flatten(table_s2(Site, Tables)).
+
+table_s2(Site, Tables) ->
+    Site2 = new_db_wu:get_prefix(Site),
+    Tab2 = get_site_tables(Tables, Site2, []),
+    [table_s3(X) || X <- Tab2].
+
+table_s3(X) ->
+    TabInfo = mnesia:table_info(list_to_atom(X), all),
+    {size, Size} = lists:keyfind(size, 1, TabInfo),
+    {memory, Memory} = lists:keyfind(memory, 1, TabInfo),
+    Type = get_type(TabInfo),
+    io_lib:format("~nTable: ~p~n~p Records~n~p~n~p Words of memory used~n",
+                  [X, Size, Type, Memory]).
+
+get_type(TabInfo) ->
+    {ram_copies, RamC}            = lists:keyfind(ram_copies, 1, TabInfo),
+    {disc_copies, DiscC}          = lists:keyfind(disc_copies, 1, TabInfo),
+    {disc_only_copies, DiscOnlyC} = lists:keyfind(disc_only_copies, 1, TabInfo),
+    case {RamC, DiscC, DiscOnlyC} of
+        {[_N], [], []} -> ram_copy;
+        {[], [_N], []} -> disc_copy;
+        {[], [], [_N]} -> disc_only_copy
+    end.
+
+get_site_tables([], _Site, Acc) ->
+    lists:reverse(Acc);
+get_site_tables([H | T], Site, Acc) ->
+    Len = length(Site),
+    case string:left(H, Len) of
+        Site -> get_site_tables(T, Site, [H | Acc]);
+        _    -> get_site_tables(T, Site, Acc)
+    end.
 
 check_supervisors() ->
     Sites = hn_setup:get_sites(),
