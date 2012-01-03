@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_relation_table_2012_01_03/0,
          recalc_includes/0,
          fix_page_srv_2011_11_23/0,
          upgrade_etl_2011_11_23/0,
@@ -68,6 +69,25 @@
 %% upgrade_1743_B/0,
 %% upgrade_1776/0
         ]).
+
+upgrade_relation_table_2012_01_03() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fun = fun({relation, C, Ch, P, InfP, ZP, Inc}) ->
+                                 O = ordsets:new(),
+                                 {relation, C, Ch, P, InfP, ZP, O, O, Inc}
+                         end,
+                   Tbl = new_db_wu:trans(Site, relation),
+                   io:format("Table ~p transformed~n", [Tbl]),
+                   Ret1 = mnesia:transform_table(Tbl, Fun,
+                                                 [cellidx, children, parents,
+                                                  infparents, z_parents,
+                                                  dyn_parents, dyn_infparents,
+                                                  include]),
+                   io:format("Ret is ~p~n", [Ret1])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 recalc_includes() ->
     Sites = hn_setup:get_sites(),
