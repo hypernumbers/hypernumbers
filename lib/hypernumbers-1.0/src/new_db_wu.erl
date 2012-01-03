@@ -36,6 +36,7 @@
          read_incsD/1,
          xrefX_to_rti/3,
          trans/2,
+         get_prefix/1,
          delete_apiD/2,
          write_apiD/2,
          read_apiD/2,
