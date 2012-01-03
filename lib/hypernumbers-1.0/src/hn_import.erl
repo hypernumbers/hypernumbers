@@ -307,7 +307,7 @@ set_view(Site, Path, {View, {struct, Propslist}}) ->
                            {"groups",   Groups},
                            {"everyone", Everyone}]).
 
-rows(#refX{site = S} = Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
+rows(#refX{site = _S} = Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
     Cells2 = lists:sort(fun int_sort/2, Cells),
     %syslib:limiter(S),
     [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells2],
@@ -752,7 +752,7 @@ refX_from_page(Site, Page) ->
 flatten([], Acc)      -> Acc;
 flatten([H | T], Acc) -> flatten(T, lists:merge([H, Acc])).
 
-load_records(List, Site) -> Recs = load_r2(List, []),
+load_records(List, _Site) -> Recs = load_r2(List, []),
                             ok = new_db_api:write_attributes(Recs),
                             %syslib:limiter(Site),
                             ok.
