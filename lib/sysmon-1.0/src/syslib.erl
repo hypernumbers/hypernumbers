@@ -42,15 +42,19 @@
 
 overview(Site) ->
     Msg1 = check_supervisors(Site),
+    io:format(Msg1),
     Msg2 = show_queues(Site),
+    io:format(Msg2),
     Msg3 = table_status(Site),
-    Output = lists:flatten(lists:merge([Msg1, Msg2, Msg3])),
-    io:format(Output).
+    io:format(Msg3),
+    ok.
 
 make_stats_page(Site) ->
     Sups = convert_lf(check_supervisors(Site)),
     Qs = convert_lf(show_queues(Site)),
-    TableInfo = convert_lf(table_status(Site)),
+    Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
+    TableInfo = table_s2(Site, Tables),
+    TableInfo2 = convert_lf(io_lib:format(lists:flatten(TableInfo), [])),
     CPU = convert_lf(os:cmd("top -b -n 1 -u hypernumbers")),
     "<html><head></head><body><div style='font-family:monospace'>" ++
         "<h1 style='color:#ffcc00'>(Logical) Site And (Physical) " ++
@@ -64,7 +68,9 @@ make_stats_page(Site) ->
         "for dirty_zinf)</small><br />" ++
         Qs ++
         "<h3>Status Of Tables</h3>" ++
-        TableInfo ++
+        "<small>ram_copy is in memory only, disc_only_copy is on disc only, " ++
+        "disc_copy is on disc and in ram</small><br />" ++
+        TableInfo2 ++
         "<h2 style='color:#ffcc00'>Server Specific Stuff</h2>" ++
         "<h3>Top Snapshot</h3>" ++
         CPU ++
@@ -73,12 +79,11 @@ make_stats_page(Site) ->
 table_status() ->
     Sites = hn_setup:get_sites(),
     Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
-    Msg = lists:flatten([table_s2(X, Tables) || X <- Sites]),
-    io:format(Msg).
+    io:format(lists:flatten([table_s2(X, Tables) || X <- Sites])).
 
 table_status(Site) ->
     Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
-    lists:flatten(table_s2(Site, Tables)).
+    io:format(lists:flatten(table_s2(Site, Tables))).
 
 table_s2(Site, Tables) ->
     Site2 = new_db_wu:get_prefix(Site),
