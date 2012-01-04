@@ -621,6 +621,7 @@ match_seg({zseg, S1},   S,   Site,  Htap) ->
         {_, true}               -> circref;
         {match, false}          -> match;
         {nomatch, false}        -> nomatch;
+        {errval, _Err}          -> error; % dunno where this came from
         {{errval, _Err}, false} -> error;
         {{error, _}, false}     -> error % Old style errs from fns
                                    % (shouldn't exist!)
