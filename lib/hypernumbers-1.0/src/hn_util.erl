@@ -500,6 +500,8 @@ jsonify_val({"value", true}) ->
     {"value", "true"};
 jsonify_val({"value", false}) ->
     {"value", "false"};
+jsonify_val({"input", {"dynamic_select", Url, L}}) ->
+    {"input", {struct, [{"dynamic_select", Url}, {"values", {array, L}}]}};
 jsonify_val({"input", {"select", L}}) ->
     {"input", {struct, [{"select", {array, L}}]}};
 jsonify_val({"preview", {Text, Width, Height}}) ->
@@ -513,13 +515,13 @@ jsonify_val({K, V}) ->
     catch
         error: _Err ->
             error_logger:error_msg("#MOCHIJSON! error ~p ~p~n", [K, V]),
-            {K, {errval, '#MOCHIJSON!'}};
+            {K, '#MOCHIJSON!'};
         exit: _Err ->
             error_logger:error_msg("#MOCHIJSON! exit ~p ~p~n", [K, V]),
-            {K, {errval, '#MOCHIJSON!'}};
+            {K, '#MOCHIJSON!'};
         throw: _Err ->
             error_logger:error_msg("#MOCHIJSON! throw ~p ~p~n", [K, V]),
-            {K, {errval, '#MOCHIJSON!'}}
+            {K, '#MOCHIJSON!'}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

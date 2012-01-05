@@ -12,9 +12,7 @@
     <link rel="stylesheet" href="/tblsorter/style.css" />
     <link rel="stylesheet" href="/tooltip/jquery.tooltip.css" />
   </head>
-
   <script src="/hypernumbers/err.remoterr.js"></script>
-
   <body id="hn" data-view="spreadsheet">
     <div id="pagemenu" style="background-color:#000;">
     <div id="pagemarker"><div>pages:</div></div>
@@ -494,8 +492,10 @@
         <a id="hn_makewikiselectclose">x</a>
           <p id="hn_makewikiselectblurb">This dialog box will replace the cell
           <span id="hn_wikiselectcell"></span> with a select (dropdown) box.</p>
-          <p>Type the values you want to put into the select box
-          separated by commas. To delete a select box just clear the values
+          <p>You can either type the values you want to put into the select box
+          separated by commas, or put in a cell or range like './a1',
+          '/some/page/b2:c7' or a z-query like '../[a1>3]/b2:b4'.
+          To delete a select box just clear the values
           and submit.</p>
           <input type="text" id="hn_insertwikiselect" />
           <input type="button", id="hn_wikiselectsubmit" value="Submit" />

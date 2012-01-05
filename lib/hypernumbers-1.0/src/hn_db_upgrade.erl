@@ -70,6 +70,11 @@
 %% upgrade_1776/0
         ]).
 
+% * git pull
+% * > hypernumbers_sup:suspend_mochi().
+% * ./hn quick
+% * > hn_db_upgrade:upgrade_relation_table_2012_01_03().
+% * > hypernumbers_sup:resume_mochi().
 upgrade_relation_table_2012_01_03() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->

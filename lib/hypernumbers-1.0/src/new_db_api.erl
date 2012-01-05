@@ -844,15 +844,39 @@ handle_dirty_cell(Site, Idx, Ar) ->
                                 end,
                         case orddict:find("formula", Attrs) of
                             {ok, F} ->
-                                _Dict = new_db_wu:write_attrs(Cell,
-                                                              [{"formula", F}],
-                                                              Ar),
+                                _Dict1 = new_db_wu:write_attrs(Cell,
+                                                               [{"formula", F}],
+                                                               Ar),
                                 % cells may have been written that now depend
                                 % on this cell so it needs to report back
                                 % dirty children
                                 [Rels] = new_db_wu:read_relations(Cell, read),
                                 Rels#relation.children;
                             _ ->
+                                []
+                        end,
+                        case orddict:find("input", Attrs) of
+                            {ok, I} ->
+                                % need to reset the dynamic select as if
+                                % it hasn't calculated yet so that the
+                                % recalc will 'fire' on writing
+                                case I of
+                                    "inline" ->
+                                        % normal inlines don't have vals to recalcrecalc
+                                        ok;
+                                    "none" ->
+                                        % used to have an input but it's been cleared
+                                        ok;
+                                    {"select", _} ->
+                                        % normal select's don't recalc their vals
+                                        ok;
+                                    _ ->
+                                        {"dynamic_select", S, _Vals} = I,
+                                        NewI = [{"input", {"dynamic_select", S}}],
+                                        _Dict2 = new_db_wu:write_attrs(Cell, NewI, Ar)
+                                end,
+                                [];
+                            _  ->
                                 []
                         end
                 end

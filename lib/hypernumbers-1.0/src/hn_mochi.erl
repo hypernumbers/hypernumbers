@@ -869,6 +869,13 @@ ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
                          json(Env, "success");
                 false -> respond(403, Env)
             end;
+        [{#xrefX{}, {"dynamic_select", _Src, Vs}}] ->
+            [{"formula", V}] = Attrs,
+            case lists:member(V, Vs) of
+                true  -> ok = new_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
+                         json(Env, "success");
+                false -> respond(403, Env)
+            end;
         _ ->
             respond(403, Env)
     end;
@@ -917,12 +924,15 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
         [{"input", {struct, [{"select", {array, Array}}]}}] ->
             NewAttr = [{"input", {"select", Array}}],
             ok = new_db_api:write_attributes([{Ref, NewAttr}], Uid, Uid);
+        [{"input", {struct, [{"dynamic_select", Expression}]}}] ->
+            NewAttr = [{"input", {"dynamic_select", Expression}}],
+            ok = new_db_api:write_attributes([{Ref, NewAttr}], Uid, Uid);
         [{"width", _}] ->
             ok = expand_width(Ref, Attr, Uid, Uid);
         [{"height", _}] ->
             ok = expand_height(Ref, Attr, Uid, Uid);
         [{"fixedHeight", _}] ->
-            ok = expand_height(Ref, Attr, Uid, Uid);
+                  ok = expand_height(Ref, Attr, Uid, Uid);
         _Else ->
             ok = new_db_api:write_attributes([{Ref, Attr}], Uid, Uid)
     end,
@@ -1928,7 +1938,6 @@ make_name(Name, Ext) ->
 expand_binaries({struct, [{"time", Time}, {"msgs", {array, List}}]}) ->
     List2 = [binary_to_term(X) || X <- List],
     {struct, [{"time", Time}, {"msgs", {array, List2}}]}.
-
 
 make_demo(Site, Path) ->
     URL = Site ++ hn_util:list_to_path(Path),

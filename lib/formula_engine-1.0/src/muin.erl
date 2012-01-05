@@ -1,4 +1,4 @@
-%%% @author Hasan Veldstra <hasan@hypernumbers.com>
+%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Interface to the formula engine/interpreter.
 
 -module(muin).
@@ -25,6 +25,7 @@
         ]).
 
 -export([
+         fetch_for_select/2,
          run_formula/2,
          run_code/2,
          zeval_from_zinf/3,
@@ -80,6 +81,23 @@ parse_expr_for_gui(Expr) when is_list(Expr) ->
         [{_Type, NVal}, _, _] -> {struct, [{"value", NVal}]}
     end.
 
+%% use in setting up selects
+fetch_for_select(#rangeref{} = RangeRef, Rti) ->
+    ok = init_proc_dict(Rti),
+    {range, List} = fetch(RangeRef, "__rawvalue"),
+    special_flatten(List, []);
+fetch_for_select(#cellref{} = CellRef, Rti) ->
+    ok = init_proc_dict(Rti),
+    Val = fetch(CellRef, "__rawvalue"),
+    % return a list 'cos the select expects a list
+    [Val];
+%% use in setting up z-ref inline selects only
+fetch_for_select(#zcellref{} = Z, Rti) ->
+    ok = init_proc_dict(Rti),
+    {zeds, Zeds, _, _} = fetch(Z, "__rawvalue"),
+    {_Urls, Vals} = lists:unzip(Zeds),
+    Vals.
+
 %% @doc Runs formula given as a string.
 run_formula("#CIRCREF!", _) -> {error, ?ERRVAL_CIRCREF};
 run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
@@ -89,19 +107,8 @@ run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
     end.
 
 %% @doc Runs compiled formula.
-run_code(Pcode, #muin_rti{site=Site, path=Path,
-                          col=Col,   row=Row,
-                          idx = Idx,
-                          array_context=AryCtx,
-                          auth_req=AuthReq}) ->
-    % Populate the process dictionary.
-    lists:map(fun({K,V}) -> put(K, V) end,
-              [{site, Site}, {path, Path}, {x, Col}, {y, Row},
-               {idx, Idx},
-               {array_context, AryCtx}, {infinite, []},
-               {retvals, {[], []}}, {recompile, false},
-               {auth_req, AuthReq},
-               {circref, false}]),
+run_code(Pcode, Rti) ->
+    ok = init_proc_dict(Rti),
     Fcode = case ?array_context of
                 true -> loopify(Pcode);
                 false -> Pcode
@@ -1141,3 +1148,24 @@ make_zpath([{seg, Seg} | T], Acc) ->
     make_zpath(T, [Seg | Acc]);
 make_zpath([{zseg, _, ZSeg} | T], Acc) ->
     make_zpath(T, [ZSeg | Acc]).
+
+init_proc_dict(#muin_rti{site = Site, path = Path, col = Col,
+                         row = Row, idx = Idx,array_context = AryCtx,
+                         auth_req = AuthReq}) ->
+    % Populate the process dictionary.
+    lists:map(fun({K,V}) -> put(K, V) end,
+              [{site, Site}, {path, Path}, {x, Col}, {y, Row},
+               {idx, Idx},
+               {array_context, AryCtx}, {infinite, []},
+               {retvals, {[], []}}, {recompile, false},
+               {auth_req, AuthReq},
+               {circref, false}]),
+    ok.
+
+special_flatten([], Acc)                      -> Acc;
+special_flatten([H | T], Acc) when is_list(H) -> NewAcc = special_f2(H, Acc),
+                                                 special_flatten(T, NewAcc);
+special_flatten([H | T], Acc)                 -> special_flatten(T, [H | Acc]).
+
+special_f2([], Acc)      -> Acc;
+special_f2([H | T], Acc) -> special_f2(T, [H | Acc]).

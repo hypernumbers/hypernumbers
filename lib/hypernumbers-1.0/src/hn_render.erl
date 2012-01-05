@@ -196,10 +196,12 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
            integer(), integer(),
            integer(), integer(), integer(), integer())
           -> textdata().
-% both the inputs need to be drawn even if there is no value
+% all three inputs need to be drawn even if there is no value
 draw(undefined,Css,"inline",C,R,X,Y,W,H) ->
     draw("",Css, "inline",C,R,X,Y,W,H);
 draw(undefined,Css,{"select", _}=Inp,C,R,X,Y,W,H) ->
+    draw("",Css,Inp,C,R,X,Y,W,H);
+draw(undefined,Css,{"dynamic_select", _}=Inp,C,R,X,Y,W,H) ->
     draw("",Css,Inp,C,R,X,Y,W,H);
 draw(undefined,"",_Inp,_C,_R,_X,_Y,_W,_H) -> "";
 draw(Value,Css,Inp,C,R,X,Y,W,H) ->
@@ -240,8 +242,14 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
                                   [X, Y, W - 4, H - 1, Css]),
             Ref = hn_util:obj_to_ref({cell, {C, R}}),
             "<div data-ref='"++Cell++"'"++Style++">"++
-                make_select(tconv:to_s(Val), Ref, Options)++"</div>";
-        _  ->
+                make_select(tconv:to_s(Val), Ref, Options) ++ "</div>";
+        {"dynamic_select", _Source, Options} ->
+            Style = io_lib:format(St ++"padding:1px 1px;'",
+                                  [X, Y, W - 4, H - 1, Css]),
+            Ref = hn_util:obj_to_ref({cell, {C, R}}),
+            "<div data-ref='"++Cell++"'"++Style++">"++
+                make_select(tconv:to_s(Val), Ref, Options) ++ "</div>";
+        _ ->
             Style = io_lib:format(St ++ "padding:1px 3px;'",
                                   [X, Y, W - 6, H - 2, Css]),
             "<div data-ref='"++Cell++"'"++Style++">"++Val++"</div>"
@@ -362,13 +370,15 @@ wrap_region(Content, Width, Height) ->
      Content,
      "</div>"].
 
-make_select(Val, Ref, Options) -> make_s(Options, Ref, Val, []).
+make_select(Val, Ref, Options) ->
+    make_s(Options, Ref, Val, []).
 
-make_s([], Ref, _Val, Acc) -> "<select class='hn_inlineselect "
-                                  ++ "hn_inlineselect_wikipage' "
-                                  ++ "data-ref='" ++ Ref ++ "'>"
-                                  ++ lists:flatten(lists:reverse(Acc))
-                                  ++ "</select>";
+make_s([], Ref, _Val, Acc) ->
+    "<select class='hn_inlineselect "
+        ++ "hn_inlineselect_wikipage' "
+        ++ "data-ref='" ++ Ref ++ "'>"
+        ++ lists:flatten(lists:reverse(Acc))
+        ++ "</select>";
 make_s([H | T], Ref, Val, Acc) ->
     NewAcc = case tconv:to_s(H) of
                  Val -> "<option selected>" ++ Val ++ "</option>";

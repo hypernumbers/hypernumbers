@@ -401,6 +401,12 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                              false ->
                                  ok
                          end,
+                         case is_dynamic_select(Attrs) of
+                             true ->
+                                 ok = clean_up_dynamic_select(XRefX);
+                             false ->
+                                 ok
+                         end,
                          {clean, del_attributes(Attrs, DelAttrs)}
                  end
          end,
@@ -519,31 +525,40 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                  Has_Incs = orddict:is_key("__hasincs", Attrs),
                  Has_Timer = orddict:is_key("__hastimer", Attrs),
                  Is_In_IncFn = orddict:is_key("__in_includeFn", Attrs),
-                 Attrs2 = case Is_Formula of
-                              true ->
-                                  A3 = case Has_Form of
-                                           true ->
-                                               unattach_formD(XRefX),
-                                               orddict:erase("__hasform", Attrs);
-                                           false  ->
-                                               Attrs
-                                       end,
-                                  A4 = case Has_Incs of
+                 Is_Dynamic = is_dynamic_select(Attrs),
+                 Attrs2 =
+                     case Is_Formula of
+                         true ->
+                             A3 = case Has_Form of
+                                      true ->
+                                          unattach_formD(XRefX),
+                                          orddict:erase("__hasform", Attrs);
+                                      false  ->
+                                          Attrs
+                                  end,
+                             A4 = case Has_Incs of
                                            true ->
                                                delete_incsD(XRefX),
                                                orddict:erase("__hasincs", A3);
                                            false  ->
                                                A3
                                        end,
-                                  case Has_Timer of
-                                      true ->
-                                          delete_timerD(XRefX),
-                                          orddict:erase("__hastimer", A4);
-                                      false ->
-                                          A4
-                                  end;
-                              false -> Attrs
-                          end,
+                             case Has_Timer of
+                                 true ->
+                                     delete_timerD(XRefX),
+                                     orddict:erase("__hastimer", A4);
+                                 false ->
+                                     A4
+                             end;
+                         false ->
+                             case Is_Dynamic of
+                                 true ->
+                                     ok = clean_up_dynamic_select(XRefX),
+                                     orddict:erase("input", Attrs);
+                                 false ->
+                                     Attrs
+                             end
+                     end,
                  case Is_In_IncFn of
                      true  -> mark_children_dirtyD(XRefX, AReq);
                      false -> ok
@@ -587,21 +602,63 @@ mark_these_dirtyD(Refs = [#xrefX{site = Site}|_], AReq) ->
 process_attrs([], _XRefX, _AReq, Attrs) ->
     Attrs;
 process_attrs([{"formula",Val} | Rest], XRefX, AReq, Attrs) ->
-    Attrs2  =
-        case superparser:process(Val) of
-            {formula, Fla} ->
-                write_formula1(XRefX, Fla, Val, AReq, Attrs);
-            [NVal, Align, Frmt] ->
-                write_formula2(XRefX, Val, NVal, Align, Frmt, Attrs)
-        end,
+    Attrs2 = case superparser:process(Val) of
+                 {formula, Fla} ->
+                     write_formula1(XRefX, Fla, Val, AReq, Attrs);
+                 [NVal, Align, Frmt] ->
+                     write_formula2(XRefX, Val, NVal, Align, Frmt, Attrs)
+             end,
     ok = mark_dirty_for_zinfD(XRefX),
     process_attrs(Rest, XRefX, AReq, Attrs2);
+process_attrs([{"input", {"dynamic_select", S}} | Rest], XRefX, AReq, Attrs) ->
+    {SelPath, Ref} = split_select(S),
+    Path = muin_util:walk_path(XRefX#xrefX.path, SelPath),
+    % it is not possible to check the url client-side so we need to do
+    % a try/catch here to handle user duff user input...
+    {NA, Ps, InfPs} = parse_select(XRefX, {Path, Ref}, S),
+    ok = set_dyn_relationsD(XRefX, Ps, InfPs),
+    process_attrs([NA | Rest], XRefX, AReq, Attrs);
 process_attrs([A = {Key, Val} | Rest], XRefX, AReq, Attrs) ->
-    Attrs2  = case ms_util2:is_in_record(magic_style, Key) of
-                  true  -> apply_style(XRefX, A, Attrs);
-                  false -> orddict:store(Key, Val, Attrs)
-              end,
+    Attrs2 = case ms_util2:is_in_record(magic_style, Key) of
+                 true  -> apply_style(XRefX, A, Attrs);
+                 false -> orddict:store(Key, Val, Attrs)
+             end,
     process_attrs(Rest, XRefX, AReq, Attrs2).
+
+parse_select(XRefX, {Path, Ref}, S) ->
+    try
+        % this is what will blow up if it does...
+        process_dyn(XRefX, {Path, Ref}, S)
+    catch
+        throw: {errval, Err} ->
+            {{"input", {"dynamic_select", S, [Err]}}, [], []}
+    end.
+
+process_dyn(#xrefX{obj = {cell, {X, Y}}} = XRefX, {Path, Ref}, Select) ->
+    Z = hn_util:list_to_path(Path) ++ Ref,
+    case muin:parse(Z, {X, Y}) of
+        {ok, AST} ->
+            Rti = xrefX_to_rti(XRefX, nil, false),
+            Vals = muin:fetch_for_select(AST, Rti),
+            Vals2 = lists:delete(blank, hslists:uniq(Vals)),
+            Vals3 = [tconv:to_s(XX) || XX <- Vals2],
+            % lists:delete don't mind if the value already exists...
+            % sooo, get rid of any blanks
+            Vals4 = lists:sort(Vals3),
+            {_Errors, References} = get(retvals),
+            FiniteRefs = [{XX, L} || {XX, _, L} <- References],
+            InfiniteRefs = get(infinite),
+            case get(circref) of
+                true  ->
+                    {{"input", {"dynamic_select", Select, ["#CIRCREF!"]}},
+                      [], []};
+                false ->
+                    {{"input", {"dynamic_select", Select, Vals4}},
+                     FiniteRefs, InfiniteRefs}
+            end;
+        _Err ->
+            {{"input", {"dynamic_select", Select, ["#ERR!"]}}, [], []}
+    end.
 
 write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
     Rti = xrefX_to_rti(XRefX, AReq, false),
@@ -745,6 +802,17 @@ write_error_attrs(Attrs, XRefX, Formula, Error) ->
                            {"__rawvalue", {errval, Error}},
                            {"__ast", []}]).
 
+-spec set_dyn_relationsD(#xrefX{}, [#xrefX{}], [#xrefX{}]) -> ok.
+set_dyn_relationsD(#xrefX{idx = CellIdx, site = Site}, DynParents,
+                   DynInfParents) ->
+    Tbl = trans(Site, relation),
+    Rel = case mnesia:read(Tbl, CellIdx, write) of
+              [R] -> R;
+              []  -> #relation{cellidx = CellIdx}
+          end,
+    Rel2 = set_dyn_parents(Tbl, Site, Rel, DynParents, DynInfParents),
+    mnesia:write(Tbl, Rel2, write).
+
 -spec set_relationsD(#xrefX{}, [#xrefX{}], [#xrefX{}], boolean()) -> ok.
 set_relationsD(#xrefX{idx = CellIdx, site = Site}, FiniteParents,
               InfParents, IsIncl) ->
@@ -772,20 +840,42 @@ mark_in_includeFn(Site, Idx) ->
          end,
     apply_to_attrsD(XRefX, Op, include, nil, ?NONTRANSFORMATIVE).
 
+-spec set_dyn_parents(atom(), list(), #relation{}, [#xrefX{}],
+                      [#xrefX{}]) -> #relation{}.
+set_dyn_parents(Tbl, Site, Rel, DynParents, DynInfParents) ->
+    #relation{cellidx = CellIdx, dyn_parents = CurDynParents,
+              dyn_infparents = CurDynInfPars} = Rel,
+    Fun = fun({local, #xrefX{idx = Idx} = XRefX}) ->
+                  {Idx, XRefX}
+          end,
+    {PIdxs, _} = lists:unzip(lists:map(Fun, DynParents)),
+    {InfPIdxs, InfPars} = lists:unzip(lists:map(Fun, DynInfParents)),
+    NewParentIdxs = ordsets:from_list(PIdxs),
+    LostParents = ordsets:subtract(CurDynParents, NewParentIdxs),
+    [del_childD(P, CellIdx, Tbl) || P <- LostParents],
+    [ok = add_childD(P, CellIdx, Tbl, false) || P <- NewParentIdxs],
+    NewInfParIdxs = ordsets:from_list(InfPIdxs),
+    XCurInfPars = [idx_to_xrefXD(Site, X) || X <- CurDynInfPars],
+    case InfPars of
+        XCurInfPars ->
+            ok;
+        _           ->
+            ok = handle_infsD(CellIdx, Site, InfPars, XCurInfPars)
+    end,
+    Rel#relation{dyn_parents = NewParentIdxs, dyn_infparents = NewInfParIdxs}.
+
 -spec set_parents(atom(), list(), #relation{}, [#xrefX{}],
                   [#xrefX{}], boolean()) -> #relation{}.
 set_parents(Tbl,
-            Site,
-            Rel = #relation{cellidx = CellIdx,
-                            parents = CurParents,
-                            infparents = CurInfPars
-                           },
+            Site, Rel,
             Parents,
             InfParents,
             IsIncl) ->
+    #relation{cellidx = CellIdx, parents = CurParents,
+              infparents = CurInfPars} = Rel,
     Fun = fun({local, #xrefX{idx = Idx} = XRefX}) ->
-                     {Idx, XRefX}
-             end,
+                  {Idx, XRefX}
+          end,
     {PIdxs, _} = lists:unzip(lists:map(Fun, Parents)),
     {InfPIdxs, InfPars} = lists:unzip(lists:map(Fun, InfParents)),
     NewParentIdxs = ordsets:from_list(PIdxs),
@@ -818,6 +908,9 @@ xrefX_to_rti(#xrefX{idx = Idx, site = S, path = P,
               col = C, row = R, idx = Idx,
               array_context = AC,
               auth_req = AR}.
+
+clean_up_dynamic_select(XRefX) ->
+    ok = set_dyn_relationsD(XRefX, [], []).
 
 delete_timerD(#xrefX{idx = Idx, site = S}) ->
     Tbl = trans(S, timer),
@@ -1167,7 +1260,7 @@ read_relationsD(Site, Idx, Lock) ->
     Tbl = trans(Site, relation),
     mnesia:read(Tbl, Idx, Lock).
 
-read_ref(Ref , Relation) -> read_ref(Ref, Relation, read).
+read_ref(Ref, Relation) -> read_ref(Ref, Relation, read).
 
 -spec read_ref([#xrefX{} | #refX{}], inside | intersect, read | write)
 -> [{#xrefX{}, ?dict}].
@@ -1519,40 +1612,73 @@ shift_cellsD(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
     % mark the refs dirty for zinfs to force recalc
     [ok = mark_dirty_for_zinfD(X) || X <- expand_ref(From)],
     case read_objs(RefXSel, inside) of
-        [] -> [];
+        []       ->
+            [];
         ObjsList ->
-            % Rewrite the formulas of all the child cells
+            % We might need to rewrite the formulas and dynamic selectors of
+            % all the child cells so lets collect them
             RefXList = [lobj_to_xrefX(Site, O) || O <- ObjsList],
             ChildCells = lists:flatten([get_childrenD(X) || X <- RefXList]),
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
+
+            % Rewrite formulas that are affected
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
-            Fun  =
-                fun({ChildRef, F1}, Acc) ->
-                        {St, F2} = offset_fm_w_rng(ChildRef, F1, From,
-                                                   {XOff, YOff}),
-                        Op = fun(Attrs) ->
-                                     {St, orddict:store("formula", F2, Attrs)}
-                             end,
-                        apply_to_attrsD(ChildRef, Op, rewrite, Uid,
-                                        ?TRANSFORMATIVE),
-                        % you need to switch the ref to an idx because later on
-                        % you are going to move the cells and you need to know
-                        % the ref of the shifted cell
-                        case St of
-                            clean -> Acc;
-                            dirty -> [ChildRef | Acc]
-                        end
-                end,
-            DirtyChildren = lists:foldl(Fun, [], Formulas),
+            Acc = {{From, {XOff, YOff}, Uid}, []},
+            {_, DirtyCh1} = lists:foldl(fun rewrite_formulae/2, Acc, Formulas),
+
+            % now rewrite any dynamic selects that are affected
+            DynSels = [F || X <- DedupedChildren,
+                            F <- read_ref_field(X, "input", write)],
+            {_, DirtyCh2} = lists:foldl(fun rewrite_dyn_select/2, Acc, DynSels),
+
             % Rewrite the local_obj entries by applying the shift offset.
             ObjTable = trans(Site, local_obj),
             [begin
                  mnesia:delete(ObjTable, Idx, write),
                  mnesia:write(ObjTable, shift_obj(LO, XOff, YOff), write)
              end || #local_obj{idx = Idx} = LO <- ObjsList],
-            DirtyChildren
+            lists:merge(DirtyCh1, DirtyCh2)
+    end.
+
+rewrite_dyn_select({ChildRef, DynSel}, {{From, {XOff, YOff}, Uid}, Acc}) ->
+  case DynSel of
+      {"dynamic_select", DynFormula, _} ->
+          {St, "="++DF2} = offset_fm_w_rng(ChildRef, "="++DynFormula, From,
+                                     {XOff, YOff}),
+          Op = fun(Attrs) ->
+                       % don't worry about calculating the values for the
+                       % dynamic select as we are going to make the cell
+                       % recalc itself anyhoo
+                       DynSel2 = {"dynamic_select", DF2, []},
+                       {St, orddict:store("input", DynSel2, Attrs)}
+               end,
+          apply_to_attrsD(ChildRef, Op, rewrite, Uid,
+                          ?TRANSFORMATIVE),
+          % you need to switch the ref to an idx because later on
+          % you are going to move the cells and you need to know
+                                   % the ref of the shifted cell
+          case St of
+              clean -> {{From, {XOff, YOff}, Uid}, Acc};
+              dirty -> {{From, {XOff, YOff}, Uid}, [ChildRef | Acc]}
+          end;
+      _ ->
+          {{From, {XOff, YOff}, Uid}, Acc}
+  end.
+
+rewrite_formulae({ChildRef, F1}, {{From, {XOff, YOff}, Uid}, Acc}) ->
+    {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
+    Op = fun(Attrs) ->
+                 {St, orddict:store("formula", F2, Attrs)}
+         end,
+    apply_to_attrsD(ChildRef, Op, rewrite, Uid, ?TRANSFORMATIVE),
+    % you need to switch the ref to an idx because later on
+    % you are going to move the cells and you need to know
+    % the ref of the shifted cell
+    case St of
+        clean -> {{From, {XOff, YOff}, Uid}, Acc};
+        dirty -> {{From, {XOff, YOff}, Uid}, [ChildRef | Acc]}
     end.
 
 shift_pattern(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
@@ -1599,16 +1725,37 @@ get_childrenD(#xrefX{obj = {Type, _}} = Ref)
     {clean | dirty, #refX{}}.
 deref_formula(XRefX, DelRef, Disp, Uid) ->
     Op = fun(Attrs) ->
-                 case orddict:find("formula", Attrs) of
-                     {ok, F1} ->
-                         {Status, F2} = deref(XRefX, F1, DelRef, Disp),
-                         {Status, orddict:store("formula", F2, Attrs)};
-                     _ ->
-                         {clean, Attrs}
+                 {St2, A2} = case orddict:find("formula", Attrs) of
+                                 {ok, F1} ->
+                                     {St, F2} = deref(XRefX, F1, DelRef, Disp),
+                                     {St, orddict:store("formula", F2, Attrs)};
+                                 _ ->
+                                     {clean, Attrs}
+                             end,
+                 case is_dynamic_select(Attrs) of
+                     true ->
+                         {ok, V} = orddict:find("input", Attrs),
+                         {"dynamic_select", Dyn, _} = V,
+                         case deref(XRefX, "=" ++ Dyn, DelRef, Disp) of
+                             clean ->
+                                 {merge(clean, St2), A2};
+                             {dirty, "=" ++ NewDyn} ->
+                                 % this cell is going to be marked as dirty
+                                 % and recalced, so what we do is not bother
+                                 % getting the values for the dyn select
+                                 % gonnae get them on the recalc anyhoo
+                                 NInp = {"dynamic_select", NewDyn, []},
+                                 {dirty, orddict:store("input", NInp, A2)}
+                         end;
+                     false ->
+                         {St2, A2}
                  end
          end,
     {Status, _} = apply_to_attrsD(XRefX, Op, deref, Uid, ?NONTRANSFORMATIVE),
     {Status, XRefX}.
+
+merge(clean, clean) -> clean;
+merge(_, _)         -> dirty.
 
 %% dereferences a formula
 deref(XChildX, [$= |Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
@@ -1672,7 +1819,7 @@ deref2(XChildX, H, Text, Path, DeRefX, Disp) ->
 %% if DelObj completely subsumes RewriteObj then the reference to RewriteObj should
 %% be dereferenced (return 'deref')
 %% %% if DelObj partially subsumes RewriteObj then the reference to RewriteObj should
-%% be rewitten (return 'rewrite')
+%% be rewritten (return 'rewrite')
 %% if there is partial or no overlap then return 'unchanged'
 deref_overlap(Text, DelObj, Disp) ->
     RewriteObj = hn_util:parse_ref(Text),
@@ -2025,9 +2172,14 @@ delete_relationD(#xrefX{site = Site} = Cell) ->
             % delete infinite relations and stuff
             OldInfPs = [#xrefX{} = idx_to_xrefXD(Site, X)
                         || X <- R#relation.infparents],
-            ok = handle_infsD(Cell#xrefX.idx, Site, [], OldInfPs),
+            OldDynInfPs = [#xrefX{} = idx_to_xrefXD(Site, X)
+                        || X <- R#relation.dyn_infparents],
+            OldPs = lists:merge(OldInfPs, OldDynInfPs),
+            ok = handle_infsD(Cell#xrefX.idx, Site, [], OldPs),
             [del_childD(P, Cell#xrefX.idx, Tbl) ||
                 P <- R#relation.parents],
+            [del_childD(P, Cell#xrefX.idx, Tbl) ||
+                P <- R#relation.dyn_parents],
             ok = mnesia:delete(Tbl, Cell#xrefX.idx, write);
         _ -> ok
     end.
@@ -2477,3 +2629,24 @@ clean_up(#xrefX{} = XRefX) ->
     % trash any forms that might pertain
     % TODO this contains a lot of reads
     ok = unattach_formD(XRefX).
+
+is_dynamic_select(Attrs) ->
+    case orddict:find("input", Attrs) of
+        {ok, Val} -> case Val of
+                         {"dynamic_select", _, _} -> true;
+                         _                        -> false
+                     end;
+        error     -> false
+    end.
+
+split_select(String) ->
+    [Ref | Htap] = lists:reverse(string:tokens(String, "/")),
+    Path = case lists:reverse(Htap) of
+               [".." | Rest ] ->
+                   ".." ++ hn_util:list_to_path(Rest);
+               ["."  | Rest ] ->
+                   "."  ++ hn_util:list_to_path(Rest);
+               SimplePath ->
+                   hn_util:list_to_path(SimplePath)
+           end,
+    {Path, Ref}.
