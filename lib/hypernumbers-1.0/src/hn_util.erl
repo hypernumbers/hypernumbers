@@ -124,11 +124,14 @@ log_terms(Terms, File) ->
 
 log(String, File) ->
     _Return = filelib:ensure_dir(File),
-    Date = dh_date:format("d_M_y_G_i_s"),
+    Now = now(),
+    {_, _, Millisecs} = Now,
+    Date = dh_date:format("d_M_y_G_i_s", Now),
 
     case file:open(File, [append]) of
         {ok, Id} ->
-            io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
+            io:fwrite(Id, "~s~n", [Date ++ "_" ++ integer_to_list(Millisecs) ++
+                                   "," ++ String]),
             file:close(Id);
         _ ->
             error
