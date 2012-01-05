@@ -73,7 +73,7 @@ ping(Site) ->
     ok = gen_server:call({global, Id}, ping),
     Now = util2:get_timestamp(),
     lists:flatten(io_lib:format("pinging ~s took ~w",
-                                [Id, (Then - Now)/1000000])).
+                                [Id, (Now - Then)/1000000])).
 
 stop(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
