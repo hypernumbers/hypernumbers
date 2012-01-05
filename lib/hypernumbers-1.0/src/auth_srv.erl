@@ -12,6 +12,7 @@
 -export([start_link/1, stop/1]).
 
 -export([
+         ping/1,
          check_get_view/3,
          check_particular_view/4,
          check_get_challenger/3,
@@ -65,6 +66,14 @@
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:start_link({global, Id}, ?MODULE, [Site], []).
+
+ping(Site) ->
+    Id = hn_util:site_to_atom(Site, "_auth"),
+    Then = util2:get_timestamp(),
+    ok = gen_server:call({global, Id}, ping),
+    Now = util2:get_timestamp(),
+    lists:flatten(io_lib:format("pinging ~s took ~w",
+                                [Id, (Then - Now)/1000000])).
 
 stop(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
@@ -201,7 +210,9 @@ handle_call(Request, _From, State) ->
                   dump_script ->
                       {dump_script1(Tr), false};
                   {load_script, Terms} ->
-                      {load_script1(Terms), true}
+                      {load_script1(Terms), true};
+                  ping ->
+                      {ok, false}
               end,
     case Return1 of
         {NewTree, true} ->
