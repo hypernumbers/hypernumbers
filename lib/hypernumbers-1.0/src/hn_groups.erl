@@ -17,6 +17,11 @@
          load_script/2
         ]).
 
+% debugging
+-export([
+         list_users_DEBUG/1
+        ]).
+
 -include("spriki.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 
@@ -124,6 +129,18 @@ any_admin(Site) ->
                 end
         end,
     mnesia:activity(transaction, F).
+
+-spec list_users_DEBUG(string()) -> string().
+list_users_DEBUG(Site) ->
+    Tbl = new_db_wu:trans(Site, group),
+    Terms = mnesia:activity(transaction, fun mnesia:foldl/3,
+                            [fun list_u2/2, [], Tbl]),
+    Terms.
+
+list_u2(#group{members = M}, Acc) ->
+    NewAcc = [passport:uid_to_email(X) || X <- gb_sets:to_list(M)],
+    {_, NewAcc2} = lists:unzip(NewAcc),
+    lists:merge(NewAcc2, Acc).
 
 -spec dump_script(string()) -> string().
 dump_script(Site) ->
