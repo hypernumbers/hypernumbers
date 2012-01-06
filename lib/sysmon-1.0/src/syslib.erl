@@ -251,7 +251,16 @@ show_queues(Site) -> show_queues(Site, verbose).
 show_queues(Site, Verbose) ->
     Qs = [new_db_wu:trans(Site, X) || X <- ?qs],
     QLen = dbsrv:dump_q_len(Site),
-    Msg1 = io_lib:format("The dbsrv workplan has ~p cells in it~n", [QLen]),
+    Msg1 = case {Verbose, QLen} of
+               {verbose, _} ->
+                   io_lib:format("The dbsrv workplan has ~p cells in it~n",
+                                 [QLen]);
+               {_, 0} ->
+                   [];
+               {_, _} ->
+                   io_lib:format("The dbsrv workplan has ~p cells in it~n",
+                                 [QLen])
+           end,
     Msg2 = showq(Qs, Verbose, []),
     lists:flatten(lists:merge(Msg1, Msg2)).
 
