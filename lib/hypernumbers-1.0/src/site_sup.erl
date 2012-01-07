@@ -33,14 +33,7 @@ start_link(Site) ->
 %%--------------------------------------------------------------------
 init([Site]) ->
    {ok, { {one_for_one,1,10},
-           [ {dbsrv,
-              {dbsrv, start_link, [Site]},
-              permanent,
-              infinity,
-              supervisor,
-              [dbsrv]},
-
-             {remoting_reg,
+           [ {remoting_reg,
               {remoting_reg, start_link, [Site]},
               permanent,
               2000,
@@ -53,13 +46,6 @@ init([Site]) ->
               2000,
               worker,
               [auth_srv]},
-
-             {zinf_srv,
-              {zinf_srv, start_link, [Site]},
-              permanent,
-              2000,
-              worker,
-              [zinf_srv]},
 
              {page_srv,
               {page_srv, start_link, [Site]},
@@ -80,7 +66,14 @@ init([Site]) ->
               permanent,
               2000,
               worker,
-              [status_srv]}
+              [status_srv]},
+
+             {calc_sup,
+              {calc_sup, start_link, [Site]},
+              permanent,
+              infinity,
+              supervisor,
+              [calc_sup]}
 
             ]
           }}.

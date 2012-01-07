@@ -143,7 +143,8 @@ check_super2(Site, Globals, Locals) ->
 
 get_sups(Site, global) ->
     get_sups2(["_status", "_auth", "_tick", "_remoting",
-                     "_dbsrv_sup", "_pages", "_sup", "_zinf"], Site, []);
+                     "_dbsrv_sup", "_pages", "_sup", "_zinf", "_calc_sup"],
+              Site, []);
 get_sups(Site, local) ->
     get_sups2(["_dbsrv"], Site, []).
 
