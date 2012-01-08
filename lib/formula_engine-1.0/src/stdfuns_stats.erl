@@ -18,6 +18,7 @@
 -export([
          avedev/1,
          average/1,
+         zaverage/1,
          averagea/1,
          %%averageif/1,
          %%averageifs/1,
@@ -62,11 +63,15 @@
          %%loginv/1,
          %%lognormdist/1,
          max/1,
+         zmax/1,
          maxa/1,
          median/1,
+         zmedian/1,
          min/1,
+         zmin/1,
          mina/1,
          mode/1,
+         zmode/1,
          %%negbinomdist/1,
          %%normdist/1,
          %%norminv/1,
@@ -87,6 +92,7 @@
          standardize/1,
          standardise/1,
          stdev/1,
+         zstdev/1,
          stdeva/1,
          stdevp/1,
          stdevpa/1,
@@ -122,10 +128,15 @@ avedev1(Nums) ->
     Deviation = lists:foldl(fun(X, Acc) -> Acc + erlang:abs(Avg - X) end, 0, Nums),
     Deviation / length(Nums).
 
+zaverage(List) ->
+    Zs = muin_util:get_zs(List),
+    average(Zs).
+
 average(Args) ->
     col(Args,
         [eval_funs, {cast, str, num, ?ERRVAL_VAL}, {cast, num}, fetch,
-         flatten, {ignore, blank}, {ignore, bool}, {ignore, str}],
+         fetch_z_no_errs, flatten,
+         {ignore, blank}, {ignore, bool}, {ignore, str}],
         [return_errors, {all, fun is_number/1}],
         fun average1/1).
 
@@ -179,29 +190,8 @@ chidist_([X, Degfree]) ->
 countz(List) -> zcount(List).
 
 zcount(List) ->
-    put(recompile, true),
-    Strs = typechecks:std_strs(List),
-    Zs = zcount_(Strs, []),
-    muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
-                          {cast, bool, num}, fetch, fetch_z_all, flatten,
-                          {ignore, blank}, {ignore, str},
-                          {ignore, bool}, {ignore, error}],
-                     [{all, fun is_number/1}],
-                     fun length/1).
-
-zcount_([], Acc) -> Acc;
-zcount_([H | T], Acc) ->
-    NewAcc = case muin:parse(H, {?mx, ?my}) of
-              {ok, Ast} ->
-                  case muin:external_eval(Ast) of
-                      X when ?is_cellref(X);
-                             ?is_rangeref(X);
-                             ?is_zcellref(X) -> X;
-                      _Else                  -> ?ERRVAL_REF
-                  end;
-              {error, syntax_error} -> ?ERRVAL_REF
-          end,
-    zcount_(T, [NewAcc | Acc]).
+    Zs = muin_util:get_zs(List),
+    count(Zs).
 
 counta(Vs) ->
     Vals = col(Vs, [eval_funs, fetch, flatten, {ignore, blank}]),
@@ -375,10 +365,14 @@ linest(_) ->
 linest1(_, _) ->
     0.
 
+zmax(List) ->
+    Zs = muin_util:get_zs(List),
+    max(Zs).
+
 max(Args) ->
     col(Args,
         [eval_funs, flatten, {cast, str, num, ?ERRVAL_VAL},
-         {cast, bool, num}, fetch_name, fetch_ref,
+         {cast, bool, num}, fetch_z_no_errs, fetch_name, fetch_ref,
          flatten, {ignore, blank}, {ignore, str}, {ignore, bool}],
         [return_errors],
         fun max_/1).
@@ -389,10 +383,14 @@ max_(Nums) ->
         false -> lists:max(Nums)
     end.
 
+zmin(List) ->
+    Zs = muin_util:get_zs(List),
+    min(Zs).
+
 min(Args) ->
     col(Args,
         [eval_funs, flatten, {cast, str, num, ?ERRVAL_VAL},
-         {cast, bool, num}, fetch_name, fetch_ref,
+         {cast, bool, num}, fetch_z_no_errs, fetch_name, fetch_ref,
          flatten, {ignore, blank}, {ignore, str}, {ignore, bool}],
         [return_errors],
         fun min_/1).
@@ -431,10 +429,14 @@ maxa_(Nums) ->
         false -> lists:max(Nums)
     end.
 
+zmedian(List) ->
+    Zs = muin_util:get_zs(List),
+    median(Zs).
+
 median(Args) ->
     col(Args,
         [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL},
-         fetch, flatten, {ignore, str}, {ignore, bool}, {ignore, blank}],
+         fetch, fetch_z_all, flatten, {ignore, str}, {ignore, bool}, {ignore, blank}],
         [return_errors, {all, fun is_number/1}],
         fun median_/1).
 
@@ -450,10 +452,15 @@ median_(Args) ->
             (lists:nth(C, Nums) + lists:nth(C+1, Nums)) / 2
     end.
 
+zmode(List) ->
+    Zs = muin_util:get_zs(List),
+    mode(Zs).
+
 mode(Args) ->
     col(Args,
-        [eval_funs, fetch, flatten, {ignore, str}, {ignore, bool},
-         {ignore, blank}], [return_errors, {all, fun is_number/1}],
+        [eval_funs, fetch, fetch_z_no_errs, flatten, {ignore, str},
+         {ignore, bool}, {ignore, blank}],
+        [return_errors, {all, fun is_number/1}],
         fun mode_/1).
 
 mode_([]) ->
@@ -607,9 +614,14 @@ standardize1([_Num, _Mean, Stdev]) when Stdev =< 0 ->
 standardize1([Num, Mean, Stdev]) ->
     (Num - Mean) / Stdev.
 
+zstdev(List) ->
+    Zs = muin_util:get_zs(List),
+    stdev(Zs).
+
 stdev(V1) ->
     col(V1,
-        [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
+        [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL},
+         fetch, fetch_z_no_errs, flatten,
          {ignore, str}, {ignore, bool}, {ignore, blank}],
         [return_errors, {all, fun is_number/1}],
         fun stdev1/1).

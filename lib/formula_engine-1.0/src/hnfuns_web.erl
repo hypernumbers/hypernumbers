@@ -292,7 +292,23 @@ img([Src]) ->
                true  -> ["Links" | Hds1];
                false -> Hds1
           end,
-    [Z2] = typechecks:std_strs([Z]),
+    ZRef = case Z of
+             List when is_list(List) ->
+                   [Z2] = typechecks:std_strs([Z]),
+                   case muin:parse(Z2, {?mx, ?my}) of
+                       {ok, AST} ->
+                           case muin:external_eval(AST) of
+                               X when ?is_zcellref(X);
+                                      ?is_zrangeref(X) -> X;
+                               _Else                  -> ?ERRVAL_REF
+                           end;
+                       {error, syntax_error} -> ?ERRVAL_REF
+                   end;
+               ZRange when ?is_zrangeref(ZRange) ->
+                   ZRange;
+               _Else ->
+                   ?ERR_VAL
+               end,
     [Sort2] = typechecks:std_ints([Sort]),
     case HasLink of
         true  -> ok;
@@ -300,15 +316,6 @@ img([Src]) ->
         _     -> ?ERR_VAL
     end,
     put(recompile, true),
-    ZRef = case muin:parse(Z2, {?mx, ?my}) of
-               {ok, AST} ->
-                   case muin:external_eval(AST) of
-                      X when ?is_zcellref(X);
-                             ?is_zrangeref(X) -> X;
-                       _Else                  -> ?ERRVAL_REF
-                   end;
-              {error, syntax_error} -> ?ERRVAL_REF
-          end,
     Rules = [fetch_ztable],
     Passes = [],
     [{zeds, Ranges, _, _}] = muin_collect:col([ZRef], Rules, Passes),

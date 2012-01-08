@@ -241,29 +241,8 @@ negate([V]) ->
 sumz(List) -> zsum(List).
 
 zsum(List) ->
-    put(recompile, true),
-    Strs = typechecks:std_strs(List),
-    Zs = zsum_(Strs, []),
-    muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
-                          {cast, bool, num}, fetch, fetch_z_no_errs,
-                          flatten, {ignore, blank}, {ignore, str},
-                          {ignore, bool}],
-                     [return_errors, {all, fun is_number/1}],
-                     fun sum1/1).
-
-zsum_([], Acc) -> Acc;
-zsum_([H | T], Acc) ->
-    NewAcc = case muin:parse(H, {?mx, ?my}) of
-                 {ok, Ast} ->
-                     case muin:external_eval(Ast) of
-                         X when ?is_cellref(X);
-                                ?is_rangeref(X);
-                                ?is_zcellref(X) -> X;
-                         _Else                  -> ?ERRVAL_REF
-                     end;
-                 {error, syntax_error} -> ?ERRVAL_REF
-             end,
-    zsum_(T, [NewAcc | Acc]).
+    Zs = muin_util:get_zs(List),
+    sum(Zs).
 
 sum(Vs) ->
     muin_collect:col(Vs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},

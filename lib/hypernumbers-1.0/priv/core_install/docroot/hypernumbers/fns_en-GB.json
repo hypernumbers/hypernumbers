@@ -3439,6 +3439,114 @@
          ]
     },
     {
+        "fn": "zaverage",
+        "category": "HN Database",
+        "desc": "Calculates the average of values in a z-query.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/zaverage.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query.",
+                "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "zcount",
+        "category": "HN Database",
+        "desc": "Counts the number of values in a z-query.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/zcount.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query.",
+                "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "zmax",
+        "category": "HN Database",
+        "desc": "Returns the maximum value of a z-query.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/zmax.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query.",
+                "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "zmedian",
+        "category": "HN Database",
+        "desc": "Returns the median value of a z-query.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/zmedian.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query.",
+                "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "zmin",
+        "category": "HN Database",
+        "desc": "Returns the minimum value of a z-query.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/zmin.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query.",
+                "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "zmode",
+        "category": "HN Database",
+        "desc": "Returns the mode of a z-query.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/zmode.html",
+         "args": [
+             {
+                "name": "Z Query",
+                "desc": "A Z Query.",
+                "type": "finite"
+            }
+         ]
+    },
+    {
         "fn": "zsum",
         "category": "HN Database",
         "desc": "Sums the results of a z query.",
@@ -3453,6 +3561,39 @@
                 "name": "Z Query",
                 "desc": "A Z Query.",
                 "type": "finite"
+            }
+         ]
+    },
+    {
+        "fn": "ztable",
+        "category": "HN Layout",
+        "desc": "Embeds a range of cells from another page as a sortable table.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/ztable.html",
+         "args": [
+             {
+                "name": "Range",
+                "desc": "Reference to a range of cells.",
+                "type": "finite"
+             },
+             {
+                 "name": "Z-Query",
+                 "desc": "A Z Query",
+                "type": "finite"
+             },
+             {
+                "name": "Sort Column",
+                "desc": "An integer.",
+                "type": "optional"
+             },
+             {
+                "name": "Sort Direction",
+                "desc": "TRUE or FALSE.",
+                "type": "optional"
             }
          ]
     },
