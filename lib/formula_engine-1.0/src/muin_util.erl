@@ -29,11 +29,36 @@
          get_type/1
         ]).
 
+% fun for zdb functions to use
+-export([
+          get_zs/1
+         ]).
+
 -define(SECS_IN_DAY, 86400).
 
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 -include("spriki.hrl").
+-include("muin_proc_dict.hrl").
+
+get_zs(List) ->
+    put(recompile, true),
+    Strs = typechecks:std_strs(List),
+    get_z2(Strs, []).
+
+get_z2([], Acc) -> Acc;
+get_z2([H | T], Acc) ->
+    NewAcc = case muin:parse(H, {?mx, ?my}) of
+                 {ok, Ast} ->
+                     case muin:external_eval(Ast) of
+                         X when ?is_cellref(X);
+                                ?is_rangeref(X);
+                                ?is_zcellref(X) -> X;
+                         _Else                  -> ?ERRVAL_REF
+                     end;
+                 {error, syntax_error} -> ?ERRVAL_REF
+             end,
+    get_z2(T, [NewAcc | Acc]).
 
 create_name() ->
     Bin = crypto:rand_bytes(8),
@@ -276,11 +301,11 @@ attempt(Mod, F, Args) ->
         Val -> {ok, Val}
     catch
         Error:Reason when Error =:= error orelse Error =:= throw ->
-            error_logger:info_msg("attempt to eval ~p/~p/~p failed~n"
-                                  ++ "- for ~p : ~p~n"
-                                  "-with stacktrace of ~p~n",
-                                  [Mod, F, Args, Error, Reason,
-                                   erlang:get_stacktrace()]),
+            %error_logger:info_msg("attempt to eval ~p/~p/~p failed~n"
+            %                      ++ "- for ~p : ~p~n"
+            %                      "-with stacktrace of ~p~n",
+            %                      [Mod, F, Args, Error, Reason,
+            %                       erlang:get_stacktrace()]),
             {error, Reason}
     end.
 
@@ -289,10 +314,10 @@ attempt(Fun) when is_function(Fun) ->
         Val -> {ok, Val}
     catch
         Error:Reason when Error =:= error orelse Error =:= throw ->
-            error_logger:error_msg("attempt to eval a fun failed~n"
-                                   ++ "- for ~p : ~p~n"
-                                   "-with stacktrace of ~p~n",
-                                   [Error, Reason, erlang:get_stacktrace()]),
+            %error_logger:error_msg("attempt to eval a fun failed~n"
+            %                       ++ "- for ~p : ~p~n"
+            %                       "-with stacktrace of ~p~n",
+            %                       [Error, Reason, erlang:get_stacktrace()]),
             {error, Reason}
     end.
 
