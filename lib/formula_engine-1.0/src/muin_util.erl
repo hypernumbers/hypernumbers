@@ -301,11 +301,6 @@ attempt(Mod, F, Args) ->
         Val -> {ok, Val}
     catch
         Error:Reason when Error =:= error orelse Error =:= throw ->
-            %error_logger:info_msg("attempt to eval ~p/~p/~p failed~n"
-            %                      ++ "- for ~p : ~p~n"
-            %                      "-with stacktrace of ~p~n",
-            %                      [Mod, F, Args, Error, Reason,
-            %                       erlang:get_stacktrace()]),
             {error, Reason}
     end.
 
@@ -314,10 +309,6 @@ attempt(Fun) when is_function(Fun) ->
         Val -> {ok, Val}
     catch
         Error:Reason when Error =:= error orelse Error =:= throw ->
-            %error_logger:error_msg("attempt to eval a fun failed~n"
-            %                       ++ "- for ~p : ~p~n"
-            %                       "-with stacktrace of ~p~n",
-            %                       [Error, Reason, erlang:get_stacktrace()]),
             {error, Reason}
     end.
 
