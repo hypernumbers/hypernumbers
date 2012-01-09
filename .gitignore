@@ -17,6 +17,7 @@ lib/*/ebin/*.erl
 lib/hypernumbers*/src/ms_util2.erl
 lib/starling/ebin/starling_drv
 priv/load_testing/logs
+priv/verification/dets
 
 ## Script used for fetching svn externals
 lib/git-svn-*
