@@ -67,28 +67,32 @@ security() ->
     WC = filename:absname(?TEST_DIR)++"/security_test",
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
+    io:format("Tests is ~p~n", [Tests]),
     do_test(Opts).
 
 security(S) ->
+    io:format("Security running with ~p~n", [S]),
     init_sec(),
     WC = filename:absname(?TEST_DIR)++"/security_test",
     Tests = filelib:wildcard(WC),
-    [compile(X) || X <- Tests],
+    %[compile(X) || X <- Tests],
     Suite = S ++ "_SUITE",
-    Opts = [ {dir, [Tests]},
+    Opts = [ {dir, Tests},
              {suite, [Suite]} ],
     do_test(Opts).
 
 compile(File) ->
-    case compile:file(File, []) of
+    io:format("Compiling ~p~n", [File]),
+    case compile:file(File, [return_errors]) of
         {ok, FileName} ->
             io:fwrite("OK: ~s~n", [File]),
             code:delete(FileName),
             code:purge(FileName),
             code:load_file(FileName),
             ok;
-        _Error ->
-              exit("can't compile...")
+        Error ->
+            io:format("Error is ~p~n", [Error]),
+            exit(lists:flatten(io_lib:format("can't compile ~p...", [File])))
     end.
 
 sys() ->
@@ -193,6 +197,7 @@ post_logged_out_TEST(URL, Data) ->
 %%% Internal functions
 
 do_test(Opts) ->
+    io:format("Opts is ~p~n", [Opts]),
     application:unset_env(hypernumbers, sync_url),
     filelib:ensure_dir(filename:absname(?LOG_DIR)++"/"),
     DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
