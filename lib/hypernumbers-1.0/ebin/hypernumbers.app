@@ -3,6 +3,7 @@
   {vsn,          "1.0"},
   {modules,      [
                   auth_srv,
+                  calc_sup,
                   dbsrv,
                   dh_date,
                   dh_matrix,
