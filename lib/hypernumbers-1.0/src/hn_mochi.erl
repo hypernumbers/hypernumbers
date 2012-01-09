@@ -97,7 +97,6 @@ handle_(#refX{site = _S, path=["_sync" | Cmd]}, Env,
     throw(ok);
 
 handle_(Ref, Env, Qry) ->
-    log("arrive in handle_", Ref),
     case hn_setup:site_exists(Ref#refX.site) of
         true  -> case filename:extension((Env#env.mochi):get(path)) of
                      []  -> authorize_resource(Env, Ref, Qry);
@@ -111,15 +110,12 @@ handle_(Ref, Env, Qry) ->
 
 -spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return().
 authorize_resource(Env, Ref, Qry) ->
-    log("arrive in authorize_resource", Ref),
     case cluster_up() of
         false -> text_html(Env, "There appears to be a network problem. "++
                            "Please try later");
         true  -> case Env#env.auth of
-                     []   -> log("out of cluster up (1)", Ref),
-		             authorize_r2(Env, Ref, Qry);
-                     Auth -> log("out of cluster up (2)", Ref),
-		             authorize_api(Auth, Env, Ref, Qry)
+                     []   -> authorize_r2(Env, Ref, Qry);
+                     Auth -> authorize_api(Auth, Env, Ref, Qry)
                  end
     end.
 
@@ -150,9 +146,7 @@ authorize_api(_Auth, _Env, _Ref, _Qry) ->
     denied.
 
 authorize_r2(Env, Ref, Qry) ->
-    log("arriving in r2", Ref),
     Env2 = process_user(Ref#refX.site, Env),
-    log("user processed in in r2", Ref),
     #env{method = Method, body = Body} = Env,
     AuthRet = case {Method, Body} of
                   {Req, _} when Req == 'GET'; Req == 'HEAD'  ->
@@ -162,7 +156,6 @@ authorize_r2(Env, Ref, Qry) ->
                   {'POST', _} ->
                       authorize_post(Ref, Qry, Env2)
               end,
-    log("_r2 (2)", Ref),
     case {AuthRet, Env2#env.accept} of
         {allowed, _} ->
             handle_resource(Ref, Qry, Env2);
@@ -278,13 +271,10 @@ authorize_get(#refX{site = Site, path = Path},
 
 %% Authorize access to the DEFAULT page. Notice that no query
 %% parameters have been set.
-authorize_get(#refX{site = Site, path = Path} = Ref,
+authorize_get(#refX{site = Site, path = Path},
               #qry{_ = undefined},
               #env{accept = html, uid = Uid}) ->
-    log("arriving in authorize_get", Ref),
-    Ret = auth_srv:check_get_view(Site, Path, Uid),
-    log("leaving authorize_get", Ref),
-    Ret;
+    auth_srv:check_get_view(Site, Path, Uid);
 
 %% Authorize access to the challenger view.
 authorize_get(#refX{site = Site, path = Path},
@@ -606,7 +596,6 @@ iget(Ref, Obj, #qry{view = ?WIKI}, Env=#env{accept = html,uid = Uid})
 
 iget(Ref, Obj, #qry{view=?WEBPAGE}, Env=#env{accept=html,uid=Uid})
   when Obj == page orelse Obj == range ->
-    log("arriving in iget", Ref),
     ok = status_srv:update_status(Uid, Ref, "view webpage"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, webpage),
     Page = hn_render:wrap_page(Html, Width, Height, Addons, "webpage"),
@@ -1781,7 +1770,8 @@ run_actions(#refX{site = S, path = P} = RefX, Env,
             respond(403, Env);
         true ->
             % check that all the templates exists here!
-            {Templates, Perms, Dest, Actions} = hn_webcontrols:make_actions(S, P, Commands),
+            {Templates, Perms, Dest, Actions}
+                = hn_webcontrols:make_actions(S, P, Commands),
             case templates_exist(S, Templates) of
                 {error, Err} ->
                     ?E("Templates errors in postcreatepages: ~p~n", [Err]),
@@ -1796,7 +1786,8 @@ run_actions(#refX{site = S, path = P} = RefX, Env,
                     [Fun2(X) || X <- Actions],
                     % now run the permissions
                     Fun3 = fun({Path, Ps}) ->
-                                   [ok = process_perms(S, Path, View, Groups, Uid)
+                                   [ok = process_perms(S, Path, View,
+                                                       Groups, Uid)
                                     || {View, Groups} <- Ps]
                            end,
                     [Fun3(X) || X <- Perms],
@@ -2062,10 +2053,3 @@ Path == "/websql/scripts/setup.php"
     error_logger:info_msg(Format, Msg);
 log_path_errors(_Path, Format, Msg) ->
     error_logger:error_msg(Format, Msg).
-
-log(Str, #refX{path = Path}) -> ok.
-%    Then = get(now),
-%    Now = util2:get_timestamp(),
-%    Msg = lists:flatten(io_lib:format("~p,~p " ++ Str ++ " ~p", 
-%        [Then, (Now - Then)/1000000, Path])),
-%    hn_util:log(Msg, "/hn/hypernumbers/var/logs/slow_request_logging.log").
