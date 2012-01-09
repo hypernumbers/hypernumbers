@@ -42,7 +42,6 @@ printf $(./hn call 'test:excel("2c").')
 printf "\n\n"
 printf $(./hn call 'test:excel("2d").')
 printf "\n\n"
-printf "\n\n"
 printf $(./hn call 'test:excel("2e").')
 printf "\n\n"
 
