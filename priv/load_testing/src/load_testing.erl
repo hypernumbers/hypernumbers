@@ -32,6 +32,8 @@
                     ]).
 
 -export([
+         test_pret/0,
+         test_pret_SPAWN/0,
          percept/0,
          test/0,
          test_SPAWN/0
@@ -84,11 +86,27 @@ percept() ->
     Ret3 = percept:start_webserver(8888),
     io:format("Ret3 is ~p~n", [Ret3]).
 
+test_pret() -> spawn(load_testing, test_pret_SPAWN, []).
+
 test() -> spawn(load_testing, test_SPAWN, []).
+
+test_pret_SPAWN() ->
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    load_testing:load(Stamp, disc_only,
+                      [{run, [
+                              trash_db,
+                              %z_test
+                              load_pret
+                             ]}
+                      %%  {cprof,
+                      %%   [
+                      %%    load_pret
+                      %%   ]}
+                     ]).
 
 test_SPAWN() ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-    load_testing:load(Stamp, disc_only,
+    load_testing:load(Stamp, disc_and_mem,
                       [{run, [
                               trash_db,
                               %z_test
@@ -210,6 +228,7 @@ load_3(Stamp, Type, Spec) ->
     run(RSpc, [],   bulk_pages,    [],             fun bulk_pages/1),
     run(RSpc, CSpc, log_memory,    Stamp,          fun log_memory/1),
     run(RSpc, CSpc, load_data,     Stamp,          fun load_data/1),
+    run(RSpc, CSpc, load_pret,     Stamp,          fun load_pret/1),
     run(RSpc, CSpc, load_calcs,    Stamp,          fun load_calcs/1),
     run(RSpc, CSpc, load_zs,       Stamp,          fun load_zs/1),
     run(RSpc, CSpc, load_zs_cprof, {?site, Stamp}, fun load_zs_cprof/1),
@@ -345,7 +364,7 @@ load_pages(Label, Template, Prefix, Max, N) ->
     io:format("~p: (~p) loading ~p as ~p ~n",
               [Label, Max - N + 1, Template,
                hn_util:list_to_path(Path)]),
-    RefX = #refX{site = ?site, path = Path, obj = {page, "/"}},
+    RefX = #refX{site = ?site, type = url, path = Path, obj = {page, "/"}},
     StartTime = get_time(),
     ok = hn_templates:load_template(RefX, Template),
     MidTime = get_time(),
@@ -476,6 +495,35 @@ load_calcs2(Stamp, Prefix, NoOfPages) ->
     io:format("~nabout to load calculation pages...~n"),
     ok = load_pages("calculations" ++ Stamp, ?calcspage, Prefix,
                     NoOfPages, NoOfPages).
+
+load_pret(_Stamp) ->
+    Dir = "/home/gordon/hypernumbers/var/sites/" ++
+        "load.hypernumbers.dev&9000/",
+    Files = [
+             %% "processed_10_11_2011_13305034822493.csv",
+             %% "processed_11_11_2011_13305855022505.csv",
+             %% "processed_12_11_2011_13305855022505.csv",
+             %% "processed_13_11_2011_13302248222517.csv",
+             %% "processed_13_11_2011_13304119122529.csv",
+             %% "processed_14_11_2011_13302248222517.csv",
+             %% "processed_15_11_2011_13303082622543.csv",
+             %% "processed_16_11_2011_13305855022505.csv",
+             %% "processed_17_11_2011_13305855022505.csv",
+             %% "processed_18_11_2011_13303082622543.csv",
+             %% "processed_19_11_2011_13303082622543.csv",
+             %% "processed_20_11_2011_13303082622543.csv",
+             "testing.csv"
+            ],
+    Map = "pret",
+    load_pret2(Dir, Files, Map).
+
+load_pret2(_Dir, [], _Map) ->
+    ok;
+load_pret2(Dir, [H | T], Map) ->
+    Ret = hn_import:etl_to_custom(Dir ++ "/uploads/" ++ H, ?site,
+                                  Dir ++ "/etl/" ++ Map ++ ".map"),
+    io:format("Loading ~p ~p~n", [H, Ret]),
+    load_pret2(Dir, T, Map).
 
 load_data(Stamp) ->
     load_data2(Stamp, ?dataprefix, ?no_of_datapages).
