@@ -1,5 +1,6 @@
 /* tables */
 table.tablesorter {
+  height: auto;
 	border-collapse:collapse;
 	border: 1px solid #3f3f3f;
 }
