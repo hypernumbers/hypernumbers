@@ -64,7 +64,8 @@ content(Ref, Type) ->
 read_data_without_page(Ref) ->
     XRefs = new_db_api:read_intersect_ref(Ref),
     [ {XRefX, Val} || {XRefX, Val} <- XRefs,
-                      element(1, XRefX#xrefX.obj) =/= page ].
+                      element(1, XRefX#xrefX.obj) =/= page,
+                      Val =/= []].
 
 -spec layout(#xrefX{}, atom(), cells(), cols(), rows(), gb_tree())
             -> {[textdata()], integer(), integer()}.
