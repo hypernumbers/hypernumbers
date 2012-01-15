@@ -300,9 +300,9 @@ get_cell_ast(H, Site, Path)	->
             [{_address, Properties}] = _List,
             Tuple = lists:keyfind("__ast", 1, Properties),
             case Tuple of
-                false			-> [];
+                false			      -> [];
                 {"__ast", AST}	-> AST;
-                []				-> []
+                []				      -> []
             end
     end.
 
