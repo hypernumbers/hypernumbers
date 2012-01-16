@@ -13,8 +13,14 @@
 
 -include("spriki.hrl").
 
+-record(verify_master,
+        {
+          site = null,
+          exists = true
+         }).
 -record(ver,
         {
+          idx = null,
           relation = null,
           local_obj = null,
           item = null,
@@ -44,7 +50,8 @@
 
 % main api
 -export([
-         check/0
+         check/0,
+         check_recalc/0
         ]).
 
 % step-by-step api
@@ -60,6 +67,51 @@
          summarise_problems/2,
          read_verification/0
         ]).
+
+check_recalc() ->
+    Sites = hn_setup:get_sites(),
+    F1 = fun(Site) ->
+                 io:format("Processing ~p~n", [Site]),
+                 Tbl1 = new_db_wu:trans(Site, relation),
+                 Tbl2 = new_db_wu:trans(Site, item),
+                 F2 = fun(X, Acc) ->
+                              #item{idx = I, attrs = A} = X,
+                              TermA = binary_to_term(A),
+                              case orddict:find("formula", TermA) of
+                                  {ok, _V} ->
+                                      [R] = mnesia:read(Tbl1, I, read),
+                                      #relation{children = C} = R,
+                                      ok = is_recalc_duff(C, Site, I, TermA);
+                                  _ ->
+                                      ok
+                              end,
+                              Acc
+                      end,
+                 F3 = fun() ->
+                              mnesia:foldl(F2, [], Tbl2)
+                      end,
+                 mnesia:activity(transaction, F3)
+         end,
+    lists:foreach(F1, Sites).
+
+is_recalc_duff([], _Site, _I, _A) -> ok;
+is_recalc_duff([H | T], Site, I, A) ->
+    {ok, PCalced} = orddict:find("__lastcalced", A),
+    Tbl = new_db_wu:trans(Site, item),
+    [#item{idx = PI, attrs = CA}] = mnesia:read(Tbl, H, read),
+    TCA = binary_to_term(CA),
+    {ok, CCalced} = orddict:find("__lastcalced", TCA),
+    Diff = CCalced - PCalced,
+    if
+        Diff < 0 ->
+            Cell = new_db_wu:idx_to_xrefXD(Site, PI),
+            Cell2 = hn_util:xrefX_to_url(Cell),
+            io:format("~p (~p) has not triggered a recalc~n", [Cell2, PI]);
+        Diff > 0 ->
+            % parents are older than children
+            ok
+    end,
+    is_recalc_duff(T, Site, I, A).
 
 check() ->
     {Dir, TermFile, ZinfFile} = dump_tables(),
@@ -88,6 +140,7 @@ read_verification() ->
     read_verification(Dir, VerFile, ZinfFile).
 
 read_verification(Dir, VerFile, ZinfFile) ->
+    setup_mnesia(),
     {ok, Data} = parse(Dir ++ VerFile),
     io:format("in verification, data parsed...~n"),
     {ok, Zinfs} = case file:consult(Dir ++ ZinfFile) of
@@ -104,7 +157,7 @@ read_verification(Dir, VerFile, ZinfFile) ->
     DataFile = "verification_data" ++ "." ++ Stamp ++ "." ++ FileType,
     garbage_collect(self()),
     delete_file(Dir ++ DataFile),
-    %ok = write_terms(Data2, Dir ++ DataFile),
+    ok = write_terms(Data2, Dir ++ DataFile),
     %io:format("Written out processed data to ~p~n", [DataFile]),
     garbage_collect(self()),
     FileName = "errors."  ++ Stamp ++ "." ++ FileType,
@@ -956,6 +1009,7 @@ process(Tuple, Acc) ->
     process2(Site, Table, Head, Acc).
 
 process2(core, _, _, Acc) -> Acc;
+process2(verify, _, _, Acc) -> Acc;
 % skip these tables - not interesting
 process2(_Site, Table, _, Acc)
   when Table == "api"
@@ -1160,6 +1214,8 @@ lookup(Site, List) ->
         {Site, ITree, RTree} -> {ITree, RTree, List}
     end.
 
+extract_tables(verify_master) ->
+    {verify, master};
 extract_tables(tables) ->
     {core, tables};
 extract_tables(core_site) ->
@@ -1280,3 +1336,75 @@ add_dirty_zinfs(Idx, Parents) ->
     Old = ordsets:from_list(Parents),
     New = ordsets:from_list([]),
     #dirty_zinf{type = infinite, dirtycellidx = Idx, old = Old, new = New}.
+
+setup_mnesia() ->
+    try
+        mnesia:table_info(verify_master, all),
+        clear_master()
+    catch
+        error: Error ->
+            io:format("Error is ~p~n", [Error]),
+            create_master();
+        exit: Exit ->
+            io:format("Exit is ~p~n", [Exit]),
+            create_master()
+    end,
+    ok.
+
+clear_master() ->
+    io:format("Clearing all tables~n"),
+    Fun = fun() ->
+                  mnesia:all_keys(verify_master)
+          end,
+    Tables = mnesia:activity(async_dirty, Fun),
+    io:format("Tables is ~p~n", [Tables]),
+    [{atomic, ok} = mnesia:delete_table(X) || X <- Tables],
+    NewTables = mnesia:activity(async_dirty, Fun),
+    io:format("should be no tables now...~p~n", [NewTables]),
+    {atomic, ok} = mnesia:clear_table(verify_master),
+    ok.
+
+create_master() ->
+    Fields = record_info(fields, verify_master),
+    {atomic, ok} = mnesia:create_table(verify_master,
+                                       [{record_name, verify_master},
+                                        {attributes, Fields},
+                                        {disc_copies, [node()]},
+                                        {type, set},
+                                        {local_content, true}]),
+    ok.
+
+%% create_table(Site) ->
+%%     Fields = record_info(fields, ver),
+%%     Table = make_table(Site),
+%%     io:format("Trying to create ~p~n", [Table]),
+%%     {atomic, ok} = mnesia:create_table(Table,
+%%                                        [{record_name, ver},
+%%                                         {attributes, Fields},
+%%                                         {disc_copies, [node()]},
+%%                                         {type, set},
+%%                                         {local_content, true}]),
+%%     io:format("Table created...~n"),
+%%     Record = #verify_master{site = Table},
+%%     Fun = fun() ->
+%%                   mnesia:write(verify_master, Record, write)
+%%           end,
+%%     ok = mnesia:activity(async_dirty, Fun).
+
+%% make_table(Site) -> list_to_atom(Site ++ "&ver").
+
+%% read(Tbl, Idx) ->
+%%     Fun = fun() ->
+%%                   case mnesia:read(Tbl, Idx) of
+%%                       []    -> #ver{idx = Idx};
+%%                       [Rec] -> Rec#ver{}
+%%                   end
+%%           end,
+%%     mnesia:activity(async_dirty, Fun).
+
+%% write(Tbl, Rec) ->
+%%     io:format("Tbl is ~p~n", [Tbl]),
+%%     Fun = fun() ->
+%%                   mnesia:write(Tbl, Rec, write)
+%%           end,
+%%     mnesia:activity(async_dirty, Fun).
