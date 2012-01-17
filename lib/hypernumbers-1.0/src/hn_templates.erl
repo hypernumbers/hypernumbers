@@ -52,7 +52,8 @@ save_template(#refX{site = S}=RefX, Name)  ->
 load_template_if_no_page(#refX{} = RefX, Name) ->
     case new_db_api:does_page_exist(RefX) of
         false -> load_template(RefX, Name);
-        true  -> io:format("Not loading ~p on ~p~n", [Name, RefX]),
+        true  -> io:format("Not loading ~p on ~p~n",
+                           [Name, hn_util:refX_to_url(RefX)]),
                  ok
     end.
 
