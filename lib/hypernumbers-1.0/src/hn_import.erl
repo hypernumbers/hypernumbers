@@ -287,9 +287,9 @@ json_file(Url, FileName, Uid) ->
     [rows(Ref, X, Styles, column, fun write_col_row/4, Uid)
      || X <- Cols],
 
-    [rows(Ref, X, Styles, cell,   fun write_cells/4,   Uid)
-     || X <- lists:sort(fun int_sort/2, Cells)],
-    ok.
+    Cells2 = struct_flatten(Cells, Ref, Styles, []),
+
+    ok = new_write_cells(Cells2, Uid).
 
 make_styles([], Acc) -> Acc;
 make_styles([{Idx, Str} | T], Acc) ->
@@ -322,15 +322,26 @@ cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun, Uid) ->
     Fun(NRef, Styles, Attrs, Uid),
     ok.
 
+struct_flatten([], _Ref, _Styles,  Acc) -> Acc;
+struct_flatten([{Y, {struct, H}} | T], Ref, Styles, Acc) ->
+    NewAcc = struct_f2(H, Y, Ref, Styles, Acc),
+    struct_flatten(T, Ref, Styles, NewAcc).
+
+struct_f2([], _Y, _Ref, _Styles, Acc) -> Acc;
+struct_f2([{X, {struct, Attrs}} | T], Y, Ref, Styles, Acc) ->
+    Obj = {cell, {tconv:to_i(X), tconv:to_i(Y)}},
+    NewRef = Ref#refX{obj = Obj},
+    Attrs2 = copy_attrs(Attrs, [], Styles, ["merge", "formula", "style",
+                                            "format", "input"]),
+    struct_f2(T, Y, Ref, Styles, [{NewRef, Attrs2} | Acc]).
+
+new_write_cells(Cells, Uid) ->
+    new_db_api:write_attributes(Cells, Uid).
+
 write_col_row(_NRef, _, [], _) ->
     ok;
 write_col_row(NRef, _, Attrs, Uid) ->
     new_db_api:write_attributes([{NRef, Attrs}], Uid).
-
-write_cells(Ref, Styles, Attrs, Uid) ->
-    Attrs2 = copy_attrs(Attrs, [], Styles, ["merge", "formula", "style",
-                                            "format", "input"]),
-    new_db_api:write_attributes([{Ref, Attrs2}], Uid).
 
 copy_attrs(_Source, Dest, _Styles, []) -> Dest;
 copy_attrs(Source, Dest, Styles, ["style" = Key | T]) ->
@@ -767,14 +778,15 @@ load_r2([{RefX, V} | T], Acc) -> load_r2(T, [{RefX, [{"formula", V}]} | Acc]).
 load_templates([], _, _) ->
     ok;
 load_templates([H | T], "overwrite", Template) ->
-    io:format("loading ~p on ~p~n", [Template, H]),
+    io:format("Loading ~p on ~p~n", [Template, hn_util:refX_to_url(H)]),
     ok = hn_templates:load_template(H, Template),
     ok = load_templates(T, "overwrite", Template);
 load_templates([H | T], "dont_overwrite", Template) ->
     #refX{path = P} = H,
     case new_db_api:does_page_exist(H) of
         true  -> {error, hn_util:list_to_path(P) ++ " exists"};
-        false -> io:format("loading ~p on ~p~n", [Template, H]),
+        false -> io:format("Loading ~p on ~p~n",
+                           [Template, hn_util:refX_to_url(H)]),
                  ok = hn_templates:load_template(H, Template),
                  load_templates(T, "dont_overwrite", Template)
     end.
