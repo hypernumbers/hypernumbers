@@ -1,6 +1,7 @@
 -module(hn_setup).
 
 -export([
+         copy_site/2,
          site/3,
          site/4,
          delete_site/1,
@@ -18,6 +19,51 @@
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 -include("keyvalues.hrl").
+
+%% copies a site from one domain to another
+-spec copy_site(string(), string()) ->
+    ok | {error, from_site_exists} | {error, to_site_doesnt_exist}.
+copy_site(From, To) ->
+    case hn_setup:site_exists(To) of
+        true ->
+            {error, to_site_exists};
+        false ->
+            case hn_setup:site_exists(From) of
+                false ->
+                    {error, from_site_doesnt_exist};
+                true ->
+                    site(To, blank, []),
+                    ok = sitemaster_sup:delete_site(From),
+                    ok = sitemaster_sup:delete_site(To),
+                    copy_tables(From, To),
+                    ok = sitemaster_sup:add_site(From),
+                    ok = sitemaster_sup:add_site(To)
+            end
+    end.
+
+copy_tables(From, To) ->
+    Tables = [X || {X, _, _, _, _} <- tables()],
+    ok = copy_t2(Tables, From, To).
+
+copy_t2([], _, _) -> ok;
+copy_t2([H | T], From, To) ->
+    io:format("~nCopying ~p from ~p to ~p~n", [H, From, To]),
+    TblFrom = new_db_wu:trans(From, H),
+    TblTo = new_db_wu:trans(To, H),
+    Fun1 = fun() ->
+                   Fun2 = fun(X, N) ->
+                                  io:format("."),
+                                  case N rem 80 of
+                                      0 -> io:format("~n");
+                                      _ -> ok
+                                  end,
+                                  mnesia:write(TblTo, X, write),
+                                  N + 1
+                          end,
+                   mnesia:foldl(Fun2, 1, TblFrom)
+           end,
+    mnesia:activity(transaction, Fun1),
+    copy_t2(T, From, To).
 
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok | exists.
