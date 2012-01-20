@@ -189,7 +189,7 @@ Tabs
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; }
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
 .ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
-.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; z-index: 0}
+.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; z-index: auto}
 .ui-tabs .ui-tabs-hide { display: none !important; }
 
 .hn_sld_tabs { border: 1px solid #3f3f3f;padding: 0; margin: 0}
