@@ -306,8 +306,8 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
 "     ++Addons#render.css++
 "         <script src='/hypernumbers/jquery-1.7.1.min.js'></script>
          <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>-->
-         </head>
          <script src='/hypernumbers/err.remoterr.js'></script>
+         </head>
 
          <body data-view='" ++ PageType ++ "'>
 
@@ -353,6 +353,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
 </div>
   <script src='/hypernumbers/json2.js'></script>
   <script src='/hypernumbers/hn.js'></script>
+  <!--[if IE 7]><script>HN.isIE7 = true;</script><![endif]-->
   <script src='/hypernumbers/hn.util.js'></script>
   <script src='/hypernumbers/hn.sheet.js'></script>
   <script src='/hypernumbers/hn.data.js'></script>
