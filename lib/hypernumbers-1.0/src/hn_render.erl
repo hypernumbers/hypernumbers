@@ -304,8 +304,8 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
          <link rel='stylesheet' href='/tblsorter/style.css' />
 
 "     ++Addons#render.css++
-"         <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
-         <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
+"         <script src='/hypernumbers/jquery-1.7.1.min.js'></script>
+         <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>-->
          </head>
          <script src='/hypernumbers/err.remoterr.js'></script>
 
