@@ -9,6 +9,7 @@
 -module(hnfuns_special).
 
 -export([
+         timestamp/1,
          tick/1,
          snapshot/1
          ]).
@@ -24,6 +25,8 @@ snapshot([Arg]) ->
     put(retvals, {Errors, []}),
     put(infinite, []),
     Ret.
+
+timestamp(_List) -> stdfuns_date:now([]).
 
 tick([]) -> tick([1]);
 tick(Options) ->
