@@ -4864,6 +4864,24 @@
          ]
     },
     {
+        "fn": "timestamp",
+        "category": "HN Special",
+        "desc": "A function to timestamp changes to some cells",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/special/timestamp.html",
+         "args": [
+             {
+                 "name": "Reference",
+                 "desc": "A reference to a cell of range, a zquery or a function.",
+                 "type": "infinite"
+            }
+         ]
+    },
+    {
         "fn": "create.button",
         "category": "HN Templates",
         "desc": "Puts a button on a page which creates pages from templates.",
