@@ -357,6 +357,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
   <script src='/hypernumbers/hn.util.js'></script>
   <script src='/hypernumbers/hn.sheet.js'></script>
   <script src='/hypernumbers/hn.data.js'></script>
+  <script src='/hypernumbers/hn.sitedata.js'></script>
   <script src='/hypernumbers/hn.callbacks.js'></script>"
      ++ Addons#render.js ++ "" ++ Addons#render.js_reload ++
 "  <script src='/hypernumbers/hn.renderpage.js'></script>
