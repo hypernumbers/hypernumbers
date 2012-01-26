@@ -194,7 +194,7 @@ zcount(List) ->
     count(Zs).
 
 counta(Vs) ->
-    Vals = col(Vs, [eval_funs, fetch, flatten, {ignore, blank}]),
+    Vals = col(Vs, [eval_funs, fetch, fetch_z_all, flatten, {ignore, blank}]),
     length(Vals).
 
 count(Vs) ->
