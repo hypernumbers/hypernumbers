@@ -250,13 +250,13 @@ z2(T2, Z, St2) ->
     SubMenu = "<span>" ++ T2 ++ "</span>" ++ Z2,
     {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
 
-'html.submenu'(List) ->
-    Rules = [eval_funs, fetch, flatten, {cast, str}],
-    Passes = [return_errors],
-    [Menu | Subs] = muin_collect:col(List, Rules, Passes),
-    SubMenu = "<span>"++Menu++"</span>"++menu1(lists:reverse(Subs),
-                                               "", []),
-    {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
+'html.submenu'(List) -> 'tim.submenu'(List).
+    %% Rules = [eval_funs, fetch, flatten, {cast, str}],
+    %% Passes = [return_errors],
+    %% [Menu | Subs] = muin_collect:col(List, Rules, Passes),
+    %% SubMenu = "<span>"++Menu++"</span>"++menu1(lists:reverse(Subs),
+    %%                                            "", []),
+    %% {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
 
 'html.menu.'(List) when is_list(List) ->
     [Width | Rest] = List,
