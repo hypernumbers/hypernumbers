@@ -84,8 +84,12 @@ build(Root) ->
     os:cmd("make"),
     file:set_cwd(Root),
     file:set_cwd("lib/starling"),
-    io:format("...building rake~n"),
+    io:format("...building starling~n"),
     io:format(os:cmd("rake")),
+    file:set_cwd(Root),
+    file:set_cwd("lib/twilio_erlang"),
+    io:format("...building twilio (partially)~n"),
+    io:format(os:cmd("./rebar compile")),
     file:set_cwd(Root),
 
     % build the lexer-parsers
