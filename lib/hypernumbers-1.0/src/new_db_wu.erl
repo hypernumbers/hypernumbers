@@ -786,7 +786,8 @@ write_formula2(XRefX, OrigVal, {Type, Val},
     ok = set_relationsD(XRefX, [], [], false),
     Attrs2 = add_attributes(Attrs, [{"__default-align", Align},
                                     {"__rawvalue", Val},
-                                    {"formula", Formula}]),
+                                    {"formula", Formula},
+                                    {"__lastcalced", util2:get_timestamp()}]),
     % there might have been a preview before - nuke it!
     Attrs3 = orddict:erase("preview", Attrs2),
     Attrs4 = orddict:erase("__ast", Attrs3),
@@ -1059,7 +1060,8 @@ write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res, {Parents, IsIncl},
                            {"__rawvalue", Res},
                            {"__ast", Pcode},
                            {"__default-align", Align},
-                           {"__recompile", Recompile}]).
+                           {"__recompile", Recompile},
+                           {"__lastcalced", util2:get_timestamp()}]).
 
 update_timerD(#xrefX{idx = Idx, site = S}, Spec) ->
     Tbl = trans(S, timer),
@@ -1737,7 +1739,7 @@ deref_formula(XRefX, DelRef, Disp, Uid) ->
                          {ok, V} = orddict:find("input", Attrs),
                          {"dynamic_select", Dyn, _} = V,
                          case deref(XRefX, "=" ++ Dyn, DelRef, Disp) of
-                             clean ->
+                             {clean, "=" ++ _NewDyn} ->
                                  {merge(clean, St2), A2};
                              {dirty, "=" ++ NewDyn} ->
                                  % this cell is going to be marked as dirty
@@ -1758,10 +1760,14 @@ merge(clean, clean) -> clean;
 merge(_, _)         -> dirty.
 
 %% dereferences a formula
-deref(XChildX, [$= |Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
+deref(XChildX, [$= |Formula], DeRefX, Disp)
+  when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = deref1(XChildX, Toks, DeRefX, Disp, []),
-    hn_util:make_formula(clean, NewToks).
+    hn_util:make_formula(clean, NewToks);
+deref(_XChildX, Formula, _DeRefX, _Disp)
+  when is_record(_DeRefX, refX) ->
+    {clean, Formula}.
 
 deref1(_XChildX, [], _DeRefX, _Disp, Acc) -> lists:reverse(Acc);
 deref1(XChildX, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Disp, Acc) ->
@@ -2450,7 +2456,8 @@ content_attrs() ->
      "__recompile",
      "__shared",
      "__area",
-     "__default-align"].
+     "__default-align",
+     "__lastcalced"].
 
 copy_attributes(_SD, TD, []) -> TD;
 copy_attributes(SD, TD, [Key|T]) ->
