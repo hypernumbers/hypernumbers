@@ -637,6 +637,10 @@ label {
                    color: #f88017;
  }
 
+#hn_wikiselectsubmit {
+                       width: 90px;
+                       }
+
 #hn_spreadsheet, #hn_wikipage, #hn_webpage, .hn_preview
 {
   border: 4px solid #666;
