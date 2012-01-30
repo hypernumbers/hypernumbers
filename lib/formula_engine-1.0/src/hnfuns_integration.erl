@@ -12,6 +12,7 @@
 
 % working functions
 -export([
+         'twilio.phone'/1,
          'generic.integration.'/1,
          'facebook.comments'/1,
          'disqus.comments'/1,
@@ -71,6 +72,10 @@
 %%
 %% Exported functions
 %%
+
+'twilio.phone'(List) ->
+    io:format("List is ~p~n", [List]),
+    {preview, {"Twilio phone", 8, 16, #incs{}}, "<div>hey!</div>"}.
 
 'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
 'google.map'([Long, Lat, Zoom]) ->
@@ -132,11 +137,18 @@ gen_i(W, H, HTML, Js, JsRel, CSS, ShowPreview) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     [HTML2, Js2, JsRel2, CSS2] = typechecks:std_strs([HTML, Js, JsRel, CSS]),
-    Incs = #incs{js = [Js2], js_reload = [JsRel2], css = [CSS2]},
-    case ShowPreview of
+    [ShowP2] = typechecks:throw_std_bools([ShowPreview]),
+    WJs2 = wrap(Js2),
+    WJsRel2 = wrap(JsRel2),
+    WCSS2 = wrap(CSS2),
+    Incs = #incs{js = WJs2, js_reload = WJsRel2, css = WCSS2},
+    case ShowP2 of
         false -> {resize, {Width, Height, Incs}, HTML2};
         true  -> {preview, {"Generic Integration", Width, Height, Incs}, HTML2}
     end.
+
+wrap([]) -> [];
+wrap(X)  -> [X].
 
 % for hypernumbers it is:
 % * id = 196044207084776
