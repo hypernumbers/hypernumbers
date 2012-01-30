@@ -258,17 +258,15 @@ z2(T2, Z, St2) ->
     %%                                            "", []),
     %% {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
 
-'html.menu.'(List) when is_list(List) ->
-    [Width | Rest] = List,
-    [Width2] = typechecks:throw_std_ints([Width]),
-    Strings = typechecks:throw_flat_strs(Rest),
-    Menu = menu1(Strings, "potato-menu", []),
-    CSS = ["/webcomponents/jquery.ui.potato.menu.css"],
-    Js = ["/webcomponents/jquery.ui.potato.menu.js",
-              "/webcomponents/hn.webcomponents.js"],
-    Js_R = ["HN.WebComponents.reload();"],
-    Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    {preview, {"Type 1 Menu", Width2, 1, Incs}, Menu}.
+'html.menu.'([W | Rest]) ->
+    [W2] = typechecks:throw_std_ints([W]),
+    Strings = typechecks:throw_html_box_contents(Rest),
+    Menu = 'tim.menu1'(Strings, "hn_sld_menu sld_menu1", []),
+    Js   = ["/webcomponents/hn.newwebcomponents.js"],
+    Js_R = ["HN.NewWebComponents.reload();"],
+    CSS  = ["/webcomponents/newwebcomponents.css"],
+    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
+    {preview, {"Menu " ++ hd(Strings), W2, 3, Incs}, Menu}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -276,21 +274,13 @@ z2(T2, Z, St2) ->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-menu1([], Class, Acc) ->
-    Klass = case Class of
-                []    -> "";
-                Other -> " class="++Other
-            end,
-    "<ul"++Klass++" style='display:none'>"++lists:flatten(lists:reverse(Acc))++"</ul>";
-menu1([H | T], Cl, Acc) ->
-    Line = "<li>"++H++"</li>",
-    menu1(T, Cl, [Line | Acc]).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Propsed new components                                                   %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+'tim.menu.'(List) -> 'html.menu.'(List).
+
 'tim.tabs.'([Width, Height | List]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
@@ -446,15 +436,6 @@ split(List) ->
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
     {resize, {1, H2, Incs}, HTML}.
 
-'tim.menu.'([W | Rest]) ->
-    [W2] = typechecks:throw_std_ints([W]),
-    Strings = typechecks:throw_html_box_contents(Rest),
-    Menu = 'tim.menu1'(Strings, "hn_sld_menu sld_menu1", []),
-    Js   = ["/webcomponents/hn.newwebcomponents.js"],
-    Js_R = ["HN.NewWebComponents.reload();"],
-    CSS  = ["/webcomponents/newwebcomponents.css"],
-    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    {preview, {"Menu " ++ hd(Strings), W2, 3, Incs}, Menu}.
 
 'tim.submenu'(List) ->
     [Header | Strings] = typechecks:throw_html_box_contents(List),
