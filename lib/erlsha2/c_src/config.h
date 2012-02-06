@@ -1,0 +1,2 @@
+#define HAVE_STDINT_H 1
+#undef WORDS_BIGENDIAN
