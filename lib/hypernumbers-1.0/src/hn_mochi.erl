@@ -234,11 +234,21 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
        X == "_logout" ->
     allowed;
 
+% deal with the reserved part of the namespace
 % shows sites and pages
-authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json})
-  when X == "_site";
-       X == "_pages" ->
+authorize_get(#refX{path = ["_" ++ X | _]}, _Qry, #env{accept = json})
+  when X == "site";
+       X == "pages" ->
     allowed;
+% enable the sites pager
+authorize_get(#refX{path = ["_sites" | []]}, _Qry, #env{accept = Accept})
+  when Accept == html;
+       Accept == json ->
+    allowed;
+% Feature Flag them out
+%authorize_get(#refX{path = ["_services", "twilio" | _], obj = {cell, _}},
+%              _Qry, #env{accept = json}) ->
+%    allowed;
 
 %% Only some sites have a forgotten password box
 authorize_get(#refX{path = [X | _Vanity]}, _Qry, #env{accept = html})
@@ -247,6 +257,11 @@ authorize_get(#refX{path = [X | _Vanity]}, _Qry, #env{accept = html})
         true  -> allowed;
         false -> denied
     end;
+
+authorize_get(#refX{path = ["_" ++ _X | _]}, _Qry, #env{accept = Accept})
+  when Accept == json;
+       Accept == html ->
+    denied;
 
 %% Authorize update requests when the update is targeted towards a
 %% spreadsheet. Since we have no closed security object, we rely on
@@ -625,6 +640,16 @@ iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
 
 iget(Ref, page, #qry{pages = []}, Env=#env{accept = json}) ->
     json(Env, pages(Ref));
+
+iget(#refX{path = ["_services", "twilio" | Path]} = Ref, cell, _Qry,
+     Env = #env{accept = json}) ->
+    AccountSID = "AC7a076e30da6d49119b335d3a6de43844",
+    AuthToken  = "9248c9a2a25f6914fad9c9fb5b30e69c",
+    AppSid     = "APabe7650f654fc34655fc81ae71caa3ff",
+    Token = twilio_capabilities:generate(AccountSID, AuthToken,
+                                         [{client_outgoing, AppSid, []}],
+                                         [{expires_after, 7200}]),
+    json(Env, {struct, [{"twiliotoken", binary_to_list(Token)}]});
 
 iget(Ref, page, _Qry, Env=#env{accept = json}) ->
     json(Env, page_attributes(Ref, Env));

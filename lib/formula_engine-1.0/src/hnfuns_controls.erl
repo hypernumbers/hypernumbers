@@ -12,11 +12,32 @@
          'map.rows.button'/1,
          'map.sheet.button'/1,
          'map.custom.button'/1,
-         'load.templates.button'/1
+         'load.templates.button'/1,
+         'twilio.phone.out'/1
         ]).
 
 -include("spriki.hrl").
 -include("errvals.hrl").
+
+'twilio.phone.out'(List) ->
+    Title = "Twilio Phone Outbound",
+    %% we call them hn.twiliolib.* because of a name collision bug
+    %% with the twilio libraries
+    Js = ["/webcomponents/hn.twiliolib.js",
+          "http://static.twilio.com/libs/twiliojs/1.0/twilio.js"],
+    Reload = ["HN.Twilio.phone_outbound_reload();"],
+    CSS = ["/webcomponents/hn.twiliolib.css"],
+    Incs = #incs{js = Js, js_reload = Reload, css = CSS},
+    PhoneNo = "07776 251669",
+    Payload = {struct, [{'twilio_outboundphone', PhoneNo}]},
+    HTML = "<button id='hn-twilio-outboundphone' value='Twilio Phone' " ++
+        "data-phoneno='" ++ PhoneNo ++"' disabled>" ++
+        "<div class='hn-twilio-outbound_img'>" ++ "Twilio Phone" ++ "</div>"
+        "</button>",
+    Form = #form{id = {'twilio-outboundphone', Title},
+                 kind = "twilio-outboundphone",
+                 attrs = Payload},
+    {webcontrol, {Form, {Title, 2, 2, Incs}}, HTML}.
 
 'load.templates.button'(List) ->
     [Title, Template] = typechecks:std_strs(List),
@@ -36,7 +57,7 @@
                      ++ "class='hn-loadtemplate' value='"
                      ++ Title ++ "' data-template='"
                      ++ Template ++ "' />",
-                 {webcontrol, {Form, {Title, 1, 1, Incs}}, Html}
+                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
     end.
 
 'map.custom.button'(List) ->
@@ -57,7 +78,7 @@
                      ++ "class='hn-mapcustom' value='"
                      ++ Title ++ "' data-map-type='custom' data-map='"
                      ++ Map ++ "' />",
-                 {webcontrol, {Form, {Title, 1, 1, Incs}}, Html}
+                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
     end.
 
 'map.sheet.button'(List) ->
@@ -78,7 +99,7 @@
                      ++ "class='hn-mapsheet' value='"
                      ++ Title ++ "' data-map-type='sheet' data-map='"
                      ++ Map ++ "' data-map-page='" ++ Page ++"' />",
-                 {webcontrol, {Form, {Title, 1, 1, Incs}}, Html}
+                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
     end.
 
 'map.rows.button'(List) ->
@@ -99,7 +120,7 @@
                      ++ "class='hn-maprows' value='"
                      ++ Title ++ "' data-map-type='row' data-map='"
                      ++ Map ++ "' />",
-                 {webcontrol, {Form, {Title, 1, 1, Incs}}, Html}
+                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
     end.
 
 'create.button'(List) when is_list(List) ->
@@ -139,5 +160,5 @@
             % action is approved
             Form = #form{id = {'create-button', Title}, kind = "create-button",
                          attrs = Commands3},
-            {webcontrol, {Form, {Title, 1, 1, #incs{}}}, Html}
+            {webcontrol, {Form, {Title, 2, 2, #incs{}}}, Html}
     end.

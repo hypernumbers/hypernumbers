@@ -12,7 +12,6 @@
 
 % working functions
 -export([
-         'twilio.phone'/1,
          'generic.integration.'/1,
          'facebook.comments'/1,
          'disqus.comments'/1,
@@ -72,10 +71,6 @@
 %%
 %% Exported functions
 %%
-
-'twilio.phone'(List) ->
-    io:format("List is ~p~n", [List]),
-    {preview, {"Twilio phone", 8, 16, #incs{}}, "<div>hey!</div>"}.
 
 'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
 'google.map'([Long, Lat, Zoom]) ->

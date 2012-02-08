@@ -1,0 +1,10 @@
+/* CSS file for the Twilio softphones */
+/* it is called twiliolib because of a namespace collision bug in
+   twilio client libraries */
+
+.hn-twilio-outbound_img {
+                          width               : 100%;
+                          background-image    : url(/img/telephone.png);
+                          background-repeat   : no-repeat;
+                          background-position : 98% 50%;
+ }

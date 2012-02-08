@@ -88,7 +88,11 @@ build(Root) ->
     io:format(os:cmd("rake")),
     file:set_cwd(Root),
     file:set_cwd("lib/twilio_erlang"),
-    io:format("...building twilio (partially)~n"),
+    io:format("...building twilio~n"),
+    io:format(os:cmd("./rebar compile")),
+    file:set_cwd(Root),
+    file:set_cwd("lib/erlsha2"),
+    io:format("...building erlsha2~n"),
     io:format(os:cmd("./rebar compile")),
     file:set_cwd(Root),
 
