@@ -50,9 +50,10 @@ start() ->
 
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
+    Site = get_site(MochiReq),
     try
         Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
-	put(now, util2:get_timestamp()),
+        put(now, util2:get_timestamp()),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
         handle_(Ref, Env, Qry)
@@ -71,11 +72,16 @@ handle(MochiReq) ->
                 {badmatch, {error, enoent}} ->
                     F1 = "dumping script kiddie (should be 404)~n~p~n",
                     ?E(F1, [process_environment(MochiReq)]),
-                    log_path_errors(Path, Format, Msg);
+                    log_path_errors(Path, Format, Msg),
+                    '500'(process_environment(MochiReq));
+                invalid_url ->
+                    Dir = hn_util:viewroot(Site) ++ "/",
+                    File = "invalidurl.html",
+                    serve_html(404, process_environment(MochiReq), [Dir, File]);
                 _ ->
-                    ?E(Format, Msg)
-            end,
-            '500'(process_environment(MochiReq))
+                    ?E(Format, Msg),
+                    '500'(process_environment(MochiReq))
+            end
     end.
 
 -spec handle_(#refX{}, #env{}, #qry{}) -> ok.
@@ -1217,24 +1223,35 @@ log_signup(Site, NewSite, Node, Uid, Email) ->
                               {"E:E", atom_to_list(Node)} ] ],
     new_db_api:append_row(Row, nil, nil).
 
+get_site(Env) ->
+    Host = get_host(Env),
+    Port = get_port(Env),
+    lists:concat(["http://", string:to_lower(Host), ":", Port]).
+
 %% Some clients dont send ip in the host header
 get_real_uri(Env) ->
-    Host = case Env:get_header_value("HN-Host") of
-               undefined ->
-                   lists:takewhile(fun(X) -> X /= $: end,
-                                   Env:get_header_value("host"));
-               ProxiedHost ->
-                   ProxiedHost
-           end,
-    Port = case Env:get_header_value("HN-Port") of
-               undefined ->
-                   {ok, P} = inet:port(Env:get(socket)),
-                   integer_to_list(P);
-               ProxiedPort ->
-                   ProxiedPort
-           end,
+    Host = get_host(Env),
+    Port = get_port(Env),
     lists:concat(["http://", string:to_lower(Host), ":", Port,
                   Env:get(path)]).
+
+get_port(Env) ->
+    case Env:get_header_value("HN-Port") of
+        undefined ->
+            {ok, P} = inet:port(Env:get(socket)),
+            integer_to_list(P);
+        ProxiedPort ->
+            ProxiedPort
+    end.
+
+get_host(Env) ->
+    case Env:get_header_value("HN-Host") of
+        undefined ->
+            lists:takewhile(fun(X) -> X /= $: end,
+                            Env:get_header_value("host"));
+        ProxiedHost ->
+            ProxiedHost
+    end.
 
 get_json_post(undefined) ->
     {ok, undefined};

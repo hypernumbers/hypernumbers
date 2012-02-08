@@ -129,9 +129,9 @@ make_refX("http://"++URL) ->
     case Ret of
         {ok, {Type, Path, Ref}} ->
             #refX{site = "http://" ++ Site, type = Type, path = Path, obj = Ref};
-        {error, Err} -> error_logger:error_msg("url parsing of ~p~n~p~n"
-                                               ++ "failed with ~p~n",
-                                               [URL, Toks, Err]),
+        {error, Err} -> %error_logger:error_msg("url parsing of ~p~n~p~n"
+                        %                       ++ "failed with ~p~n",
+                        %                       [URL, Toks, Err]),
                         exit(invalid_url)
     end.
 
