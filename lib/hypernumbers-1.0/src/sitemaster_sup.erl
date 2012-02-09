@@ -26,6 +26,10 @@
 %% Description: Starts the supervisor
 %%--------------------------------------------------------------------
 start_link() ->
+    case application:get_env(hypernumbers, startup_debug) of
+        {ok, true} -> io:format("...starting sitemaster_sup~n");
+        _Other     -> ok
+    end,
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 -spec add_site(string()) -> ok.

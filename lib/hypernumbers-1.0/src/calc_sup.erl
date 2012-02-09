@@ -31,6 +31,10 @@
 %% @end
 %%--------------------------------------------------------------------
 start_link(Site) ->
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting calc_srv for ~p~n", [Site]);
+       _Other     -> ok
+    end,
     Id = hn_util:site_to_atom(Site, "_calc_sup"),
     supervisor:start_link({global, Id}, ?MODULE, [Site]).
 

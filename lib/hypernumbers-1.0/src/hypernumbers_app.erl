@@ -25,6 +25,10 @@ start(_Type, Args) ->
 
 basic_start() ->
     io:format("Hypernumbers Startup~n********************~n~n"),
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...showing debug startup messages~n");
+       _Other     -> ok
+    end,
     ok = ensure_dirs(),
     io:format("Hypernumbers Startup: directories inited...~n"),
     ok = init_tables(),
@@ -39,6 +43,7 @@ normal_start() ->
     io:format("Hypernumbers Startup: hypernumbers supervisors started...~n"),
     ok = case application:get_env(hypernumbers, environment) of
              {ok,development} -> dev_tasks();
+             {ok,server_dev}  -> server_dev_tasks();
              {ok,production}  -> production_tasks()
          end,
     io:format("Hypernumbers Startup: environment variables read...~n"),
@@ -96,11 +101,24 @@ dev_tasks() ->
     create_dev_zone(),
     local_hypernumbers().
 
+server_dev_tasks() ->
+    application:set_env(hypernumbers, sync_url,
+                        "http://dev.hypernumbers.com:8080"),
+    create_server_dev_zone(),
+    local_srv_hypernumbers().
+
 create_dev_zone() ->
     Gen = fun() -> [crypto:rand_uniform($a, $z+1)] end,
     ok = hns:set_resource("127.0.0.1", 9000, node(), 1),
     hns:create_zone(?DEV_ZONE, 1, 26, Gen),
     ok.
+
+create_server_dev_zone() ->
+    Gen = fun() -> [crypto:rand_uniform($a, $z+1)] end,
+    ok = hns:set_resource("127.0.0.1", 8888, node(), 1),
+    hns:create_zone(?DEV_ZONE, 1, 26, Gen),
+    ok.
+
 
 local_hypernumbers() ->
     Site = "http://hypernumbers.dev:9000",
@@ -117,6 +135,24 @@ local_hypernumbers() ->
             ok = hn_db_admin:disc_only(Site);
         {error, site_exists} ->
             io:format("Hypernumbers Local: Site ~p exists~n", [Site]),
+            ok
+    end.
+
+local_srv_hypernumbers() ->
+    Site = "http://dev.hypernumbers.com:8080",
+    {ok, _, Uid1} = passport:get_or_create_user("test@hypernumbers.com"),
+    {ok, _, Uid2} = passport:get_or_create_user("guest@hypernumbers.com"),
+    case hn_setup:site(Site, blank, [{creator, Uid1}]) of
+        {initial_view, []} ->
+            passport:validate_uid(Uid1),
+            passport:validate_uid(Uid2),
+            % make guest a member of group guest
+            hn_groups:add_user(Site, "guest", Uid2),
+            passport:set_password(Uid1, "i!am!secure"),
+            passport:set_password(Uid2, "i!am!secure"),
+            ok = hn_db_admin:disc_only(Site);
+        {error, site_exists} ->
+            io:format("Hypernumbers Server Dev: Site ~p exists~n", [Site]),
             ok
     end.
 

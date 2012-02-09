@@ -52,6 +52,10 @@ update_status(User, RefX, Change) ->
 %% @end
 %%--------------------------------------------------------------------
 start_link(Site) ->
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting status_srv for ~p~n", [Site]);
+       _Other     -> ok
+    end,
     Id = hn_util:site_to_atom(Site, "_status"),
     gen_server:start_link({global, Id}, ?MODULE, [], []).
 

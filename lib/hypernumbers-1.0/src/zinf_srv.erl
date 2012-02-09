@@ -157,6 +157,10 @@ stop_cprof(Site) ->
 %% @end
 %%--------------------------------------------------------------------
 start_link(Site) ->
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting zinf_srv for ~p~n", [Site]);
+       _Other     -> ok
+    end,
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
