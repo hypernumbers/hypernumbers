@@ -2,7 +2,7 @@
 [{hypernumbers,
   [
    {nodename, hndev},
-   {environment, development}, % development | production
+   {environment, development}, % development | production | server_dev
 
    % Host to bind Mochiweb to. 9000 should be used for dev,
    % 9090-9092 reserved for production used, and should be turned off
@@ -31,7 +31,8 @@
    {mailpassword, "spell!hello!right"},
 
    % Set to false to not start the individual site modules
-   {should_start_sites, true}
+   {should_start_sites, true},
+   {startup_debug, false}
   ]},
 
 %% Mnesia Config
