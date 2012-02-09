@@ -15,7 +15,8 @@
    % be started regardless.
    {services,
     [{hns, true},
-     {passport, true}
+     {passport, true},
+     {twilio_srv, true}
     ]},
 
    % Url to synchronize cookies against.
