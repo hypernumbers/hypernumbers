@@ -16,6 +16,10 @@
 %% Description: Starts the supervisor
 %%--------------------------------------------------------------------
 start_link(Site) ->
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting site sup for ~p~n", [Site]);
+       _Other     -> ok
+    end,
     Id = hn_util:site_to_atom(Site, "_sup"),
     supervisor:start_link({global, Id}, ?MODULE, [Site]).
 

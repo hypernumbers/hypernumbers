@@ -40,6 +40,10 @@
 %%
 
 start_link(Site) ->
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting remoting_reg for ~p~n", [Site]);
+       _Other     -> ok
+    end,
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:start_link({global, Id}, ?MODULE, [], []).
 

@@ -39,6 +39,10 @@
 %%--------------------------------------------------------------------
 -spec start_link(string()) -> {ok,pid()} | ignore | {error,any()}.
 start_link(Site) ->
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting db_srv for ~p~n", [Site]);
+       _Other     -> ok
+    end,
     Id = hn_util:site_to_atom(Site, "_dbsrv_sup"),
     supervisor_bridge:start_link({global, Id}, ?MODULE, [Site]).
 
