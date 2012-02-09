@@ -20,6 +20,10 @@
 %% @end
 %%--------------------------------------------------------------------
 start_link() ->
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting services~n");
+       _Other     -> ok
+    end,
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 %%%===================================================================
@@ -46,7 +50,11 @@ init([]) ->
     MaxSecondsBetweenRestarts = 3600,
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
 
-    IsDev = {ok,development} == application:get_env(hypernumbers, environment),
+    IsDev = case  application:get_env(hypernumbers, environment) of
+                {ok, development} -> true;
+                {ok, server_dev}  -> true;
+                {ok, production}  -> false
+            end,
     {ok, Services} = application:get_env(hypernumbers, services),
 
     ChildSpecs = [gen_child_spec(S) || {S,X} <- Services, (IsDev or X)],

@@ -114,14 +114,14 @@ send1(reset, To, CC, Name, Site, URL, Hash) ->
 
 send_email(To, CC, From, Subject, EmailBody) ->
     case application:get_env(hypernumbers, environment) of
-        {ok, development} ->
-            io:format("Spoofing Emails~n~nTo: ~p~nCC: ~p~nFrom ~p~n"
-                      ++"Subject: ~p~n~s~nEND EMAIL--~n",
-                      [To, CC, From, Subject, EmailBody]);
         {ok, production}  ->
             spawn(hn_net_util, email,
                   [To, CC, From, Subject, EmailBody]),
-            ok
+            ok;
+        {ok, _} ->
+            io:format("Spoofing Emails~n~nTo: ~p~nCC: ~p~nFrom ~p~n"
+                      ++"Subject: ~p~n~s~nEND EMAIL--~n",
+                      [To, CC, From, Subject, EmailBody])
     end.
 
 -spec kfind(string() | atom(), list()) -> any().
