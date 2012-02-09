@@ -256,7 +256,7 @@ authorize_get(#refX{path = ["_sites" | []]}, _Qry, #env{accept = Accept})
        Accept == json ->
     allowed;
 % Feature Flag them out
-%authorize_get(#refX{path = ["_services", "twilio" | _], obj = {cell, _}},
+%authorize_get(#refX{path = ["_services", "phone" | _], obj = {cell, _}},
 %              _Qry, #env{accept = json}) ->
 %    allowed;
 
@@ -651,7 +651,7 @@ iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
 iget(Ref, page, #qry{pages = []}, Env=#env{accept = json}) ->
     json(Env, pages(Ref));
 
-iget(#refX{path = ["_services", "twilio" | Path]} = Ref, cell, _Qry,
+iget(#refX{path = ["_services", "phone" | Path]} = Ref, cell, _Qry,
      Env = #env{accept = json}) ->
     AccountSID = "AC7a076e30da6d49119b335d3a6de43844",
     AuthToken  = "9248c9a2a25f6914fad9c9fb5b30e69c",
@@ -659,7 +659,7 @@ iget(#refX{path = ["_services", "twilio" | Path]} = Ref, cell, _Qry,
     Token = twilio_capabilities:generate(AccountSID, AuthToken,
                                          [{client_outgoing, AppSid, []}],
                                          [{expires_after, 7200}]),
-    json(Env, {struct, [{"twiliotoken", binary_to_list(Token)}]});
+    json(Env, {struct, [{"phonetoken", binary_to_list(Token)}]});
 
 iget(Ref, page, _Qry, Env=#env{accept = json}) ->
     json(Env, page_attributes(Ref, Env));
