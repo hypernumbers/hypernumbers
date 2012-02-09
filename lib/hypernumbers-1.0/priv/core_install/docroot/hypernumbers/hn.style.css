@@ -82,14 +82,14 @@ body {
     -webkit-box-sizing:border-box;
 }
 
-#hn_twilio {
+#hn_phone {
              z-index: 1000001;
              position: absolute;
              display: none;
              background-color: #FF0;
              }
 
-.hninput, #hn-twilio-outboundphone, .hn-webcontrol, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hnfixedval {
+.hninput, #hn-outboundphone, .hn-webcontrol, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hnfixedval {
     font-size:inherit;
     width:100%;
     height:100%;
