@@ -37,7 +37,8 @@ start_link() ->
        {ok, true} -> io:format("...starting twilio_srv~n");
        _Other     -> ok
     end,
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+    global:unregister_name(?MODULE),
+    gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
 %%%===================================================================
 %%% gen_server callbacks
