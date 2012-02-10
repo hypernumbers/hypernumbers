@@ -87,7 +87,7 @@ make_r([{"ToZip", Val} | T], Tw, Cd, Cr, Fr, To) ->
     make_r(T, Tw, Cd, Cr, Fr, To#twilio_to{to_zip = ?UQ(Val)}).
 
 % these records all have the same structure so use that
-fix_up_number({Rec, Number, City, Zip, State, [], [], []} = R) ->
+fix_up_number({_Rec, _Number, _City, _Zip, _State, [], [], []} = R) ->
     R;
 fix_up_number({Rec, Number, City, Zip, State, [], CC, []}) ->
     {Country, CC, Prefix} = lists:keyfind(CC, 2, ?CCLOOKUP),
