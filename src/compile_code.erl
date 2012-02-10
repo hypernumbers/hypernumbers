@@ -28,7 +28,13 @@
          "/lib/hypernumbers-1.0/",
          "/lib/formula_engine-1.0/",
          "/lib/read_excel-1.0/",
-         "/lib/sysmon-1.0/"
+         "/lib/sysmon-1.0/",
+         "/lib/erlsha2/",
+         "/lib/gettext/",
+         "/lib/mochiweb/",
+         "/lib/sitemods/",
+         "/lib/starling",
+         "/lib/twilio_erlang/"
         ]).
 
 %% location of the jslint.js file relative to root
