@@ -125,6 +125,7 @@ build_standard() ->
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
                 {i, Dir ++ "lib/sysmon-1.0/include"},
+                {i, Dir ++ "lib/twilio-erlang/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
 
     % List of {ErlangFile, OutputDirectory} tuples.
