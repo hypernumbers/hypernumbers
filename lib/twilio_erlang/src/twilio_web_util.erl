@@ -31,6 +31,8 @@ make_r([], Twilio, Called, Caller, From, To) ->
 % main twilio record
 make_r([{"AccountSid", Val} | T], Tw, Cd, Cr, Fr, To) ->
     make_r(T, Tw#twilio{account_sid = ?UQ(Val)}, Cd, Cr, Fr, To);
+make_r([{"ApplicationSid", Val} | T], Tw, Cd, Cr, Fr, To) ->
+    make_r(T, Tw#twilio{application_sid = ?UQ(Val)}, Cd, Cr, Fr, To);
 make_r([{"ApiVersion", Val} | T], Tw, Cd, Cr, Fr, To) ->
     make_r(T, Tw#twilio{api_version = ?UQ(Val)}, Cd, Cr, Fr, To);
 make_r([{"Direction", Val}  | T], Tw, Cd, Cr, Fr, To) ->
@@ -85,7 +87,9 @@ make_r([{"ToZip", Val} | T], Tw, Cd, Cr, Fr, To) ->
     make_r(T, Tw, Cd, Cr, Fr, To#twilio_to{to_zip = ?UQ(Val)}).
 
 % these records all have the same structure so use that
-fix_up_number({Rec, Number, City, Zip, State, undefined, CC, undefined}) ->
+fix_up_number({Rec, Number, City, Zip, State, [], [], []} = R) ->
+    R;
+fix_up_number({Rec, Number, City, Zip, State, [], CC, []}) ->
     {Country, CC, Prefix} = lists:keyfind(CC, 2, ?CCLOOKUP),
     NewPrefix = integer_to_list(Prefix),
     {Rec, fix(Number, NewPrefix), City, Zip, State,
