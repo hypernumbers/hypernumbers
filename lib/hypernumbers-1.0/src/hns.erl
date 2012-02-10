@@ -51,6 +51,10 @@
 %% @end
 %%--------------------------------------------------------------------
 start_link() ->
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting hns~n");
+       _Other     -> ok
+    end,
     global:unregister_name(?MODULE),
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
