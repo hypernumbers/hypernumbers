@@ -263,52 +263,6 @@
           views
          }).
 
-%% Twilio records
--record(twilio_called,
-        {
-          called_city,
-          called_zip,
-          called_state,
-          called_country
-          }).
-
--record(twilio_caller,
-        {
-          caller,
-          caller_side,
-          caller_zip
-         }).
-
--record(twilio_from,
-        {
-          from,
-          from_city,
-          from_zip,
-          from_state,
-          from_country
-          }).
-
--record(twilio_to,
-        {
-          to_city,
-          to_zip,
-          to_state,
-          to_country
-         }).
-
--record(twilio,
-        {
-          accountsid,
-          direction,
-          call_status,
-          call_city,
-          api_version,
-          called = #twilio_called{},
-          caller = #twilio_caller{},
-          from = #twilio_from{},
-          to = #twilio_to{}
-         }).
-
 %% web controls records
 
 -record(namedpage,
