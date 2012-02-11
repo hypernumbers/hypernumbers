@@ -224,6 +224,12 @@
           attrs = []
          }).
 
+-record(phone,
+        {
+          id,
+          command = []
+         }).
+
 -record(webcontrol,
         {
           id,
