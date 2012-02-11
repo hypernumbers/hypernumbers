@@ -467,6 +467,7 @@ get_modules() ->
      hnfuns_html,
      hnfuns_forms,
      hnfuns_controls,
+     hnfuns_phone,
      hnfuns_z,
      hnfuns_special
     ].
@@ -532,6 +533,7 @@ implicit_intersection_col(R) ->
         1 ->
             {col, Col} = R#rangeref.tl,
             ColIdx = col_index(Col),
+            xx1(),
             do_cell(R#rangeref.path, ?my, ColIdx, finite, "__rawvalue");
         _ ->
             ?ERRVAL_VAL
@@ -542,6 +544,7 @@ implicit_intersection_row(R) ->
         1 ->
             {row, Row} = R#rangeref.tl,
             RowIdx = row_index(Row),
+            xx2(),
             do_cell(R#rangeref.path, RowIdx, ?mx, finite, "__rawvalue");
         _ ->
             ?ERRVAL_VAL
@@ -552,17 +555,20 @@ implicit_intersection_finite(R) ->
     case Dim of
         {1, 1} ->
             [{X, Y}] = muin_util:expand_cellrange(R),
+            xx3(),
             do_cell(R#rangeref.path, Y, X, finite, "__rawvalue");
         {1, _H} -> % vertical vector
             CellCoords = muin_util:expand_cellrange(R),
             case lists:filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
-                [{X, Y}] -> do_cell(R#rangeref.path, Y, X, finite, "__rawvalue");
+                [{X, Y}] -> xx4(),
+                            do_cell(R#rangeref.path, Y, X, finite, "__rawvalue");
                 []       -> ?ERRVAL_VAL
             end;
         {_W, 1} -> % horizontal vector
             CellCoords = muin_util:expand_cellrange(R),
             case lists:filter(fun({X, _Y}) -> X == ?mx end, CellCoords) of
-                [{X, Y}] -> do_cell(R#rangeref.path, Y, X, finite, "__rawvalue");
+                [{X, Y}] -> xx5(),
+                            do_cell(R#rangeref.path, Y, X, finite, "__rawvalue");
                 []       -> ?ERRVAL_VAL
             end;
         {_, _} ->
@@ -637,6 +643,7 @@ fetch(N, _ValType) when ?is_namedexpr(N) ->
 fetch(#cellref{col = Col, row = Row, path = Path}, ValType) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
+    xx6(),
     do_cell(Path, RowIndex, ColIndex, finite, ValType);
 fetch(#rangeref{type = Type, path = Path} = Ref, ValType)
   when Type == row orelse Type == col ->
@@ -654,12 +661,20 @@ fetch(#rangeref{type = Type, path = Path} = Ref, ValType)
 % error_logger:info_msg("Somebody tried a row or column rangeref~n"),
 % ?ERRVAL_ERR;
 fetch(#rangeref{type = finite} = Ref, ValType) ->
+    XX = get(x),
+    YY = get(y),
+    Obj = tconv:to_b26(XX) ++ integer_to_list(YY),
+    Msg = io_lib:format("~p", [hn_util:list_to_path(get(path))++Obj]),
+    Dir = "/home/gordon/hypernumbers/var/logs/",
+    File = "rangerefs.csv",
+    hn_util:log(Msg, Dir ++ File),
     CellCoords = muin_util:expand_cellrange(Ref),
     Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows
                    Fun2 = fun({_, Y}) ->
                                   Y == CurrRow
                           end,
                    Fun3 = fun({X, Y}) ->
+                                  xx7(),
                                   do_cell(Ref#rangeref.path, Y, X,
                                           finite, ValType)
                           end,
@@ -823,9 +838,11 @@ sort1D_([], _Path, Type, Dict, _ValType) ->
         row    -> [[X || [X] <- Filled]]
     end;
 sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, row, Dict, ValType) ->
+    xx8(),
     V = do_cell(Path, Y, X, infinite, ValType),
     sort1D_(T, Path, row, orddict:append(X, V, Dict), ValType);
 sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, column, Dict, ValType) ->
+    xx9(),
     V = do_cell(Path, Y, X, infinite, ValType),
     sort1D_(T, Path, column, orddict:append(Y, V, Dict), ValType).
 
@@ -849,6 +866,7 @@ sort2D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, Def, Dict, ValType) ->
                   true  -> orddict:fetch(X, Dict);
                   false -> orddict:new()
               end,
+    xx10(),
     V = do_cell(Path, Y, X, infinite, ValType),
     NewSub  = orddict:append(Y, V, SubDict),  % works because there are no dups!
     NewDict = orddict:store(X, NewSub, Dict),
@@ -1035,6 +1053,7 @@ fetch_r2([{cell, {X, Y}} | T], Path, ZPath, ValType, Acc1, Acc2) ->
     Cell = tconv:to_b26(X) ++ integer_to_list(Y),
     NewAcc1 = make_inf_xrefX(ZPath, Cell),
     URL = {Path, Cell},
+    xx11(),
     NewAcc2 = do_cell(Path, Y, X, infinite, ValType),
     fetch_r2(T, Path, ZPath, ValType, [NewAcc1 | Acc1],
              [{URL, NewAcc2} | Acc2]).
@@ -1047,6 +1066,7 @@ fetch_v1([H | T], Row, Col, ValType, Acc) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
     URL = {H, tconv:to_b26(ColIndex) ++ integer_to_list(RowIndex)},
+    xx12(),
     NewAcc = do_cell(Path, RowIndex, ColIndex, infinite, ValType),
     fetch_v1(T, Row, Col, ValType, [{URL, NewAcc} | Acc]).
 
@@ -1169,3 +1189,16 @@ special_flatten([H | T], Acc)                 -> special_flatten(T, [H | Acc]).
 
 special_f2([], Acc)      -> Acc;
 special_f2([H | T], Acc) -> special_f2(T, [H | Acc]).
+
+xx1() -> ok.
+xx2() -> ok.
+xx3() -> ok.
+xx4() -> ok.
+xx5() -> ok.
+xx6() -> ok.
+xx7() -> ok.
+xx8() -> ok.
+xx9() -> ok.
+xx10() -> ok.
+xx11() -> ok.
+xx12() -> ok.
