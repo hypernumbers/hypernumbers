@@ -74,8 +74,8 @@
 add_phone_table_2011_02_11() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
-                   Fields = record_info(phone, api),
-                   make_table(Site, api, Fields, disc_copies)
+                   Fields = record_info(fields, phone),
+                   make_table(Site, phone, Fields, disc_copies)
            end,
     lists:foreach(Fun1, Sites),
     ok.
