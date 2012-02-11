@@ -20,6 +20,7 @@
                            "item",
                            "local_obj",
                            "del_local",
+                           "phone",
                            "relation",
                            "style",
                            "timer",

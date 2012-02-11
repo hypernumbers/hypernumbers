@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_phone_table_2011_02_11/0,
          upgrade_relation_table_2012_01_03/0,
          recalc_includes/0,
          fix_page_srv_2011_11_23/0,
@@ -69,6 +70,15 @@
 %% upgrade_1743_B/0,
 %% upgrade_1776/0
         ]).
+
+add_phone_table_2011_02_11() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fields = record_info(phone, api),
+                   make_table(Site, api, Fields, disc_copies)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 % * git pull
 % * > hypernumbers_sup:suspend_mochi().
