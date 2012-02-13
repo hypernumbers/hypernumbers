@@ -33,8 +33,8 @@
          "/lib/gettext/",
          "/lib/mochiweb/",
          "/lib/sitemods/",
-         "/lib/starling",
-         "/lib/twilio_erlang/"
+         "/lib/starling/",
+         "/lib/twilio/"
         ]).
 
 %% location of the jslint.js file relative to root
@@ -109,7 +109,9 @@ jslint3([H | T], JSLint) ->
     jslint3(T, JSLint).
 
 start() ->
+    io:format("about to build standard~n"),
     build_standard(),
+    io:format("about to build release~n"),
     build_release().
 
 quick() ->
@@ -125,8 +127,9 @@ build_standard() ->
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
                 {i, Dir ++ "lib/sysmon-1.0/include"},
-                {i, Dir ++ "lib/twilio_erlang/include"},
+                {i, Dir ++ "lib/twilio/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
+
 
     % List of {ErlangFile, OutputDirectory} tuples.
     Fun = fun(X) ->
@@ -266,7 +269,7 @@ make_rel_file(App, Version, Deps) ->
 get_rel_file() ->
     Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, public_key,
             gettext, sgte, read_excel, sysmon, starling, formula_engine,
-            mochiweb, hypernumbers],
+            erlsha2, twilio, mochiweb, hypernumbers],
     Rel  = make_rel_file("hypernumbers", "1.0", Apps),
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
     ok   = systools:make_script("hypernumbers",
