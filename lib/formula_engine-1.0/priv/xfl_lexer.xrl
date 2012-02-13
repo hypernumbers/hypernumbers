@@ -22,7 +22,7 @@ BOOL = ({TRUE}|{FALSE})
 STR = (\"[^"]*\")
 %%" % erlang-mode fix
 
-ERRVAL = \#NULL\!|\#AUTH\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A|\#AUTH\!|\#CIRCREF\!|#CANTINC\!
+ERRVAL = \#NULL\!|\#AUTH\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A|\#AUTH\!|\#CIRCREF\!|#CANTINC\!|#PAYONLY\!
 
 %%% References: cell references (A1 & RC), range references (finite, column, row;
 %%% both styles), name references.

@@ -17,6 +17,7 @@
 -define(ERRVAL_ERR,     {errval, '#ERROR!'}).
 -define(ERRVAL_MOCHI,   {errval, '#MOCHIJSON!'}). % THIS IS A TEMPORARY ERROR MSG AND MUST BE MADE TO GO AWAY! ITS A BUG!!
 -define(ERRVAL_CANTINC, {errval, '#CANTINC!'}).
+-define(ERRVAL_PAYONLY, {errval, '#PAYONLY!'}).
 
 %% Return an error.
 -define(ERR_NULL,    throw(?ERRVAL_NULL)).
