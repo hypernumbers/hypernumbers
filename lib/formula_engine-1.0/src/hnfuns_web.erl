@@ -300,7 +300,7 @@ img([Src]) ->
                            case muin:external_eval(AST) of
                                X when ?is_zcellref(X);
                                       ?is_zrangeref(X) -> X;
-                               _Else                  -> ?ERRVAL_REF
+                               _Else                   -> ?ERRVAL_REF
                            end;
                        {error, syntax_error} -> ?ERRVAL_REF
                    end;
@@ -319,12 +319,19 @@ img([Src]) ->
     Rules = [fetch_ztable],
     Passes = [],
     [{zeds, Ranges, _, _}] = muin_collect:col([ZRef], Rules, Passes),
-    Ranges2 = fix_upzrange(Ranges, HasLink, []),
-    Cols1 = length(Hds2),
-    Cols2 = length(hd(Ranges2)),
-    case Cols1 of
-        Cols2 -> table_("ZTable ", Width, Height, [Hds2 | Ranges2], Sort2, true);
-        _     -> ?ERRVAL_VAL
+    case Ranges of
+        % emtpy table
+        [] ->
+            {include, {"ZTable ", Width, Height, #incs{}}, ""};
+        Ranges ->
+            Ranges2 = fix_upzrange(Ranges, HasLink, []),
+            Cols1 = length(Hds2),
+            Cols2 = length(hd(Ranges2)),
+            case Cols1 of
+                Cols2 -> table_("ZTable ", Width, Height, [Hds2 | Ranges2],
+                                Sort2, true);
+                _     -> ?ERRVAL_VAL
+            end
     end.
 
 fix_upzrange([], _HasLink, Acc) -> lists:reverse(Acc);
@@ -368,15 +375,20 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
             [Sort2] = typechecks:std_ints([Sort]),
             Ref2 = table_collect(Ref),
             SubLen = trunc(length(Ref2)/Len),
-            Ref3 = make_ref3(Ref2, SubLen, []),
-            [Hd | Body] = Ref3,
-            % negative sort index means reverse the natural order
-            Ref4 = if
-                       Sort2 <  0 -> [Hd | lists:reverse(Body)];
-                       Sort2 >= 0 -> Ref3
-                   end,
-            [Dirc2] = typechecks:std_bools([Dirc]),
-            table_("Table ", Width, Height, Ref4, Sort2 - 1, Dirc2) % users sort from 1 not 0
+            case make_ref3(Ref2, SubLen, []) of
+                [] -> % empty table
+                    {include, {"Table ", Width, Height, #incs{}}, ""};
+                Ref3 ->
+                    [Hd | Body] = Ref3,
+                    % negative sort index means reverse the natural order
+                    Ref4 = if
+                               Sort2 <  0 -> [Hd | lists:reverse(Body)];
+                               Sort2 >= 0 -> Ref3
+                           end,
+                    [Dirc2] = typechecks:std_bools([Dirc]),
+                    % users sort from 1 not 0
+                    table_("Table ", Width, Height, Ref4, Sort2 - 1, Dirc2)
+            end
     end.
 
 %background([Url]) -> background([Url, ""]);
