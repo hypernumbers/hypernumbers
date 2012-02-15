@@ -92,7 +92,7 @@ dump_etf(Site, SiteDest) ->
 dump_page(EtfDest, Encoder, Ref, Path) ->
     io:format("Dumping ~p~n", [Path]),
     FileName = ?join(EtfDest, hn_util:path_to_json_path(Path)),
-    Page = Encoder(hn_mochi:page_attributes(Ref#refX{path = Path}, #env{})),
+    Page = Encoder(hn_mochi:page_attrs_for_export(Ref#refX{path = Path}, #env{})),
     Data = io_lib:format("~s", [lists:flatten(Page)]),
     file:write_file(FileName, Data).
 
@@ -169,3 +169,4 @@ load_views(Site, SiteSrc) ->
 load_perms(Site, SiteSrc) ->
     {ok, Perms} = file:consult(?join(SiteSrc, "permissions.export")),
     auth_srv:load_script(Site, Perms).
+

@@ -42,7 +42,7 @@ save_template(#refX{site = S}=RefX, Name)  ->
     TemplatesDir = hn_util:templateroot(S),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     FileName = filename:join(TemplatesDir, Name++".json"),
-    Page = Encoder(hn_mochi:page_attributes(RefX, #env{})),
+    Page = Encoder(hn_mochi:page_attrs_for_export(RefX, #env{})),
     Data = io_lib:format("~s", [lists:flatten(Page)]),
     ok = filelib:ensure_dir(FileName),
     ok = file:write_file(FileName, Data),

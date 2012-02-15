@@ -25,6 +25,7 @@
          handle/1,
          extract_styles/1,
          style_to_css/1,
+         page_attrs_for_export/2,
          page_attributes/2,
          get_json_post/1    % Used for mochilog replay rewrites
         ]).
@@ -1378,21 +1379,46 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
                                 {"timeout", "true"}]})
     end.
 
+% need to pay attention how you use this
+% dynamic input attributes need to be cleaned up with
+% hn_util:clean_up_page_attrs in certain circumstances
+-spec page_attrs_for_export(#refX{}, #env{}) -> {struct, list()}.
+page_attrs_for_export(#refX{site = S, path = P} = Ref, Env) ->
+    page_a2(Ref, Env, export).
+
 -spec page_attributes(#refX{}, #env{}) -> {struct, list()}.
 page_attributes(#refX{site = S, path = P} = Ref, Env) ->
+    page_a2(Ref, Env, full).
+
+page_a2(#refX{site = S, path = P} = Ref, Env, Type) ->
     #env{uid=UID} = Env,
     Content = new_db_api:read_intersect_ref(Ref),
+    Content2 = case Type of
+                   full -> Content;
+                   export -> clean_up_dyn_sel(Content, [])
+               end,
     Init    = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree    = dh_tree:create(Init),
     Styles  = extract_styles(S),
     NTree   = add_styles(Styles, Tree),
-    Dict    = to_dict(Content, NTree),
+    Dict    = to_dict(Content2, NTree),
     Time    = {"time", remoting_reg:timestamp()},
     Usr     = {"user", Env#env.email},
     Host    = {"host", S},
     Views   = {"views", {array, auth_srv:get_views(S, P, UID)}},
     Perms   = {"permissions", auth_srv:get_as_json(S, P)},
     {struct, [Time, Usr, Host, Perms, Views | dict_to_struct(Dict)]}.
+
+clean_up_dyn_sel([], Acc) -> Acc;
+clean_up_dyn_sel([{XRefX, Attrs} | T], Acc) ->
+    Attrs2 = clean2(Attrs, []),
+    clean_up_dyn_sel(T, [{XRefX, Attrs2} | Acc]).
+
+clean2([], Acc) -> Acc;
+clean2([{"input", {"dynamic_select", S, Vals}} | T], Acc) ->
+    clean2(T, [{"input", {"dynamic_select", S}} | Acc]);
+clean2([H | T], Acc) ->
+    clean2(T, [H | Acc]).
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};

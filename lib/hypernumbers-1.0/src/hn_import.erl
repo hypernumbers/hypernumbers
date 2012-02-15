@@ -362,8 +362,8 @@ copy_attrs(Source, Dest, RT, [Key|T]) ->
             V2 = case lists:sort(V) of
                      [{"select", {array, Array}}] ->
                          {"select", Array};
-                     [{"dynamic_select", DS}, {"values", {array, Array}}] ->
-                         {"dynamic_select", DS, Array}
+                     [{"dynamic_select", DS}] ->
+                         {"dynamic_select", DS}
                  end,
             copy_attrs(Source, [{Key,V2}|Dest], RT, T);
         {_K, V} ->
