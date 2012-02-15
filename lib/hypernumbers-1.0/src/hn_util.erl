@@ -504,6 +504,8 @@ jsonify_val({"value", true}) ->
     {"value", "true"};
 jsonify_val({"value", false}) ->
     {"value", "false"};
+jsonify_val({"input", {"dynamic_select", Url}}) ->
+    {"input", {struct, [{"dynamic_select", Url}]}};
 jsonify_val({"input", {"dynamic_select", Url, L}}) ->
     {"input", {struct, [{"dynamic_select", Url}, {"values", {array, L}}]}};
 jsonify_val({"input", {"select", L}}) ->
