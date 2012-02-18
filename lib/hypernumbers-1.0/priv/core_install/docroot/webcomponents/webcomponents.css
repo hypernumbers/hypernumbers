@@ -1,92 +1,98 @@
-.hn-wc-headline { 
+.hn-wc-headline {
                   height: 36px;
                   font-size: 200%;
                   padding: 3px;
                   }
 
-.hn-wc-body { 
+.hn-wc-body {
               padding: 3px;
               overflow: auto;
               }
 
-.hn-wc-footer { 
+.hn-wc-footer {
                 font-size: 80%;
                 height: 20px;
                 }
 
-.hn-wc-line-single > .hn-wc-headline { 
+.hn-wc-line-single > .hn-wc-headline {
                   border-bottom: 1px solid #aaa;
              }
 
-.hn-wc-line-single > .hn-wc-footer { 
+.hn-wc-line-single > .hn-wc-footer {
                 border-top: 1px solid #aaa;
              }
 
-.hn-wc-background-grey > .hn-wc-headline { 
+.hn-wc-background-grey > .hn-wc-headline {
                   -moz-border-radius: 6px 6px 0px 0px;
                   -webkit-border-radius: 6px 6px 0px 0px;
                   border: 1px solid #eeeeee;
-                  background: #eeeeee;
+                  background: -moz-linear-gradient(center top , #F9F9F9, #E3E3E3) repeat scroll 0 0 transparent;
+                  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), to(#E3E3E3));
              }
 
-.hn-wc-background-grey > .hn-wc-footer { 
+.hn-wc-background-grey > .hn-wc-footer {
                 -moz-border-radius: 0px 0px 6px 6px;
                 -webkit-border-radius: 0px 0px 6px 6px;
                 border: 1px solid #eeeeee;
-                background: #eeeeee;
+                background: -moz-linear-gradient(center top , #F9F9F9, #E3E3E3) repeat scroll 0 0 transparent;
+                background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), to(#E3E3E3));
              }
 
-.hn-wc-headline .hn-wc-line-single { 
-                     background: #fff; 
+.hn-wc-headline .hn-wc-line-single {
+                     background: #fff;
 }
 
-.hn-wc-style-alert1, .hn-wc-style-alert2, .hn-wc-style-alert3 { 
+.hn-wc-style-alert1, .hn-wc-style-alert2, .hn-wc-style-alert3 {
                       border: 1px solid #F00 !important;
                       }
 
-.hn-wc-style-alert2 > .hn-wc-headline > .hn-wc-inner { 
+.hn-wc-style-alert2 > .hn-wc-headline > .hn-wc-inner {
                                                        color: #F00;
                                                        }
 
-.hn-wc-style-alert2 > .hn-wc-footer > .hn-wc-inner { 
+.hn-wc-style-alert2 > .hn-wc-footer > .hn-wc-inner {
                                                        color: #F00;
                                                        }
 
-.hn-wc-style-alert3 > .hn-wc-headline  { 
+.hn-wc-style-alert3 > .hn-wc-headline  {
                   -moz-border-radius: 6px 6px 0px 0px;
                   -webkit-border-radius: 6px 6px 0px 0px;
                   border: 1px solid #F00;
                   color: #FFF;
-                  background-color: #F00;
-               }
+                  background: -moz-linear-gradient(center top , #F00, #E33) repeat scroll 0 0 transparent;
+                  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F00), to(#E33));
+                    }
 
-.hn-wc-style-alert3 > .hn-wc-footer  { 
+.hn-wc-style-alert3 > .hn-wc-footer  {
                   -moz-border-radius: 0px 0px 6px 6px;
                   -webkit-border-radius: 0px 0px 6px 6px;
                   border: 1px solid #F00;
                   color: #FFF;
-                  background-color: #F00;
+                  background: -moz-linear-gradient(center top , #F00, #E33) repeat scroll 0 0 transparent;
+                  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F00), to(#E33));
                }
 
-.hn-wc-lines-single { 
+.hn-wc-lines-single {
                       border: none;
                       }
 
-.hn-wc-lines-single { 
+.hn-wc-lines-single {
                       border: none;
                       }
 
-.hn-wc-border-single { 
-             -moz-border-radius: 6px 6px 6px 6px;
-             -webkit-border-radius: 6px 6px 6px 6px;
+.hn-wc-border-single {
+             -moz-border-radius    : 6px 6px 6px 6px;
+             -webkit-border-radius : 6px 6px 6px 6px;
+             -moz-box-shadow       : 2px 2px 8px 0px #CCC;
+             -webkit-box-shadow    : 2px 2px 8px 0px #CCC;
              border: 1px solid #AAA;
            }
 
-/*.hn-wc-box { 
+/*.hn-wc-box {
              background: #fefefe;
              margin: 3px;
             }*/
 
-.hn-wc-inner img { 
+.hn-wc-inner img {
                    border: 0px;
                    }
