@@ -187,8 +187,8 @@ add_user2(User, Site, Args, Type) ->
                     Vanity = hn_util:extract_name_from_email(E),
                     HtP = ["_validate", Vanity],
                     Data = [{emailed, true},{redirect, P}],
-                    HT = passport:create_hypertag(Site, HtP, UID, E,
-                                                  Data, "never"),
+                    HT = passport:create_hypertag_url(Site, HtP, UID, E,
+                                                      Data, "never"),
                     Dets = [{invitee, I}, {msg, M},
                             {hypertag, HT}],
                     emailer:send(invite_new, E, I, Site, Dets)
