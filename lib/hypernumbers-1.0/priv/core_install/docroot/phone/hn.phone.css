@@ -1,0 +1,43 @@
+#hn-phone-frame{
+    height : 110px;
+    width  : 200px;
+    margin : 20 auto;
+    border : 8px solid #eee;
+    -moz-border-radius    : 12px 12px 12px 12px;
+    -webkit-border-radius : 12px 12px 12px 12px;
+    padding 40px;
+}
+
+#hn-phone-frame > h2 {
+    margin: 5px 0px;
+    font-weight : bold;
+    line-height : 105%;
+    color       : darkorange;
+    text-align  : center;
+}
+
+#hn-phone {
+    width  : 160px;
+    height : 44px;
+    background:#EEE;
+    -webkit-border-radius:3px 3px 3px 3px;
+    -moz-border-radius:3px 3px 3px 3px;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9),
+                                 to(#E3E3E3));
+    background: -moz-linear-gradient(center top , #F9F9F9,
+                                     #E3E3E3) repeat scroll 0 0 transparent;
+    border:1px solid #BBBBBB;
+    outline:medium none;
+    padding:3px 6px;
+    text-align:center;
+    white-space:nowrap;
+    margin : 0 0 0 20px;
+}
+
+#hn-phone-img {
+    width               : 100%;
+    background-image    : url(/img/telephone.png);
+    background-repeat   : no-repeat;
+    background-position : 98% 50%;
+    font-size           : 75%;
+}
