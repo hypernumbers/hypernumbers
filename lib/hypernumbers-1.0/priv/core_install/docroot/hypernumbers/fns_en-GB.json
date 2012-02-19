@@ -4316,7 +4316,7 @@
          ]
     },
     {
-        "fn": "toggle-views",
+        "fn": "toggle.views",
         "category": "HN Layout",
         "desc": "Creates a button that toggles between web and wiki pages.",
         "experimental": false,
