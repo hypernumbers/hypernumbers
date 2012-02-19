@@ -53,7 +53,7 @@ post_provision(NE, Site, Uid, Email, Name) ->
         {_, _}           ->
             Path = ["_validate", Name],
             Data = [{emailed, true}],
-            HT = passport:create_hypertag(Site, Path, Uid, Email,
-                                          Data, "never"),
+            HT = passport:create_hypertag_url(Site, Path, Uid, Email,
+                                              Data, "never"),
             emailer:send(new_site_validate, Email, "", Site, [{hypertag, HT}])
     end.

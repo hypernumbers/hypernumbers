@@ -26,6 +26,7 @@
                   hn_net_util,
                   hn_render,
                   hn_security,
+                  hn_twilio_mochi,
                   hns,
                   hn_setup,
                   hn_templates,
