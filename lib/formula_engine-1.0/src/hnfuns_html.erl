@@ -18,8 +18,9 @@
          'html.menu.'/1,
          'html.submenu'/1,
          'html.zsubmenu'/1,
-         'link.box.'/1
-         ]).
+         'link.box.'/1,
+         'toggle.views'/1
+        ]).
 
 -export([
          'tim.alert.'/1,
@@ -33,6 +34,14 @@
          'tim.submenu'/1,
          'tim.tabs.'/1
         ]).
+
+'toggle.views'([]) ->
+    HTML = lists:flatten("<input type='submit' value='' "
+                         ++ "class='hn-toggleviews' style='display:none;'/>"),
+    JS = ["/webcomponents/hn.toggle.js"],
+    Js_R = ["HN.Toggle.reload();"],
+    Incs = #incs{js = JS, js_reload = Js_R},
+    {preview, {"Toggle Views Button", 2, 2, Incs}, HTML}.
 
 'link.box.'([H, W, Z]) ->
     'link.box.'([H, W, Z, 0]);

@@ -3565,39 +3565,6 @@
          ]
     },
     {
-        "fn": "ztable",
-        "category": "HN Layout",
-        "desc": "Embeds a range of cells from another page as a sortable table.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": "range",
-        "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/ztable.html",
-         "args": [
-             {
-                "name": "Range",
-                "desc": "Reference to a range of cells.",
-                "type": "finite"
-             },
-             {
-                 "name": "Z-Query",
-                 "desc": "A Z Query",
-                "type": "finite"
-             },
-             {
-                "name": "Sort Column",
-                "desc": "An integer.",
-                "type": "optional"
-             },
-             {
-                "name": "Sort Direction",
-                "desc": "TRUE or FALSE.",
-                "type": "optional"
-            }
-         ]
-    },
-    {
         "fn": "dategraph",
         "category": "HN Graphs",
         "desc": "Creates a line graph with dates on the X Axis.",
@@ -4349,6 +4316,19 @@
          ]
     },
     {
+        "fn": "toggle.views",
+        "category": "HN Layout",
+        "desc": "Creates a button that toggles between web and wiki pages.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/layout-and-display/toggle-views.html",
+         "args": [
+         ]
+    },
+    {
         "fn": "vertical.line",
         "category": "HN Layout",
         "desc": "Creates a vertical line.",
@@ -4373,6 +4353,39 @@
              {
                 "name": "Colour",
                 "desc": "A string describing a hexadecimal colour.",
+                "type": "optional"
+            }
+         ]
+    },
+    {
+        "fn": "ztable",
+        "category": "HN Layout",
+        "desc": "Embeds a range of cells from another page as a sortable table.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/database/ztable.html",
+         "args": [
+             {
+                "name": "Range",
+                "desc": "Reference to a range of cells.",
+                "type": "finite"
+             },
+             {
+                 "name": "Z-Query",
+                 "desc": "A Z Query",
+                "type": "finite"
+             },
+             {
+                "name": "Sort Column",
+                "desc": "An integer.",
+                "type": "optional"
+             },
+             {
+                "name": "Sort Direction",
+                "desc": "TRUE or FALSE.",
                 "type": "optional"
             }
          ]
