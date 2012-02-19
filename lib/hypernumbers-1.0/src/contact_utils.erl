@@ -5,7 +5,7 @@
 %%% @end
 %%% Created : 13 Feb 2012 by gordon@hypernumbers.com
 
--module(twilio_utils).
+-module(contact_utils).
 
 -export([
          post_sms/1
