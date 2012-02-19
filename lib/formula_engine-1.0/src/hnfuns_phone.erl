@@ -30,10 +30,20 @@
 'manual.sms.out'([PhoneNo]) ->
     check_if_paid(fun 'manual.sms.out2'/2, [PhoneNo, ""]).
 
-'manual.sms.out2'([PhoneNo, Prefix], AC) ->
+'manual.sms.out2'([PhoneNo, Prefix], _AC) ->
     [PhoneNo2] = typechecks:std_strs([PhoneNo]),
     PhoneNo3 = compress(PhoneNo2),
-    erk.
+    Log = #contact_log{to = PhoneNo3},
+    TwiML = "",
+    Capability = [{manual_sms, "+" ++ Prefix ++ PhoneNo3}],
+    Type ={"softphone_type", "manual sms"},
+    Config = [{"button_txt", "(+" ++ Prefix ++ ") " ++ PhoneNo3},
+              {"headline_txt", "Send SMS"}],
+    Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
+                   softphone_type = Type, softphone_config = Config},
+    Headline = "Send SMS",
+    ButtonTxt = "(+" ++ Prefix ++ ") " ++ PhoneNo3,
+    phone(Phone, "Manual SMS: ",  Headline, ButtonTxt).
 
 'auto.sms.out'([Condition, PhoneNo, Msg, Prefix]) ->
     check_if_paid(fun 'auto.sms.out2'/2,
@@ -109,18 +119,19 @@ check_if_paid(Fun, Args) ->
                 "</Response>",
             Capability = [{client_outgoing, AppSID, []}],
             Type = {"softphone_type", "outbound call"},
-            Config = {"button_txt", "(+" ++ Prefix ++ ") " ++ PhoneNo3},
+            Config = [{"button_txt", "(+" ++ Prefix ++ ") " ++ PhoneNo3},
+                      {"headline_txt", "Make Phone Call"}],
             Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
                            softphone_type = Type, softphone_config = Config},
             Headline = "Make Phone Call",
             ButtonTxt = "(+" ++ Prefix ++ ") " ++ PhoneNo3,
-            phone(Phone, Headline, ButtonTxt)
+            phone(Phone, "Phone Out: ", Headline, ButtonTxt)
     end.
 
 'phone.in'([]) ->
-    phone(#phone{}, "yerk", "berk").
+    phone(#phone{}, "Phone In: ", "yerk", "berk").
 
-phone(Payload, Headline, ButtonTxt) ->
+phone(Payload, Preview, Headline, ButtonTxt) ->
     Site = get(site),
     Path = get(path),
     X = get(mx),
@@ -135,7 +146,7 @@ phone(Payload, Headline, ButtonTxt) ->
         ++ "</div>"
         ++ "<div class='small'>(opens in new window)</div>"
         ++ "</div>",
-    {phone, {"Phone: " ++ ButtonTxt, 2, 4, Payload}, HTML}.
+    {phone, {Preview ++ ButtonTxt, 2, 4, Payload}, HTML}.
 
 compress(List) ->
     L2 = re:replace(List, " ", "", [{return, list}, global]),

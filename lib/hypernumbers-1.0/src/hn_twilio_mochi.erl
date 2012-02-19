@@ -13,16 +13,20 @@
 -include("twilio_web.hrl").
 
 -export([
-         get_token/3,
-         handle_call/2
+         get_phone/3,
+         handle_call/2,
+         handle_phone_post/3
         ]).
 
-get_token(#refX{site = S}, Phone, Uid) ->
-    #phone{capability = Capability} = Phone,
+get_phone(#refX{site = _S}, #phone{capability = [{manual_sms, PhoneNo}]} = P, _Uid) ->
+    {struct, lists:flatten([{"phoneno", PhoneNo},
+                            P#phone.softphone_config,
+                            P#phone.softphone_type])};
+get_phone(#refX{site = S}, #phone{capability = [{client_outgoing, _, _}] = C} = P,
+          Uid) ->
     AC = contact_utils:get_twilio_account(S),
     #twilio_account{account_sid = AccSID, auth_token = AuthToken} = AC,
-    Token = twilio_capabilities:generate(AccSID, AuthToken,
-                                         Capability,
+    Token = twilio_capabilities:generate(AccSID, AuthToken, C,
                                          [{expires_after, 7200}]),
     {ok, Email} = passport:uid_to_email(Uid),
     Age = 7200, % in seconds
@@ -30,11 +34,35 @@ get_token(#refX{site = S}, Phone, Uid) ->
     % by twilio, twilio needs to get the originating URL from the data
     % so we sign the hypertab with the URL that the request will come in on
     IncomingPath = ["_services", "phone"],
-    HyperTag = passport:create_hypertag(S, IncomingPath, Uid, Email, Phone, Age),
-    {struct, [{"phonetoken", binary_to_list(Token)},
-              {hypertag, HyperTag},
-              Phone#phone.softphone_config,
-              Phone#phone.softphone_type]}.
+    HyperTag = passport:create_hypertag(S, IncomingPath, Uid, Email, P, Age),
+    {struct, lists:flatten([{"phonetoken", binary_to_list(Token)},
+                            {hypertag, HyperTag},
+                            P#phone.softphone_config,
+                            P#phone.softphone_type])}.
+
+handle_phone_post(#refX{} = Ref, Phone, #env{body = Body}) ->
+    case Body of
+        [{"manual_sms", {struct, Args}}] ->
+            case handle_sms(Ref, Phone, Args) of
+                {ok, ok}   -> {ok, 200};
+                {error, N} -> {error, N}
+            end;
+        _  -> {error, 401}
+    end.
+
+handle_sms(Ref, Phone, Args) ->
+    #phone{capability = [{manual_sms, P}]} = Phone,
+    % check that the phone no in the request matches that
+    % in the capability
+    case proplists:lookup("phoneno", Args) of
+        none             -> {error, 401};
+        {"phoneno", P}   -> {"msg", Msg} = proplists:lookup("msg", Args),
+                           #refX{site = S} = Ref,
+                           AC = contact_utils:get_twilio_account(S),
+                           contact_utils:post_sms(AC, P, Msg);
+        % somebody is spoofing the phone no, erk!
+        {"phoneno", _P2} -> {error, 401}
+    end.
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
     Body = twilio_web_util:process_body(Env#env.body),

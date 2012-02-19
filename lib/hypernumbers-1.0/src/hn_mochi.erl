@@ -386,6 +386,11 @@ authorize_post(#refX{path = ["_services", "phone" | []], obj = {page, _}},
               _Qry, #env{accept = html}) ->
     allowed;
 
+% allow a post to a phone view for a cell - gonnae check it later
+authorize_post(#refX{obj = {cell, _}}, #qry{view = ?PHONE},
+               #env{accept = json}) ->
+    allowed;
+
 %% Allow a post to occur, if the user has access to a spreadsheet on
 %% the target. But it might be a post from a form or an inline
 %% update so you need to check for them too before allowing
@@ -400,7 +405,8 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
 % WIKI's can take both 'postform' and 'postinline'
 authorize_p2(Site, Path, Env) ->
     case ?check_pt_vw(Site, Path, Env#env.uid, ?WIKI) of
-        not_found        -> not_found;
+        not_found ->
+            not_found;
         {view, ?WIKI} ->
             case Env#env.body of
                 [{"postform",   _}]      -> allowed;
@@ -408,7 +414,8 @@ authorize_p2(Site, Path, Env) ->
                 [{"postwebcontrols", _}] -> allowed;
                 _                        -> denied
             end;
-        denied           -> authorize_p3(Site, Path, Env)
+        denied ->
+            authorize_p3(Site, Path, Env)
     end.
 
 % WEBPAGE's can only do 'postform'
@@ -650,7 +657,7 @@ iget(#refX{site = Site}, cell,  #qry{view=?PHONE},
 iget(Ref, cell,  #qry{view=?PHONE} = _Qry, #env{accept = json, uid = Uid} = Env) ->
     case  new_db_api:get_phone(Ref) of
         []      -> json(Env, {struct, [{"error", "no phone at this url"}]});
-        [Phone] -> JSON = hn_twilio_mochi:get_token(Ref, Phone, Uid),
+        [Phone] -> JSON = hn_twilio_mochi:get_phone(Ref, Phone, Uid),
                    json(Env, JSON)
     end;
 
@@ -739,6 +746,20 @@ ipost(#refX{path = ["_services", "phone" | []], obj = {page, "/"}} = Ref, _Qry,
         error     -> '500'(Env);
         {ok, 200} -> json(Env, "success");
         TwiML     -> xml(Env, TwiML)
+    end;
+
+% a post to the phone view - need to check there is a control
+ipost(#refX{obj = {cell, _}} = Ref, #qry{view = ?PHONE},
+               #env{accept = json} = Env) ->
+    case  new_db_api:get_phone(Ref) of
+        []      ->
+            json(Env, {struct, [{"error", "no phone at this url"}]});
+        [Phone] ->
+            case hn_twilio_mochi:handle_phone_post(Ref, Phone, Env) of
+                {ok, 200}    -> json(Env, "success");
+                {error, 401} -> respond(401, Env);
+                _            -> '500'(Env)
+            end
     end;
 
 ipost(Ref=#refX{path=["_parse_expression"]}=Ref, _Qry, Env) ->
