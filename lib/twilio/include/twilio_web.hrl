@@ -1,4 +1,10 @@
 %% Twilio records
+-record(twilio_duration,
+        {
+          duration,
+          call_duration
+         }).
+
 -record(twilio_called,
         {
           number       = [],
@@ -51,10 +57,12 @@
           call_status     = [],
           call_sid        = [],
           api_version     = [],
+          custom_params   = [],
           called          = null,
           caller          = null,
           from            = null,
-          to              = null
+          to              = null,
+          call_duration   = null
          }).
 
 % Country Codes For Lookup
