@@ -10,6 +10,8 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         write_twilio_use_kvs/0,
+         write_twilio_dev_kvs/0,
          add_phone_table_2011_02_11/0,
          upgrade_relation_table_2012_01_03/0,
          recalc_includes/0,
@@ -71,9 +73,31 @@
 %% upgrade_1776/0
         ]).
 
+write_twilio_dev_kvs() ->
+    Site = "http://dev.hypernumbers.com:8080",
+    AC = #twilio_account{account_sid     = "AC7a076e30da6d49119b335d3a6de43844",
+                         auth_token      = "9248c9a2a25f6914fad9c9fb5b30e69c",
+                         application_sid = "APe2c6b02daf974b699fb14591cc7bbd79",
+                         site_phone_no   = "+441315101875"},
+    new_db_api:write_kv(Site, ?twilio, AC).
+
+write_twilio_use_kvs() ->
+    Site = "http://usability.hypernumbers.com:8080",
+    AC = #twilio_account{account_sid     = "AC7a076e30da6d49119b335d3a6de43844",
+                         auth_token      = "9248c9a2a25f6914fad9c9fb5b30e69c",
+                         application_sid = "APf2b5e475549b404e8ff26ed1a9fb8bcb",
+                         site_phone_no   = "+441315101883"},
+    new_db_api:write_kv(Site, ?twilio, AC).
+
 add_phone_table_2011_02_11() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
+                   Tables = mnesia:system_info(local_tables),
+                   Tbl = new_db_wu:trans(Site, phone),
+                   case lists:member(Tbl, Tables) of
+                       true  -> mnesia:delete_table(Site);
+                       false -> ok
+                   end,
                    Fields = record_info(fields, phone),
                    make_table(Site, phone, Fields, disc_copies)
            end,
