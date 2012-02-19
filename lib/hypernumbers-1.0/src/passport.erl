@@ -14,26 +14,28 @@
         ]).
 
 %% API
--export([ start_link/0,
-          create_hypertag/6,
-          open_hypertag/3,
-          authenticate/3,
-          inspect_stamp/1,
-          temp_stamp/0,
-          set_password/2,
-          uid_to_email/1,
-          email_to_uid/1,
-          validate_uid/1,
-          is_valid_uid/1,
-          get_or_create_user/1,
+-export([
+         start_link/0,
+         create_hypertag/6,
+         create_hypertag_url/6,
+         open_hypertag/3,
+         authenticate/3,
+         inspect_stamp/1,
+         temp_stamp/0,
+         set_password/2,
+         uid_to_email/1,
+         email_to_uid/1,
+         validate_uid/1,
+         is_valid_uid/1,
+         get_or_create_user/1,
           get_or_create_user/2,
-          is_user/1,
-          delete_uid/1,
-          create_uid/0,
-          dump_script/0,
-          load_script/1,
-          issue_pwd_reset/2,
-          reset_pwd/3
+         is_user/1,
+         delete_uid/1,
+         create_uid/0,
+         dump_script/0,
+         load_script/1,
+         issue_pwd_reset/2,
+         reset_pwd/3
         ]).
 
 %% gen_server callbacks
@@ -67,21 +69,29 @@
 %%%===================================================================
 %%% Local API
 %%%===================================================================
+-spec create_hypertag_url(string(),
+                      [string()],
+                      auth_srv:uid(), string(),
+                      any(),
+                      integer() | string())
+                     -> string().
+create_hypertag_url(Site, Path, Uid, Email, Data, Age) ->
+    HTEnc = create_hypertag(Site, Path, Uid, Email, Data, Age),
+    lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
 
 -spec create_hypertag(string(),
                       [string()],
                       auth_srv:uid(), string(),
                       any(),
                       integer() | string())
-                     -> string().
+                      -> string().
 create_hypertag(Site, Path, Uid, Email, Data, Age) ->
     HalfKey = [Site, make_lower(Path, [])],
     HT = #hypertag{uid = Uid,
                    email = Email,
                    expiry = gen_expiry(Age),
                    data = Data},
-    HTEnc = encrypt_term_hex(HalfKey, HT),
-    lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
+     encrypt_term_hex(HalfKey, HT).
 
 -spec open_hypertag(string(), [string()], string())
                    -> {ok, auth_srv:uid(), string(), any(), string(),
@@ -670,9 +680,9 @@ test_hypertag() ->
     Site = "http://example.com:1234",
     Path = ["_invite", "alice", "secret", "page"],
     Email = "alice@example.com",
-    "http://" ++ Url = create_hypertag(Site, Path,
-                                       "alice", Email,
-                                       {"123"}, "never"),
+    "http://" ++ Url = create_hypertag_url(Site, Path,
+                                           "alice", Email,
+                                           {"123"}, "never"),
     {_, "?hypertag=" ++ HyperTag} = httpd_util:split_path(Url),
     {ok, U, Email, D, _Stamp, _Age} = open_hypertag(Site, Path, HyperTag),
     ?assertEqual("alice", U),
