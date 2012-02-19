@@ -4349,6 +4349,19 @@
          ]
     },
     {
+        "fn": "toggle-views",
+        "category": "HN Layout",
+        "desc": "Creates a button that toggles between web and wiki pages."
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/layout-and-display/toggle-views.html",
+         "args": [
+         ]
+    },
+    {
         "fn": "vertical.line",
         "category": "HN Layout",
         "desc": "Creates a vertical line.",
