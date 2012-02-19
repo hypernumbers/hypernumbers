@@ -1386,7 +1386,7 @@ z-index     : 10000002;
     font-style:     italic;
 }
 
-#doupload, #hn-phone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn {
+#doupload, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn, .hn-toggleviews {
     cursor:pointer;
 }
 
@@ -1595,7 +1595,7 @@ z-index     : 10000002;
     width: 100px
 }
 
-.button, .tournavigate, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc {
+.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, .hn-toggleviews {
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;
@@ -1610,6 +1610,27 @@ z-index     : 10000002;
     text-align:center;
     white-space:nowrap;
 }
+
+.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, .hn-toggleviews {
+    background:#EEE;
+    -webkit-border-radius:3px 3px 3px 3px;
+    -moz-border-radius:3px 3px 3px 3px;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9),
+                                 to(#E3E3E3));
+    background: -moz-linear-gradient(center top , #F9F9F9,
+                                     #E3E3E3) repeat scroll 0 0 transparent;
+    border:1px solid #BBBBBB;
+    margin:0 0px 0 0;
+    outline:medium none;
+    padding:3px 6px;
+    text-align:center;
+    white-space:nowrap;
+}
+
+.hn-toggleviews {
+                  font-weight : bold;
+                  color       : darkorange;
+                  }
 
 .input {
     border:1px solid #BBBBBB;
