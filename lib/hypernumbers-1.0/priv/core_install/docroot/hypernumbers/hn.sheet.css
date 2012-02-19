@@ -1386,7 +1386,7 @@ z-index     : 10000002;
     font-style:     italic;
 }
 
-#doupload, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn {
+#doupload, #hn-phone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn {
     cursor:pointer;
 }
 
@@ -1595,7 +1595,7 @@ z-index     : 10000002;
     width: 100px
 }
 
-.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc {
+.button, .tournavigate, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc {
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;

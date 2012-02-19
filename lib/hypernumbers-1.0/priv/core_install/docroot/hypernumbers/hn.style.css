@@ -82,14 +82,7 @@ body {
     -webkit-box-sizing:border-box;
 }
 
-#hn_phone {
-             z-index: 1000001;
-             position: absolute;
-             display: none;
-             background-color: #FF0;
-             }
-
-.hninput, #hn-outboundphone, .hn-webcontrol, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hnfixedval {
+.hninput, .hn-webcontrol, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hnfixedval {
     font-size:inherit;
     width:100%;
     height:100%;
@@ -120,7 +113,7 @@ body {
   display: none;
   }
 
-#hn_passwordform p, #hn_passwordform .button, #hn_passwordform div
+#hn_passwordform p, #hn_passwordform .button, #hn_passwordform div, .softphone_link
 {
   font: 9px/1.2 Verdana,Tahoma,sans-serif;
   color: #777;
@@ -739,3 +732,46 @@ label {
 .hn_spark {
             padding: 2px 0px 0px 0px
             }
+
+
+.hn_softphone {
+    text-weight           : bold;
+    text-align            : center;
+    color                 : #666;
+    -moz-border-radius    : 4px 4px 4px 4px;
+    -webkit-border-radius : 4px 4px 4px 4px;
+    border                : 1px solid #77f;
+    height                : 98%;
+}
+
+.hn_softphone_hd {
+    font-weight: bold;
+}
+
+.hn_softphone_link {
+    height: 23px;
+    width:  134px;
+    text-align: center;
+    padding: 11px 3px 11px 3px;
+    margin:  0px 2px 2px 5px;
+    background:#EEE;
+    -webkit-border-radius:3px 3px 3px 3px;
+    -moz-border-radius:3px 3px 3px 3px;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9),
+                                 to(#E3E3E3));
+    background: -moz-linear-gradient(center top , #F9F9F9,
+                                     #E3E3E3) repeat scroll 0 0 transparent;
+    border:1px solid #BBBBBB;
+    outline:medium none;
+    white-space:nowrap;
+}
+
+.hn_softphone_link > a:link, .hn_softphone_link > a:visited {
+    text-decoration: none !important;
+    border-bottom: none !important;
+}
+
+.small {
+    line-height : 12px;
+    font-size   : 80%;
+}

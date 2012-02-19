@@ -1,0 +1,80 @@
+<html>
+  <title>Hypernumbers SoftPhone</title>
+  <link rel='stylesheet' href='/phone/hn.phone.css' />
+  <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />
+  <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
+  <body>
+    <div id='hn-phone-frame'>
+    <h2>Hypernumbers SoftPhone</h2>
+    <button id='hn-phone' disabled>
+      <div id='hn-phone-img'>Phone</div>
+    </button>
+    </div>
+    <script src='/hypernumbers/jquery-1.7.1.min.js'></script>
+    <script src='http://static.twilio.com/libs/twiliojs/1.0/twilio.js'></script>
+    <script type='text/javascript'>
+      var HN = {};
+      HN.Phone = {};
+      HN.Phone.initialize = function () {
+      var bindfn, path;
+      path = document.location.pathname.toLowerCase();
+      var SuccessFun = function(Response) {
+        var clickfn, params;
+        $("#hn-phone-img").html(Response.button_txt);
+        Twilio.Device.setup(Response.phonetoken);
+
+        Twilio.Device.ready(function (device) {
+                                $("#hn-phone").removeAttr("disabled");
+                            });
+
+        Twilio.Device.error(function (error) {
+                            });
+
+        Twilio.Device.incoming(function (conn) {
+             conn.accept();
+       });
+
+        Twilio.Device.connect(function (conn) {
+                                  $("#hn-phone > div")
+                                      .css("background-image",
+                                           "url(/img/telephone_delete.png)");
+                              });
+
+        Twilio.Device.disconnect(function (conn) {
+                                     $("#hn-phone > div")
+                                         .css("background-image",
+                                              "url(/img/telephone.png)");
+                                 });
+
+        clickfn = function () {
+            var element = $("#hn-phone");
+            switch (Twilio.Device.status()) {
+            case "ready":
+                params = {"hypertag": Response.hypertag};
+                Twilio.Device.connect(params);
+                break;
+            case "busy":
+                Twilio.Device.disconnectAll();
+                break;
+            default:
+                ok;
+            };
+        };
+
+        $("#hn-phone").bind("click", clickfn);
+
+        // now start the call
+        params = {"hypertag": Response.hypertag};
+        Twilio.Device.connect(params);
+    };
+    $.ajax({
+               "url"      :  path + "?view=phone",
+               "dataType" : "json",
+               "success"  : SuccessFun
+           });
+      };
+      HN.Phone.initialize();
+
+    </script>
+  </body>
+</html>

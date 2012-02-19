@@ -10,6 +10,7 @@
             hnfuns_graphs,
             hnfuns_html,
             hnfuns_integration,
+            hnfuns_phone,
             hnfuns_special,
             hnfuns_web,
             hnfuns_z,
