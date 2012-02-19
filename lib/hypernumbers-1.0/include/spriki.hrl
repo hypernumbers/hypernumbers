@@ -224,10 +224,34 @@
           attrs = []
          }).
 
+-record(twilio_account,
+        {
+          account_sid,
+          auth_token,
+          application_sid,
+          site_phone_no
+         }).
+
+-record(contact_log,
+        {
+          idx,
+          from      = [] ,
+          to        = [],
+          cc        = [],
+          bcc       = [],
+          subject   = [],
+          contents  = [],
+          reference = []
+         }).
+
 -record(phone,
         {
-          id,
-          command = []
+          idx,
+          twiml,
+          capability,
+          log,
+          softphone_type,
+          softphone_config
          }).
 
 -record(webcontrol,
