@@ -24,6 +24,7 @@
 -define(NONTRANSFORMATIVE, false).
 
 -export([
+         get_phone/1,
          does_page_exist/1,
          has_cell_been_deletedD/2,
          proc_dirties_for_zinfD/3,
@@ -93,6 +94,15 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% see if there is a phone - might not be, mebbies the cell doesn't exist
+get_phone(#refX{site = S, obj = {cell, _}} = RefX) ->
+    case refX_to_xrefXD(RefX) of
+        false -> [];
+        XRefX -> #xrefX{idx = Idx} = XRefX,
+                 Tbl = trans(S, phone),
+                 mnesia:read(Tbl, Idx, read)
+    end.
+
 does_page_exist(#refX{site = S, obj = {page , "/"}} = RefX) ->
     case read_objs(RefX, inside) of
         []   -> false;
@@ -520,12 +530,13 @@ write_attrs(XRefX, NewAttrs) -> write_attrs(XRefX, NewAttrs, nil).
 -spec write_attrs(#xrefX{}, [{string(), term()}], auth_srv:auth_spec()) -> ?dict.
 write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
     Op = fun(Attrs) ->
-                 Is_Formula = lists:keymember("formula", 1, NewAs),
-                 Has_Form = orddict:is_key("__hasform", Attrs),
-                 Has_Incs = orddict:is_key("__hasincs", Attrs),
-                 Has_Timer = orddict:is_key("__hastimer", Attrs),
+                 Is_Formula  = lists:keymember("formula", 1, NewAs),
+                 Has_Form    = orddict:is_key("__hasform", Attrs),
+                 Has_Incs    = orddict:is_key("__hasincs", Attrs),
+                 Has_Timer   = orddict:is_key("__hastimer", Attrs),
+                 Has_Phone   = orddict:is_key("__hasphone", Attrs),
                  Is_In_IncFn = orddict:is_key("__in_includeFn", Attrs),
-                 Is_Dynamic = is_dynamic_select(Attrs),
+                 Is_Dynamic  = is_dynamic_select(Attrs),
                  Attrs2 =
                      case Is_Formula of
                          true ->
@@ -537,18 +548,25 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                                           Attrs
                                   end,
                              A4 = case Has_Incs of
-                                           true ->
-                                               delete_incsD(XRefX),
-                                               orddict:erase("__hasincs", A3);
-                                           false  ->
-                                               A3
-                                       end,
-                             case Has_Timer of
+                                      true ->
+                                          delete_incsD(XRefX),
+                                          orddict:erase("__hasincs", A3);
+                                      false  ->
+                                          A3
+                                  end,
+                             A5 = case Has_Timer of
+                                      true ->
+                                          delete_timerD(XRefX),
+                                          orddict:erase("__hastimer", A4);
+                                      false ->
+                                          A4
+                                  end,
+                             case Has_Phone of
                                  true ->
-                                     delete_timerD(XRefX),
-                                     orddict:erase("__hastimer", A4);
+                                     unattach_phoneD(XRefX),
+                                     orddict:erase("__hasphone", A5);
                                  false ->
-                                     A4
+                                     A5
                              end;
                          false ->
                              case Is_Dynamic of
@@ -697,6 +715,16 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
             Attrs4 = orddict:store("preview", {Title, Wd, Ht}, Attrs3),
+            write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
+                                {Parents, false}, InfParents,
+                                Recompile, CircRef);
+        % the formula returns a phone control
+        {ok, {Pcode, {phone, {PreV, Wd, Ht, Payload}, Res},
+              Parents, InfParents, Recompile, CircRef}} ->
+            ok = attach_phoneD(XRefX, Payload),
+            Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
+            Attrs3 = orddict:store("__hasphone", t, Attrs2),
+            Attrs4 = handle_merge(Ht, Wd, Attrs3),
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents,
                                 Recompile, CircRef);
@@ -883,6 +911,8 @@ set_parents(Tbl,
     LostParents = ordsets:subtract(CurParents, NewParentIdxs),
     [del_childD(P, CellIdx, Tbl) || P <- LostParents],
     [ok = add_childD(P, CellIdx, Tbl, IsIncl) || P <- NewParentIdxs],
+    %Ret = read_relationsD(Site, CellIdx, write),
+    %Cell = idx_to_xrefXD(Site, CellIdx),
     NewInfParIdxs = ordsets:from_list(InfPIdxs),
     XCurInfPars = [idx_to_xrefXD(Site, X) || X <- CurInfPars],
     case InfPars of
@@ -919,6 +949,11 @@ delete_timerD(#xrefX{idx = Idx, site = S}) ->
 
 delete_incsD(#xrefX{idx = Idx, site = S}) ->
     Tbl = trans(S, include),
+    mnesia:delete(Tbl, Idx, write).
+
+-spec unattach_phoneD(#xrefX{}) -> ok.
+unattach_phoneD(#xrefX{site = Site, idx = Idx}) ->
+    Tbl = trans(Site, phone),
     mnesia:delete(Tbl, Idx, write).
 
 -spec unattach_formD(#xrefX{}) -> ok.
@@ -1038,6 +1073,11 @@ based_styleD(#xrefX{site = Site} = XRefX, BaseIdx, Name, Val) ->
         _ ->
             BaseIdx %% <- strange..
     end.
+
+-spec attach_phoneD(#xrefX{}, #phone{}) -> ok.
+attach_phoneD(#xrefX{idx = Idx, site = Site}, Phone) ->
+    Tbl = trans(Site, phone),
+    mnesia:write(Tbl, Phone#phone{idx = Idx}, write).
 
 -spec attach_formD(#xrefX{}, #form{}) -> ok.
 attach_formD(#xrefX{idx = Idx, site = Site}, Form) ->

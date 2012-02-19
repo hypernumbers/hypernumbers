@@ -13,6 +13,7 @@
 -include("syslib.hrl").
 
 -export([
+         get_phone/1,
          does_page_exist/1,
          delete_api/2,
          write_api/2,
@@ -33,7 +34,7 @@
          append_row/3,
          read_ref/1,
          read_attribute/2,
-         recalc_page/1,
+         recalc/1,
          matching_forms/2,
          write_attributes/1,
          write_attributes/2,
@@ -221,6 +222,14 @@ process_dirties_for_zinf(Site, Tree, CheckFun) ->
     RefX = #refX{site = Site},
     write_activity(RefX, Fun, "quiet", Report),
     ok.
+
+get_phone(#refX{obj = {cell, _}} = RefX) ->
+    Report = mnesia_mon:get_stamp("get_phone"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:get_phone(RefX)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 does_page_exist(#refX{obj = {page, "/"}} = RefX) ->
     Report = mnesia_mon:get_stamp("does_page_exists"),
@@ -545,8 +554,8 @@ read_attribute(RefX, Field) when is_record(RefX, refX) ->
           end,
     read_activity(RefX, Fun, Report).
 
-recalc_page(#refX{obj = {page, "/"}} = RefX) ->
-    Report = mnesia_mon:get_stamp("recalc_page"),
+recalc(#refX{} = RefX) ->
+    Report = mnesia_mon:get_stamp("recalc"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
                   XRefX = new_db_wu:refX_to_xrefX_createD(RefX),

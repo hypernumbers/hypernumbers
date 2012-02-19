@@ -38,6 +38,7 @@
 -define(WIKIPREVIEW, "wikipreview").
 -define(LOGVIEW,     "logs").
 -define(RECALC,      "recalc").
+-define(PHONE,       "phone").
 
 -spec start() -> {ok, pid()}.
 start() ->
@@ -157,7 +158,7 @@ authorize_api(_Auth, _Env, _Ref, _Qry) ->
     denied.
 
 authorize_r2(Env, Ref, Qry) ->
-    Env2 = process_user(Ref#refX.site, Env),
+    Env2 = process_user(Ref, Env),
     #env{method = Method, body = Body} = Env,
     AuthRet = case {Method, Body} of
                   {Req, _} when Req == 'GET'; Req == 'HEAD'  ->
@@ -251,15 +252,23 @@ authorize_get(#refX{path = ["_" ++ X | _]}, _Qry, #env{accept = json})
   when X == "site";
        X == "pages" ->
     allowed;
-% enable the sites pager
+
+% enable the sites page
 authorize_get(#refX{path = ["_sites" | []]}, _Qry, #env{accept = Accept})
   when Accept == html;
        Accept == json ->
     allowed;
+
 % Feature Flag them out
-%authorize_get(#refX{path = ["_services", "phone" | _], obj = {cell, _}},
-%              _Qry, #env{accept = json}) ->
-%    allowed;
+% this path is hardwired into the module hn_twilio_mochi.erl
+authorize_get(#refX{path = ["_services", "phone" | _], obj = {cell, _}},
+              _Qry, #env{accept = html}) ->
+    io:format("Phone service now allows twilio in feature flag it~n"),
+    allowed;
+
+authorize_get(#refX{site = "http://usability.hypernumbers.com:8080",
+                    path = ["_reprovision"], obj = {page, "/"}}, _Qry, _Env) ->
+    allowed;
 
 %% Only some sites have a forgotten password box
 authorize_get(#refX{path = [X | _Vanity]}, _Qry, #env{accept = html})
@@ -327,6 +336,17 @@ authorize_get(R, #qry{view = ?RECALC} = Q, E) ->
         Other              -> Other
     end;
 
+%% Allow the softphone if there is a softphone control on the cell
+%% for both html and json
+authorize_get(#refX{site = S, path = P} = R, #qry{view=?PHONE}, Env) ->
+    case new_db_api:get_phone(R) of
+        []      -> denied;
+        [_Phone]-> case auth_srv:get_any_view(S, P, Env#env.uid) of
+                       false -> denied;
+                       _     -> allowed
+                   end
+    end;
+
 %% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path},
               #qry{view = View},
@@ -358,6 +378,13 @@ authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
         true  -> allowed;
         false -> authorize_admin(Site, Env#env.body, Uid)
     end;
+
+% allow incoming phone calls
+% feature flag out
+% this path is hardwired into the module hn_twilio_mochi.erl
+authorize_post(#refX{path = ["_services", "phone" | []], obj = {page, _}},
+              _Qry, #env{accept = html}) ->
+    allowed;
 
 %% Allow a post to occur, if the user has access to a spreadsheet on
 %% the target. But it might be a post from a form or an inline
@@ -518,6 +545,17 @@ iget(#refX{path = P, obj = {filename, FileName}} = Ref, filename, Qry, Env) ->
              '404'(Ref, Env)
     end;
 
+iget(#refX{site = "http://usability.hypernumbers.com:8080" = Site,
+                    path = ["_reprovision"], obj = {page, "/"}}, page, _Qry, Env) ->
+    ok = hn_setup:delete_site(Site),
+    {initial_view, []} = hn_setup:site(Site, usability, []),
+    {ok, _, Uid1} = passport:get_or_create_user("usability@hypernumbers.com"),
+    passport:validate_uid(Uid1),
+    passport:set_password(Uid1, "i!am!usable"),
+    hn_groups:add_user(Site, "admin", Uid1),
+    hn_db_upgrade:write_twilio_use_kvs(),
+    serve_html(200, Env, [hn_util:viewroot(Site), "/reprovision.html"]);
+
 iget(#refX{site = S, path = ["_site"]}, page, #qry{map = Name}, Env) when Name =/= undefined ->
     Maps = {struct, [hn_import:read_map(S, Name)]},
     json(Env, Maps);
@@ -598,11 +636,23 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
 iget(#refX{site=Site, path=Path}, page, #qry{view=?DEMO}, Env) ->
     text_html(Env, make_demo(Site, Path));
 
-iget(#refX{site=Site, path=Path}, page, #qry{view=?RECALC}, Env) ->
-    ok = new_db_api:recalc_page(#refX{site = Site, type = url,
-                                      path = Path, obj = {page, "/"}}),
+iget(#refX{site = Site} = RefX, _Type, #qry{view=?RECALC}, Env) ->
+    ok = new_db_api:recalc(RefX),
     Html = hn_util:viewroot(Site) ++ "/recalc.html",
     serve_html(Env, Html);
+
+iget(#refX{site = Site}, cell,  #qry{view=?PHONE},
+     #env{accept = html} = Env) ->
+            Dir = hn_util:viewroot(Site) ++ "/",
+            File = "softphone.html",
+            serve_html(200, Env, [Dir, File]);
+
+iget(Ref, cell,  #qry{view=?PHONE} = _Qry, #env{accept = json, uid = Uid} = Env) ->
+    case  new_db_api:get_phone(Ref) of
+        []      -> json(Env, {struct, [{"error", "no phone at this url"}]});
+        [Phone] -> JSON = hn_twilio_mochi:get_token(Ref, Phone, Uid),
+                   json(Env, JSON)
+    end;
 
 iget(#refX{site=Site, path=Path}, page, #qry{view=?WEBPREVIEW}, Env) ->
     text_html(Env, make_preview("web", Site, Path));
@@ -613,7 +663,7 @@ iget(#refX{site=Site, path=Path}, page, #qry{view=?WIKIPREVIEW}, Env) ->
 iget(Ref, page, #qry{view = ?LOGVIEW}, Env) ->
     text_html(Env, hn_logs:get_logs(Ref));
 
-iget(Ref, Obj, #qry{view = ?WIKI}, Env=#env{accept = html,uid = Uid})
+iget(Ref, Obj, #qry{view = ?WIKI}, Env=#env{accept = html, uid = Uid})
   when Obj == page orelse Obj == range ->
     ok = status_srv:update_status(Uid, Ref, "view wiki page"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, wikipage),
@@ -652,16 +702,6 @@ iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
 iget(Ref, page, #qry{pages = []}, Env=#env{accept = json}) ->
     json(Env, pages(Ref));
 
-iget(#refX{path = ["_services", "phone" | Path]} = Ref, cell, _Qry,
-     Env = #env{accept = json}) ->
-    AccountSID = "AC7a076e30da6d49119b335d3a6de43844",
-    AuthToken  = "9248c9a2a25f6914fad9c9fb5b30e69c",
-    AppSid     = "APabe7650f654fc34655fc81ae71caa3ff",
-    Token = twilio_capabilities:generate(AccountSID, AuthToken,
-                                         [{client_outgoing, AppSid, []}],
-                                         [{expires_after, 7200}]),
-    json(Env, {struct, [{"phonetoken", binary_to_list(Token)}]});
-
 iget(Ref, page, _Qry, Env=#env{accept = json}) ->
     json(Env, page_attributes(Ref, Env));
 
@@ -684,11 +724,22 @@ iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
         end,
     json(Env, V);
 
-iget(Ref, _Type, Qry, Env) ->
+iget(Ref, Type, Qry, Env) ->
+    io:format("in other 404~n- Ref is ~p~n- Type is ~p~n- Qry is ~p~n- Env is ~p~n",
+              [Ref, Type, Qry, Env]),
     ?E("404~n-~p~n-~p~n", [Ref, Qry]),
     '404'(Ref, Env).
 
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
+
+% this path is hardwired into the module hn_twilio_mochi.erl
+ipost(#refX{path = ["_services", "phone" | []], obj = {page, "/"}} = Ref, _Qry,
+     Env = #env{accept = html}) ->
+    case hn_twilio_mochi:handle_call(Ref, Env) of
+        error     -> '500'(Env);
+        {ok, 200} -> json(Env, "success");
+        TwiML     -> xml(Env, TwiML)
+    end;
 
 ipost(Ref=#refX{path=["_parse_expression"]}=Ref, _Qry, Env) ->
     [{"expression", Expr}] = Env#env.body,
@@ -722,6 +773,7 @@ ipost(#refX{site=S, path=["_login"]}, Qry, E) ->
     Email = string:to_lower(Email0),
     case passport:authenticate(Email, Pass, true) of
         {error, authentication_failed} ->
+            io:format("faile a~n"),
             json(E, {struct, [{"response", "error"}]});
         {ok, Uid, Stamp, Age} ->
             Return = case Qry#qry.return of
@@ -1159,8 +1211,8 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
             log_signup(RootSite, Site, Node, Uid, Email),
             Opaque = [{param, InitialView}],
             Expiry = "never",
-            Url = passport:create_hypertag(Site, ["_mynewsite", Name],
-                                           Uid, Email, Opaque, Expiry),
+            Url = passport:create_hypertag_url(Site, ["_mynewsite", Name],
+                                              Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
         {ok, existing, Site, Node, Uid, _Name, InitialView} ->
             log_signup(RootSite, Site, Node, Uid, Email),
@@ -1259,9 +1311,14 @@ get_host(Env) ->
             ProxiedHost
     end.
 
-get_json_post(undefined) ->
-    {ok, undefined};
 get_json_post(Json) ->
+    get_json_post(Json, json).
+
+get_json_post(undefined, _) ->
+    {ok, undefined};
+get_json_post(HTML, html) ->
+    {ok, HTML};
+get_json_post(Json, json) ->
     {struct, Attr} = mochijson:decode(Json),
     {ok, lists:map(fun hn_util:js_to_utf8/1, Attr)}.
 
@@ -1383,11 +1440,11 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
 % dynamic input attributes need to be cleaned up with
 % hn_util:clean_up_page_attrs in certain circumstances
 -spec page_attrs_for_export(#refX{}, #env{}) -> {struct, list()}.
-page_attrs_for_export(#refX{site = S, path = P} = Ref, Env) ->
+page_attrs_for_export(Ref, Env) ->
     page_a2(Ref, Env, export).
 
 -spec page_attributes(#refX{}, #env{}) -> {struct, list()}.
-page_attributes(#refX{site = S, path = P} = Ref, Env) ->
+page_attributes(Ref, Env) ->
     page_a2(Ref, Env, full).
 
 page_a2(#refX{site = S, path = P} = Ref, Env, Type) ->
@@ -1415,7 +1472,7 @@ clean_up_dyn_sel([{XRefX, Attrs} | T], Acc) ->
     clean_up_dyn_sel(T, [{XRefX, Attrs2} | Acc]).
 
 clean2([], Acc) -> Acc;
-clean2([{"input", {"dynamic_select", S, Vals}} | T], Acc) ->
+clean2([{"input", {"dynamic_select", S, _Vals}} | T], Acc) ->
     clean2(T, [{"input", {"dynamic_select", S}} | Acc]);
 clean2([H | T], Acc) ->
     clean2(T, [H | Acc]).
@@ -1444,7 +1501,7 @@ accept_type(Env) ->
         Accept    ->
             case re:run(Accept, "application/json") of
                 {match, _} -> json;
-                nomatch -> html
+                nomatch    -> html
             end
     end.
 
@@ -1496,6 +1553,7 @@ process_query_([{Param, Value} | Rest], Qry) ->
 
 -spec process_environment(any()) -> #env{}.
 process_environment(Mochi) ->
+    Accept = accept_type(Mochi),
     {RawBody, Body} =
         case Mochi:get(method) of
             'GET'  -> {undefined, undefined};
@@ -1504,13 +1562,13 @@ process_environment(Mochi) ->
                                                         Mochi:get(headers)),
                       case Headers of
                           none -> RB = Mochi:recv_body(),
-                                  {ok, B} = get_json_post(RB),
+                                  {ok, B} = get_json_post(RB, Accept),
                                   {RB, B};
                           {_,{_,T}} ->
                               case lists:prefix("multipart/form-data", T) of
                                   true  -> {undefined, multipart};
                                   false -> RB = Mochi:recv_body(),
-                                           {ok, B} = get_json_post(RB),
+                                           {ok, B} = get_json_post(RB, Accept),
                                            {RB, B}
                               end
                       end
@@ -1521,55 +1579,39 @@ process_environment(Mochi) ->
                {value, {_, A}} -> A
            end,
     #env{mochi    = Mochi,
-         accept   = accept_type(Mochi),
+         accept   = Accept,
          method   = Mochi:get(method),
          raw_body = RawBody,
          body     = Body,
          auth     = Auth}.
 
 -spec process_user(string(), #env{}) -> #env{} | no_return().
-process_user(Site, E=#env{mochi = Mochi}) ->
+% for twilio api calls we spoof the username
+process_user(#refX{path = ["_services", "phone"]}, E=#env{}) ->
+    Email = "api@twilio.com",
+    {ok, _, Uid} = passport:get_or_create_user(Email),
+    E#env{uid = Uid, email = Email};
+process_user(#refX{site = Site}, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
-    %syslib:log(io_lib:format("~p in process_user (a) for ~p", [Site, Auth]),
-    %           ?auth),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
-            %Msg1 = io_lib:format("~p in process_user (b) for ~p ~p",
-            %                     [Site, Uid, Email]),
-            %syslib:log(Msg1, ?auth),
             E#env{uid = Uid, email = Email};
         {error, no_stamp} ->
             Return = cur_url(Site, E),
-            %Msg2 = io_lib:format("~p in process_user (c) Return is ~p",
-            %                     [Site, Return]),
-            %syslib:log(Msg2, ?auth),
             case try_sync(["seek"], Site, Return, ?NO_STAMP) of
                 on_sync ->
                     Stamp = passport:temp_stamp(),
                     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
-                    %Msg3 = io_lib:format("~p in process_user (d) Stamp is ~p "
-                    %                     ++" Cookie is ~p~n",
-                    %                     [Site, Stamp, Cookie]),
-                    %syslib:log(Msg3, ?auth),
                     E#env{headers = [Cookie | E#env.headers]};
                 {redir, Redir} ->
-                    %Msg4 = io_lib:format("~p in process_user (e) Redir is ~p~n",
-                    %                     [Site, Redir]),
-                    %syslib:log(Msg4, ?auth),
                     E2 = E#env{headers = [{"location",Redir}|E#env.headers]},
                     respond(303, E2),
                     throw(ok)
             end;
         {error, _Reason} ->
-            %Msg5 = io_lib:format("~p in process_user (f) Redir is ~p~n",
-            %                     [Site, Reason]),
-            %syslib:log(Msg5, ?auth),
             cleanup(Site, cur_url(Site, E), E)
     catch error:
-                _Other -> %Msg6 = io_lib:format("~p in process_user (g) "
-                          %                     ++ "cleanup",[Site]),
-                          %syslib:log(Msg6, ?auth),
-                          cleanup(Site, cur_url(Site, E), E)
+                _Other -> cleanup(Site, cur_url(Site, E), E)
                         end.
 
 %% Clears out auth cookie on current and main server.
@@ -1589,7 +1631,7 @@ cleanup(Site, Return, E) ->
                     %syslib:log(Msg2, ?auth),
                     R
             end,
-    E3 = E2#env{headers = [{"location",Redir}|E2#env.headers]},
+    E3 = E2#env{headers = [{"location", Redir} | E2#env.headers]},
     respond(303, E3),
     throw(ok).
 
@@ -1693,6 +1735,13 @@ text_html_nocache(#env{mochi = Mochi, headers = Headers}, Text) ->
 
 text_html(#env{mochi = Mochi, headers = Headers}, Text) ->
     Mochi:ok({"text/html", Headers, Text}),
+    ok.
+
+-spec xml(#env{}, any()) -> any().
+xml(#env{mochi = Mochi, headers = Headers}, Data) ->
+    Mochi:ok({"text/xml",
+              Headers ++ nocache(),
+              Data}),
     ok.
 
 -spec json(#env{}, any()) -> any().
