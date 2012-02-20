@@ -8,6 +8,7 @@
 -module(hnfuns_contacts).
 
 -export([
+         'auto.email'/1,
          'manual.sms.out'/1,
          'auto.sms.out'/1,
          'auto.robocall'/1,
@@ -18,6 +19,38 @@
 -include("spriki.hrl").
 -include("errvals.hrl").
 -include("keyvalues.hrl").
+
+'auto.email'([Condition, To, Subject, Contents]) ->
+    'auto.email'([Condition, To, Subject, Contents, [], []]);
+'auto.email'([Condition, To, Subject, Contents, CC]) ->
+    'auto.email'([Condition, To, Subject, Contents, CC, []]);
+'auto.email'([Condition, To, Su, Cn, CC, Reply]) ->
+    Domain = get_domain(get(site)),
+    [Cond2] = typechecks:std_bools([Condition]),
+    case Cond2 of
+        false -> "Email not sent";
+        true  ->
+            Vals = typechecks:std_strs([To, Su, Cn, CC, Reply]),
+            [To2, Su2, Cn2, CC2, R2] = Vals,
+            Fr = case R2 of
+                     [] -> "no-reply@" ++ Domain;
+                     _  -> R2 ++ Domain
+                 end,
+            case is_valid([To2, CC2, Fr]) of
+                false -> ?ERRVAL_VAL;
+                true  -> hn_net_util:email(To2, CC2, Fr, Su2, Cn2),
+                         S = get(site),
+                         Log = #contact_log{idx = get(idx),
+                                            type = "email out",
+                                            to = To2,
+                                            cc = CC2,
+                                            subject = Su2,
+                                            contents = Cn2,
+                                            reply_to = Fr},
+                         spawn(hn_twilio_mochi, log, [S, Log]),
+                         "<a href='./contacts/'>email sent</a>"
+            end
+    end.
 
 'auto.robocall'([Condition, PhoneNo, Msg, Prefix]) ->
     check_if_paid(fun 'auto.robocall2'/2,
@@ -83,8 +116,8 @@ check_if_paid(Fun, Args) ->
     [PhoneNo2] = typechecks:std_strs([PhoneNo]),
     PhoneNo3 = "+" ++ Prefix ++ compress(PhoneNo2),
     Msg2 = rightsize(Msg),
-    Log = #contact_log{idx = get(idx), type = "automatic sms", to = PhoneNo3,
-                      contents = Msg2},
+    Log = #contact_log{idx = get(idx), type = "automatic sms",
+                       to = PhoneNo3, contents = Msg2},
     S = get(site),
     case Condition of
         true ->
@@ -92,7 +125,7 @@ check_if_paid(Fun, Args) ->
                 {ok, ok} ->
                     spawn(hn_twilio_mochi, log,
                           [S, Log#contact_log{status = "ok"}]),
-                    "SMS: " ++ Msg2 ++ " sent to phone " ++ PhoneNo3;
+                    "<a href='./contacts/'>sms sent</a>";
                 _        ->
                     spawn(hn_twilio_mochi, log,
                           [S, Log#contact_log{status = "failed"}]),
@@ -181,3 +214,13 @@ rightsize(Msg) ->
                          Msg3;
         Length =< 160 -> Msg2
     end.
+
+is_valid([])       -> true;
+is_valid([[] | T]) -> is_valid(T);
+is_valid([H | T])  -> case hn_util:valid_email(H) of
+                          true   -> is_valid(T);
+                          false  -> false
+                      end.
+get_domain("http://" ++ Domain) ->
+    [D, _] = string:tokens(Domain, ":"),
+    D.

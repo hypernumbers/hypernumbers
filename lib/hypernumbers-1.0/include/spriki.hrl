@@ -239,9 +239,9 @@
           from      = [] ,
           to        = [],
           cc        = [],
-          bcc       = [],
           subject   = [],
           contents  = [],
+          reply_to  = [],
           reference = [],
           status    = []
          }).
