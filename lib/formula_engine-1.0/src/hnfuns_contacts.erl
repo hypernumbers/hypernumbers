@@ -5,7 +5,7 @@
 %%% @end
 %%% Created : 11 Feb 2012 by gordon@hypernumbers.com
 
--module(hnfuns_phone).
+-module(hnfuns_contacts).
 
 -export([
          'manual.sms.out'/1,

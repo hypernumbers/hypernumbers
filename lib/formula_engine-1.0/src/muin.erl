@@ -466,8 +466,8 @@ get_modules() ->
      hnfuns_integration,
      hnfuns_html,
      hnfuns_forms,
+     hnfuns_contacts,
      hnfuns_controls,
-     hnfuns_phone,
      hnfuns_z,
      hnfuns_special
     ].
