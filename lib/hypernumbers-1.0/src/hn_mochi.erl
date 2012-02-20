@@ -39,6 +39,7 @@
 -define(LOGVIEW,     "logs").
 -define(RECALC,      "recalc").
 -define(PHONE,       "phone").
+-define(RECORDING,   "recording").
 
 -spec start() -> {ok, pid()}.
 start() ->
@@ -322,6 +323,14 @@ authorize_get(_Ref, #qry{view = V}, _Env)
   when V == ?DEMO orelse V == ?WEBPREVIEW orelse V == ?WIKIPREVIEW ->
     allowed;
 
+% a recording is stored against a link with a hypertag signed with its url
+% so authorise anyone with any view of that page to see it
+authorize_get(#refX{site = Site, path = Path}, #qry{view = ?RECORDING}, Env) ->
+    case auth_srv:get_any_view(Site, Path, Env#env.uid) of
+        {view, _} -> allowed;
+        _Else     -> denied
+    end;
+
 % you can only see the logs if you have the spreadsheet view
 authorize_get(R, #qry{view = ?LOGVIEW} = Q, E) ->
     case authorize_get(R, Q#qry{view = ?SHEETVIEW}, E) of
@@ -338,7 +347,8 @@ authorize_get(R, #qry{view = ?RECALC} = Q, E) ->
 
 %% Allow the softphone if there is a softphone control on the cell
 %% for both html and json
-authorize_get(#refX{site = S, path = P} = R, #qry{view=?PHONE}, Env) ->
+authorize_get(#refX{site = S, path = P, obj = {cell, _}} = R,
+              #qry{view=?PHONE}, Env) ->
     case new_db_api:get_phone(R) of
         []      -> denied;
         [_Phone]-> case auth_srv:get_any_view(S, P, Env#env.uid) of
@@ -669,6 +679,20 @@ iget(#refX{site=Site, path=Path}, page, #qry{view=?WIKIPREVIEW}, Env) ->
 
 iget(Ref, page, #qry{view = ?LOGVIEW}, Env) ->
     text_html(Env, hn_logs:get_logs(Ref));
+
+% negotiate a recording
+iget(#refX{site = S} = Ref, page, #qry{view = ?RECORDING, play = Play},
+     #env{accept = html} = Env) ->
+    case hn_twilio_mochi:handle_recording(Ref, Play) of
+        {redir, Redir} ->
+            E2 = Env#env{headers = [{"location", Redir} | Env#env.headers]},
+            respond(303, E2),
+            throw(ok);
+        no_recording ->
+            Dir = hn_util:viewroot(S) ++ "/",
+            File = "no_recording.html",
+            serve_html(200, Env, [Dir, File])
+        end;
 
 iget(Ref, Obj, #qry{view = ?WIKI}, Env=#env{accept = html, uid = Uid})
   when Obj == page orelse Obj == range ->
@@ -1011,7 +1035,9 @@ ipost(Ref=#refX{site = S, path = P} = Ref, _Qry,
             Path = string:tokens(hn_util:abs_path(P, ResPath), "/"),
             Res = Ref#refX{site = S, type = gurl, path = Path,
                            obj = {row, {1, 1}}},
-            ok = new_db_api:handle_form_post(Res, Array, PosterUid),
+            Array2 = [{R, [L, {"formula", hn_util:esc(V)}]}
+                      || {R, [L, {_, V}]} <- Array],
+            ok = new_db_api:handle_form_post(Res, Array2, PosterUid),
             json(Env, "success")
     end;
 

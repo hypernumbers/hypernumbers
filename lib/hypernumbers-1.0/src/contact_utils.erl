@@ -8,6 +8,7 @@
 -module(contact_utils).
 
 -export([
+         get_recording_details/2,
          robocall/3,
          post_sms/3,
          get_twilio_account/1
@@ -28,6 +29,13 @@ robocall(AC, Number, Msg) ->
     twilio:request(AC#twilio_account.account_sid,
                    AC#twilio_account.auth_token,
                    post, Path, Params).
+
+get_recording_details(AC, Call_Sid) ->
+    Path = "/Accounts/" ++ AC#twilio_account.account_sid
+        ++ "/Calls/" ++ Call_Sid ++ "/Recordings.json",
+    twilio:request(AC#twilio_account.account_sid,
+                  AC#twilio_account.auth_token,
+                  get, Path, []).
 
 post_sms(AC, "+" ++ Number, Msg) ->
     post_sms(AC, Number, Msg);

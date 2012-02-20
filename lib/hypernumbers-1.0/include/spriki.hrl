@@ -235,13 +235,15 @@
 -record(contact_log,
         {
           idx,
+          type,
           from      = [] ,
           to        = [],
           cc        = [],
           bcc       = [],
           subject   = [],
           contents  = [],
-          reference = []
+          reference = [],
+          status    = []
          }).
 
 -record(phone,
@@ -281,6 +283,7 @@
           pages,
           paths,
           permissions,
+          play,
           rawview,
           return,
           status,

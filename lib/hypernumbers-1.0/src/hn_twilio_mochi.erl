@@ -13,6 +13,7 @@
 -include("twilio_web.hrl").
 
 -export([
+         handle_recording/2,
          log/2,
          get_phone/3,
          handle_call/2,
@@ -35,7 +36,7 @@ get_phone(#refX{site = S}, #phone{capability = [{client_outgoing, _, _}] = C} = 
     Age = 7200, % in seconds
     % uses the path as an encryption key - when this hypertag is returned
     % by twilio, twilio needs to get the originating URL from the data
-    % so we sign the hypertab with the URL that the request will come in on
+    % so we sign the hypertag with the URL that the request will come in on
     IncomingPath = ["_services", "phone"],
     % now add the current user into the phone log
     {ok, Email} = passport:uid_to_email(Uid),
@@ -47,6 +48,21 @@ get_phone(#refX{site = S}, #phone{capability = [{client_outgoing, _, _}] = C} = 
                             {hypertag, HyperTag},
                             P#phone.softphone_config,
                             P#phone.softphone_type])}.
+
+handle_recording(#refX{site = S, path = P}, HyperTag) ->
+    HT = passport:open_hypertag(S, P, HyperTag),
+    {ok, _, _, Call_SID, _, _} = HT,
+    AC = contact_utils:get_twilio_account(S),
+    {ok, Details} = contact_utils:get_recording_details(AC, Call_SID),
+    {struct, D2} = mochijson:decode(Details),
+    case proplists:lookup("recordings", D2) of
+        {"recordings", {array, [{struct, D3}]}} ->
+            {"uri", URI} = proplists:lookup("uri", D3),
+            URI2 = re:replace(URI, ".json$", ".mp3", [global, {return, list}]),
+            {redir, "https://api.twilio.com" ++ URI2};
+        {"recordings", {array, []}} ->
+            no_recording
+    end.
 
 handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
     case Body of
@@ -90,9 +106,20 @@ handle_c2(#refX{site = S, path = P},
     #twilio{application_sid = AppSID, custom_params = CP} = Body,
     {"hypertag", HyperTag} = proplists:lookup("hypertag", CP),
     HT = passport:open_hypertag(S, P, HyperTag),
-    {ok, _Uid, _EMail, Phone, _, _} = HT,
+    {ok, Uid, EMail, Phone, _, _} = HT,
     Log = Phone#phone.log,
-    Log2 = Log#contact_log{reference = Body#twilio.call_sid},
+    Data = Body#twilio.call_sid,
+    % gonnae build the hypertag with the original refX so we can check it
+    % for security
+    XRefX = new_db_api:idx_to_xrefX(S, Phone#phone.idx),
+    #xrefX{path = OrigP} = XRefX,
+    OrigRef = hn_util:xrefX_to_refX(XRefX),
+    OrigP2 = lists:merge(OrigP, ["contacts"]),
+    RecHyperTag = passport:create_hypertag(S, OrigP2, Uid, EMail, Data, "never"),
+    Url = hn_util:refX_to_url(OrigRef#refX{path = OrigP2, obj = {page, "/"}}),
+    Link = "<a href='" ++ Url ++ "?view=recording&play="
+        ++ RecHyperTag ++ "' target='recording'>Recording</a>",
+    Log2 = Log#contact_log{reference = Link},
     case AppSID of
         LocalAppSID -> log(S, Log2),
                        Phone#phone.twiml;
