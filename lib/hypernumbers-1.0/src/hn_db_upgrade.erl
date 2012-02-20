@@ -47,6 +47,7 @@
          upgrade_dirty_zinf_2011_05_02/0,
          flash_tests/0,
          flash_dev/0,
+         flash_devsrv/0,
          fix_zinf_local_obj_bug/0,
          add_include_index/0,
          make_include_table/0,
@@ -876,6 +877,11 @@ flash_tests() ->
 flash_dev() ->
     ok = hn_setup:delete_site("http://hypernumbers.dev:9000"),
     ok = hypernumbers_app:local_hypernumbers().
+
+flash_devsrv() ->
+    ok = hn_setup:delete_site("http://dev.hypernumbers.com:8080"),
+    ok = hypernumbers_app:local_srv_hypernumbers(),
+    ok = write_twilio_dev_kvs().
 
 fix_zinf_local_obj_bug() ->
     Sites = hn_setup:get_sites(),

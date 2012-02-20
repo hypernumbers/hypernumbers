@@ -29,6 +29,8 @@ robocall(AC, Number, Msg) ->
                    AC#twilio_account.auth_token,
                    post, Path, Params).
 
+post_sms(AC, "+" ++ Number, Msg) ->
+    post_sms(AC, Number, Msg);
 post_sms(AC, Number, Msg) when is_integer(Number) ->
     post_sms(AC, integer_to_list(Number), Msg);
 post_sms(AC, Number, Msg) ->

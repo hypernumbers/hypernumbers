@@ -1,5 +1,5 @@
 #hn-phone-frame{
-    height : 110px;
+    height : auto;
     width  : 200px;
     margin : 20 auto;
     border : 8px solid #eee;
@@ -13,6 +13,24 @@
     font-weight : bold;
     line-height : 105%;
     color       : darkorange;
+    text-align  : center;
+}
+
+#hn-phone-headline, #hn-phone-response {
+    font-weight : bold;
+}
+
+#hn-phone-response {
+    color : darkorange;
+}
+
+#hn-phone-headline, #hn-phone-msg {
+    color       : #666;
+}
+
+#hn-phone-headline, #hn-phone-msg, #hn-phone-response {
+    margin      : 5px 0px;q
+    line-height : 105%;
     text-align  : center;
 }
 
@@ -31,7 +49,7 @@
     padding:3px 6px;
     text-align:center;
     white-space:nowrap;
-    margin : 0 0 0 20px;
+    margin : 0 0 10px 20px;
 }
 
 #hn-phone-img {

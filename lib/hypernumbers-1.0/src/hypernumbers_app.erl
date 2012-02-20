@@ -6,7 +6,8 @@
 -export([
          start/2,
          stop/1,
-         local_hypernumbers/0
+         local_hypernumbers/0,
+         local_srv_hypernumbers/0
         ]).
 
 -include("hypernumbers.hrl").

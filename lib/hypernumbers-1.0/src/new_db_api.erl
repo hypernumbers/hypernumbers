@@ -13,6 +13,7 @@
 -include("syslib.hrl").
 
 -export([
+         idx_to_xrefX/2,
          get_phone/1,
          does_page_exist/1,
          delete_api/2,
@@ -222,6 +223,14 @@ process_dirties_for_zinf(Site, Tree, CheckFun) ->
     RefX = #refX{site = Site},
     write_activity(RefX, Fun, "quiet", Report),
     ok.
+
+idx_to_xrefX(Site, Idx) ->
+    Report = mnesia_mon:get_stamp("get refX from idx"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:idx_to_xrefXD(Site, Idx)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 get_phone(#refX{obj = {cell, _}} = RefX) ->
     Report = mnesia_mon:get_stamp("get_phone"),
@@ -989,6 +998,7 @@ write_activity(#refX{site = Site} = RefX, Op, FrontEnd, Report) ->
                        tell_front_end(FrontEnd, RefX),
                        Ret
                end,
+
     dbsrv:write_activity(Site, Activity).
 
 tell_front_end("quiet", _RefX) ->
