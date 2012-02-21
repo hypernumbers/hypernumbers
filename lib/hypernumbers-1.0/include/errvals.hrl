@@ -32,3 +32,4 @@
 -define(ERR_FORM,    throw(?ERRVAL_FORM)).
 -define(ERR_MOCHI,   throw(?ERRVAL_MOCHI)).
 -define(ERR_CANTINC, throw(?ERRVAL_CANTINC)).
+-define(ERR_PAYONLY, throw(?ERRVAL_PAYONLY)).
