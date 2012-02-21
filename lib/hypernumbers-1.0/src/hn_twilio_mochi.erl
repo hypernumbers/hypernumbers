@@ -20,6 +20,11 @@
          handle_phone_post/3
         ]).
 
+get_phone(#refX{site = _S},
+          #phone{capability = [{manual_email, _To, _Fr, _CC, _Su, _Cn}]} = P,
+          _Uid) ->
+    {struct, lists:flatten([P#phone.softphone_config,
+                            P#phone.softphone_type])};
 get_phone(#refX{site = _S}, #phone{capability = [{manual_sms, PhoneNo, Msg}]} = P,
           _Uid) ->
     {struct, lists:flatten([{"phoneno", PhoneNo},
@@ -58,7 +63,7 @@ handle_recording(#refX{site = S, path = P}, HyperTag) ->
     case proplists:lookup("recordings", D2) of
         {"recordings", {array, [{struct, D3}]}} ->
             {"uri", URI} = proplists:lookup("uri", D3),
-            URI2 = re:replace(URI, ".json$", ".mp3", [global, {return, list}]),
+            URI2 = re:replace(URI, ".json$", ".mp3", [global, {return, list}]), %"
             {redir, "https://api.twilio.com" ++ URI2};
         {"recordings", {array, []}} ->
             no_recording
@@ -77,6 +82,12 @@ handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
                     log(S, Log#contact_log{from = Email, status = "failed"}),
                     {error, N}
             end;
+        [{"manual_email", {struct, Args}}] ->
+            ok = handle_email(Phone, Args),
+            {ok, Email} = passport:uid_to_email(Uid),
+            Log = Phone#phone.log,
+            log(S, Log#contact_log{from = Email}),
+            {ok, 200};
         _  -> {error, 401}
     end.
 
@@ -84,11 +95,26 @@ handle_sms(Ref, Phone, Args) ->
     #phone{capability = [{manual_sms, P, Msg}]} = Phone,
     % check that the phone no and msg in the request matches those
     % in the capability
-    case validate_sms([{"msg", Msg}, {"phoneno", P}], Args) of
+    case validate([{"msg", Msg}, {"phoneno", P}], Args) of
         false -> {error, 401};
         true  -> #refX{site = S} = Ref,
                  AC = contact_utils:get_twilio_account(S),
                  contact_utils:post_sms(AC, P, Msg)
+    end.
+
+handle_email(Phone, Args) ->
+    #phone{capability = Capability} = Phone,
+    [{_, To, Fr, CC, Su, Cn}] = Capability,
+    Caps = [{"to", To},
+            {"reply_to", Fr},
+            {"cc", CC},
+            {"subject", Su},
+            {"contents", Cn}],
+    % check that the phone no and msg in the request matches those
+    % in the capability
+    case validate(Caps, Args) of
+        false -> {error, 401};
+        true  -> ok = hn_net_util:email(To, CC, Fr, Su, Cn)
     end.
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
@@ -114,7 +140,7 @@ handle_c2(#refX{site = S, path = P},
     XRefX = new_db_api:idx_to_xrefX(S, Phone#phone.idx),
     #xrefX{path = OrigP} = XRefX,
     OrigRef = hn_util:xrefX_to_refX(XRefX),
-    OrigP2 = lists:merge(OrigP, ["contacts"]),
+    OrigP2 = lists:merge(OrigP, ["_contacts"]),
     RecHyperTag = passport:create_hypertag(S, OrigP2, Uid, EMail, Data, "never"),
     Url = hn_util:refX_to_url(OrigRef#refX{path = OrigP2, obj = {page, "/"}}),
     Link = "<a href='" ++ Url ++ "?view=recording&play="
@@ -133,12 +159,12 @@ handle_c2(_Ref, #twilio{called = null,
     io:format("Tw is ~p~n", [Tw]),
     {ok, 200}.
 
-validate_sms([], _Args) ->
+validate([], _Args) ->
     true;
-validate_sms([{K, V} | T], Args) ->
+validate([{K, V} | T], Args) ->
     case proplists:lookup(K, Args) of
         none     -> false;
-        {K, V}   -> validate_sms(T, Args);
+        {K, V}   -> validate(T, Args);
         % somebody is spoofing client-side, erk!
         {K, _V2} -> false
     end.
@@ -147,7 +173,7 @@ log(Site, #contact_log{} = Log) ->
     #contact_log{idx = Idx} = Log,
     XRefX = new_db_api:idx_to_xrefX(Site, Idx),
     #xrefX{path = P} = XRefX,
-    P2 = lists:merge(P, ["contacts"]),
+    P2 = lists:merge(P, ["_contacts"]),
     RefX = hn_util:xrefX_to_refX(XRefX),
     RefX2 = RefX#refX{type = gurl, path = P2, obj = {row, {1, 1}}},
     Array = [

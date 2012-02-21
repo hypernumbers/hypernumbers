@@ -1,6 +1,6 @@
 #hn-phone-frame{
     height : auto;
-    width  : 200px;
+    width  : 300px;
     margin : 20 auto;
     border : 8px solid #eee;
     -moz-border-radius    : 12px 12px 12px 12px;
@@ -24,13 +24,20 @@
     color : darkorange;
 }
 
-#hn-phone-headline, #hn-phone-msg {
+#hn-phone-headline, .hn-phone-text, .hn-phone-text2 {
     color       : #666;
 }
 
-#hn-phone-headline, #hn-phone-msg, #hn-phone-response {
-    margin      : 5px 0px;q
+#hn-phone-headline, .hn-phone-text, #hn-phone-text2, #hn-phone-response {
+    margin      : 5px 0px;
     line-height : 105%;
+}
+
+.hn-phone-text2 {
+    padding : 0px 5px;
+}
+
+#hn-phone-headline, .hn-phone-text, #hn-phone-response {
     text-align  : center;
 }
 
@@ -49,13 +56,16 @@
     padding:3px 6px;
     text-align:center;
     white-space:nowrap;
-    margin : 0 0 10px 20px;
+    margin : 0 0 10px 70px;
 }
 
-#hn-phone-img {
-    width               : 100%;
+.hn-phone-img {
     background-image    : url(/img/telephone.png);
     background-repeat   : no-repeat;
     background-position : 98% 50%;
+}
+
+hn-phone-button {
+    width               : 100%;
     font-size           : 75%;
 }

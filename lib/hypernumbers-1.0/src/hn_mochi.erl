@@ -258,10 +258,14 @@ authorize_get(#refX{path = ["_" ++ X | _]}, _Qry, #env{accept = json})
 authorize_get(#refX{path = ["_statistics" | _]}, _Qry, #env{accept = html}) ->
     allowed;
 
-% enable the sites page
-authorize_get(#refX{path = ["_sites" | []]}, _Qry, #env{accept = Accept})
+% enable the _sites page and also _replies and _contacts for phone and form
+% pages on the root page
+authorize_get(#refX{path = ["_" ++ X | []]}, _Qry, #env{accept = Accept})
   when Accept == html;
-       Accept == json ->
+       Accept == json
+       andalso X == "sites";
+       X == "replies";
+       X == "contacts" ->
     allowed;
 
 % Feature Flag them out
