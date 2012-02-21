@@ -1256,7 +1256,7 @@ allocate({Label, Value}, {S, P, Labels, Index, Ref, NLabels, Refs}) ->
             % Label already exists
             {S, P, Labels, Index, Ref, NLabels,
              [{#refX{site = S, type = gurl, path = P,
-                     obj = {column, {X, X}}}, hn_util:esc(Value)} | Refs]};
+                     obj = {column, {X, X}}}, Value} | Refs]};
         false  ->
             % Write new label
             X = Index + 1,
