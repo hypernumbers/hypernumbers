@@ -653,13 +653,29 @@ label {
   font-size:        60%;
   font-weight:      bold;
   background-color: #EEE;
+  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#EEE),
+                                 to(#DDD));
+  background: -moz-linear-gradient(center top , #EEE,
+                                     #DDD) repeat scroll 0 0 transparent;
   color:            #777;
   margin:           2px;
-  padding:          1px 1px 1px 4px;
+  padding:          1px 1px 1px 1px;
   -moz-border-radius:    4px 4px 4px 4px;
   -webkit-border-radius: 4px 4px 4px 4px;
   border:           1px solid #E99;
   }
+
+.hn-include {
+              font-size:  12px;
+              height: auto;
+              background-color: #F00;
+              color: #FFF;
+              width: auto;
+              padding:          4px 4px 4px 4px;
+              -moz-border-radius:    4px 4px 4px 4px;
+              -webkit-border-radius: 4px 4px 4px 4px;
+              border:           1px solid #E99;
+ }
 
 #hn_newpageform, #hn_saveastemplateform, #hn_douploadform, #hn_deletepageform
 {
@@ -774,4 +790,21 @@ label {
 .small {
     line-height : 12px;
     font-size   : 80%;
+}
+
+.hn-wiki-img {
+    background: url(/hypernumbers/down.png) no-repeat right;
+ }
+
+.hn-wikiselect-preview {
+    height : 95%;
+    width  : 95%;
+    -webkit-border-radius:8px 8px 8px 8px;
+    -moz-border-radius:8px 8px 8px 8px;
+    text-align : center;
+    background-color  : #EEEEFF;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#EEEEFF),
+                                 to(#DDDDEE));
+    background: -moz-linear-gradient(center top , #EEEEFF,
+                                     #DDDDEE) repeat scroll 0 0 transparent;
 }
