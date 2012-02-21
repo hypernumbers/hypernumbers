@@ -254,6 +254,10 @@ authorize_get(#refX{path = ["_" ++ X | _]}, _Qry, #env{accept = json})
        X == "pages" ->
     allowed;
 
+% we check later on if you have admin permissions
+authorize_get(#refX{path = ["_statistics" | _]}, _Qry, #env{accept = html}) ->
+    allowed;
+
 % enable the sites page
 authorize_get(#refX{path = ["_sites" | []]}, _Qry, #env{accept = Accept})
   when Accept == html;
