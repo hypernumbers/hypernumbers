@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         write_twilio_spoof_kvs/0,
          write_twilio_use_kvs/0,
          write_twilio_dev_kvs/0,
          add_phone_table_2011_02_11/0,
@@ -73,6 +74,14 @@
 %% upgrade_1743_B/0,
 %% upgrade_1776/0
         ]).
+
+write_twilio_spoof_kvs() ->
+    Site = "http://hypernumbers.dev:9000",
+    AC = #twilio_account{account_sid     = "aaaa",
+                         auth_token      = "bbbb",
+                         application_sid = "cccc",
+                         site_phone_no   = "+441315101875"},
+    new_db_api:write_kv(Site, ?twilio, AC).
 
 write_twilio_dev_kvs() ->
     Site = "http://dev.hypernumbers.com:8080",
