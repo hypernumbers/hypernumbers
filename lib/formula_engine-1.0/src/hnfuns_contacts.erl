@@ -8,6 +8,7 @@
 -module(hnfuns_contacts).
 
 -export([
+         'manual.email'/1,
          'auto.email'/1,
          'manual.sms.out'/1,
          'auto.sms.out'/1,
@@ -20,36 +21,68 @@
 -include("errvals.hrl").
 -include("keyvalues.hrl").
 
+'manual.email'([To, Subject, Contents]) ->
+    'manual.email'([To, Subject, Contents, [], []]);
+'manual.email'([To, Subject, Contents, CC]) ->
+    'manual.email'([To, Subject, Contents, CC, []]);
+'manual.email'([To, Su, Cn, CC, Reply]) ->
+    [To2, Su2, Cn2, CC2, Fr] = check(To, Su, Cn, CC, Reply),
+    Log = #contact_log{idx = get(idx),
+                       type = "manual email",
+                       to = To2,
+                       from = Fr,
+                       cc = CC2,
+                       subject = Su2,
+                       contents = Cn2},
+    TwiML = "",
+    Capability = [{manual_email, To2, Fr, CC2}],
+    Type ={"softphone_type", "manual email"},
+    Config = [{"button_txt", To},
+              {"headline_txt", "Send Email"},
+              {"to_txt", To2},
+              {"from_txt", Fr},
+              {"cc_txt", CC2},
+              {"subject_txt", Su2},
+              {"email_msg", Cn2}],
+    Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
+                   softphone_type = Type, softphone_config = Config},
+    Headline = "Send Email",
+    ButtonTxt = To2,
+    phone(Phone, "Manual Email: ", Headline, ButtonTxt).
+
 'auto.email'([Condition, To, Subject, Contents]) ->
     'auto.email'([Condition, To, Subject, Contents, [], []]);
 'auto.email'([Condition, To, Subject, Contents, CC]) ->
     'auto.email'([Condition, To, Subject, Contents, CC, []]);
 'auto.email'([Condition, To, Su, Cn, CC, Reply]) ->
-    Domain = get_domain(get(site)),
+    [To2, Su2, Cn2, CC2, Fr] = check(To, Su, Cn, CC, Reply),
     [Cond2] = typechecks:std_bools([Condition]),
     case Cond2 of
         false -> "Email not sent";
-        true  ->
-            Vals = typechecks:std_strs([To, Su, Cn, CC, Reply]),
-            [To2, Su2, Cn2, CC2, R2] = Vals,
-            Fr = case R2 of
-                     [] -> "no-reply@" ++ Domain;
-                     _  -> R2 ++ Domain
-                 end,
-            case is_valid([To2, CC2, Fr]) of
-                false -> ?ERRVAL_VAL;
-                true  -> hn_net_util:email(To2, CC2, Fr, Su2, Cn2),
-                         S = get(site),
-                         Log = #contact_log{idx = get(idx),
-                                            type = "email out",
-                                            to = To2,
-                                            cc = CC2,
-                                            subject = Su2,
-                                            contents = Cn2,
-                                            reply_to = Fr},
-                         spawn(hn_twilio_mochi, log, [S, Log]),
-                         "<a href='./contacts/'>email sent</a>"
-            end
+        true  -> hn_net_util:email(To2, CC2, Fr, Su2, Cn2),
+                 S = get(site),
+                 Log = #contact_log{idx = get(idx),
+                                    type = "email out",
+                                    to = To2,
+                                    cc = CC2,
+                                    subject = Su2,
+                                    contents = Cn2,
+                                    reply_to = Fr},
+                 spawn(hn_twilio_mochi, log, [S, Log]),
+                 "<a href='./contacts/'>email sent</a>"
+    end.
+
+check(To, Su, Cn, CC, Reply) ->
+    Domain = get_domain(get(site)),
+    Vals = typechecks:std_strs([To, Su, Cn, CC, Reply]),
+    [To2, Su2, Cn2, CC2, R2] = Vals,
+    Fr = case R2 of
+             [] -> "no-reply@" ++ Domain;
+             _  -> R2 ++ Domain
+         end,
+    case is_valid([To2, CC2, Fr]) of
+        false -> ?ERR_VAL;
+        true  -> [To2, Su2, Cn2, CC2, Fr]
     end.
 
 'auto.robocall'([Condition, PhoneNo, Msg, Prefix]) ->
@@ -178,13 +211,14 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
     Y = get(my),
     URL = hn_util:refX_to_url(#refX{site = Site, path = Path,
                                     obj = {cell, {X, Y}}}),
-    HTML= "<div class='hn_softphone'>"
+    HTML = "<div class='hn_softphone'>"
         ++ "<div class'hn_softphone_hd'>" ++ Headline ++ "</div>"
         ++ "<div class='hn_softphone_link'>"
         ++ "<a href='" ++ URL ++ "?view=phone' target='hnsoftphone'>"
         ++ ButtonTxt ++ "</a>"
         ++ "</div>"
-        ++ "<div class='small'>(opens in new window)</div>"
+        ++ "<div class='small'>(opens in new window) "
+        ++ "<a href='./contacts/'>logs</a></div>"
         ++ "</div>",
     {phone, {Preview ++ ButtonTxt, 2, 4, Payload}, HTML}.
 
