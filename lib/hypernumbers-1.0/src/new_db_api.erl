@@ -1264,7 +1264,7 @@ allocate({Label, Value}, {S, P, Labels, Index, Ref, NLabels, Refs}) ->
              [{#refX{site = S, type = url, path = P,
                      obj = {cell, {X, 1}}}, Label} | NLabels],
              [{#refX{site = S, type = gurl, path = P,
-                     obj = {column, {X, X}}}, hn_util:esc(Value)} | Refs]}
+                     obj = {column, {X, X}}}, Value} | Refs]}
     end.
 
 allocate_values(S, P, Values, Labels, Ref, Index) ->
