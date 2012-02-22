@@ -50,7 +50,7 @@ textarea([V1]) ->
 
 button([])      -> button(["Submit Form"]);
 button([Title]) -> button([Title, "Thanks for completing our form."]);
-button([Title, Response]) -> button([Title, Response, "./replies/"]);
+button([Title, Response]) -> button([Title, Response, "./_replies/"]);
 button([Title, Response, Results]) ->
     muin_collect:col([Title, Response, Results], [first_array, fetch, {cast,str}],
         [return_errors, {all, fun muin_collect:is_string/1}],

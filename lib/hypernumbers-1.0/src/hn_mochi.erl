@@ -260,6 +260,15 @@ authorize_get(#refX{path = ["_statistics" | _]}, _Qry, #env{accept = html}) ->
 
 % enable the _sites page and also _replies and _contacts for phone and form
 % pages on the root page
+%
+% need to do it twice, once for no view set, and once for a sepcific view
+authorize_get(#refX{site = Site, path = ["_" ++ X | []] = Path},
+              #qry{_ = undefined}, #env{accept = html, uid = Uid})
+  when  X == "sites";
+        X == "replies";
+        X == "contacts" ->
+    auth_srv:check_get_view(Site, Path, Uid);
+
 authorize_get(#refX{path = ["_" ++ X | []]}, _Qry, #env{accept = Accept})
   when Accept == html;
        Accept == json
@@ -763,9 +772,7 @@ iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
         end,
     json(Env, V);
 
-iget(Ref, Type, Qry, Env) ->
-    io:format("in other 404~n- Ref is ~p~n- Type is ~p~n- Qry is ~p~n- Env is ~p~n",
-              [Ref, Type, Qry, Env]),
+iget(Ref, _Type, Qry, Env) ->
     ?E("404~n-~p~n-~p~n", [Ref, Qry]),
     '404'(Ref, Env).
 
@@ -826,7 +833,6 @@ ipost(#refX{site=S, path=["_login"]}, Qry, E) ->
     Email = string:to_lower(Email0),
     case passport:authenticate(Email, Pass, true) of
         {error, authentication_failed} ->
-            io:format("faile a~n"),
             json(E, {struct, [{"response", "error"}]});
         {ok, Uid, Stamp, Age} ->
             Return = case Qry#qry.return of
