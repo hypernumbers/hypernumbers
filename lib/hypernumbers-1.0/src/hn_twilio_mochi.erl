@@ -140,7 +140,7 @@ handle_c2(#refX{site = S, path = P},
     XRefX = new_db_api:idx_to_xrefX(S, Phone#phone.idx),
     #xrefX{path = OrigP} = XRefX,
     OrigRef = hn_util:xrefX_to_refX(XRefX),
-    OrigP2 = lists:merge(OrigP, ["_contacts"]),
+    OrigP2 = lists:append(OrigP, ["_contacts"]),
     RecHyperTag = passport:create_hypertag(S, OrigP2, Uid, EMail, Data, "never"),
     Url = hn_util:refX_to_url(OrigRef#refX{path = OrigP2, obj = {page, "/"}}),
     Link = "<a href='" ++ Url ++ "?view=recording&play="
