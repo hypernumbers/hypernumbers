@@ -324,7 +324,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
    <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
  </div>
 
- <div id='editmenu' class='ctrlbox'>
+ <div id='editingmenu' class='ctrlbox'>
   <div id='editloggedin'>
    <div id='uname'></div>
   <div id='allowedviews'></div>
