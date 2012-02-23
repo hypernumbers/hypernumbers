@@ -69,7 +69,7 @@
                                     contents = Cn2,
                                     reply_to = Fr},
                  spawn(hn_twilio_mochi, log, [S, Log]),
-                 "<a href='./contacts/'>email sent</a>"
+                 "<a href='./_contacts/'>email sent</a>"
     end.
 
 check(To, Su, Cn, CC, Reply) ->
@@ -157,7 +157,7 @@ check_if_paid(Fun, Args) ->
                 {ok, ok} ->
                     spawn(hn_twilio_mochi, log,
                           [S, Log#contact_log{status = "ok"}]),
-                    "<a href='./contacts/'>sms sent</a>";
+                    "<a href='./_contacts/'>sms sent</a>";
                 _        ->
                     spawn(hn_twilio_mochi, log,
                           [S, Log#contact_log{status = "failed"}]),
@@ -217,7 +217,7 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
         ++ ButtonTxt ++ "</a>"
         ++ "</div>"
         ++ "<div class='small'>(opens in new window) "
-        ++ "<a href='./contacts/'>logs</a></div>"
+        ++ "<a href='./_contacts/'>logs</a></div>"
         ++ "</div>",
     {phone, {Preview ++ ButtonTxt, 2, 4, Payload}, HTML}.
 

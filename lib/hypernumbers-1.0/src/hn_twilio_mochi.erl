@@ -140,7 +140,7 @@ handle_c2(#refX{site = S, path = P},
     XRefX = new_db_api:idx_to_xrefX(S, Phone#phone.idx),
     #xrefX{path = OrigP} = XRefX,
     OrigRef = hn_util:xrefX_to_refX(XRefX),
-    OrigP2 = lists:merge(OrigP, ["_contacts"]),
+    OrigP2 = lists:append(OrigP, ["_contacts"]),
     RecHyperTag = passport:create_hypertag(S, OrigP2, Uid, EMail, Data, "never"),
     Url = hn_util:refX_to_url(OrigRef#refX{path = OrigP2, obj = {page, "/"}}),
     Link = "<a href='" ++ Url ++ "?view=recording&play="
@@ -155,8 +155,8 @@ handle_c2(_Ref, #twilio{called = null,
                         caller = null,
                         from = null,
                         to = null,
-                  call_duration = #twilio_duration{}} = Tw) ->
-    io:format("Tw is ~p~n", [Tw]),
+                  call_duration = #twilio_duration{}}) ->
+    %io:format("Tw is ~p~n", [Tw]),
     {ok, 200}.
 
 validate([], _Args) ->
@@ -173,7 +173,7 @@ log(Site, #contact_log{} = Log) ->
     #contact_log{idx = Idx} = Log,
     XRefX = new_db_api:idx_to_xrefX(Site, Idx),
     #xrefX{path = P} = XRefX,
-    P2 = lists:merge(P, ["_contacts"]),
+    P2 = lists:append(P, ["_contacts"]),
     RefX = hn_util:xrefX_to_refX(XRefX),
     RefX2 = RefX#refX{type = gurl, path = P2, obj = {row, {1, 1}}},
     Array = [
