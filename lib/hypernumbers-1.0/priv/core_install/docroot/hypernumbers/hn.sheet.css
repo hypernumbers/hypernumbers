@@ -801,12 +801,12 @@ table.tablesorter tbody tr.highlight td {
                color   : #666;
 }
 
-.insert a, .edit a, .fonts a, .site a {
+.forms a, .insert a, .edit a, .fonts a, .site a {
  display: block;
  padding: 2px 5px;
 }
 
-.insert a:hover, .edit a:hover, .fonts a:hover, .site a:hover {
+.forms a:hover, .insert a:hover, .edit a:hover, .fonts a:hover, .site a:hover {
     background: -moz-linear-gradient(center top , #EEE, #BBB) repeat scroll 0 0 transparent;
     background: -webkit-linear-gradient(linear, 0 40%, 0 70% from(#EEE), to(#BBB));
 }
