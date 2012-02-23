@@ -25,7 +25,7 @@
     <div id="powered" class="ctrlbox">
         <span class="hyper">hyper</span><span class="numbers">numbers</span>
     </div>
-    <div id="editmenu" class="ctrlbox">
+    <div id="editingmenu" class="ctrlbox">
         <div id="editanon">
           <form action="" method="post" id="login">
             <div class="formrow"><label for="email">Email Address</label>
@@ -88,13 +88,51 @@
       <div class="expand site" id="sitemenu">
         <span id="sitemenuwrap">Site</span>
       <div id="sitemenulist" class="expandinner">
-      <a data-tab="sitemypages">My Pages</a>
-      <a data-tab="sitesettings">Settings</a>
-      <a class="hn_advanced" data-tab="sitedataupload">Data Upload</a>
-      <a class="hn_developer" data-tab="sitemanageapi">Manage API</a>
-      <a data-tab="sitetour">Tour</a>
+      <a name="sitemypages">My Pages</a>
+      <a name="sitesettings">Settings</a>
+      <a class="hn_advanced" name="sitedataupload">Data Upload</a>
+      <a class="hn_developer" name="sitemanageapi">Manage API</a>
+      <a name="sitetour">Tour</a>
       </div>
       </div>
+      <a class="separator"></a>
+      <div class="expand edit" id="editmenu">
+        <span id="editmenuwrap">Edit</span>
+      <div id="editmenulist" class="expandinner">
+      <a name="clearboth">Clear <b>All</b></a>
+      <a name="clearcontent">Clear <b>Contents</b></a>
+      <a name="clearformat">Clear <b>Formats</b></a>
+  	  <hr />
+      <a name="copy">Copy<span class="desc">Ctrl+C</span></a>
+      <a name="paste" class="disabled paste">Paste<span class="desc">Ctrl+V</span></a>
+      <a name="pastevalue" class="disabled paste">Paste Value</a>
+      <a name="pastestyle" class="disabled paste">Paste Style</a>
+  	  <hr class="editviewlogs" />
+      <a name="viewlogs" class="editviewlogs">View Cell's History</a>
+      </div>
+      </div>
+
+      <div class="expand insert" id="insertmenu">
+        <span id="insertmenuwrap">Insert</span>
+      <div id="insertmenulist" class="expandinner">
+       <div class='insertgroup'>Cells</div>
+      <a name="insertright" class="cell_range">Insert (shift right)</a>
+      <a name="insertdown" class="cell_range">Insert (shift down)</a>
+      <a name="deleteleft" class="cell_range">Delete (shift left)</a>
+      <a name="deleteup" class="cell_range">Delete (shift up)</a>
+      <div class='insertgroup'>Rows</div>
+      <a name="deleterows" class="row">Delete Row(s)</a>
+      <a name="defaultheightrows" class="row">Default Height</a>
+      <a name="insertrowsbefore" class="row">Insert Rows Before</a>
+      <a name="insertrowsafter" class="row">Insert Rows After</a>
+      <div class='insertgroup'>Columns</div>
+      <a name="deletecols" class="col">Delete Columns</a>
+      <a name="defaultwidthcols" class="col">Default Width</a>
+      <a name="insertcolsbefore" class="col">Insert Columns Before</a>
+      <a name="insertcolsafter" class="col">Insert Columns After</a>
+      </div>
+      </div>
+
       <a class="separator"></a>
       <div class="expand fonts" id="fontsizewrap">
         <span id="fontsize">$txt:{Size}$</span>
@@ -436,7 +474,7 @@
 	<li><a name="deleteleft">Delete (shift left)</a></li>
 	<li><a name="deleteup">Delete (shift up)</a></li>
 	<li class="seperator viewlogs"></li>
-	<li><a name="viewlogs" class="viewlogs">View cell's history</a></li>
+	<li><a name="viewlogs" class="viewlogs">View Cell's History</a></li>
       </ul>
     </div>
 
@@ -571,11 +609,11 @@
       <a id="ctrlclose">x</a>
 
       <ul id="ctrltabs">
-        <li><a data-tab="sitemypages">Pages</a></li>
-        <li><a data-tab="sitesettings">Settings</a></li>
-        <li class="hn_advanced"><a data-tab="sitedataupload">Data Upload</a></li>
-        <li class="hn_developer"><a data-tab="sitemanageapi">Manage Api</a></li>
-        <li><a data-tab="sitetour">Tour</a></li>
+        <li><a name="sitemypages">Pages</a></li>
+        <li><a name="sitesettings">Settings</a></li>
+        <li class="hn_advanced"><a name="sitedataupload">Data Upload</a></li>
+        <li class="hn_developer"><a name="sitemanageapi">Manage Api</a></li>
+        <li><a name="sitetour">Tour</a></li>
       </ul>
 
       <div id="ctrltabdivs">
