@@ -40,8 +40,10 @@ make_html([H | T], Acc) ->
           type = _Ty, path = _P, obj = O, log = Msg} = H,
     Date = dh_date:format("d/m/y h:m", util2:timestamp_to_date(Tm)),
     Date2 = io_lib:format("~s", [Date]),
-    Row = [Date2, U, hn_util:obj_to_ref(O), format_actions_and_type(A),
-           format_actions_and_type(AT), format_msg(Msg)],
+    {ok, Email} = passport:uid_to_email(U),
+    Row = [Date2, Email, hn_util:obj_to_ref(O),
+           format_actions_and_type(A), format_actions_and_type(AT),
+           format_msg(Msg)],
     make_html(T, [make_row(Row, []) | Acc]).
 
 make_row([], Acc)       -> "<tr>" ++ lists:flatten(lists:reverse(Acc)) ++ "</tr>";
