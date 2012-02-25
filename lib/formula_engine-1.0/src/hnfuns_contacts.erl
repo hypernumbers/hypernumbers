@@ -78,12 +78,24 @@ check(To, Su, Cn, CC, Reply) ->
     [To2, Su2, Cn2, CC2, R2] = Vals,
     Fr = case R2 of
              [] -> "no-reply@" ++ Domain;
-             _  -> R2 ++ Domain
+             _  -> R2 ++ "@" ++ Domain
          end,
-    case is_valid([To2, CC2, Fr]) of
+    To3 = split([To2]),
+    CC3 = split([CC2]),
+    case is_valid(lists:merge([To3, CC3, Fr])) of
         false -> ?ERR_VAL;
-        true  -> [To2, Su2, Cn2, CC2, Fr]
+        true  -> [string:join(To3, ";"), Su2, Cn2, string:join(CC3, ";"), Fr]
     end.
+
+split(List) ->
+    List2 = split(List, " ", []),
+    List3 = split(List2, ",", []),
+    split(List3, ";", []).
+
+split([], _ , Acc) -> lists:reverse(Acc);
+split([H | T], Token, Acc) ->
+    List2 = string:tokens(H, Token),
+    split(T, Token, lists:merge(List2, Acc)).
 
 'auto.robocall'([Condition, PhoneNo, Msg, Prefix]) ->
     check_if_paid(fun 'auto.robocall2'/2,
@@ -249,7 +261,7 @@ rightsize(Msg) ->
     end.
 
 is_valid([])       -> true;
-is_valid([[] | T]) -> is_valid(T);
+is_valid(["" | T]) -> is_valid(T);
 is_valid([H | T])  -> case hn_util:valid_email(H) of
                           true   -> is_valid(T);
                           false  -> false
