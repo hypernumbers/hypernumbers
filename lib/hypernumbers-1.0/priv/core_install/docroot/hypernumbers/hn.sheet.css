@@ -234,7 +234,7 @@ img.wizrep {
 }
 
 #wizcatlist {
-    font-size:inherit;
+    font-size: 80%;
     box-sizing:border-box;
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
@@ -243,7 +243,7 @@ img.wizrep {
 
 #wizfunlist {
               width       : 144px;
-              font-size   : 9pt;
+              font-size   : 8pt;
               line-height : 16px; /* set this or problems in Chrome returning "normal" */
 }
 
@@ -625,6 +625,11 @@ table.tablesorter tbody tr.highlight td {
     top: 0px;
 }
 
+.hn-text-right
+{
+  text-align : right;
+  }
+
 #right { right  : 0px; background: url(sprite.png) -1px -32px; }
 #left  { left   : 0px; background: url(sprite.png) -1px -47px; }
 #up    { top    : 0px; background: url(sprite.png) -1px -1px; }
@@ -798,7 +803,8 @@ table.tablesorter tbody tr.highlight td {
 .insertgroup {
                padding : 3px 0px 0px 3px;
                size    : 120%;
-               color   : #666;
+               color   : orange;
+               font-weight: bold;
 }
 
 .forms a, .insert a, .edit a, .fonts a, .site a {
@@ -1262,19 +1268,55 @@ z-index     : 10000002;
     margin : 0px;
 }
 
-#ctrlpanel {
-    display     : none;
-    z-index     : 10000002;
-    position    : absolute;
-    top         : 50%;
-    left        : 50%;
-    height      : 400px;
-    width       : 600px;
-    margin-left : -300px;
-    margin-top  : -201px;
-	border      : 2px solid #999;
-    -moz-border-radius:4px;
-    -webkit-border-radius:4px;
+#hn-small-dialog-hdr
+{
+  text-align: center;
+  }
+
+#pagespanel
+{
+  background-color : #000;
+  display : none;
+  border : 5px solid #f00;
+  z-index     : 10000002;
+  position    : absolute;
+  top         : 50%;
+  left        : 50%;
+  width       : 300px;
+  margin-left : -200px;
+  margin-top  : -101px;
+  border      : 2px solid #999;
+  -moz-border-radius:4px;
+  -webkit-border-radius:4px;
+  }
+
+#pagespanel div, #pagespanel form
+{
+  display : none;
+  }
+
+#sitesaveastemplate, #siteuploadxls
+{
+  height : 180;
+  background-color : #fff;
+  -moz-border-radius: 0px 0px 4px 4px;
+  -webkit-border-radius: 0px 0px 4px 4px;
+  }
+
+#ctrlpanel
+{
+  display     : none;
+  z-index     : 10000002;
+  position    : absolute;
+  top         : 50%;
+  left        : 50%;
+  height      : 400px;
+  width       : 600px;
+  margin-left : -300px;
+  margin-top  : -201px;
+  border      : 2px solid #999;
+  -moz-border-radius : 4px;
+  -webkit-border-radius : 4px;
 }
 
 #ctrltabs {
@@ -1338,7 +1380,14 @@ z-index     : 10000002;
     cursor:pointer;
 }
 
-#ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose, #hn_makewikiselectclose, #hn_makeuserdeffnsclose {
+#hn-small-dialog-hdr > span
+{
+  font-weight : bold;
+  color: white;
+  z-index: 100;
+  }
+
+#pagesclose, #ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose, #hn_makewikiselectclose, #hn_makeuserdeffnsclose {
     cursor:pointer;
     color:white;
     font-weight:bold;
@@ -1352,7 +1401,7 @@ z-index     : 10000002;
     z-index:99;
 }
 
-#ctrlclose:hover,#funsclose:hover, #dialogclose:hover, #lineviewclose:hover {
+#pagesclose:hover,#ctrlclose:hover,#funsclose:hover, #dialogclose:hover, #lineviewclose:hover {
     color:#CCC;
 }
 
@@ -1392,7 +1441,7 @@ z-index     : 10000002;
     font-style:     italic;
 }
 
-#doupload, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn, .hn-toggleviews {
+#uploadxls, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn, .hn-toggleviews {
     cursor:pointer;
 }
 
@@ -1408,9 +1457,14 @@ z-index     : 10000002;
 
 #newpage, #templatename
 {
-  width: 96px;
+  width: 170px;
   padding: 2px 0px 0px 0px;
 }
+
+#templateslist, #templateslist2
+{
+  width: 170px;
+  }
 
 #newviewas a:hover {
     text-decoration:underline;
@@ -1597,27 +1651,18 @@ z-index     : 10000002;
                   padding: 4px;
                   }
 
-#doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet {
+.hn_experimental
+{
+  font-size   : 130%;
+  font-weight : bold;
+  color       : darkorange;
+  }
+
+#uploadxls, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet {
     width: 100px
 }
 
-.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, .hn-toggleviews {
-    background:#EEE;
-    -webkit-border-radius:3px 3px 3px 3px;
-    -moz-border-radius:3px 3px 3px 3px;
-    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9),
-                                 to(#E3E3E3));
-    background: -moz-linear-gradient(center top , #F9F9F9,
-                                     #E3E3E3) repeat scroll 0 0 transparent;
-    border:1px solid #BBBBBB;
-    margin:0 0px 0 0;
-    outline:medium none;
-    padding:3px 6px;
-    text-align:center;
-    white-space:nowrap;
-}
-
-.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, .hn-toggleviews {
+.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #uploadxls, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, .hn-toggleviews {
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;

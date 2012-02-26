@@ -472,7 +472,7 @@ label {
     color:#666;
 }
 
-#templateslist, #hn_uf_select {
+#templateslist, #templateslist2, #hn_uf_select {
   background-color: #ffffff;
   color:            #555555;
   width:            98px;
@@ -677,11 +677,19 @@ label {
               border:           1px solid #E99;
  }
 
-#hn_newpageform, #hn_saveastemplateform, #hn_douploadform, #hn_deletepageform
+#hn_uploadxlsform, #hn_saveastemplateform
 {
   padding: 3px 3px 5px 3px;
-  float:left;
-  height: 70px;
+  -moz-border-radius:    0px 0px 4px 4px;
+  -webkit-border-radius: 0px 0px 4px 4px;
+  border:  1px solid #aaa;
+  background-color: #efefef;
+}
+
+#hn_newpageform
+{
+  float : left;
+  padding: 3px 3px 5px 3px;
   -moz-border-radius:    4px 4px 4px 4px;
   -webkit-border-radius: 4px 4px 4px 4px;
   border:  1px solid #aaa;
@@ -695,15 +703,8 @@ label {
 
 .hn_pagesbuttonbox {
                      padding: 0px 2px 0px 2px;
-                     width: 99px;
                      float: left;
                 }
-
-#hn_pagesheader {
-    padding: 0px 0px 0px 12px;
-    font-weight: bold;
-    text-align:  left;
-}
 
 .hn_debug_z {
               -moz-border-radius: 4px 4px 4px 4px;

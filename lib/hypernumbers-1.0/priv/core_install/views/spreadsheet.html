@@ -80,15 +80,18 @@
       <div class="expand site" id="sitemenu">
         <span id="sitemenuwrap">Site</span>
       <div id="sitemenulist" class="expandinner">
-      <a name="sitemypages">My Pages</a>
-      <a name="sitesettings">Settings</a>
-      <a class="hn_advanced" name="sitedataupload">Data Upload</a>
-      <a class="hn_developer" name="sitemanageapi">Manage API</a>
-      <a name="sitetour">Tour</a>
+      <a name="sitemypages">New Page...</a>
+      <a name="sitedelete">Delete Page</a>
+      <a name="sitesaveastemplate">Save As Template...</a>
+      <a name="siteuploadxls">Upload .xls File...</a>
+      <a name="sitesettings">Site Settings...</a>
+      <a class="hn_advanced" name="sitedataupload">Data Upload...</a>
+      <a class="hn_developer" name="sitemanageapi">Manage API...</a>
+      <a name="sitetour">Take Tour...</a>
       </div>
       </div>
       <a class="separator"></a>
-      <div class="expand edit" id="editmenu1">
+      <div class="expand edit" id="editmenu">
         <span id="editmenuwrap">Edit</span>
       <div id="editmenulist" class="expandinner">
       <a name="clearboth">Clear <b>All</b></a>
@@ -538,11 +541,11 @@
     <div id="insertimagedialog" class="mdialog">
       <span>Enter the URL of the image:</span>
       <form id="imageform">
-	<input type="text" id="insertimageinput" value="http://">
-	<div style="margin-top:4px;">
-	  <input type="submit" class="button action" value="Insert Image"  />
-	  <input type="button" class="button cancel" value="Cancel" />
-	</div>
+      <input type="text" id="insertimageinput" value="http://">
+      <div style="margin-top:4px;">
+        <input type="submit" class="button action" value="Insert Image"  />
+        <input type="button" class="button cancel" value="Cancel" />
+      </div>
       </form>
     </div>
 
@@ -600,6 +603,26 @@
       <img src="/img/loading2.gif" /> loading data...
     </div>
 
+    <div id="pagespanel"><div id="hn-small-dialog-hdr"><span></span>
+      <a id="pagesclose">x</a></div>
+      <div id="sitesaveastemplate">
+        <form id="hn_saveastemplateform">
+        <div id="hn_save_as_temp_text"></div>
+        <input id="templatename" />
+        <input id="saveastemplate" type="button" value="Save As..." />
+        <span id="templates2"></span>
+        <div id="saveasfeedback"></div>
+        </form>
+        </div>
+      <div id="siteuploadxls">
+        <form id="hn_uploadxlsform">
+        <div>You can upload Microsoft Excel '97 files (.xls). This functionality has not been extensively tested and is known to have problems with Excel files created in other versions of Excel, Excel files created on the Mac and Open Office files.</div>
+        <div id="hn_uploadxls_details"></div>
+        <input type="submit" id="uploadxls" value="Upload"  />
+        <div id="uploadxlsresponse"></div>
+        </form>
+        </div>
+      </div>
     <div id="ctrlpanel">
 
       <a id="ctrlclose">x</a>
@@ -617,50 +640,24 @@
 	<div id="sitemypages">
 
 	  <div id="finder">
-	    <div class="panewrapper"><div class="pane"></div></div>
+	    <div class="panewrapper">
+        <div class="pane"></div>
+      </div>
 	  </div>
         <span class="currentpageselection" style="display:none;"></span>
-       <div id='hn_buttonpanel'>
-         <div id='hn_newpagewrapper'>
-         <form id="hn_newpageform">
-       <div class='hn_pagesbuttonbox'>
-         <div id="hn_pagesheader">New Pages</div>
-        <div>
-          <input id="newspreadsheet" type="submit" value="New" class="button" />
-        </div>
-        <div>from template:</div>
-        </div>
-        <div class='hn_pagesbuttonbox'>
-        <small>eg <code>/my/home/</code></small>
-        <div>
-          <input type="text" id="newpage" value="" />
-        </div>
-        <span id="templates"></span>
-        </div>
-        </form>
-        </div>
-        <form id="hn_deletepageform">
-       <div class='hn_pagesbuttonbox'>
-         <div id="hn_pagesheader">Delete Page</div>
-        <input class="redbutton" id="ctrldelete" type="submit" value="Delete" />
+        <form id="hn_newpageform">
+         <div class='hn_pagesbuttonbox' class='hn-text-right'>
+           <div><small>eg <code>/my/home/</code></small></div>
+           <div>from template:</div>
+         </div>
+         <div class='hn_pagesbuttonbox'>
+           <input type="text" id="newpage" value="" />
+           <div id="templates"></div>
+         </div>
+         <div class='hn_pagesbuttonbox'>
+           <input id="newspreadsheet" type="submit" value="New" class="button" />
          </div>
         </form>
-        <form id="hn_douploadform">
-       <div class='hn_pagesbuttonbox'>
-         <div id="hn_pagesheader">Upload .xls</div>
-        <input type="submit" id="doupload" value="Upload"  />
-        <div id="uploadresponse"></div>
-        </div>
-        </form>
-        <form id="hn_saveastemplateform">
-       <div class='hn_pagesbuttonbox'>
-         <div id="hn_pagesheader">Templates</div>
-          <input class="redbutton" id="saveastemplate" type="submit" value="Save As..." />
-        <div><input id="templatename" /></div>
-        <span id="saveasfeedback"></span>
-        </div>
-        </form>
-        </div>
        </div>
     	<div id="sitesettings" class="sitedialogwrapper">
 	    <h4>Set Password</h4>
@@ -899,6 +896,7 @@
     <script src="/hypernumbers/jquery.tablesorter.min.js"></script>
     <script src="/jscolor/jscolor.js"></script>
     <script src="/hypernumbers/hn.ui.ctrlpanel.js"></script>
+    <script src="/hypernumbers/hn.ui.pagespanel.js"></script>
     <script src="/hypernumbers/hn.site.js"></script>
     <script src="/hypernumbers/hn.dialog.js"></script>
     <script src="/hypernumbers/hn.userdeffns.js"></script>

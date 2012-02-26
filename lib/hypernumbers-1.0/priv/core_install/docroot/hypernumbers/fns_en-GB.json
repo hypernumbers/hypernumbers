@@ -167,12 +167,88 @@
     ]
   },
   {
+    "fn": "auto.email",
+    "category": "Phone And Email <- new!",
+    "desc": "Allows a user to send an email",
+    "experimental": true,
+    "includable": false,
+    "inexcel": false,
+    "resize": false,
+    "wizardready": true,
+    "link": "http://http://documentation.hypernumbers.com/contents/hypernumbers-functions/phone-and-email/auto-email.html",
+    "args": [
+      {
+        "name": "Condition",
+        "desc": "TRUE or FALSE",
+        "type": "finite"
+      },
+      {
+        "name": "To",
+        "desc": "An email or list of emails",
+        "type": "finite"
+      },
+      {
+        "name": "Subject",
+        "desc": "The subject line",
+        "type": "finite"
+      },
+      {
+        "name": "Contents",
+        "desc": "the contents of the email",
+        "type": "finite"
+      },
+      {
+        "name": "CC",
+        "desc": "An email or list of emails",
+        "type": "optional"
+      },
+      {
+        "name": "Replay",
+        "desc": "A name",
+        "type": "optional"
+      }
+    ]
+  },
+  {
+    "fn": "auto.sms.out",
+    "category": "Phone And Email <- new!",
+    "desc": "Sends an SMS message based on a condition.",
+    "experimental": true,
+    "includable": false,
+    "inexcel": false,
+    "resize": false,
+    "wizardready": true,
+    "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/phone-and-email/auto-sms-out.html",
+    "args": [
+      {
+        "name": "Condition",
+        "desc": "TRUE or FALSE",
+        "type": "finite"
+      },
+      {
+        "name": "PhoneNo",
+        "desc": "A phone number.",
+        "type": "finite"
+      },
+      {
+        "name": "Message",
+        "desc": "A message of less than 160 characters",
+        "type": "finite"
+      },
+      {
+        "name": "Dialling Code",
+        "desc": "A dialling code or country code",
+        "type": "optional"
+      }
+    ]
+  },
+  {
     "fn": "avedev",
     "category": "Statistical",
     "desc": "Returns the average of the absolute deviations of values from their mean.",
     "experimental": false,
     "includable": true,
-    "inexcel": false,
+    "inexcel": true,
     "resize": false,
     "wizardready": true,
     "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/avedev.html",
@@ -222,7 +298,7 @@
   },
   {
     "fn": "button",
-    "category": "HN Forms",
+    "category": "Forms <- new!",
     "desc": "Create a button for submitting a form.",
     "experimental": false,
     "includable": true,
@@ -486,7 +562,7 @@
   },
   {
     "fn": "create.button",
-    "category": "HN Templates",
+    "category": "Templates <- new!",
     "desc": "Puts a button on a page which creates pages from templates.",
     "experimental": false,
     "includable": true,
@@ -509,7 +585,7 @@
   },
   {
     "fn": "crumb.trail",
-    "category": "HN Navigation",
+    "category": "Navigation <- new!",
     "desc": "Displays a crumb trail for the current page.",
     "experimental": false,
     "includable": true,
@@ -551,7 +627,7 @@
   },
   {
     "fn": "dategraph",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a line graph with dates on the X Axis.",
     "experimental": false,
     "includable": true,
@@ -787,7 +863,7 @@
   },
   {
     "fn": "debugz",
-    "category": "HN Database",
+    "category": "Database-Z <- new",
     "desc": "Helps debugging z-queries.",
     "experimental": false,
     "includable": true,
@@ -851,7 +927,7 @@
   },
   {
     "fn": "disqus.comments",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "Inserts a Disqus comments box.",
     "experimental": false,
     "includable": true,
@@ -1093,7 +1169,7 @@
   },
   {
     "fn": "equigraph",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a line graph with an equispaced X Axis.",
     "experimental": false,
     "includable": true,
@@ -1215,7 +1291,7 @@
     "desc": "Calculates values for an exponential distribution.",
     "experimental": false,
     "includable": true,
-    "inexcel": false,
+    "inexcel": true,
     "resize": false,
     "wizardready": true,
     "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/expondist.html",
@@ -1239,7 +1315,7 @@
   },
   {
     "fn": "facebook.comments",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "Inserts a Facebook comments box.",
     "experimental": false,
     "includable": true,
@@ -1257,7 +1333,7 @@
   },
   {
     "fn": "facebook.like",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "Puts a Facebook like box on the page.",
     "experimental": false,
     "includable": true,
@@ -1285,7 +1361,7 @@
   },
   {
     "fn": "facebook.likebox",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "Displays a box of all the people who like a particular page on Facebook.",
     "experimental": false,
     "includable": true,
@@ -1377,7 +1453,7 @@
   },
   {
     "fn": "fixedval",
-    "category": "HN Forms",
+    "category": "Forms <- new!",
     "desc": "Allows a calculated valued to be specified in a form.",
     "experimental": false,
     "includable": true,
@@ -1466,7 +1542,7 @@
   },
   {
     "fn": "generic.integration",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "A special fn to make it easy for software developers to integrate Hypernumbers with social media.",
     "experimental": false,
     "includable": true,
@@ -1529,7 +1605,7 @@
   },
   {
     "fn": "google.buynow",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "Puts a Google Buy Now button on a page.",
     "experimental": false,
     "includable": true,
@@ -1577,7 +1653,7 @@
   },
   {
     "fn": "google.map",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "Embed a google map that centers at Latitude, Longitude, the zoom level is a number between 1 and 20. (the map will preview as an image inside the spreadsheet)",
     "experimental": false,
     "includable": true,
@@ -1605,7 +1681,7 @@
   },
   {
     "fn": "histogram",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a histogram.",
     "experimental": false,
     "includable": true,
@@ -1698,7 +1774,7 @@
   },
   {
     "fn": "horizontal.line",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Creates a horizontal line.",
     "experimental": false,
     "includable": true,
@@ -1745,7 +1821,7 @@
   },
   {
     "fn": "html",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Inserts HTML into a cell for a web or wiki page.",
     "experimental": false,
     "includable": true,
@@ -1765,7 +1841,7 @@
   },
   {
     "fn": "html.alert",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Creates an alert box which can be 'popped' programmatically.",
     "experimental": false,
     "includable": true,
@@ -1800,7 +1876,7 @@
   },
   {
     "fn": "html.box",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Creates an layout box.",
     "experimental": false,
     "includable": true,
@@ -1830,7 +1906,7 @@
   },
   {
     "fn": "html.headline",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Creates a headline.",
     "experimental": false,
     "includable": true,
@@ -1850,7 +1926,7 @@
   },
   {
     "fn": "html.menu",
-    "category": "HN Navigation",
+    "category": "Navigation <- new!",
     "desc": "Creates an HTML menu.",
     "experimental": false,
     "includable": true,
@@ -1869,7 +1945,7 @@
   },
   {
     "fn": "html.plainbox",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Creates a plain layout box.",
     "experimental": false,
     "includable": true,
@@ -1899,7 +1975,7 @@
   },
   {
     "fn": "html.ruledbox",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Creates a ruled layout box.",
     "experimental": false,
     "includable": true,
@@ -1929,7 +2005,7 @@
   },
   {
     "fn": "html.submenu",
-    "category": "HN Navigation",
+    "category": "Navigation <- new!",
     "desc": "Creates sub menus for use in HTML menu.",
     "experimental": false,
     "includable": true,
@@ -1952,7 +2028,7 @@
   },
   {
     "fn": "html.zsubmenu",
-    "category": "HN Navigation",
+    "category": "Navigation <- new!",
     "desc": "Creates sub menus for use in HTML menu from z-queries.",
     "experimental": false,
     "includable": true,
@@ -2008,7 +2084,7 @@
   },
   {
     "fn": "iframe",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Displays a URL inside an iframe on the web or wiki page.",
     "experimental": false,
     "includable": true,
@@ -2028,7 +2104,7 @@
   },
   {
     "fn": "img",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Displays an image.",
     "experimental": false,
     "includable": true,
@@ -2051,7 +2127,7 @@
   },
   {
     "fn": "include",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Includes cells and formatting from another page.",
     "experimental": false,
     "includable": true,
@@ -2125,7 +2201,7 @@
   },
   {
     "fn": "input",
-    "category": "HN Forms",
+    "category": "Forms <- new!",
     "desc": "Create a single line text input for a form.",
     "experimental": false,
     "includable": true,
@@ -2332,7 +2408,7 @@
     "desc": "Returns the nth largest value in a list of numbers.",
     "experimental": false,
     "includable": true,
-    "inexcel": false,
+    "inexcel": true,
     "resize": false,
     "wizardready": true,
     "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/large.html",
@@ -2392,7 +2468,7 @@
   },
   {
     "fn": "linegraph",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a line graph with a numerical X axis.",
     "experimental": false,
     "includable": true,
@@ -2442,7 +2518,7 @@
   },
   {
     "fn": "link",
-    "category": "HN Navigation",
+    "category": "Navigation <- new!",
     "desc": "Make a link to a webpage",
     "experimental": false,
     "includable": true,
@@ -2475,7 +2551,7 @@
   },
   {
     "fn": "link.box",
-    "category": "HN Database",
+    "category": "Database-Z <- new",
     "desc": "Displays the results of a z-query as a link box.",
     "experimental": false,
     "includable": true,
@@ -2579,7 +2655,7 @@
   },
   {
     "fn": "lorem.headline",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Generates fake headlines for layouts.",
     "experimental": false,
     "includable": true,
@@ -2597,7 +2673,7 @@
   },
   {
     "fn": "lorem.ipsum",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Generates lorem ipsum text for layouts",
     "experimental": false,
     "includable": true,
@@ -2632,8 +2708,74 @@
     ]
   },
   {
+    "fn": "manual.email",
+    "category": "Phone And Email <- new!",
+    "desc": "Sends a email based on a condition being fulfilled.",
+    "experimental": true,
+    "includable": false,
+    "inexcel": false,
+    "resize": false,
+    "wizardready": true,
+    "link": "http://http://documentation.hypernumbers.com/contents/hypernumbers-functions/phone-and-email/manual-email.html",
+    "args": [
+      {
+        "name": "To",
+        "desc": "An email or list of emails",
+        "type": "finite"
+      },
+      {
+        "name": "Subject",
+        "desc": "The subject line",
+        "type": "finite"
+      },
+      {
+        "name": "Contents",
+        "desc": "the contents of the email",
+        "type": "finite"
+      },
+      {
+        "name": "CC",
+        "desc": "An email or list of emails",
+        "type": "optional"
+      },
+      {
+        "name": "Replay",
+        "desc": "A name",
+        "type": "optional"
+      }
+    ]
+  },
+  {
+    "fn": "manual.sms.out",
+    "category": "Phone And Email <- new!",
+    "desc": "Allows a user to send an SMS message",
+    "experimental": true,
+    "includable": false,
+    "inexcel": false,
+    "resize": false,
+    "wizardready": true,
+    "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/phone-and-email/manual-sms-out.html",
+    "args": [
+      {
+        "name": "PhoneNo",
+        "desc": "A phone number.",
+        "type": "finite"
+      },
+      {
+        "name": "Message",
+        "desc": "A message of less than 160 characters",
+        "type": "finite"
+      },
+      {
+        "name": "Dialling Code",
+        "desc": "A dialling code or country code",
+        "type": "optional"
+      }
+    ]
+  },
+  {
     "fn": "map.rows.button",
-    "category": "HN Templates",
+    "category": "Templates <- new!",
     "desc": "Puts a button on a page which uploads a spreadsheet and maps it to a series of hypernumbers page specified in the spreadsheet.",
     "experimental": false,
     "includable": true,
@@ -2656,7 +2798,7 @@
   },
   {
     "fn": "map.sheet.button",
-    "category": "HN Templates",
+    "category": "Templates <- new!",
     "desc": "Puts a button on a page which uploads a spreadsheet and maps it to a hypernumbers page you specify.",
     "experimental": false,
     "includable": true,
@@ -2875,7 +3017,7 @@
     "desc": "Returns the most common value in a set of numbers.",
     "experimental": false,
     "includable": true,
-    "inexcel": false,
+    "inexcel": true,
     "resize": false,
     "wizardready": true,
     "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/mode.html",
@@ -3063,7 +3205,7 @@
   },
   {
     "fn": "page",
-    "category": "HN Navigation",
+    "category": "Navigation <- new!",
     "desc": "Returns the path of the current page.",
     "experimental": false,
     "includable": true,
@@ -3081,7 +3223,7 @@
   },
   {
     "fn": "pageurl",
-    "category": "HN Navigation",
+    "category": "Navigation <- new!",
     "desc": "Returns the URL of the current page.",
     "experimental": false,
     "includable": true,
@@ -3091,6 +3233,29 @@
     "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/pageurl.html",
     "args": [
 
+    ]
+  },
+  {
+    "fn": "phone.out",
+    "category": "Phone And Email <- new!",
+    "desc": "Allows a user to make a phone call.",
+    "experimental": true,
+    "includable": false,
+    "inexcel": false,
+    "resize": false,
+    "wizardready": true,
+    "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/phone-and-email/phone-out.html",
+    "args": [
+      {
+        "name": "PhoneNo",
+        "desc": "A phone number.",
+        "type": "finite"
+      },
+      {
+        "name": "Dialling Code",
+        "desc": "A dialling code or country code",
+        "type": "optional"
+      }
     ]
   },
   {
@@ -3109,7 +3274,7 @@
   },
   {
     "fn": "piechart",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a piechart.",
     "experimental": false,
     "includable": true,
@@ -3292,7 +3457,7 @@
   },
   {
     "fn": "radio",
-    "category": "HN Forms",
+    "category": "Forms <- new!",
     "desc": "Create a set of radio buttons for a form.",
     "experimental": false,
     "includable": true,
@@ -3611,7 +3776,7 @@
   },
   {
     "fn": "segment",
-    "category": "HN Navigation",
+    "category": "Navigation <- new!",
     "desc": "Returns the segment of the current page.",
     "experimental": false,
     "includable": true,
@@ -3625,7 +3790,7 @@
   },
   {
     "fn": "select",
-    "category": "HN Forms",
+    "category": "Forms <- new!",
     "desc": "Create a drop down select box for a form.",
     "experimental": false,
     "includable": true,
@@ -3702,7 +3867,7 @@
   },
   {
     "fn": "site",
-    "category": "HN Navigation",
+    "category": "Navigation <- new!",
     "desc": "Returns the site that the current page is on.",
     "experimental": false,
     "includable": true,
@@ -3720,7 +3885,7 @@
     "desc": "Returns a measure of how skewed a distribution is.",
     "experimental": false,
     "includable": true,
-    "inexcel": false,
+    "inexcel": true,
     "resize": false,
     "wizardready": true,
     "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/skew.html",
@@ -3785,7 +3950,7 @@
   },
   {
     "fn": "snapshot",
-    "category": "HN Special",
+    "category": "Special <- new!",
     "desc": "Evaluates an expression 1 and never updates when the underlying cells referred to change.",
     "experimental": false,
     "includable": true,
@@ -3808,7 +3973,7 @@
   },
   {
     "fn": "sparkbar",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a spark barchart that shows the change.",
     "experimental": false,
     "includable": true,
@@ -3838,7 +4003,7 @@
   },
   {
     "fn": "sparkhist",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a spark histogram.",
     "experimental": false,
     "includable": true,
@@ -3868,7 +4033,7 @@
   },
   {
     "fn": "sparkline",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a sparkline.",
     "experimental": false,
     "includable": true,
@@ -3893,7 +4058,7 @@
   },
   {
     "fn": "speedo",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a speedometer-type graph.",
     "experimental": false,
     "includable": true,
@@ -3969,7 +4134,7 @@
   },
   {
     "fn": "status.bar",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Provides a status bar.",
     "experimental": false,
     "includable": true,
@@ -4304,7 +4469,7 @@
   },
   {
     "fn": "table",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Embeds a range of cells from another page as a sortable table.",
     "experimental": false,
     "includable": true,
@@ -4391,7 +4556,7 @@
   },
   {
     "fn": "textarea",
-    "category": "HN Forms",
+    "category": "Forms <- new!",
     "desc": "Create a textarea for a form.",
     "experimental": false,
     "includable": true,
@@ -4409,7 +4574,7 @@
   },
   {
     "fn": "tick",
-    "category": "HN Special",
+    "category": "Special <- new!",
     "desc": "A date function that ticks.",
     "experimental": false,
     "includable": true,
@@ -4460,7 +4625,7 @@
   },
   {
     "fn": "timestamp",
-    "category": "HN Special",
+    "category": "Special <- new!",
     "desc": "A function to timestamp changes to some cells",
     "experimental": false,
     "includable": true,
@@ -4510,7 +4675,7 @@
   },
   {
     "fn": "toggle.views",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Creates a button that toggles between web and wiki pages.",
     "experimental": false,
     "includable": true,
@@ -4588,7 +4753,7 @@
   },
   {
     "fn": "twitter.button",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "Embed a twitter \"follow me\" button onto your page.",
     "experimental": false,
     "includable": true,
@@ -4616,7 +4781,7 @@
   },
   {
     "fn": "twitter.profile",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "Display a profile of a Twitter user.",
     "experimental": false,
     "includable": true,
@@ -4634,7 +4799,7 @@
   },
   {
     "fn": "twitter.tweet",
-    "category": "HN Social/Web",
+    "category": "Social/Web <- new!",
     "desc": "Create a link that takes the user to their Twitter account prepopulated with a suggested tweet.",
     "experimental": false,
     "includable": true,
@@ -4783,7 +4948,7 @@
   },
   {
     "fn": "vertical.line",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Creates a vertical line.",
     "experimental": false,
     "includable": true,
@@ -4868,7 +5033,7 @@
   },
   {
     "fn": "xy",
-    "category": "HN Graphs",
+    "category": "Graphs <- new!",
     "desc": "Creates a line graph with different sets of X axes points.",
     "experimental": false,
     "includable": true,
@@ -4931,7 +5096,7 @@
   },
   {
     "fn": "zaverage",
-    "category": "HN Database",
+    "category": "Database-Z <- new",
     "desc": "Calculates the average of values in a z-query.",
     "experimental": false,
     "includable": true,
@@ -4949,7 +5114,7 @@
   },
   {
     "fn": "zcount",
-    "category": "HN Database",
+    "category": "Database-Z <- new",
     "desc": "Counts the values in a z-query.",
     "experimental": false,
     "includable": true,
@@ -4967,7 +5132,7 @@
   },
   {
     "fn": "zmax",
-    "category": "HN Database",
+    "category": "Database-Z <- new",
     "desc": "Returns the maximum value of a z-query.",
     "experimental": false,
     "includable": true,
@@ -4985,7 +5150,7 @@
   },
   {
     "fn": "zmedian",
-    "category": "HN Database",
+    "category": "Database-Z <- new",
     "desc": "Returns the median value of a z-query.",
     "experimental": false,
     "includable": true,
@@ -5003,7 +5168,7 @@
   },
   {
     "fn": "zmin",
-    "category": "HN Database",
+    "category": "Database-Z <- new",
     "desc": "Returns the minimum value of a z-query.",
     "experimental": false,
     "includable": true,
@@ -5021,7 +5186,7 @@
   },
   {
     "fn": "zmode",
-    "category": "HN Database",
+    "category": "Database-Z <- new",
     "desc": "Returns the mode of a z-query.",
     "experimental": false,
     "includable": true,
@@ -5039,7 +5204,7 @@
   },
   {
     "fn": "zsum",
-    "category": "HN Database",
+    "category": "Database-Z <- new",
     "desc": "Sums the results of a z query.",
     "experimental": false,
     "includable": true,
@@ -5057,7 +5222,7 @@
   },
   {
     "fn": "ztable",
-    "category": "HN Layout",
+    "category": "Layout <- new!",
     "desc": "Embeds a range of cells from another page as a sortable table.",
     "experimental": false,
     "includable": true,
