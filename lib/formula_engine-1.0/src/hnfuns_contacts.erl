@@ -82,7 +82,8 @@ check(To, Su, Cn, CC, Reply) ->
          end,
     To3 = split([To2]),
     CC3 = split([CC2]),
-    case is_valid(lists:merge([To3, CC3, Fr])) of
+    Emails = lists:merge([To3, CC3, [Fr]]),
+    case is_valid(Emails) of
         false -> ?ERR_VAL;
         true  -> [string:join(To3, ";"), Su2, Cn2, string:join(CC3, ";"), Fr]
     end.
