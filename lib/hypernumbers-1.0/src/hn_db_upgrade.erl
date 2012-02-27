@@ -10,7 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
-         write_twilio_kvs/5,
+         write_twilio_kvs/3,
          write_twilio_spoof_kvs/0,
          write_twilio_use_kvs/0,
          write_twilio_dev_kvs/0,
@@ -76,8 +76,10 @@
 %% upgrade_1776/0
         ]).
 
-write_twilio_kvs(Site, AccSID, AuthToken, AppSID, PhoneNo)
+write_twilio_kvs(Site, AppSID, PhoneNo)
   when is_list(PhoneNo)->
+    AccSID = "AC7a076e30da6d49119b335d3a6de43844",
+    AuthToken = "9248c9a2a25f6914fad9c9fb5b30e69c",
     AC = #twilio_account{account_sid     = AccSID,
                          auth_token      = AuthToken,
                          application_sid = AppSID,
