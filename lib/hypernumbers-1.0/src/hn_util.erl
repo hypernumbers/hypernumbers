@@ -289,6 +289,7 @@ capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
 -spec valid_email(string()) -> boolean().
 valid_email(Email) ->
     NewE = string:strip(Email),
+    NewE2 = string:to_lower(NewE),
     EMail_regex = "^(?<name>([a-z0-9!#$%&'*+/=?^_`{|}~\\-]+)"
         ++ "(\\.[a-z0-9!#\$%&'*+/=?^_`{|}~\\-]+)*)"
         ++ "(@)(?<dom>([a-z0-9](([a-z0-9\\-\\.]*[a-z0-9]+)*))+)"
@@ -296,12 +297,7 @@ valid_email(Email) ->
         ++ "|\\.biz|\\.info|\\.mobi|\\.name|\\.aero|\\.jobs|\\.museum|\\.edu|"
         ++"\\.asia|\\.cat|\\.coop|\\.int|\\.jobs|\\.pro|\\.arpa|\\.tel|\\.travel)$",
         %" for syntax highighting
-    % io:format("Name is ~p~nDom is ~p~nnTld is ~p~n",
-    %          [re:run(Email, EMail_regex, [{capture, [name]}]),
-    %           re:run(Email, EMail_regex, [{capture, [dom]}]),
-    %           re:run(Email, EMail_regex, [{capture, [tld]}])
-    %         ]),
-    case re:run(NewE, EMail_regex) of
+    case re:run(NewE2, EMail_regex) of
         nomatch    -> false;
         {match, _} -> true
     end.
