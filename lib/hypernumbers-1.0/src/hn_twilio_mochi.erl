@@ -157,7 +157,12 @@ handle_c2(_Ref, #twilio{called = null,
                         to = null,
                   call_duration = #twilio_duration{}}) ->
     %io:format("Tw is ~p~n", [Tw]),
-    {ok, 200}.
+    {ok, 200};
+handle_c2(Ref, Twilio) ->
+    io:format("Ref is ~p Twilio is ~p~n", [Ref, Twilio]),
+    "<Response>"
+        ++ "<Say>Tongs, ya bas!</Say>"
+        ++ "</Response>".
 
 validate([], _Args) ->
     true;
