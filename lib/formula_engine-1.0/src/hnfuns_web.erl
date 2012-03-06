@@ -407,8 +407,8 @@ include([CellRef]) when ?is_cellref(CellRef) ->
     include([RelRan]);
 include([RelRan]) when ?is_rangeref(RelRan) ->
     OldPath = RelRan#rangeref.path,
-    OldSite = get(site),
-    URL = OldSite ++ OldPath,
+    OrigPath = get(path),
+    NewPath = muin_util:walk_path(OrigPath, OldPath),
     %% DIRTY HACK. This forces muin to setup dependencies, and checks
     %% for circ errors.
     Ret = muin:fetch(RelRan, "__rawvalue"),
@@ -424,8 +424,9 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             Obj = {range, {X1, Y1, X2, Y2}},
             Ref = #refX{site = Site, type = url, path = Path, obj = Obj},
             % throw an error if we are trying to bring controls through
-            Title = "<div class='hn-include'><a href='" ++ URL ++ "'>"
-                ++"Click To Go To Source</a></div>",
+            Title = "<div class='hn-include'>Including data from "
+                ++ hn_util:list_to_path(NewPath)
+                ++ hn_util:obj_to_ref(Obj) ++ "</div>",
             case new_db_wu:has_forms(Ref) of
                 false ->  Content = hn_render:content(Ref),
                           {{Html, Width, Height}, _Addons} = Content,
