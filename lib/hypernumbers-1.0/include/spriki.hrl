@@ -17,11 +17,11 @@
                 generator :: generator(),
                 zone_id :: integer() }).
 
--record(record, { name, % :: {string(), string()},
-                  address,% :: resource_addr(),
-                  %% Following two used for linode.
-                  zone_id,% :: integer(),
-                  resource_id }).% :: integer()}).
+-record(hns_record, { name, % :: {string(), string()},
+                      address,% :: resource_addr(),
+                      % Following two used for linode.
+                      zone_id,% :: integer(),
+                      resource_id }).% :: integer()}).
 
 -record(resource, { address = [] :: resource_addr(),
                     weight = 0 :: integer() }).

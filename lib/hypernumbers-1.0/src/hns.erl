@@ -71,7 +71,7 @@ do_link_resource(0, _Msg) ->
     underflow;
 do_link_resource(Tries, Msg) ->
     case gen_server:call({global, ?MODULE}, Msg) of
-        no_zone -> no_zone;
+        no_zone   -> no_zone;
         underflow ->  do_link_resource(Tries-1, Msg);
         R -> {ok, R}
     end.
@@ -194,8 +194,8 @@ init([]) ->
                                   false,
                                   []),
     ok = hn_db_admin:create_table(service_hns_record,
-                                  record,
-                                  record_info(fields, record),
+                                  hns_record,
+                                  record_info(fields, hns_record),
                                   disc_copies,
                                   set,
                                   false,
@@ -250,8 +250,8 @@ handle_call({delete_zone, ZoneL}, _From, S) ->
     {reply, ok, S};
 
 handle_call({purge, ZoneL}, _From, S) ->
-    MS = ets:fun2ms(fun(#record{name = {Z, _}}=R)
-                          when ZoneL == Z -> R
+    MS = ets:fun2ms(fun(#hns_record{name = {Z, _}}=R)
+                       when ZoneL == Z -> R
                     end),
     DelF = fun() ->
                    Recs = mnesia:select(service_hns_record, MS, write),
@@ -259,8 +259,8 @@ handle_call({purge, ZoneL}, _From, S) ->
                    Recs
            end,
     Recs = mnesia:activity(async_dirty, DelF),
-    [delete_dns_LINODE(ZID, RID) || #record{zone_id = ZID,
-                                            resource_id = RID} <- Recs],
+    [delete_dns_LINODE(ZID, RID) || #hns_record{zone_id = ZID,
+                                                resource_id = RID} <- Recs],
     {reply, ok, S};
 
 handle_call({link_resource, ZoneL}, _From, S) ->
@@ -274,10 +274,10 @@ handle_call({link_resource, ZoneL}, _From, S) ->
                           underflow;
                       _ ->
                           {Name, Address, RId, Z2} = get_mapping(Z),
-                          Rec = #record{name = {Z2#zone.label, Name},
-                                        address = Address,
-                                        zone_id = Z2#zone.zone_id,
-                                        resource_id = RId},
+                          Rec = #hns_record{name = {Z2#zone.label, Name},
+                                            address = Address,
+                                            zone_id = Z2#zone.zone_id,
+                                            resource_id = RId},
                           F = fun() ->
                                       ok = mnesia:write(service_hns_zone,
                                                         Z2,
@@ -298,10 +298,10 @@ handle_call({link_resource_manual, ZoneL, Name, Ip, Port, Node}, _From, S) ->
     ZoneId = zone_id_LINODE(ZoneL),
     ResourceID = create_dns_LINODE(Name, Ip, ZoneId),
     Address = {Ip, Port, Node},
-    Rec = #record{name = {ZoneL, Name},
-                  address = Address,
-                  zone_id = ZoneId,
-                  resource_id = ResourceID},
+    Rec = #hns_record{name = {ZoneL, Name},
+                      address = Address,
+                      zone_id = ZoneId,
+                      resource_id = ResourceID},
     F = fun() -> ok = mnesia:write(service_hns_record, Rec, write) end,
     ok = mnesia:activity(async_dirty, F),
     {reply, {Name ++ "." ++ ZoneL, Address}, S};
@@ -311,7 +311,7 @@ handle_call({unlink_resource, ZoneL, Name}, _From, S) ->
                           fun mnesia:read/2,
                           [service_hns_record, {ZoneL, Name}]),
     case Val of
-        [#record{zone_id = ZID, resource_id = RID}] ->
+        [#hns_record{zone_id = ZID, resource_id = RID}] ->
             delete_dns_LINODE(ZID, RID),
             mnesia:activity(async_dirty,
                             fun mnesia:delete/3,
@@ -341,7 +341,7 @@ handle_call({lookup_node, ZoneL, Name}, _From, S) ->
                           fun mnesia:read/2,
                           [service_hns_record, {ZoneL, Name}]),
     Reply = case Rec of
-                [#record{address={_, _, Node}}] -> {ok, Node};
+                [#hns_record{address={_, _, Node}}] -> {ok, Node};
                 _ -> no_record
             end,
     {reply, Reply, S};

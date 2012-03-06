@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         change_hns_record_table/0,
          add_site_table_2012_03_05/0,
          write_twilio_kvs/3,
          write_twilio_spoof_kvs/0,
@@ -110,6 +111,16 @@ write_twilio_use_kvs() ->
                          application_sid = "APf2b5e475549b404e8ff26ed1a9fb8bcb",
                          site_phone_no   = "+441315101883"},
     new_db_api:write_kv(Site, ?twilio, AC).
+
+change_hns_record_table() ->
+    Fun = fun({record, Nm, Add, ZID, RID}) ->
+                  {hns_record, Nm, Add, ZID, RID}
+          end,
+    Tbl = service_hns_record,
+    Ret = mnesia:transform_table(Tbl, Fun, [name, address,
+                                            zone_id, resource_id], hns_record),
+    io:format("Ret is ~p~n", [Ret]),
+    ok.
 
 add_site_table_2012_03_05() ->
     Sites = hn_setup:get_sites(),
