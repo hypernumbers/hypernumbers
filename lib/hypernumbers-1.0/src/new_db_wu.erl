@@ -24,6 +24,9 @@
 -define(NONTRANSFORMATIVE, false).
 
 -export([
+         delete_siteonlyD/2,
+         read_siteonlyD/2,
+         write_siteonlyD/3,
          get_phone/1,
          does_page_exist/1,
          has_cell_been_deletedD/2,
@@ -94,6 +97,20 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delete_siteonlyD(#refX{site = S}, Type) ->
+    Tbl = trans(S, siteonly),
+    mnesia:delete(Tbl, Type, write).
+
+read_siteonlyD(#refX{site = S}, Type) ->
+    Tbl = trans(S, siteonly),
+    mnesia:read(Tbl, Type, read).
+
+write_siteonlyD(#refX{site = S} = RefX, Type, Payload) ->
+    Tbl = trans(S, siteonly),
+    XRefX = refX_to_xrefX_createD(RefX),
+    Siteonly = #siteonly{type = Type, idx = XRefX#xrefX.idx, payload = Payload},
+    mnesia:write(Tbl, Siteonly, write).
+
 % see if there is a phone - might not be, mebbies the cell doesn't exist
 get_phone(#refX{site = S, obj = {cell, _}} = RefX) ->
     case refX_to_xrefXD(RefX) of

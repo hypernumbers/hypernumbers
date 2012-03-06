@@ -156,13 +156,32 @@ handle_c2(_Ref, #twilio{called = null,
                         from = null,
                         to = null,
                   call_duration = #twilio_duration{}}) ->
-    %io:format("Tw is ~p~n", [Tw]),
+    % twilio_web_util:pretty_print(Tw),
     {ok, 200};
-handle_c2(Ref, Twilio) ->
-    io:format("Ref is ~p Twilio is ~p~n", [Ref, Twilio]),
+handle_c2(_Ref, #twilio{direction = "inbound",
+                        call_status = "ringing"}) ->
     "<Response>"
-        ++ "<Say>Tongs, ya bas!</Say>"
-        ++ "</Response>".
+        ++ "<Gather action='/_services/phone/' numDigits='1'>"
+        ++ "<Say voice='woman' language='fr'>Tongs, ya bas!</Say>"
+        ++ "<Say language='de'>Gies a Digit</Say>"
+        ++ "<Say language='de'>Dont mention the war</Say>"
+        ++ "<Say language='es'>Manuel</Say>"
+        ++ "</Gather>"
+        ++ "</Response>";
+handle_c2(_Ref, #twilio{direction = "inbound",
+                        call_status = "completed"}) ->
+    {ok, 200};
+handle_c2(Ref, #twilio{direction = "inbound",
+                       call_status = "in-progress"} = Twilio) ->
+    io:format("Call back on ~p~n", [Ref#refX.path]),
+    twilio_web_util:pretty_print(Twilio),
+    "<Response>"
+        ++ "<Say>Good man yerself!</Say>"
+        ++ "</Response>";
+handle_c2(Ref, Twilio) ->
+    io:format("in unhandled twilio callback for ~p...~n", [Ref#refX.path]),
+    twilio_web_util:pretty_print(Twilio),
+    {ok, 200}.
 
 validate([], _Args) ->
     true;

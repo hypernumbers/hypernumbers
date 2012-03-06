@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_site_table_2012_03_05/0,
          write_twilio_kvs/3,
          write_twilio_spoof_kvs/0,
          write_twilio_use_kvs/0,
@@ -109,6 +110,21 @@ write_twilio_use_kvs() ->
                          application_sid = "APf2b5e475549b404e8ff26ed1a9fb8bcb",
                          site_phone_no   = "+441315101883"},
     new_db_api:write_kv(Site, ?twilio, AC).
+
+add_site_table_2012_03_05() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tables = mnesia:system_info(local_tables),
+                   Tbl = new_db_wu:trans(Site, siteonly),
+                   case lists:member(Tbl, Tables) of
+                       true  -> mnesia:delete_table(Site);
+                       false -> ok
+                   end,
+                   Fields = record_info(fields, siteonly),
+                   make_table(Site, siteonly, Fields, disc_copies)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 add_phone_table_2011_02_11() ->
     Sites = hn_setup:get_sites(),

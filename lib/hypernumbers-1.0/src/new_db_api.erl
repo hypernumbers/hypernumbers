@@ -13,6 +13,9 @@
 -include("syslib.hrl").
 
 -export([
+         delete_siteonly/2,
+         read_siteonly/2,
+         write_siteonly/3,
          idx_to_xrefX/2,
          get_phone/1,
          does_page_exist/1,
@@ -229,6 +232,37 @@ idx_to_xrefX(Site, Idx) ->
     Fun = fun() ->
                   mnesia_mon:report(Report),
                   new_db_wu:idx_to_xrefXD(Site, Idx)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
+
+delete_siteonly(#refX{} = RefX, Type) ->
+    Report = mnesia_mon:get_stamp("delete_siteonly"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:delete_siteonlyD(RefX, Type)
+          end,
+    mnesia_mon:oog_act(transaction, Fun, Report).
+
+read_siteonly(#refX{} = RefX, Type) ->
+    Report = mnesia_mon:get_stamp("read_siteonly"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:read_siteonlyD(RefX, Type)
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
+
+write_siteonly(#refX{} = RefX, Type, Payload) ->
+    Report = mnesia_mon:get_stamp("write_siteonly"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  % this is a 'write once' record can only be
+                  % one of each type per site
+                  case new_db_wu:read_siteonly(RefX, Type) of
+                      [] ->
+                          new_db_wu:write_siteonlyD(RefX, Type, Payload);
+                      [_R] ->
+                          {error, exists}
+                  end
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 

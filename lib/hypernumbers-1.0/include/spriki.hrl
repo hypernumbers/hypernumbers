@@ -246,6 +246,13 @@
           status    = []
          }).
 
+-record(siteonly,
+        {
+          type,
+          idx,
+          payload
+         }).
+
 -record(phone,
         {
           idx,
