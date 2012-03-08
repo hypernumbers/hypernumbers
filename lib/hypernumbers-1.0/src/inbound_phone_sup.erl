@@ -13,7 +13,8 @@
 %% API
 -export([
          start_link/1,
-         handle_incoming/2
+         answer_phone/2
+         %call_in_progress/2
         ]).
 
 %% Supervisor callbacks
@@ -24,8 +25,8 @@
 %%%===================================================================
 %%% API functions
 %%%===================================================================
--spec handle_incoming(string(), string()) -> pid() | string().
-handle_incoming(Site, CallId) ->
+-spec answer_phone(string(), string()) -> pid() | string().
+answer_phone(Site, CallId) ->
     ChildSpec = gen_child_spec(CallId),
     Id = hn_util:site_to_atom(Site, "_inbound_phone"),
     case supervisor:start_child({global, Id}, ChildSpec) of
