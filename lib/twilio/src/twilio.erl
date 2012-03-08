@@ -36,21 +36,21 @@ request(AccountSID, AuthToken, get, Path, []) ->
                  ++ "@"?BASE_URL"/"?API_VERSION_2010 ++ Path,
     Request = {RequestURL, [{"Accept", "application/json"}]},
     case httpc:request(get, Request, [], []) of
-        {ok, {{_, 200, _}, _, R}} = Result ->
+        {ok, {{_, 200, _}, _, R}} ->
             {ok, R};
         {ok, {{_, N, _}, _, _}} ->
             {error, "Error: " ++ integer_to_list(N)};
         {error, _} = Error ->
             {error, Error}
     end;
-request(AccountSID, AuthToken, Method, Path, Params) ->
+request(AccountSID, AuthToken, post, Path, Params) ->
     RequestURL = "https://" ++ AccountSID ++ ":" ++ AuthToken
                  ++ "@"?BASE_URL"/"?API_VERSION_2010 ++ Path,
     ParamsString = expand_params(Params),
     Request = {RequestURL, [], "application/x-www-form-urlencoded", ParamsString},
     % @TODO properly parse for twilio errors
-    case httpc:request(Method, Request, [], []) of
-        {ok, {{_, 201, _}, _, _}} = Result ->
+    case httpc:request(post, Request, [], []) of
+        {ok, {{_, 201, _}, _, _}} ->
             {ok, ok};
         {ok, {{_, N, _}, _, _}} ->
             {error, "Error: " ++ integer_to_list(N)};
