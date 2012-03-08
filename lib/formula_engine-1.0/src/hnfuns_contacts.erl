@@ -80,23 +80,13 @@ check(To, Su, Cn, CC, Reply) ->
              [] -> "no-reply@" ++ Domain;
              _  -> R2 ++ "@" ++ Domain
          end,
-    To3 = split([To2]),
-    CC3 = split([CC2]),
+    To3 = hn_util:split_emails(To2),
+    CC3 = hn_util:split_emails(CC2),
     Emails = lists:merge([To3, CC3, [Fr]]),
     case is_valid(Emails) of
         false -> ?ERR_VAL;
         true  -> [string:join(To3, ";"), Su2, Cn2, string:join(CC3, ";"), Fr]
     end.
-
-split(List) ->
-    List2 = split(List, " ", []),
-    List3 = split(List2, ",", []),
-    split(List3, ";", []).
-
-split([], _ , Acc) -> lists:reverse(Acc);
-split([H | T], Token, Acc) ->
-    List2 = string:tokens(H, Token),
-    split(T, Token, lists:merge(List2, Acc)).
 
 'auto.robocall'([Condition, PhoneNo, Msg, Prefix]) ->
     check_if_paid(fun 'auto.robocall2'/2,

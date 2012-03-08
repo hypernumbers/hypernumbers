@@ -48,16 +48,22 @@ textarea([V1]) ->
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:run_or_err([Label], fun textarea_/1).
 
-button([])      -> button(["Submit Form"]);
-button([Title]) -> button([Title, "Thanks for completing our form."]);
-button([Title, Response]) -> button([Title, Response, "./_replies/"]);
+button([])      ->
+    button(["Submit Form"]);
+button([Title]) ->
+    button([Title, "Thanks for completing our form."]);
+button([Title, Response]) ->
+    button([Title, Response, "./_replies/"]);
 button([Title, Response, Results]) ->
-    muin_collect:col([Title, Response, Results], [first_array, fetch, {cast,str}],
-        [return_errors, {all, fun muin_collect:is_string/1}],
-        fun([NTitle, NResponse, NResult]) ->
-                button_(NTitle, NResponse, NResult)
-        end).
-
+    button([Title, Response, Results, none]);
+button([Title, Response, Results, Email]) ->
+    Email2 = validate_email(Email),
+    muin_collect:col([Title, Response, Results],
+                     [first_array, fetch, {cast,str}],
+                     [return_errors, {all, fun muin_collect:is_string/1}],
+                     fun([NTitle, NResponse, NResult]) ->
+                             button_(NTitle, NResponse, NResult, Email2)
+                     end).
 
 select([])      -> select([""]);
 select([Label]) -> select([Label, {array, [["option 1", "option 2"]]}]);
@@ -82,6 +88,22 @@ radio([V1, V2]) ->
 %%% Internal Functions
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+validate_email(none) -> none;
+validate_email(Email) ->
+    Emails = hn_util:split_emails(Email),
+    % can be a list of emails
+    case valid_emails(Emails) of
+        true  -> string:join(Emails, ";");
+        false -> ?ERR_VAL
+    end.
+
+valid_emails([]) -> true;
+valid_emails([E | T]) ->
+    case hn_util:valid_email(E) of
+        true  -> valid_emails(T);
+        false -> false
+    end.
+
 fixedval_([Label, Val, Show]) ->
     Trans = common,
     Form = #form{id ={Trans, Label}, kind = fixedval, restrictions = [Val]},
@@ -117,14 +139,19 @@ textarea_([Label], _Default, Trans) ->
                          ++ "data-label='"++Label++"'></textarea>"),
     {rawform, Form, Html}.
 
--spec button_(string(), string(), string()) -> {rawform, #form{}, html()}.
-button_(Value, Response, ResultsPath) ->
+-spec button_(string(), string(), string(), string()) -> {rawform, #form{}, html()}.
+button_(Value, Response, ResultsPath, Email) ->
     Trans = common,
     Origin = hn_util:list_to_path(muin:context_setting(path)),
+    Attrs = case Email of
+                none -> [{"dest", Origin}];
+                _    -> [{"dest", Origin}, {"email", Email}]
+            end,
     Form = #form{id = {Trans, "_"},
                  kind = button,
-                 attrs = [{"dest", Origin}]},
-    Html = lists:flatten("<input type='submit' class='hninput' value='"++Value++"'"
+                 attrs = Attrs},
+    Html = lists:flatten("<input type='submit' class='hninput' value='"
+                         ++ Value ++"'"
                          ++ " data-results='" ++ ResultsPath ++ "'"
                          ++ " data-origin='" ++ Origin ++ "?view=webpage'"
                          ++ " data-form-name='default' data-response='"

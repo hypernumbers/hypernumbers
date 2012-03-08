@@ -1051,6 +1051,8 @@ ipost(Ref=#refX{site = S, path = P} = Ref, _Qry,
                            obj = {row, {1, 1}}},
             Array2 = [{R, [L, {"formula", hn_util:esc(V)}]}
                       || {R, [L, {_, V}]} <- Array],
+            {ok, Poster} = passport:uid_to_email(PosterUid),
+            ok = maybe_send_email(S, P, Expected, Array2, Poster),
             ok = new_db_api:handle_form_post(Res, Array2, PosterUid),
             json(Env, "success")
     end;
@@ -2122,6 +2124,38 @@ make_name(Name, Ext) ->
 expand_binaries({struct, [{"time", Time}, {"msgs", {array, List}}]}) ->
     List2 = [binary_to_term(X) || X <- List],
     {struct, [{"time", Time}, {"msgs", {array, List2}}]}.
+
+maybe_send_email(Site, Path, Expected, Array, Poster) ->
+    case get_email(Expected) of
+        false -> ok;
+        Email -> [_, "//" ++ S2, _] = string:tokens(Site, ":"),
+                 From = "no-reply@" ++ S2,
+                 Subject = "Form on page " ++ hn_util:list_to_path(Path)
+                     ++ " has been submitted",
+                 Contents = make_contents(Poster, Path, Array),
+                 ok = emailer:send_email(Email, "", From, Subject, Contents)
+    end.
+
+make_contents(Poster, Page, Array) ->
+    Line1 = "User: " ++ Poster ++ " posted to the form on page "
+        ++ Page ++ "\n",
+    Lines = get_lines(Array, []),
+    Line1 ++ Lines.
+
+get_lines([], Acc) -> string:join(lists:reverse(Acc), "\n");
+get_lines([{struct, [{"label", L}, {"formula", F}]} | T], Acc) ->
+    Line = io_lib:format("~s - ~s", [L, F]),
+    get_lines(T, [Line | Acc]).
+
+get_email([]) ->
+    false;
+get_email([{_, _, _, button, none, Attrs}]) ->
+    case lists:keyfind("email", 1, Attrs) of
+        false            -> false;
+        {"email", Email} -> Email
+    end;
+get_email([_H | T]) ->
+    get_email(T).
 
 make_demo(Site, Path) ->
     URL = Site ++ hn_util:list_to_path(Path),

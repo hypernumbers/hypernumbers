@@ -12,6 +12,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         split_emails/1,
          read_lines/1,
          esc/1,
          log/2,
@@ -892,6 +893,15 @@ add_views() ->
           auth_srv:add_view(Site, ["[**]"], ["admin"], "webpage")
       end || Site <- hn_setup:get_sites()].
 
+split_emails(List) ->
+    List2 = split_emails([List], " ", []),
+    List3 = split_emails(List2, ",", []),
+    split_emails(List3, ";", []).
+
+split_emails([], _ , Acc) -> lists:reverse(Acc);
+split_emails([H | T], Token, Acc) ->
+    List2 = string:tokens(H, Token),
+    split_emails(T, Token, lists:merge(List2, Acc)).
 
 %%%
 %%% Unit Tests

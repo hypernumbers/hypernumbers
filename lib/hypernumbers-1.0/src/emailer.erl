@@ -8,7 +8,10 @@
 -define(SIG, "Cheers\n\nGordon Guthrie\n\nCEO hypernumbers.com\n"
         ++"+44 7776 251669\n@hypernumbers\n\n").
 
--export([send/5]).
+-export([
+         send/5,
+         send_email/5
+        ]).
 
 send(Type, To, CC, Site, Args) ->
     Name = hn_util:extract_name_from_email(To),
