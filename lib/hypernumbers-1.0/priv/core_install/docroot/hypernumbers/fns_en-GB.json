@@ -321,7 +321,13 @@
         "name": "Page",
         "desc": "The page to put the responses on.",
         "type": "optional"
+      },
+      {
+        "name": "Emails",
+        "desc": "A list of emails to notify when the form is used.",
+        "type": "optional"
       }
+
     ]
   },
   {
