@@ -8,6 +8,7 @@
 -module(hnfuns_contacts).
 
 -export([
+         'text.answer.phone'/1,
          'manual.email'/1,
          'auto.email'/1,
          'manual.sms.out'/1,
@@ -20,6 +21,29 @@
 -include("spriki.hrl").
 -include("errvals.hrl").
 -include("keyvalues.hrl").
+-include("twilio.hrl").
+-include("twilio_web.hrl").
+
+'text.answer.phone'([Msg]) ->
+    'text.answer.phone'([Msg, false]);
+'text.answer.phone'([Msg, IsMan]) ->
+    'text.answer.phone'([Msg, IsMan, "en-gb"]);
+'text.answer.phone'([Msg, IsMan, Language]) ->
+    [Msg2, L2] = typechecks:std_strs([Msg, Language]),
+    L3 = string:to_lower(L2),
+    [IsMan2] = typechecks:std_bools([IsMan]),
+    Voice = case IsMan2 of
+                true  -> "man";
+                false -> "woman"
+            end,
+    case lists:member(L3, ?SAYLanguages) of
+        true  -> ok;
+        false -> ?ERR_VAL
+    end,
+    Msg3 = rightsize(Msg2, ?SAYLength),
+    Say = #say{voice = Voice, language = L3, text = Msg3},
+    io:format("Say is ~p~n", [Say]),
+    "banjo".
 
 'manual.email'([To, Subject, Contents]) ->
     'manual.email'([To, Subject, Contents, [], []]);
@@ -83,7 +107,7 @@ check(To, Su, Cn, CC, Reply) ->
     To3 = hn_util:split_emails(To2),
     CC3 = hn_util:split_emails(CC2),
     Emails = lists:merge([To3, CC3, [Fr]]),
-    case is_valid(Emails) of
+    case is_valid_email(Emails) of
         false -> ?ERR_VAL;
         true  -> [string:join(To3, ";"), Su2, Cn2, string:join(CC3, ";"), Fr]
     end.
@@ -101,7 +125,7 @@ check(To, Su, Cn, CC, Reply) ->
 
 'manual.sms.out2'([PhoneNo, Msg, Prefix], _AC) ->
     [PhoneNo2] = typechecks:std_strs([PhoneNo]),
-    Msg2 = rightsize(Msg),
+    Msg2 = rightsize(Msg, ?SMSLength),
     PhoneNo3 = compress(PhoneNo2),
     Log = #contact_log{idx = get(idx), type = "manual sms",
                        to = "+" ++ Prefix ++ PhoneNo3, contents = Msg2},
@@ -150,7 +174,7 @@ check_if_paid(Fun, Args) ->
     [Condition] = typechecks:std_bools([Condition]),
     [PhoneNo2] = typechecks:std_strs([PhoneNo]),
     PhoneNo3 = "+" ++ Prefix ++ compress(PhoneNo2),
-    Msg2 = rightsize(Msg),
+    Msg2 = rightsize(Msg, ?SMSLength),
     Log = #contact_log{idx = get(idx), type = "automatic sms",
                        to = PhoneNo3, contents = Msg2},
     S = get(site),
@@ -242,21 +266,21 @@ normalise(Prefix) ->
          end,
     integer_to_list(P2).
 
-rightsize(Msg) ->
+rightsize(Msg, Size) ->
     [Msg2] = typechecks:std_strs([Msg]),
     Length = length(Msg2),
     if
-        Length > 160  -> {Msg3, _} = lists:split(160, Msg2),
+        Length > Size  -> {Msg3, _} = lists:split(Size, Msg2),
                          Msg3;
-        Length =< 160 -> Msg2
+        Length =< Size -> Msg2
     end.
 
-is_valid([])       -> true;
-is_valid(["" | T]) -> is_valid(T);
-is_valid([H | T])  -> case hn_util:valid_email(H) of
-                          true   -> is_valid(T);
-                          false  -> false
-                      end.
+is_valid_email([])       -> true;
+is_valid_email(["" | T]) -> is_valid_email(T);
+is_valid_email([H | T])  -> case hn_util:valid_email(H) of
+                                true   -> is_valid_email(T);
+                                false  -> false
+                            end.
 get_domain("http://" ++ Domain) ->
     [D, _] = string:tokens(Domain, ":"),
     D.
