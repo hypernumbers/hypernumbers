@@ -47,7 +47,6 @@
           body = ""      :: string() | #number{}
          }).
 
-
 -record(sms, {
           to              :: string(),
           from            :: string(),
@@ -71,6 +70,22 @@
 -record(reject,
         {
           reason :: string()
+         }).
+
+-record(client, {
+          client :: string()
+         }).
+
+-record(conference,
+        {
+          muted                  :: boolean(),
+          beep                   :: boolean(),
+          startConferenceOnEnter :: boolean(),
+          endConferenceOnExit    :: boolean(),
+          waitUrl                :: string(),
+          waitMethod             :: string(),
+          maxParticipants        :: integer(),
+          conference             :: string()
          }).
 
 % definitions used in validation
@@ -114,3 +129,8 @@
 
 % REJECT record
 -define(REJECTReason, ["busy", "rejected"]).
+
+% CONFERENCE record
+-define(CONFERENCEWaitMethod,      ["get", "post"]).
+-define(CONFERENCEMinParticipants, 2).
+-define(CONFERENCEMaxParticipants, 40).

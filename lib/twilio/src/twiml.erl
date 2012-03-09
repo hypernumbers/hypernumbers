@@ -26,7 +26,6 @@ encode(Elements) ->
     xmerl:export_simple(Content, xmerl_xml).
 
 %% @doc Converts a twiml record to an xmerl XML element.
-%% @TODO Conference support for #dial
 to_xmerl_element(#say{} = Say) ->
     Attrs = [{voice,    Say#say.voice},
              {language, Say#say.language},
@@ -100,7 +99,19 @@ to_xmerl_element(#hangup{}) ->
 to_xmerl_element(#reject{} = Reject) ->
     Attrs = [{reason, Reject#reject.reason}],
     CleanAttrs = remove_undefined(Attrs),
-    {'Reject', CleanAttrs, []}.
+    {'Reject', CleanAttrs, []};
+to_xmerl_element(#client{} = C) ->
+    {'Client', [], [C#client.client]};
+to_xmerl_element(#conference{} = C) ->
+        Attrs = [{muted,                  C#conference.muted},
+                 {beep,                   C#conference.beep},
+                 {startConferenceOnEnter, C#conference.startConferenceOnEnter},
+                 {endConferenceOnExit,    C#conference.endConferenceOnExit},
+                 {waitUrl,                C#conference.waitUrl},
+                 {waitMethod,             C#conference.waitMethod},
+                 {maxParticipants,        C#conference.maxParticipants}],
+    CleanAttrs = remove_undefined(Attrs),
+    {'Conference', CleanAttrs, [C#conference.conference]}.
 
 %% @doc Removes any undefined attributes.
 remove_undefined(Attrs) ->
@@ -145,7 +156,7 @@ check(#gather{} = G, Acc) ->
                       "#gather{}", NAcc),
     NAcc3 = check_int(G#gather.num_digits, ?GATHERTimeoutMin, "num_digits",
                       "#gather{}", NAcc2),
-    lists:foldl(fun check/2, NAcc3, G#gather.body);
+    lists:foldl(fun check_gather/2, NAcc3, G#gather.body);
 check(#record{} = R, Acc) ->
     NAcc = is_member("#record{}",
                      [{record, R#record.method,        ?RECORDMethod},
@@ -171,8 +182,9 @@ check(#dial{} = D, Acc) ->
                       "#dial{}", NAcc2),
     NAcc4 = check_bool(D#dial.hangup_on_star, "hangup_on_star",
                        "#dial{}", NAcc3),
-    check_bool(D#dial.record, "#record{}",
-               "#dial{}", NAcc4);
+    NAcc5 = check_bool(D#dial.record, "#record{}",
+               "#dial{}", NAcc4),
+    lists:foldl(fun check_dial/2, NAcc5, D#dial.body);
 % we assume that the phone numbers (to and from) are properly formatted
 % even though they yanks at twilio accept 'Merican formatted
 % numbers as well
@@ -187,7 +199,61 @@ check(#pause{} = P, Acc) ->
 check(#hangup{}, Acc) ->
     Acc;
 check(#reject{} = R, Acc) ->
-    is_member("#reject{}", [{method, R#reject.reason, ?REJECTReason}], Acc).
+    is_member("#reject{}", [{method, R#reject.reason, ?REJECTReason}], Acc);
+% check is a noun with no attributes
+check(#client{} = C, Acc) ->
+    if
+        is_list(C#client.client) ->
+            Acc;
+        true ->
+            [io_lib:format("Invalid client in #client{} ~p~n",
+                           [C#client.client]) | Acc]
+    end;
+check(#conference{} = C, Acc) ->
+    NAcc = is_member("#conference", [{conference, C#conference.waitMethod,
+                                      ?CONFERENCEWaitMethod}],
+                     Acc),
+    NAcc2 = check_bool(C#conference.muted, "muted", "#conference{}", NAcc),
+    NAcc3 = check_bool(C#conference.beep, "beep", "#conference{}", NAcc2),
+    NAcc4 = check_bool(C#conference.startConferenceOnEnter,
+                       "startConferenceOnEnter", "#conference{}", NAcc3),
+    NAcc5 = check_bool(C#conference.endConferenceOnExit,
+                       "endConferenceOnExit", "#conference{}", NAcc4),
+    MaxP = C#conference.maxParticipants,
+    NAcc6 = if MaxP == undefined ->
+                    NAcc5;
+               MaxP =< ?CONFERENCEMaxParticipants
+               andalso MaxP >= ?CONFERENCEMinParticipants ->
+            NAcc5;
+               true ->
+                    [io_lib:format("Invalid maxPartipants in #conference{} ~p~n",
+                                   [MaxP]) | Acc]
+            end,
+    if
+        is_list(C#conference.conference) ->
+            NAcc6;
+        true ->
+            [io_lib:format("Invalid conference in #conference{} ~p~n",
+                           [C#conference.conference]) | Acc]
+    end.
+
+% can gather #say, #play and #pause
+check_gather(#say{}   = S, Acc) -> check(S, Acc);
+check_gather(#play{}  = P, Acc) -> check(P, Acc);
+check_gather(#pause{} = P, Acc) -> check(P, Acc);
+% anything else is wrong
+check_gather(Rec, Acc) ->
+    El = element(1, Rec),
+    [io_lib:format("Can't #gather ~p~n", [El]) | Acc].
+
+% can dial #number, #client and #conference
+check_dial(#number{}     = S, Acc) -> check(S, Acc);
+check_dial(#client{}     = P, Acc) -> check(P, Acc);
+check_dial(#conference{} = P, Acc) -> check(P, Acc);
+% anything else is wrong
+check_dial(Rec, Acc) ->
+    El = element(1, Rec),
+    [io_lib:format("Can't #dial ~p~n", [El]) | Acc].
 
 check_send_digits(undefined, Acc) ->
     Acc;
@@ -252,12 +318,15 @@ is_member(Label, [{SubLab, K, Vs} | T], Acc) ->
 
 is_valid(Elements) ->
     case validate(Elements) of
-        [] -> true;
-        _  -> false
+        {ok, ok} -> true;
+        _        -> false
     end.
 
 validate(Elements) ->
-    lists:flatten(lists:reverse(lists:foldl(fun check/2, [], Elements))).
+    case lists:flatten(lists:reverse(lists:foldl(fun check/2, [], Elements))) of
+        []  -> {ok, ok};
+        Err -> {error, Err}
+    end.
 
 %-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -414,12 +483,13 @@ validate_test_() ->
      ?_assertEqual(true, is_valid([#gather{timeout = 3}])),
      ?_assertEqual(true, is_valid([#gather{finish_on_key = "*"}])),
      ?_assertEqual(true, is_valid([#gather{num_digits = 333}])),
-     ?_assertEqual(true, is_valid([#gather{body = [#play{}, #say{}]}])),
+     ?_assertEqual(true, is_valid([#gather{body = [#play{}, #say{}, #pause{}]}])),
      % GATHER failing
      ?_assertEqual(false, is_valid([#gather{method = "panda"}])),
      ?_assertEqual(false, is_valid([#gather{timeout = -3}])),
      ?_assertEqual(false, is_valid([#gather{finish_on_key = "^"}])),
      ?_assertEqual(false, is_valid([#gather{num_digits = 333.45}])),
+     ?_assertEqual(false, is_valid([#gather{body = [#dial{}, #number{}]}])),
      ?_assertEqual(false, is_valid([#gather{body = [#play{loop = "erk"},
                                                     #say{voice = "bandy"}]}])),
 
@@ -494,15 +564,50 @@ validate_test_() ->
      ?_assertEqual(true, is_valid([#reject{}])),
      ?_assertEqual(true, is_valid([#reject{reason = "BuSy"}])),
      % REJECT failing
-     ?_assertEqual(false, is_valid([#reject{reason = "BuSTy"}]))
+     ?_assertEqual(false, is_valid([#reject{reason = "BuSTy"}])),
+
+     % CLIENT passing
+     ?_assertEqual(true, is_valid([#client{client = "adb"}])),
+
+     % CLIENT failing
+     ?_assertEqual(false, is_valid([#client{}])),
+     ?_assertEqual(false, is_valid([#client{client = 33}])),
+
+     % CONFERENCE passing
+     ?_assertEqual(true, is_valid([#conference{conference = "a32"}])),
+     ?_assertEqual(true, is_valid([#conference{conference = "a32",
+                                               muted = "tRUe"}])),
+     ?_assertEqual(true, is_valid([#conference{conference = "a32",
+                                               beep = "fALse"}])),
+     ?_assertEqual(true, is_valid([#conference{conference = "a32",
+                                               startConferenceOnEnter = "trUe"}])),
+     ?_assertEqual(true, is_valid([#conference{conference = "a32",
+                                               endConferenceOnExit = "FAlSE"}])),
+     ?_assertEqual(true, is_valid([#conference{conference = "a32",
+                                               waitMethod = "pOst"}])),
+     ?_assertEqual(true, is_valid([#conference{conference = "a32",
+                                               maxParticipants = 34}])),
+
+     % CONFERENCE failing
+     ?_assertEqual(false, is_valid([#conference{}])),
+     ?_assertEqual(false, is_valid([#conference{conference = "a32",
+                                                muted = "filibuters"}])),
+     ?_assertEqual(false, is_valid([#conference{conference = "a32",
+                                                beep = "Trudy"}])),
+     ?_assertEqual(false, is_valid([#conference{conference = "a32",
+                                                startConferenceOnEnter = "f"}])),
+     ?_assertEqual(false, is_valid([#conference{conference = "a32",
+                                                endConferenceOnExit = "erk"}])),
+     ?_assertEqual(false, is_valid([#conference{conference = "a32",
+                                                waitMethod = "pOster boy"}])),
+     ?_assertEqual(false, is_valid([#conference{conference = "a32",
+                                                maxParticipants = 1}])),
+     ?_assertEqual(false, is_valid([#conference{conference = "a32",
+                                                maxParticipants = 41}]))
     ].
 
 %-endif.
 
 testing() ->
-    _A = #play{},
-    _B = #say{voice = "erk"},
-    _C = #dial{},
-    C1 = #number{send_digits = "ww234", number="+123"},
-    _D = #gather{body = [#say{voice = "banjo"}, C1]},
-    validate([C1]).
+    A = #number{},
+    validate([A]).
