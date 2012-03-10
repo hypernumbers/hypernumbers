@@ -460,16 +460,16 @@ validate_test_() ->
     [
      % SAY passing
      ?_assertEqual(true, is_valid([#say{}])),
-     ?_assertEqual(true, is_valid([#say{loop=3}])),
-     ?_assertEqual(true, is_valid([#say{language="de"}])),
-     ?_assertEqual(true, is_valid([#say{language="En"}])),
+     ?_assertEqual(true, is_valid([#say{loop = 3}])),
+     ?_assertEqual(true, is_valid([#say{language = "de"}])),
+     ?_assertEqual(true, is_valid([#say{language = "En"}])),
      % SAY failing
-     ?_assertEqual(false, is_valid([#say{voice="benny"}])),
-     ?_assertEqual(false, is_valid([#say{language="klingon"}])),
-     ?_assertEqual(false, is_valid([#say{loop="3"}])),
-     ?_assertEqual(false, is_valid([#say{loop="dd"}])),
-     ?_assertEqual(false, is_valid([#say{loop=1.1}])),
-     ?_assertEqual(false, is_valid([#say{loop=-9}])),
+     ?_assertEqual(false, is_valid([#say{voice = "benny"}])),
+     ?_assertEqual(false, is_valid([#say{language = "klingon"}])),
+     ?_assertEqual(false, is_valid([#say{loop = "3"}])),
+     ?_assertEqual(false, is_valid([#say{loop = "dd"}])),
+     ?_assertEqual(false, is_valid([#say{loop = 1.1}])),
+     ?_assertEqual(false, is_valid([#say{loop = -9}])),
 
      % PLAY passing
      ?_assertEqual(true, is_valid([#play{}])),
@@ -511,12 +511,12 @@ validate_test_() ->
 
      % NUMBER passing
      ?_assertEqual(true, is_valid([#number{send_digits = "ww234",
-                                           number="+123"}])),
+                                           number = "+123"}])),
      ?_assertEqual(true, is_valid([#number{number = "+234"}])),
      % NUMBER failing
      ?_assertEqual(false, is_valid([#number{}])),
      ?_assertEqual(false, is_valid([#number{send_digits = "dww234",
-                                            number="+123"}])),
+                                            number = "+123"}])),
      ?_assertEqual(false, is_valid([#number{number = "234"}])),
 
      % DIAL passing
@@ -547,6 +547,7 @@ validate_test_() ->
                                          from = "+123", to = "+345"}])),
 
      % REDIRECT passing
+     ?_assertEqual(true, is_valid([#redirect{}])),
      ?_assertEqual(true, is_valid([#redirect{method = "GEt"}])),
      % REDIRECT failing
      ?_assertEqual(false, is_valid([#redirect{method = "Git"}])),
@@ -604,6 +605,64 @@ validate_test_() ->
                                                 maxParticipants = 1}])),
      ?_assertEqual(false, is_valid([#conference{conference = "a32",
                                                 maxParticipants = 41}]))
+    ].
+
+nesting_test_() ->
+    % nesting verbs
+    GATHER = #gather{},
+    DIAL = #dial{},
+
+    % non-nesting verbs
+    SAY = #say{},
+    PLAY = #play{},
+    RECORD = #record{},
+    SMS = #sms{from = "+123", to = "+345"},
+    REDIRECT = #redirect{method = "GEt"},
+    PAUSE = #pause{},
+    HANGUP = #hangup{},
+    REJECT = #reject{},
+
+    % nouns
+    NUMBER = #number{send_digits = "ww234", number = "+123"},
+    CLIENT = #client{client = "yeah"},
+    CONFERENCE = #conference{ conference = "hoot"},
+
+    [
+     % Nested GATHER passing
+     ?_assertEqual(true, is_valid([#gather{body = [SAY]}])),
+     ?_assertEqual(true, is_valid([#gather{body = [PLAY]}])),
+     ?_assertEqual(true, is_valid([#gather{body = [PAUSE]}])),
+     ?_assertEqual(true, is_valid([#gather{body = [SAY, PLAY, PAUSE]}])),
+     % Nested #GATHER failing
+     ?_assertEqual(false, is_valid([#gather{body = [GATHER]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [DIAL]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [SMS]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [REDIRECT]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [RECORD]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [HANGUP]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [REJECT]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [GATHER, DIAL, SMS, REDIRECT,
+                                                    PAUSE, HANGUP, REJECT]}])),
+
+     % Nested DIAL passing
+     ?_assertEqual(true, is_valid([#dial{body = [NUMBER]}])),
+     ?_assertEqual(true, is_valid([#dial{body = [CLIENT]}])),
+     ?_assertEqual(true, is_valid([#dial{body = [CONFERENCE]}])),
+     ?_assertEqual(true, is_valid([#dial{body = [NUMBER, CLIENT, CONFERENCE]}])),
+     % Nested DIAL failing
+     ?_assertEqual(false, is_valid([#dial{body = [GATHER]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [DIAL]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [SAY]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [PLAY]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [RECORD]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [SMS]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [REDIRECT]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [PAUSE]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [HANGUP]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [REJECT]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [GATHER, DIAL, SAY, PLAY,
+                                                  RECORD, SMS, REDIRECT,
+                                                  PAUSE, HANGUP, REJECT]}]))
     ].
 
 %-endif.
