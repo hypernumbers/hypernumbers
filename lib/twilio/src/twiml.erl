@@ -11,7 +11,9 @@
          encode/1,
          validate/1,
          is_valid/1,
-         compile/1
+         compile/1,
+         compile/2,
+         compile/3
         ]).
 
 -export([
@@ -103,13 +105,13 @@ to_xmerl_element(#reject{} = Reject) ->
 to_xmerl_element(#client{} = C) ->
     {'Client', [], [C#client.client]};
 to_xmerl_element(#conference{} = C) ->
-        Attrs = [{muted,                  C#conference.muted},
-                 {beep,                   C#conference.beep},
-                 {startConferenceOnEnter, C#conference.startConferenceOnEnter},
-                 {endConferenceOnExit,    C#conference.endConferenceOnExit},
-                 {waitUrl,                C#conference.waitUrl},
-                 {waitMethod,             C#conference.waitMethod},
-                 {maxParticipants,        C#conference.maxParticipants}],
+    Attrs = [{muted,                  C#conference.muted},
+             {beep,                   C#conference.beep},
+             {startConferenceOnEnter, C#conference.startConferenceOnEnter},
+             {endConferenceOnExit,    C#conference.endConferenceOnExit},
+             {waitUrl,                C#conference.waitUrl},
+             {waitMethod,             C#conference.waitMethod},
+             {maxParticipants,        C#conference.maxParticipants}],
     CleanAttrs = remove_undefined(Attrs),
     {'Conference', CleanAttrs, [C#conference.conference]}.
 
@@ -118,26 +120,155 @@ remove_undefined(Attrs) ->
     [Attr || {_, Value} = Attr <- Attrs, Value =/= undefined].
 
 compile(Elements) ->
-    {Type, Recs} = comp2(Elements, 'no-state', []),
-    {Type, lists:flatten(encode(Recs))}.
+    compile(Elements, "0", fun make_fsm/2).
 
-comp2([], Type, Acc) ->
-    {Type, lists:reverse(Acc)};
-comp2([H | T], Type, Acc)  when is_record(H, say)
-                                orelse is_record(H, play)
-                                orelse is_record(H, record)
-                                orelse is_record(H, number)
-                                orelse is_record(H, dial)
-                                orelse is_record(H, sms)
-                                orelse is_record(H, redirect)
-                                orelse is_record(H, pause)
-                                orelse is_record(H, hangup)
-                                orelse is_record(H, reject) ->
-    comp2(T, Type, [H | Acc]);
-comp2([#gather{} = H | T], _Type, Acc) ->
-    {_, NewBody} = comp2(H#gather.body, state, []),
-    NewH = H#gather{body = NewBody},
-    comp2(T, state, [NewH | Acc]).
+compile(Elements, Type) ->
+    compile(Elements, "0", Type).
+
+compile(Elements, Rank, html) ->
+    comp2(Elements, Rank, fun print_html/2);
+compile(Elements, Rank, ascii) ->
+    comp2(Elements, Rank, fun print_ascii/2);
+compile(Elements, Rank, fms) ->
+    comp2(Elements, Rank, fun make_fsm/2).
+
+comp2(Elements, Rank, Fun) ->
+    {Type, O} = comp3(Elements, 'no-state', Fun, Rank, []),
+    io:format("Type is ~p~n", [Type]),
+    io:format(O).
+
+comp3([], Type, _Fun, _Rank, Acc) ->
+    {Type, lists:flatten(lists:reverse(Acc))};
+comp3([H | T], Type, Fun, Rank, Acc)
+  when is_record(H, say)
+       orelse is_record(H, play)
+       orelse is_record(H, record)
+       orelse is_record(H, sms)
+       orelse is_record(H, pause)
+       orelse is_record(H, hangup)
+       orelse is_record(H, reject)
+       orelse is_record(H, number)
+       orelse is_record(H, client)
+       orelse is_record(H, conference)
+       orelse is_record(H, apply_EXT)
+       orelse is_record(H, chainload_EXT)
+       orelse is_record(H, goto_EXT) ->
+    Rank2 = bump(Rank),
+    comp3(T, Type, Fun, Rank2, [Fun(H, Rank2) | Acc]);
+comp3([#gather{} = H | T], _Type, Fun, Rank, Acc) ->
+    Rank2 = bump(Rank),
+    NewRank = incr(Rank2),
+    {_, NewBody} = comp3(H#gather.body, state, Fun, NewRank, []),
+    comp3(T, state, Fun, Rank2, [NewBody, Fun(H, Rank2) | Acc]);
+comp3([#dial{} = H | T], _Type, Fun, Rank, Acc) ->
+    Rank2 = bump(Rank),
+    NewRank = incr(Rank2),
+    {_, NewBody} = comp3(H#dial.body, state, Fun, NewRank, []),
+    comp3(T, state, Fun, Rank2, [NewBody, Fun(H, Rank2) | Acc]);
+comp3([#response_EXT{} | T], _Type, Fun, Rank, Acc) ->
+    io:format("fix me~n"),
+    Rank2 = bump(Rank),
+    comp3(T, state, Fun, Rank2, Acc);
+comp3([#default_EXT{} | T], _Type, Fun, Rank, Acc) ->
+    io:format("fix me too...~n"),
+    Rank2 = bump(Rank),
+    comp3(T, state, Fun, Rank2, Acc).
+
+print_html(_Element, _Rank) ->
+    ok.
+
+print_ascii(Element, Rank) ->
+    Indent = trunc(((length(Rank) - 1)/2) * 4),
+    print_2(Element, Rank, Indent, "", "~n").
+
+print_2(#say{text = T, voice = V, language = L}, Rank, Indent,
+        Prefix, Postfix) ->
+    io_lib:format("~s~s~s - SAY \"~s\" ~s ~s~s",
+                  [Prefix, pad(Indent), Rank, T, e(V), e(L), Postfix]);
+print_2(#play{url = U}, Rank, Indent, Prefix, Postfix) ->
+    io_lib:format("~s~s~s - PLAY ~s ~s",
+                  [Prefix, pad(Indent), Rank, U, Postfix]);
+print_2(#gather{} = G, Rank, Indent, Prefix, Postfix) ->
+    Key = case G#gather.finish_on_key of
+              undefined -> "";
+              K         -> "(finish with: " ++ K ++ ")"
+          end,
+    io_lib:format("~s~s~s - REQUEST KEYPAD INPUT (GATHER) ~s~s",
+                  [Prefix, pad(Indent), Rank, Key, Postfix]);
+print_2(#record{} = R, Rank, Indent, Prefix, Postfix) ->
+    Beep = case R#record.play_beep of
+               undefined -> "";
+               false     -> "";
+               true      -> "(beep)"
+           end,
+    Transcribe = case R#record.transcribe of
+               undefined -> "";
+               false     -> "";
+               true      -> "(transcribe)"
+           end,
+    io_lib:format("~s~s~s - RECORD ~s ~s~s",
+                  [Prefix, pad(Indent), Rank, Beep, Transcribe, Postfix]);
+print_2(#number{number = N}, Rank, Indent, Prefix, Postfix) ->
+    io_lib:format("~s~s~s - NUMBER ~s~s",
+                  [Prefix, pad(Indent), Rank, N, Postfix]);
+print_2(#dial{} = D, Rank, Indent, Prefix, Postfix) ->
+    Record = case D#dial.record of
+                 undefined -> "";
+                 false     -> "";
+                 true      -> "(to be recorded)"
+             end,
+    io_lib:format("~s~s~s - DIAL ~s~s",
+                  [Prefix, pad(Indent), Rank, Record, Postfix]);
+print_2(#sms{} = S, Rank, Indent, Prefix, Postfix) ->
+    io_lib:format("~s~s~s - SMS \"~s\" - to ~s~s",
+                  [Prefix, pad(Indent), Rank, S#sms.text, S#sms.to, Postfix]);
+print_2(#pause{length = N}, Rank, Indent, Prefix, Postfix) ->
+    io_lib:format("~s~s~s - PAUSE for ~p seconds~s",
+                  [Prefix, pad(Indent), Rank, N, Postfix]);
+print_2(#reject{reason = R}, Rank, Indent, Prefix, Postfix) ->
+    R2 = case R of
+             undefined -> "";
+             _         -> "because " ++ R
+         end,
+    io_lib:format("~s~s~s - REJECT ~s~s",
+                  [Prefix, pad(Indent), Rank, R2, Postfix]);
+print_2(#client{client = C}, Rank, Indent, Prefix, Postfix) ->
+    io_lib:format("~s~s~s - CLIENT ~s~s",
+                  [Prefix, pad(Indent), Rank, C, Postfix]);
+print_2(#conference{} = C, Rank, Indent, Prefix, Postfix) ->
+    Conf = C#conference.conference,
+    Mute = case C#conference.muted of
+               true -> "(caller can't speak)";
+               _    -> ""
+           end,
+    Beep = case C#conference.beep of
+               undefined -> "";
+               false     -> "";
+               true      -> "(beep)"
+           end,
+    Role = case C#conference.startConferenceOnEnter of
+               undefined -> "";
+               false     -> "";
+               true      -> "(wait for conf admin)"
+           end,
+    End = case C#conference.endConferenceOnExit of
+              undefined -> "";
+              false     -> "";
+              true      -> "(conf dies when this person leaves)"
+          end,
+    io_lib:format("~s~s~s - CONFERENCE ~s ~s ~s ~s ~s~s",
+                  [Prefix, pad(Indent), Rank, Conf, Mute, Beep, Role,
+                   End, Postfix]);
+print_2(_Rec, _Rank, _Indent, _Prefix, _Postfix) ->
+    "".
+
+make_fsm(_Element, _Rank) ->
+    ok.
+
+pad(N) when is_integer(N) -> lists:flatten(lists:duplicate(N, " ")).
+
+e(undefined) -> "";
+e(X)         -> X.
 
 check(#say{} = Say, Acc) ->
     NewAcc = is_member("#say{}", [{voice,    Say#say.voice,    ?SAYVoices},
@@ -156,7 +287,9 @@ check(#gather{} = G, Acc) ->
                       "#gather{}", NAcc),
     NAcc3 = check_int(G#gather.num_digits, ?GATHERTimeoutMin, "num_digits",
                       "#gather{}", NAcc2),
-    lists:foldl(fun check_gather/2, NAcc3, G#gather.body);
+    NAcc4 = lists:foldl(fun check_gather/2, NAcc3, G#gather.body),
+    NAcc5 = check_bool(G#gather.autoMenu_EXT, "autoMenu_EXT", "#gather{}", NAcc4),
+    lists:foldl(fun check_after_EXT/2, NAcc5, G#gather.after_EXT);
 check(#record{} = R, Acc) ->
     NAcc = is_member("#record{}",
                      [{record, R#record.method,        ?RECORDMethod},
@@ -168,12 +301,6 @@ check(#record{} = R, Acc) ->
                       "#record{}", NAcc3),
     check_int(R#record.max_length, ?RECORDMaxLen, "max_length",
               "#record{}", NAcc4);
-% we assume that the phone number is properly formatted
-% even though they yanks at twilio accept 'Merican formatted
-% numbers as well
-check(#number{} = N, Acc) ->
-    NAcc = check_send_digits(N#number.send_digits, Acc),
-    check_phone_no(N#number.number, "number", "#number{}", NAcc);
 check(#dial{} = D, Acc) ->
     NAcc = is_member("#dial{}", [{method, D#dial.method, ?DIALMethod}], Acc),
     NAcc2 = check_int(D#dial.timeout, ?DIALTimeoutMin, "timeout",
@@ -183,8 +310,13 @@ check(#dial{} = D, Acc) ->
     NAcc4 = check_bool(D#dial.hangup_on_star, "hangup_on_star",
                        "#dial{}", NAcc3),
     NAcc5 = check_bool(D#dial.record, "#record{}",
-               "#dial{}", NAcc4),
-    lists:foldl(fun check_dial/2, NAcc5, D#dial.body);
+                       "#dial{}", NAcc4),
+    case D#dial.body of
+        [] ->
+            io_lib:format("Body of #dial must not be blank~sn", ["~"]);
+        _ ->
+            lists:foldl(fun check_dial/2, NAcc5, D#dial.body)
+    end;
 % we assume that the phone numbers (to and from) are properly formatted
 % even though they yanks at twilio accept 'Merican formatted
 % numbers as well
@@ -192,24 +324,88 @@ check(#sms{} = S, Acc) ->
     NAcc = is_member("#sms{}", [{method, S#sms.method, ?SMSMethod}], Acc),
     NAcc2 = check_phone_no(S#sms.to, "to", "#sms{}", NAcc),
     check_phone_no(S#sms.from, "from", "#sms{}", NAcc2);
-check(#redirect{} = R, Acc) ->
-    is_member("#redirect{}", [{method, R#redirect.method, ?REDIRECTMethod}], Acc);
+check(#redirect{}, Acc) ->
+    [io_lib:format("#redirect{} is not supported~n", []) | Acc];
 check(#pause{} = P, Acc) ->
     check_int(P#pause.length, ?PAUSELengthMin, "length", "#pause{}", Acc);
 check(#hangup{}, Acc) ->
     Acc;
 check(#reject{} = R, Acc) ->
     is_member("#reject{}", [{method, R#reject.reason, ?REJECTReason}], Acc);
-% check is a noun with no attributes
-check(#client{} = C, Acc) ->
+check(#response_EXT{}, Acc) ->
+    [io_lib:format("#response_EXT{} can only be a in #gather{}.after_EXT~sn",
+                   ["~"])
+     | Acc];
+check(#default_EXT{}, Acc) ->
+    [io_lib:format("#default_EXT{} can only be a in #gather{}.after_EXT~sn",
+                   ["~"])
+     | Acc];
+check(#apply_EXT{} = A, Acc) ->
+    NAcc = case A#apply_EXT.module of
+               undefined ->
+                   [io_lib:format("module can't be blank in #apply_EXT{}~sn",
+                                  ["~"])
+                    | Acc];
+               _ ->
+                   Acc
+           end,
+    case A#apply_EXT.fn of
+        undefined ->
+            [io_lib:format("fn can't be blank in #apply_EXT{}~sn", ["~"])
+             | NAcc];
+        _ ->
+            Acc
+    end;
+check(#chainload_EXT{} = C, Acc) ->
+    NAcc = case C#chainload_EXT.module of
+               undefined ->
+                   [io_lib:format("module can't be blank in #chainload_EXT{}~sn",
+                                  ["~"])
+                    | Acc];
+               _ ->
+                   Acc
+           end,
+    case C#chainload_EXT.fn of
+        undefined ->
+            [io_lib:format("fn can't be blank in #chainload_EXT{}~sn", ["~"])
+             | NAcc];
+        _ ->
+            NAcc
+    end;
+check(#goto_EXT{goto = G}, Acc) ->
+    case G of
+        X when X == undefined orelse X == "" ->
+            [io_lib:format("#goto{} can't be blank~sn", ["~"]) | Acc];
+        _ ->
+            Acc
+    end;
+check(#repeat_EXT{}, Acc) ->
+    [io_lib:format("#repeat_EXT{} can only be a in #gather{}.after_EXT~sn",
+                   ["~"])
+     | Acc];
+check(Rec, Acc) when is_record(Rec, number)
+                     orelse is_record(Rec, client)
+                     orelse is_record(Rec, conference) ->
+    El = element(1, Rec),
+    [io_lib:format("#~p{} records are nouns and must be nested in #dial{}~sn",
+                   [El, "~"]) | Acc].
+
+% we assume that the phone number is properly formatted
+% even though they yanks at twilio accept 'Merican formatted
+% numbers as well
+check_noun(#number{} = N, Acc) ->
+    NAcc = check_send_digits(N#number.send_digits, Acc),
+    check_phone_no(N#number.number, "number", "#number{}", NAcc);
+% client is a noun with no attributes
+check_noun(#client{} = C, Acc) ->
     if
         is_list(C#client.client) ->
             Acc;
         true ->
-            [io_lib:format("Invalid client in #client{} ~p~n",
-                           [C#client.client]) | Acc]
+            [io_lib:format("Invalid client in #client{} ~p~sn",
+                           [C#client.client, "~"]) | Acc]
     end;
-check(#conference{} = C, Acc) ->
+check_noun(#conference{} = C, Acc) ->
     NAcc = is_member("#conference", [{conference, C#conference.waitMethod,
                                       ?CONFERENCEWaitMethod}],
                      Acc),
@@ -224,36 +420,53 @@ check(#conference{} = C, Acc) ->
                     NAcc5;
                MaxP =< ?CONFERENCEMaxParticipants
                andalso MaxP >= ?CONFERENCEMinParticipants ->
-            NAcc5;
+                    NAcc5;
                true ->
-                    [io_lib:format("Invalid maxPartipants in #conference{} ~p~n",
-                                   [MaxP]) | Acc]
+                    [io_lib:format("Invalid maxPartipants in #conference{} ~p~sn",
+                                   [MaxP, "~"]) | Acc]
             end,
     if
         is_list(C#conference.conference) ->
             NAcc6;
         true ->
-            [io_lib:format("Invalid conference in #conference{} ~p~n",
-                           [C#conference.conference]) | Acc]
+            [io_lib:format("Invalid conference in #conference{} ~p~sn",
+                           [C#conference.conference, "~"]) | Acc]
     end.
 
+% the after record can be a #repeat_EXT{} record
+check_after_EXT(Rec, Acc) when  is_record(Rec, repeat_EXT)->
+    Acc;
+% the after record can be a #default_EXT{} record
+check_after_EXT(Rec, Acc) when  is_record(Rec, default_EXT)->
+    lists:foldl(fun check/2, Acc, Rec#default_EXT.body);
+% response_EXT can only be in a #gather{}.after_EXT
+check_after_EXT(#response_EXT{} = R, Acc) ->
+    NAcc = check_int_as_str(R#response_EXT.response, "response",
+                            "response_EXT", Acc),
+    lists:foldl(fun check/2, NAcc, R#response_EXT.body);
+% anything else is wrong
+check_after_EXT(Rec, Acc) ->
+    El = element(1, Rec),
+    [io_lib:format("Can't ~p as after_EXT in #gather{}~sn", [El, "~"]) | Acc].
+
 % can gather #say, #play and #pause
-check_gather(#say{}   = S, Acc) -> check(S, Acc);
-check_gather(#play{}  = P, Acc) -> check(P, Acc);
-check_gather(#pause{} = P, Acc) -> check(P, Acc);
+check_gather(Rec, Acc) when is_record(Rec, say)
+                            orelse is_record(Rec, play)
+                            orelse is_record(Rec, pause) ->
+    check(Rec, Acc);
 % anything else is wrong
 check_gather(Rec, Acc) ->
     El = element(1, Rec),
-    [io_lib:format("Can't #gather ~p~n", [El]) | Acc].
+    [io_lib:format("Can't #gather ~p~sn", [El, "~"]) | Acc].
 
 % can dial #number, #client and #conference
-check_dial(#number{}     = S, Acc) -> check(S, Acc);
-check_dial(#client{}     = P, Acc) -> check(P, Acc);
-check_dial(#conference{} = P, Acc) -> check(P, Acc);
+check_dial(#number{}     = S, Acc) -> check_noun(S, Acc);
+check_dial(#client{}     = P, Acc) -> check_noun(P, Acc);
+check_dial(#conference{} = P, Acc) -> check_noun(P, Acc);
 % anything else is wrong
 check_dial(Rec, Acc) ->
     El = element(1, Rec),
-    [io_lib:format("Can't #dial ~p~n", [El]) | Acc].
+    [io_lib:format("Can't #dial ~p~sn", [El, "~"]) | Acc].
 
 check_send_digits(undefined, Acc) ->
     Acc;
@@ -264,7 +477,7 @@ check_send_digits(String, Acc) ->
 check_phone_no("+" ++ Num, Fld, Rec, Acc) ->
     check_int_as_str(Num, Fld, Rec, Acc);
 check_phone_no(Val, Fld, Rec, Acc) ->
-    [io_lib:format("Invalid ~p in ~p ~p~n", [Fld, Rec, Val]) | Acc].
+    [io_lib:format("Invalid ~p in ~p ~p~sn", [Fld, Rec, Val, "~"]) | Acc].
 
 check_int_as_str(undefined, _, _, Acc) ->
     Acc;
@@ -276,7 +489,7 @@ check_int_as_str(Str, Fld, Rec, Acc) ->
               end,
     case IsValid of
         false ->
-            [io_lib:format("Invalid ~p in ~p ~p~n", [Fld, Rec, Str])
+            [io_lib:format("Invalid ~p in ~p ~p~sn", [Fld, Rec, Str, "~"])
              | Acc];
         _ ->
             Acc
@@ -291,7 +504,7 @@ check_bool(Val, Fld, Rec, Acc) ->
         "false" ->
             Acc;
         _Other ->
-            [io_lib:format("Invalid ~p in ~p ~p~n", [Fld, Rec, Val]) | Acc]
+            [io_lib:format("Invalid ~p in ~p ~p~sn", [Fld, Rec, Val, "~"]) | Acc]
     end.
 
 check_int(undefined, _Min, _Fld, _Rec, Acc) ->
@@ -301,7 +514,7 @@ check_int(Val, Min, Fld, Rec, Acc) ->
         is_integer(Val) andalso Val >= Min ->
             Acc;
         true ->
-            [io_lib:format("Invalid ~p in ~p ~p~n", [Fld, Rec, Val]) | Acc]
+            [io_lib:format("Invalid ~p in ~p ~p~sn", [Fld, Rec, Val, "~"]) | Acc]
     end.
 
 is_member(_, [], Acc) ->
@@ -311,8 +524,8 @@ is_member(Label, [{_SubLab, undefined, _Vs} | T], Acc) ->
 is_member(Label, [{SubLab, K, Vs} | T], Acc) ->
     NewAcc = case lists:member(string:to_lower(K), Vs) of
                  true  -> Acc;
-                 false -> [io_lib:format("Invalid ~s in ~s ~p~n",
-                                         [SubLab, Label, K]) | Acc]
+                 false -> [io_lib:format("Invalid ~s in ~s ~p~sn",
+                                         [SubLab, Label, K, "~"]) | Acc]
              end,
     is_member(Label, T, NewAcc).
 
@@ -327,6 +540,13 @@ validate(Elements) ->
         []  -> {ok, ok};
         Err -> {error, Err}
     end.
+
+bump(Rank) ->
+    [T | H] = lists:reverse(string:tokens(Rank, ".")),
+    NewT = integer_to_list(list_to_integer(T) + 1),
+    string:join(lists:reverse([NewT | H]), ".").
+
+incr(Rank) -> Rank ++ ".0".
 
 %-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -509,24 +729,19 @@ validate_test_() ->
      ?_assertEqual(false, is_valid([#record{transcribe = "tRuth"}])),
      ?_assertEqual(false, is_valid([#record{play_beep = "Farts"}])),
 
-     % NUMBER passing
-     ?_assertEqual(true, is_valid([#number{send_digits = "ww234",
-                                           number = "+123"}])),
-     ?_assertEqual(true, is_valid([#number{number = "+234"}])),
-     % NUMBER failing
-     ?_assertEqual(false, is_valid([#number{}])),
-     ?_assertEqual(false, is_valid([#number{send_digits = "dww234",
-                                            number = "+123"}])),
-     ?_assertEqual(false, is_valid([#number{number = "234"}])),
-
      % DIAL passing
-     ?_assertEqual(true, is_valid([#dial{}])),
-     ?_assertEqual(true, is_valid([#dial{method = "GeT"}])),
-     ?_assertEqual(true, is_valid([#dial{timeout = 3}])),
-     ?_assertEqual(true, is_valid([#dial{hangup_on_star = "trUE"}])),
-     ?_assertEqual(true, is_valid([#dial{time_limit = 4}])),
-     ?_assertEqual(true, is_valid([#dial{record = "fAlse"}])),
+     ?_assertEqual(true, is_valid([#dial{method = "GeT",
+                                         body = [#number{number = "+123"}]}])),
+     ?_assertEqual(true, is_valid([#dial{timeout = 3,
+                                         body = [#number{number = "+123"}]}])),
+     ?_assertEqual(true, is_valid([#dial{hangup_on_star = "trUE",
+                                         body = [#number{number = "+123"}]}])),
+     ?_assertEqual(true, is_valid([#dial{time_limit = 4,
+                                         body = [#number{number = "+123"}]}])),
+     ?_assertEqual(true, is_valid([#dial{record = "fAlse",
+                                         body = [#number{number = "+123"}]}])),
      % DIAL failing
+     ?_assertEqual(false, is_valid([#dial{}])),
      ?_assertEqual(false, is_valid([#dial{method = "GeT=rund"}])),
      ?_assertEqual(false, is_valid([#dial{timeout = "33"}])),
      ?_assertEqual(false, is_valid([#dial{hangup_on_star = "banjo"}])),
@@ -536,7 +751,7 @@ validate_test_() ->
      % SMS passiing
      ?_assertEqual(true, is_valid([#sms{from = "+123", to = "+345"}])),
      ?_assertEqual(true, is_valid([#sms{method = "GEt",
-                                         from = "+123", to = "+345"}])),
+                                        from = "+123", to = "+345"}])),
      % SMS failing
      ?_assertEqual(false, is_valid([#sms{}])),
      ?_assertEqual(false, is_valid([#sms{method = "GEt",
@@ -546,10 +761,8 @@ validate_test_() ->
      ?_assertEqual(false, is_valid([#sms{method = "Git",
                                          from = "+123", to = "+345"}])),
 
-     % REDIRECT passing
-     ?_assertEqual(true, is_valid([#redirect{}])),
-     ?_assertEqual(true, is_valid([#redirect{method = "GEt"}])),
      % REDIRECT failing
+     % in this schema REDIRECT is not used at all
      ?_assertEqual(false, is_valid([#redirect{method = "Git"}])),
 
      % PAUSE passing
@@ -567,64 +780,97 @@ validate_test_() ->
      % REJECT failing
      ?_assertEqual(false, is_valid([#reject{reason = "BuSTy"}])),
 
+     % NUMBER passing
+     ?_assertEqual(true, is_valid([#dial{body = [#number{send_digits = "ww234",
+                                                         number = "+123"}]}])),
+     ?_assertEqual(true, is_valid([#dial{body = [#number{number = "+234"}]}])),
+     % NUMBER failing
+     ?_assertEqual(false, is_valid([#number{}])),
+     ?_assertEqual(false, is_valid([#dial{body = [#number{}]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [#number{send_digits = "dww234",
+                                                          number = "+123"}]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [#number{number = "234"}]}])),
+
      % CLIENT passing
-     ?_assertEqual(true, is_valid([#client{client = "adb"}])),
+     ?_assertEqual(true, is_valid([#dial{body = [#client{client = "adb"}]}])),
 
      % CLIENT failing
      ?_assertEqual(false, is_valid([#client{}])),
-     ?_assertEqual(false, is_valid([#client{client = 33}])),
+     ?_assertEqual(false, is_valid([#dial{body = [#client{}]}])),
+     ?_assertEqual(false, is_valid([#dial{body = [#client{client = 33}]}])),
 
      % CONFERENCE passing
-     ?_assertEqual(true, is_valid([#conference{conference = "a32"}])),
-     ?_assertEqual(true, is_valid([#conference{conference = "a32",
-                                               muted = "tRUe"}])),
-     ?_assertEqual(true, is_valid([#conference{conference = "a32",
-                                               beep = "fALse"}])),
-     ?_assertEqual(true, is_valid([#conference{conference = "a32",
-                                               startConferenceOnEnter = "trUe"}])),
-     ?_assertEqual(true, is_valid([#conference{conference = "a32",
-                                               endConferenceOnExit = "FAlSE"}])),
-     ?_assertEqual(true, is_valid([#conference{conference = "a32",
-                                               waitMethod = "pOst"}])),
-     ?_assertEqual(true, is_valid([#conference{conference = "a32",
-                                               maxParticipants = 34}])),
+     ?_assertEqual(true, is_valid([#dial{body =
+                                         [#conference{conference = "a32"}]}])),
+     ?_assertEqual(true, is_valid([#dial{body =
+                                         [#conference{conference = "a32",
+                                                      muted = "tRUe"}]}])),
+     ?_assertEqual(true, is_valid([#dial{body =
+                                         [#conference{conference = "a32",
+                                                      beep = "fALse"}]}])),
+     ?_assertEqual(true, is_valid([#dial{body =
+                                         [#conference{conference = "a32",
+                                                      startConferenceOnEnter =
+                                                      "trUe"}]}])),
+     ?_assertEqual(true, is_valid([#dial{body =
+                                         [#conference{conference = "a32",
+                                                      endConferenceOnExit =
+                                                      "FAlSE"}]}])),
+     ?_assertEqual(true, is_valid([#dial{body =
+                                         [#conference{conference = "a32",
+                                                      waitMethod = "pOst"}]}])),
+     ?_assertEqual(true, is_valid([#dial{body =
+                                         [#conference{conference = "a32",
+                                                      maxParticipants = 34}]}])),
 
      % CONFERENCE failing
      ?_assertEqual(false, is_valid([#conference{}])),
-     ?_assertEqual(false, is_valid([#conference{conference = "a32",
-                                                muted = "filibuters"}])),
-     ?_assertEqual(false, is_valid([#conference{conference = "a32",
-                                                beep = "Trudy"}])),
-     ?_assertEqual(false, is_valid([#conference{conference = "a32",
-                                                startConferenceOnEnter = "f"}])),
-     ?_assertEqual(false, is_valid([#conference{conference = "a32",
-                                                endConferenceOnExit = "erk"}])),
-     ?_assertEqual(false, is_valid([#conference{conference = "a32",
-                                                waitMethod = "pOster boy"}])),
-     ?_assertEqual(false, is_valid([#conference{conference = "a32",
-                                                maxParticipants = 1}])),
-     ?_assertEqual(false, is_valid([#conference{conference = "a32",
-                                                maxParticipants = 41}]))
+     ?_assertEqual(false, is_valid([#dial{body =
+                                          [#conference{}]}])),
+     ?_assertEqual(false, is_valid([#dial{body =
+                                          [#conference{conference = "a32",
+                                                       muted = "filibuters"}]}])),
+     ?_assertEqual(false, is_valid([#dial{body =
+                                          [#conference{conference = "a32",
+                                                       beep = "Trudy"}]}])),
+     ?_assertEqual(false, is_valid([#dial{body =
+                                          [#conference{conference = "a32",
+                                                       startConferenceOnEnter =
+                                                       "f"}]}])),
+     ?_assertEqual(false, is_valid([#dial{body =
+                                          [#conference{conference = "a32",
+                                                       endConferenceOnExit =
+                                                       "erk"}]}])),
+     ?_assertEqual(false, is_valid([#dial{body =
+                                          [#conference{conference = "a32",
+                                                       waitMethod =
+                                                       "pOster boy"}]}])),
+     ?_assertEqual(false, is_valid([#dial{body =
+                                          [#conference{conference = "a32",
+                                                       maxParticipants = 1}]}])),
+     ?_assertEqual(false, is_valid([#dial{body =
+                                          [#conference{conference = "a32",
+                                                       maxParticipants = 41}]}]))
     ].
 
 nesting_test_() ->
     % nesting verbs
     GATHER = #gather{},
-    DIAL = #dial{},
+    DIAL   = #dial{},
 
     % non-nesting verbs
-    SAY = #say{},
-    PLAY = #play{},
-    RECORD = #record{},
-    SMS = #sms{from = "+123", to = "+345"},
+    SAY      = #say{},
+    PLAY     = #play{},
+    PAUSE    = #pause{},
+    SMS      = #sms{from = "+123", to = "+345"},
     REDIRECT = #redirect{method = "GEt"},
-    PAUSE = #pause{},
-    HANGUP = #hangup{},
-    REJECT = #reject{},
+    RECORD   = #record{},
+    HANGUP   = #hangup{},
+    REJECT   = #reject{},
 
     % nouns
-    NUMBER = #number{send_digits = "ww234", number = "+123"},
-    CLIENT = #client{client = "yeah"},
+    NUMBER     = #number{send_digits = "ww234", number = "+123"},
+    CLIENT     = #client{client = "yeah"},
     CONFERENCE = #conference{ conference = "hoot"},
 
     [
@@ -665,8 +911,163 @@ nesting_test_() ->
                                                   PAUSE, HANGUP, REJECT]}]))
     ].
 
+part_extension_test_() ->
+    GATHER    = #gather{},
+    SAY       = #say{},
+    PLAY      = #play{},
+    APPLY     = #apply_EXT{module = bish, fn = bash},
+    CHAINLOAD = #chainload_EXT{module = bosh, fn = berk},
+    REPEAT    = #repeat_EXT{},
+    GOTO      = #goto_EXT{goto = "dddd"},
+    [
+     % APPLY_EXT passing
+     ?_assertEqual(true, is_valid([#apply_EXT{module = bish, fn = bash}])),
+     % APPLY_EXT failing
+     ?_assertEqual(false, is_valid([#apply_EXT{}])),
+
+     % RESPONSE_EXT passing
+     ?_assertEqual(true, is_valid([#gather{after_EXT =
+                                           [#response_EXT{response = "1",
+                                                          body = [GATHER]}]}])),
+     ?_assertEqual(true, is_valid([#gather{after_EXT =
+                                           [#response_EXT{response = "1",
+                                                          body = [SAY]}]}])),
+    ?_assertEqual(true, is_valid([#gather{after_EXT =
+                                          [#response_EXT{response = "1",
+                                                         body = [APPLY]}]}])),
+    ?_assertEqual(true, is_valid([#gather{after_EXT =
+                                          [#response_EXT{response = "1",
+                                                         body = [CHAINLOAD]}]}])),
+     ?_assertEqual(true, is_valid([#gather{after_EXT =
+                                           [#response_EXT{response = "1",
+                                                 body = [GOTO]}]}])),
+     % RESPONSE_EXT failing
+     ?_assertEqual(false, is_valid([#response_EXT{response = "1",
+                                                 body = [GATHER]}])),
+     ?_assertEqual(false, is_valid([#response_EXT{response = "1",
+                                                 body = [SAY]}])),
+     ?_assertEqual(false, is_valid([#response_EXT{response = "1",
+                                                 body = [APPLY]}])),
+     ?_assertEqual(false, is_valid([#response_EXT{response = "1",
+                                                 body = [CHAINLOAD]}])),
+     ?_assertEqual(false, is_valid([#response_EXT{response = "1",
+                                                 body = [GOTO]}])),
+     ?_assertEqual(false, is_valid([#response_EXT{response = "aa",
+                                                  body = [CHAINLOAD]}])),
+     ?_assertEqual(false, is_valid([#response_EXT{response = "1",
+                                                 body = [REPEAT]}])),
+
+     % DEFAULT_EXT passing
+     ?_assertEqual(true, is_valid([#gather{after_EXT =
+                                           [#default_EXT{body =
+                                                         [PLAY, SAY,
+                                                          APPLY]}]}])),
+     % There are no DEFAULT_EXT failing tests
+     ?_assertEqual(false, is_valid([#default_EXT{body = [PLAY, SAY, APPLY]}])),
+
+     % CHAINLOAD_EXT passing
+     ?_assertEqual(true, is_valid([#chainload_EXT{module = bosh, fn = berk}])),
+     % CHAINLOAD_EXT failing
+     ?_assertEqual(false, is_valid([#chainload_EXT{}])),
+
+     % GOTO passing
+     ?_assertEqual(true, is_valid([#goto_EXT{goto = "abc"}])),
+     % GOTO failing
+     ?_assertEqual(false, is_valid([#goto_EXT{}])),
+
+     % REPEAT_EXT can't pass on its own
+     % REPEAT_EXT failing
+     ?_assertEqual(false, is_valid([#repeat_EXT{}]))
+    ].
+
+full_extension_test_() ->
+    % extension nesting verb
+    GATHER = #gather{},
+
+    % verb that doesn't nest in the extension
+    DIAL   = #dial{},
+
+    % non-nesting verbs
+    SAY   = #say{},
+    PLAY  = #play{},
+    PAUSE = #pause{},
+    SMS      = #sms{from = "+123", to = "+345"},
+    REDIRECT = #redirect{method = "GEt"},
+    RECORD   = #record{},
+    HANGUP   = #hangup{},
+    REJECT   = #reject{},
+
+    % nouns
+    NUMBER     = #number{send_digits = "ww234", number = "+123"},
+    CLIENT     = #client{client = "yeah"},
+    CONFERENCE = #conference{ conference = "hoot"},
+
+    % extensions
+    APPLY = #apply_EXT{module = bish, fn = bash},
+    CHAINLOAD = #chainload_EXT{module = bosh, fn = berk},
+    RESPONSE1 = #response_EXT{response = "1", body = [SAY, PLAY]},
+    RESPONSE2 = #response_EXT{response = "2", body = [PAUSE, SAY, PLAY]},
+    RESPONSE3 = #response_EXT{response = "3", body = [PAUSE, SAY, PLAY,
+                                                      GATHER]},
+    RESPONSE4 = #response_EXT{response = "4", body = [CHAINLOAD]},
+    DEFAULT = #default_EXT{body = [PLAY, SAY, APPLY]},
+    GATHER2 = #gather{body = [SAY, PLAY, APPLY, CHAINLOAD],
+                      after_EXT = [DIAL, SAY, PLAY, APPLY, CHAINLOAD, PAUSE,
+                                   SMS, REDIRECT, RECORD, REJECT, HANGUP]},
+    [
+     % Extended GATHER passing
+     ?_assertEqual(true, is_valid([#gather{body = [SAY],
+                                           after_EXT = [RESPONSE1, RESPONSE2,
+                                                        RESPONSE3, RESPONSE4,
+                                                        DEFAULT]}])),
+     % Extended GATHER failing
+     ?_assertEqual(false, is_valid([#gather{body = [SAY],
+                                            after_EXT = [NUMBER, CLIENT,
+                                                         CONFERENCE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [SAY],
+                                            after_EXT = [GATHER2, DIAL]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [SAY],
+                                            after_EXT = [SAY, PLAY, PAUSE,
+                                                         SMS, RECORD,
+                                                         REJECT]}])),
+     % we don't support redirect records
+     ?_assertEqual(false, is_valid([#gather{body = [SAY],
+                                            after_EXT = [REDIRECT]}]))
+    ].
 %-endif.
 
 testing() ->
-    A = #number{},
-    validate([A]).
+    CHAINLOAD  = #chainload_EXT{module = "erk", fn = "berk"},
+    SAY        = #say{text = "burb"},
+    PLAY       = #play{url = "some file"},
+    APPLY      = #apply_EXT{module = bish, fn = bash},
+    _A          = #default_EXT{body = [PLAY, SAY, APPLY, CHAINLOAD]},
+    GATHER     = #gather{finish_on_key = "#", body = [SAY, PLAY]},
+    _RECORD     = #record{play_beep = true, transcribe = true},
+    _NUMBER     = #number{number = "+123456"},
+    NUMBER1    = #number{number = "+998877"},
+    NUMBER2    = #number{number = "+445566"},
+    NUMBER3    = #number{number = "+220044"},
+    CONFERENCE = #conference{muted = true, beep = true,
+                              startConferenceOnEnter = true,
+                              endConferenceOnExit = true,
+                              conference = "ya dancer"},
+    CLIENT     = #client{client = "banjo"},
+    _DIAL       = #dial{record = true, body = [NUMBER1, NUMBER2, NUMBER3,
+                                             CLIENT, CONFERENCE]},
+    _SMS        = #sms{to = "+443399",
+                     text = "now is the winter of our discontent"},
+    PAUSE      = #pause{length = 123},
+    _REJECT     = #reject{reason = "yo banger"},
+    REPEAT    = #repeat_EXT{},
+    RESPONSE1 = #response_EXT{response = "1", body = [SAY, PLAY]},
+    RESPONSE2 = #response_EXT{response = "2", body = [PAUSE, SAY, PLAY]},
+    RESPONSE3 = #response_EXT{response = "3", body = [PAUSE, SAY, PLAY,
+                                                      GATHER]},
+    RESPONSE4 = #response_EXT{response = "4", body = [CHAINLOAD, REPEAT]},
+    DEFAULT   = #default_EXT{body = [PLAY, SAY, APPLY]},
+
+    GATHER2   = #gather{body = [SAY, PLAY], after_EXT = [RESPONSE1, RESPONSE2,
+                                                          RESPONSE3, RESPONSE4,
+                                                          DEFAULT]},
+    validate([GATHER2]).

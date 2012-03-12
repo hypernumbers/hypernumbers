@@ -10,13 +10,16 @@
           url = "" :: string()
          }).
 
+% gather has been EXTtended with 2 extra fields
 -record(gather, {
-          action        :: string(),
-          method        :: atom(),
-          timeout       :: integer(),
-          finish_on_key :: string(),
-          num_digits    :: integer(),
-          body = []     :: [tuple()]
+          action         :: string(),
+          method         :: atom(),
+          timeout        :: integer(),
+          finish_on_key  :: string(),
+          num_digits     :: integer(),
+          body = []      :: [tuple()],
+          autoMenu_EXT   :: boolean(),
+          after_EXT = [] :: [tuple()]
          }).
 
 -record(record, {
@@ -56,6 +59,7 @@
           text = ""       :: string()
          }).
 
+% redirect record is not required or supported in Extended TwiML
 -record(redirect, {
           method   :: atom(),
           url = "" :: string()
@@ -87,6 +91,33 @@
           maxParticipants        :: integer(),
           conference             :: string()
          }).
+
+% these are the EXTension records needed to make TWIML compilable
+-record(response_EXT, {
+          response  :: string(),
+          title     :: string(),
+          body = [] :: [tuple()]
+         }).
+
+-record(default_EXT, {
+          body = [] :: [tuple()]
+         }).
+
+-record(apply_EXT, {
+          module,
+          fn
+         }).
+
+-record(chainload_EXT, {
+          module,
+          fn
+         }).
+
+-record(goto_EXT, {
+          goto :: string()
+          }).
+
+-record(repeat_EXT, {}).
 
 % definitions used in validation
 
