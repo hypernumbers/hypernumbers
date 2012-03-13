@@ -158,7 +158,7 @@ comp3([H | T], Type, Fun, Rank, Acc)
        orelse is_record(H, number)
        orelse is_record(H, client)
        orelse is_record(H, conference)
-       orelse is_record(H, apply_EXT)
+       orelse is_record(H, function_EXT)
        orelse is_record(H, chainload_EXT) ->
     Rank2 = bump(Rank),
     comp3(T, Type, Fun, Rank2, [Fun(H, Rank2) | Acc]);
@@ -169,7 +169,7 @@ comp3([#gather{} = G | T], _Type, Fun, Rank, Acc) ->
     {Resp, Def, Repeat} = split_out(G#gather.after_EXT, [], [], []),
     {_, NewRank1,  NewBody1} = comp3(G#gather.body, state, Fun, NewRank, []),
     {_, NewRank2,  Menu} = make_menu(Resp, Def, G#gather.autoMenu_EXT,
-                                    Fun, NewRank1),
+                                     Fun, NewRank1),
     {_, NewRank3,  NewBody2} = comp3(Resp,   state, Fun, NewRank2, []),
     {_, NewRank4,  NewBody3} = comp3(Def,    state, Fun, NewRank3, []),
     {_, _NewRank5, NewBody4} = comp3(Repeat, state, Fun, NewRank4, []),
@@ -268,10 +268,10 @@ print_2(#record{} = R, Rank, Indent, Prefix, Postfix) ->
                true      -> "(beep)"
            end,
     Transcribe = case R#record.transcribe of
-               undefined -> "";
-               false     -> "";
-               true      -> "(transcribe)"
-           end,
+                     undefined -> "";
+                     false     -> "";
+                     true      -> "(transcribe)"
+                 end,
     io_lib:format("~s~s~s - RECORD ~s ~s~s",
                   [Prefix, pad(Indent), Rank, Beep, Transcribe, Postfix]);
 print_2(#number{number = N}, Rank, Indent, Prefix, Postfix) ->
@@ -329,7 +329,7 @@ print_2(#response_EXT{response = R, title = T}, Rank, Indent,
         Prefix, Postfix) ->
     io_lib:format("~s~s~s - Response ~s : ~s  ~s",
                   [Prefix, pad(Indent), Rank, R, string:to_upper(T), Postfix]);
-print_2(#apply_EXT{title = T, module = M, fn = F}, Rank, Indent,
+print_2(#function_EXT{title = T, module = M, fn = F}, Rank, Indent,
         Prefix, Postfix) ->
     io_lib:format("~s~s~s - Call out to ~s (~s:~s)  ~s",
                   [Prefix, pad(Indent), Rank, string:to_upper(T),
@@ -373,7 +373,7 @@ check(#gather{} = G, Acc) ->
                       "#gather{}", NAcc2),
     NAcc4 = lists:foldl(fun check_gather/2, NAcc3, G#gather.body),
     NAcc5 = check_bool(G#gather.autoMenu_EXT, "autoMenu_EXT", "#gather{}", NAcc4),
-    check_after_EXT(G#gather.after_EXT, NAcc5);
+    check_after_EXT(G#gather.after_EXT, G#gather.num_digits, NAcc5);
 check(#record{} = R, Acc) ->
     NAcc = is_member("#record{}",
                      [{record, R#record.method,        ?RECORDMethod},
@@ -424,26 +424,26 @@ check(#default_EXT{}, Acc) ->
     [io_lib:format("#default_EXT{} can only be a in #gather{}.after_EXT~sn",
                    ["~"])
      | Acc];
-check(#apply_EXT{} = A, Acc) ->
-    NAcc = case A#apply_EXT.title of
+check(#function_EXT{} = A, Acc) ->
+    NAcc = case A#function_EXT.title of
                undefined ->
-                   [io_lib:format("title can't be blank in #apply_EXT{}~sn",
+                   [io_lib:format("title can't be blank in #function_EXT{}~sn",
                                   ["~"])
                     | Acc];
                _ ->
                    Acc
            end,
-    NAcc2 = case A#apply_EXT.module of
-               undefined ->
-                   [io_lib:format("module can't be blank in #apply_EXT{}~sn",
-                                  ["~"])
-                    | NAcc];
-               _ ->
-                   NAcc
-           end,
-    case A#apply_EXT.fn of
+    NAcc2 = case A#function_EXT.module of
+                undefined ->
+                    [io_lib:format("module can't be blank in #function_EXT{}~sn",
+                                   ["~"])
+                     | NAcc];
+                _ ->
+                    NAcc
+            end,
+    case A#function_EXT.fn of
         undefined ->
-            [io_lib:format("fn can't be blank in #apply_EXT{}~sn", ["~"])
+            [io_lib:format("fn can't be blank in #function_EXT{}~sn", ["~"])
              | NAcc2];
         _ ->
             Acc
@@ -525,8 +525,9 @@ check_noun(#conference{} = C, Acc) ->
                            [C#conference.conference, "~"]) | Acc]
     end.
 
-check_after_EXT(List, Acc) ->
-    {HasResp, NAcc} = lists:foldl(fun check_a2/2, {false, Acc}, List),
+check_after_EXT(List, NumD, Acc) ->
+    {NumD, HasResp, NAcc} = lists:foldl(fun check_a2/2, {NumD, false, Acc},
+                                        List),
     case HasResp of
         true  ->
             NAcc;
@@ -537,21 +538,38 @@ check_after_EXT(List, Acc) ->
     end.
 
 % the after record can be a #repeat_EXT{} record
-check_a2(Rec, {Acc1, Acc2}) when  is_record(Rec, repeat_EXT)->
-    {Acc1, Acc2};
+check_a2(Rec, {NumD, Acc1, Acc2}) when  is_record(Rec, repeat_EXT)->
+    {NumD, Acc1, Acc2};
 % the after record can be a #default_EXT{} record
-check_a2(Rec, {_Acc1, Acc2}) when  is_record(Rec, default_EXT)->
-    {true, lists:foldl(fun check/2, Acc2, Rec#default_EXT.body)};
+check_a2(Rec, {NumD, _Acc1, Acc2}) when  is_record(Rec, default_EXT)->
+    {NumD, true, lists:foldl(fun check/2, Acc2, Rec#default_EXT.body)};
 % response_EXT can only be in a #gather{}.after_EXT
-check_a2(#response_EXT{} = R, {_Acc1, Acc2}) ->
+check_a2(#response_EXT{} = R, {NumD, _Acc1, Acc2}) ->
     NAcc = check_int_as_str(R#response_EXT.response, "response",
                             "response_EXT", Acc2),
-    {true, lists:foldl(fun check/2, NAcc, R#response_EXT.body)};
+    NAcc2 = case NumD of
+                undefined ->
+                    NAcc;
+                _N ->
+                    Resp = R#response_EXT.response,
+                    io:format("Resp is ~p~n", [Resp]),
+                    case length(Resp) of
+                        NumD ->
+                            NAcc;
+                        _ ->
+                            [io_lib:format("Response ~s must be ~p digits "
+                                           ++ "long in #response_EXT{}~sn",
+                                           [Resp, NumD, "~"]) | NAcc]
+                    end
+            end,
+    NAcc3 = lists:foldl(fun check/2, NAcc2, R#response_EXT.body),
+    % 'cos we are here then there is a response so return true
+    {NumD, true, NAcc3};
 % anything else is wrong
-check_a2(Rec, {Acc1, Acc2}) ->
+check_a2(Rec, {NumD, Acc1, Acc2}) ->
     El = element(1, Rec),
-    {Acc1, [io_lib:format("Can't ~p as after_EXT in #gather{}~sn",
-                          [El, "~"]) | Acc2]}.
+    {NumD, Acc1, [io_lib:format("Can't ~p as after_EXT in #gather{}~sn",
+                                [El, "~"]) | Acc2]}.
 
 % can gather #say, #play and #pause
 check_gather(Rec, Acc) when is_record(Rec, say)
@@ -567,6 +585,9 @@ check_gather(Rec, Acc) ->
 check_dial(#number{}     = S, Acc) -> check_noun(S, Acc);
 check_dial(#client{}     = P, Acc) -> check_noun(P, Acc);
 check_dial(#conference{} = P, Acc) -> check_noun(P, Acc);
+% #function_EXT and #chainload_EXT can come back as nouns so let them through
+check_dial(#function_EXT{}  = P, Acc) -> check(P, Acc);
+check_dial(#chainload_EXT{} = P, Acc) -> check(P, Acc);
 % anything else is wrong
 check_dial(Rec, Acc) ->
     El = element(1, Rec),
@@ -799,7 +820,8 @@ validate_test_() ->
      ?_assertEqual(false, is_valid([#gather{num_digits = 333}])),
      ?_assertEqual(false, is_valid([#gather{body = [#play{}, #say{},
                                                     #pause{}]}])),
-
+     ?_assertEqual("can you have finish_on_key and num_digits?",
+                   "dinnae ken"),
      % RECORD passing
      ?_assertEqual(true, is_valid([#record{}])),
      ?_assertEqual(true, is_valid([#record{method = "Post"}])),
@@ -911,59 +933,42 @@ validate_test_() ->
                                                       maxParticipants = 34}]}])),
 
      % CONFERENCE failing
-     ?_assertEqual(false, is_valid([#conference{}])),
-     ?_assertEqual(false, is_valid([#dial{body =
-                                          [#conference{}]}])),
-     ?_assertEqual(false, is_valid([#dial{body =
-                                          [#conference{conference = "a32",
-                                                       muted = "filibuters"}]}])),
-     ?_assertEqual(false, is_valid([#dial{body =
-                                          [#conference{conference = "a32",
-                                                       beep = "Trudy"}]}])),
-     ?_assertEqual(false, is_valid([#dial{body =
-                                          [#conference{conference = "a32",
-                                                       startConferenceOnEnter =
-                                                       "f"}]}])),
-     ?_assertEqual(false, is_valid([#dial{body =
-                                          [#conference{conference = "a32",
-                                                       endConferenceOnExit =
-                                                       "erk"}]}])),
-     ?_assertEqual(false, is_valid([#dial{body =
-                                          [#conference{conference = "a32",
-                                                       waitMethod =
-                                                       "pOster boy"}]}])),
-     ?_assertEqual(false, is_valid([#dial{body =
-                                          [#conference{conference = "a32",
-                                                       maxParticipants = 1}]}])),
-     ?_assertEqual(false, is_valid([#dial{body =
-                                          [#conference{conference = "a32",
-                                                       maxParticipants = 41}]}]))
+     ?_assertEqual(false,
+                   is_valid([#conference{}])),
+     ?_assertEqual(false,
+                   is_valid([#dial{body = [#conference{}]}])),
+     ?_assertEqual(false,
+                   is_valid([#dial{body =
+                                   [#conference{conference = "a32",
+                                                muted = "filibuters"}]}])),
+     ?_assertEqual(false,
+                   is_valid([#dial{body =
+                                   [#conference{conference = "a32",
+                                                beep = "Trudy"}]}])),
+     ?_assertEqual(false,
+                   is_valid([#dial{body =
+                                   [#conference{conference = "a32",
+                                                startConferenceOnEnter =
+                                                "f"}]}])),
+     ?_assertEqual(false,
+                   is_valid([#dial{body =
+                                   [#conference{conference = "a32",
+                                                endConferenceOnExit =
+                                                "erk"}]}])),
+     ?_assertEqual(false,
+                   is_valid([#dial{body =
+                                   [#conference{conference = "a32",
+                                                waitMethod =
+                                                "pOster boy"}]}])),
+     ?_assertEqual(false,
+                   is_valid([#dial{body =
+                                   [#conference{conference = "a32",
+                                                maxParticipants = 1}]}])),
+     ?_assertEqual(false,
+                   is_valid([#dial{body =
+                                   [#conference{conference = "a32",
+                                                maxParticipants = 41}]}]))
     ].
-
-invalid_gather_test_() ->
-    % these are relocated from earlier as they require RESPONSE
-    % records to be working
-    SAY      = #say{},
-    PLAY     = #play{},
-    RESPONSE = #response_EXT{title = "schmacy", response = "1",
-                             body = [SAY, PLAY]},
-
-    [
-      % relocate tests
-     ?_assertEqual(false, is_valid([#gather{method = "panda",
-                                            after_EXT = [RESPONSE]}])),
-     ?_assertEqual(false, is_valid([#gather{timeout = -3,
-                                            after_EXT = [RESPONSE]}])),
-     ?_assertEqual(false, is_valid([#gather{finish_on_key = "^",
-                                            after_EXT = [RESPONSE]}])),
-     ?_assertEqual(false, is_valid([#gather{num_digits = 333.45,
-                                            after_EXT = [RESPONSE]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [#dial{}, #number{}],
-                                            after_EXT = [RESPONSE]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [#play{loop = "erk"},
-                                                    #say{voice = "bandy"}],
-                                            after_EXT = [RESPONSE]}]))
-     ].
 
 nesting_test_() ->
     % nesting verbs
@@ -1008,7 +1013,7 @@ nesting_test_() ->
      ?_assertEqual(false, is_valid([#gather{body = [CLIENT]}])),
      ?_assertEqual(false, is_valid([#gather{body = [CONFERENCE]}])),
      ?_assertEqual(false, is_valid([#gather{body = [NUMBER, CLIENT,
-                                                   CONFERENCE]}])),
+                                                    CONFERENCE]}])),
 
      % Nested DIAL passing
      ?_assertEqual(true, is_valid([#dial{body = [NUMBER]}])),
@@ -1032,68 +1037,149 @@ nesting_test_() ->
      % there are more nested dial tests with EXTENDED verbs later on
     ].
 
-nested_gather_menu_test_() ->
+proper_gather_test_() ->
+    SAY      = #say{},
+    PLAY     = #play{},
+    RESPONSE = #response_EXT{title = "schmacy", response = "1",
+                             body = [SAY, PLAY]},
+    [
+     % GATHER passing
+     ?_assertEqual(true, is_valid([#gather{method = "pOsT",
+                                           after_EXT = [RESPONSE]}])),
+     ?_assertEqual(true, is_valid([#gather{timeout = 3,
+                                           after_EXT = [RESPONSE]}])),
+     ?_assertEqual(true, is_valid([#gather{finish_on_key = "*",
+                                           after_EXT = [RESPONSE]}])),
+     ?_assertEqual(true, is_valid([#gather{num_digits = 1,
+                                           after_EXT = [RESPONSE]}])),
+     ?_assertEqual(true, is_valid([#gather{body = [#play{}, #say{},
+                                                   #pause{}],
+                                           after_EXT = [RESPONSE]}])),
+     % GATHER failing
+     ?_assertEqual(false, is_valid([#gather{method = "panda",
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{timeout = -3,
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{finish_on_key = "^",
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{num_digits = 333.45,
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [#dial{}, #number{}],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [#play{loop = "erk"},
+                                                    #say{voice = "bandy"}],
+                                            after_EXT = [RESPONSE]}]))
+    ].
+
+menu_consistency_check_test_() ->
+    % checks that the responses match the key pad input
+    SAY        = #say{},
+    PLAY       = #play{},
+    RESPONSE1  = #response_EXT{title = "schmacy", response = "1",
+                               body = [SAY, PLAY]},
+    RESPONSE11 = #response_EXT{title = "schmacy", response = "11",
+                               body = [SAY, PLAY]},
+    DEFAULT    = #default_EXT{title = "plerk", body = [PLAY, SAY]},
 
     [
-     ?_assertEqual(black, white)
-     ].
+     % GATHER passing
+     ?_assertEqual(true, is_valid([#gather{num_digits = 1, method = "pOsT",
+                                           after_EXT = [RESPONSE1]}])),
+     ?_assertEqual(true, is_valid([#gather{num_digits = 2, method = "pOsT",
+                                           after_EXT = [RESPONSE11]}])),
+     ?_assertEqual(true, is_valid([#gather{num_digits = 2, method = "pOsT",
+                                           after_EXT = [DEFAULT]}])),
+     ?_assertEqual(true, is_valid([#gather{finish_on_key = "#", method = "pOsT",
+                                           after_EXT = [DEFAULT]}])),
 
+     % GATHER failing
+     ?_assertEqual(false, is_valid([#gather{num_digits = 1, method = "pOsT",
+                                            after_EXT = [RESPONSE11]}])),
+     ?_assertEqual(false, is_valid([#gather{num_digits = 2, method = "pOsT",
+                                            after_EXT = [RESPONSE1]}]))
+    ].
+
+% dial should be able to include apply and chainload records
 extended_dial_test_() ->
-
+    SAY       = #say{},
+    PLAY      = #play{},
+    FUNCTION  = #function_EXT{title = "hey!",  module = bish, fn = bash},
+    CHAINLOAD = #chainload_EXT{title = "ho!", module = bosh, fn = berk},
+    RESPONSE  = #response_EXT{title = "schmacy", response = "1",
+                              body = [SAY, PLAY]},
+    DEFAULT   = #default_EXT{title = "plerk", body = [PLAY, SAY]},
+    GOTO      = #goto_EXT{goto = "dddd"},
     [
-     ?_assertEqual(black, white)
-     ].
+     % DIAL passing
+     ?_assertEqual(true, is_valid([#dial{method = "GeT",
+                                         body = [FUNCTION]}])),
+     ?_assertEqual(true, is_valid([#dial{timeout = 3,
+                                         body = [CHAINLOAD]}])),
+     ?_assertEqual(true, is_valid([#dial{hangup_on_star = "trUE",
+                                         body = [FUNCTION, CHAINLOAD]}])),
+     % DIAL failing tests
+     ?_assertEqual(false, is_valid([#dial{time_limit = 4,
+                                          body = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#dial{record = "fAlse",
+                                          body = [DEFAULT]}])),
+     ?_assertEqual(false, is_valid([#dial{record = "fAlse",
+                                          body = [GOTO]}])),
+     ?_assertEqual(false, is_valid([#dial{hangup_on_star = "trUE",
+                                          body = [FUNCTION, CHAINLOAD,
+                                                  RESPONSE, DEFAULT, GOTO]}]))
+    ].
 
+% these tests also includes nested gathers
 part_extension_test_() ->
     GATHER    = #gather{},
     SAY       = #say{},
     PLAY      = #play{},
-    APPLY     = #apply_EXT{title = "hey!",  module = bish, fn = bash},
+    FUNCTION  = #function_EXT{title = "hey!",  module = bish, fn = bash},
     CHAINLOAD = #chainload_EXT{title = "ho!", module = bosh, fn = berk},
     REPEAT    = #repeat_EXT{},
     GOTO      = #goto_EXT{goto = "dddd"},
     [
-     % APPLY_EXT passing
-     ?_assertEqual(true, is_valid([#apply_EXT{module = bish, fn = bash}])),
-     % APPLY_EXT failing
-     ?_assertEqual(false, is_valid([#apply_EXT{}])),
+     % FUNCTION_EXT passing
+     ?_assertEqual(true, is_valid([#function_EXT{module = bish, fn = bash}])),
+     % FUNCTION_EXT failing
+     ?_assertEqual(false, is_valid([#function_EXT{}])),
 
      % RESPONSE_EXT passing
      ?_assertEqual(true, is_valid([#gather{after_EXT =
                                            [#response_EXT{response = "1",
                                                           body = [SAY]}]}])),
-    ?_assertEqual(true, is_valid([#gather{after_EXT =
-                                          [#response_EXT{response = "1",
-                                                         body = [APPLY]}]}])),
-    ?_assertEqual(true, is_valid([#gather{after_EXT =
-                                          [#response_EXT{response = "1",
-                                                         body = [CHAINLOAD]}]}])),
      ?_assertEqual(true, is_valid([#gather{after_EXT =
                                            [#response_EXT{response = "1",
-                                                 body = [GOTO]}]}])),
+                                                          body = [FUNCTION]}]}])),
+     ?_assertEqual(true, is_valid([#gather{after_EXT =
+                                           [#response_EXT{response = "1",
+                                                          body = [CHAINLOAD]}]}])),
+     ?_assertEqual(true, is_valid([#gather{after_EXT =
+                                           [#response_EXT{response = "1",
+                                                          body = [GOTO]}]}])),
      % RESPONSE_EXT failing
      ?_assertEqual(false, is_valid([#response_EXT{response = "1",
-                                                 body = [GATHER]}])),
+                                                  body = [GATHER]}])),
      ?_assertEqual(false, is_valid([#response_EXT{response = "1",
-                                                 body = [SAY]}])),
+                                                  body = [SAY]}])),
      ?_assertEqual(false, is_valid([#response_EXT{response = "1",
-                                                 body = [APPLY]}])),
+                                                  body = [FUNCTION]}])),
      ?_assertEqual(false, is_valid([#response_EXT{response = "1",
-                                                 body = [CHAINLOAD]}])),
+                                                  body = [CHAINLOAD]}])),
      ?_assertEqual(false, is_valid([#response_EXT{response = "1",
-                                                 body = [GOTO]}])),
+                                                  body = [GOTO]}])),
      ?_assertEqual(false, is_valid([#response_EXT{response = "aa",
                                                   body = [CHAINLOAD]}])),
      ?_assertEqual(false, is_valid([#response_EXT{response = "1",
-                                                 body = [REPEAT]}])),
+                                                  body = [REPEAT]}])),
 
      % DEFAULT_EXT passing
      ?_assertEqual(true, is_valid([#gather{after_EXT =
                                            [#default_EXT{body =
                                                          [PLAY, SAY,
-                                                          APPLY]}]}])),
+                                                          FUNCTION]}]}])),
      % There are no DEFAULT_EXT failing tests
-     ?_assertEqual(false, is_valid([#default_EXT{body = [PLAY, SAY, APPLY]}])),
+     ?_assertEqual(false, is_valid([#default_EXT{body = [PLAY, SAY, FUNCTION]}])),
 
      % CHAINLOAD_EXT passing
      ?_assertEqual(true, is_valid([#chainload_EXT{module = bosh, fn = berk}])),
@@ -1132,21 +1218,21 @@ full_extension_test_() ->
     CONFERENCE = #conference{ conference = "hoot"},
 
     % extensions
-    APPLY = #apply_EXT{title = "fancy", module = bish, fn = bash},
+    FUNCTION  = #function_EXT{title = "fancy", module = bish, fn = bash},
     CHAINLOAD = #chainload_EXT{title = "bonzo", module = bosh, fn = berk},
     RESPONSE1 = #response_EXT{title = "schmacy", response = "1",
                               body = [SAY, PLAY]},
     RESPONSE2 = #response_EXT{title = "clancy", response = "2",
                               body = [PAUSE, SAY, PLAY]},
     GATHER = #gather{body = [PLAY, SAY],
-                    after_EXT = [RESPONSE1, RESPONSE2]},
+                     after_EXT = [RESPONSE1, RESPONSE2]},
     RESPONSE3 = #response_EXT{title = "glancy", response = "3",
                               body = [PAUSE, SAY, PLAY, GATHER]},
     RESPONSE4 = #response_EXT{title = "ooh, err!", response = "4",
                               body = [CHAINLOAD]},
-    DEFAULT = #default_EXT{title = "deffo", body = [PLAY, SAY, APPLY]},
-    GATHER2 = #gather{body = [SAY, PLAY, APPLY, CHAINLOAD],
-                      after_EXT = [DIAL, SAY, PLAY, APPLY, CHAINLOAD, PAUSE,
+    DEFAULT = #default_EXT{title = "deffo", body = [PLAY, SAY, FUNCTION]},
+    GATHER2 = #gather{body = [SAY, PLAY, FUNCTION, CHAINLOAD],
+                      after_EXT = [DIAL, SAY, PLAY, FUNCTION, CHAINLOAD, PAUSE,
                                    SMS, REDIRECT, RECORD, REJECT, HANGUP]},
     [
      % Extended GATHER passing
@@ -1174,20 +1260,20 @@ testing() ->
     CHAINLOAD  = #chainload_EXT{title = "mimsy", module = "erk", fn = "berk"},
     SAY        = #say{text = "burb"},
     PLAY       = #play{url = "some file"},
-    APPLY      = #apply_EXT{title = "dandy", module = "bish", fn = "bash"},
+    FUNCTION   = #function_EXT{title = "dandy", module = "bish", fn = "bash"},
     _RECORD     = #record{play_beep = true, transcribe = true},
     NUMBER1    = #number{number = "+998877"},
     NUMBER2    = #number{number = "+445566"},
     NUMBER3    = #number{number = "+220044"},
     CONFERENCE = #conference{muted = true, beep = true,
-                              startConferenceOnEnter = true,
-                              endConferenceOnExit = true,
-                              conference = "ya dancer"},
+                             startConferenceOnEnter = true,
+                             endConferenceOnExit = true,
+                             conference = "ya dancer"},
     CLIENT     = #client{client = "banjo"},
     _DIAL       = #dial{record = true, body = [NUMBER1, NUMBER2, NUMBER3,
-                                             CLIENT, CONFERENCE]},
+                                               CLIENT, CONFERENCE]},
     _SMS        = #sms{to = "+443399",
-                     text = "now is the winter of our discontent"},
+                       text = "now is the winter of our discontent"},
     PAUSE      = #pause{length = 123},
     _REJECT     = #reject{reason = "yo banger"},
     REPEAT     = #repeat_EXT{},
@@ -1196,27 +1282,31 @@ testing() ->
     RESPONSE2  = #response_EXT{title = "jerk", response = "2",
                                body = [PAUSE, SAY, PLAY]},
     GATHER     = #gather{finish_on_key = "#", body = [SAY, PLAY],
-                        after_EXT = [RESPONSE1, RESPONSE2]},
+                         after_EXT = [RESPONSE1, RESPONSE2]},
     RESPONSE3  = #response_EXT{title = "snerk", response = "3",
                                body = [PAUSE, SAY, PLAY,
                                        GATHER]},
     RESPONSE4  = #response_EXT{title = "sperk", response = "4",
                                body = [CHAINLOAD]},
-    DEFAULT    = #default_EXT{title = "plerk", body = [PLAY, SAY, APPLY]},
+    DEFAULT    = #default_EXT{title = "plerk", body = [PLAY, SAY, FUNCTION]},
     _GOTO       = #goto_EXT{goto = "1.2"},
     GATHER2    = #gather{autoMenu_EXT = true, body = [SAY, PLAY],
                          after_EXT = [RESPONSE1, RESPONSE2,
                                       RESPONSE3, RESPONSE4,
                                       DEFAULT, REPEAT]},
-    %compile([SAY, PLAY, RECORD, APPLY, DIAL, SMS, GATHER2, PAUSE, REJECT, GOTO],
+    %compile([SAY, PLAY, RECORD, FUNCTION, DIAL, SMS, GATHER2, PAUSE, REJECT, GOTO],
     %        ascii).
     compile([GATHER2], ascii).
 
 testing2() ->
     SAY       = #say{},
     PLAY      = #play{},
-    APPLY     = #apply_EXT{title = "hey!",  module = bish, fn = bash},
-    Load = [#gather{after_EXT = [#default_EXT{body = [PLAY, SAY, APPLY]}]}],
+    FUNCTION  = #function_EXT{title = "hey!",  module = bish, fn = bash},
+    RESPONSE1 = #response_EXT{title = "berk", response = "1",
+                              body = [SAY, PLAY]},
+    Load = [#gather{num_digits = 2,
+                    after_EXT = [RESPONSE1,
+                                 #default_EXT{body = [PLAY, SAY, FUNCTION]}]}],
     {_, Output} = validate(Load),
     io:format("~s~n", [Output]),
     compile(Load, ascii).

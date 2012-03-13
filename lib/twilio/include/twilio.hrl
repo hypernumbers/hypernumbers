@@ -104,7 +104,7 @@
           body = [] :: [tuple()]
          }).
 
--record(apply_EXT, {
+-record(function_EXT, {
           title  :: string(),
           module :: string(),
           fn     :: string()
