@@ -100,17 +100,20 @@
          }).
 
 -record(default_EXT, {
+          title     :: string(),
           body = [] :: [tuple()]
          }).
 
 -record(apply_EXT, {
-          module,
-          fn
+          title  :: string(),
+          module :: string(),
+          fn     :: string()
          }).
 
 -record(chainload_EXT, {
-          module,
-          fn
+          title  :: string(),
+          module :: string(),
+          fn     :: string()
          }).
 
 -record(goto_EXT, {
