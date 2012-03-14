@@ -28,6 +28,11 @@ encode(Elements) ->
     Content = [{'Response', [], [to_xmerl_element(El) || El <- Elements]}],
     xmerl:export_simple(Content, xmerl_xml).
 
+encode_record(Record) ->
+    El = xmerl:export_simple([to_xmerl_element(Record)], xmerl_xml),
+    "<?xml version=\"1.0\"?>" ++ XML = lists:flatten(El),
+    {xml, XML}.
+
 %% @doc Converts a twiml record to an xmerl XML element.
 to_xmerl_element(#say{} = Say) ->
     Attrs = [{voice,    Say#say.voice},
@@ -121,7 +126,7 @@ remove_undefined(Attrs) ->
     [Attr || {_, Value} = Attr <- Attrs, Value =/= undefined].
 
 compile(Elements) ->
-    compile(Elements, "0", fun make_fsm/2).
+    compile(Elements, "0", fsm).
 
 compile(Elements, Type) ->
     compile(Elements, "0", Type).
@@ -130,26 +135,60 @@ compile(Elements, Rank, html) ->
     comp2(Elements, Rank, fun print_html/2);
 compile(Elements, Rank, ascii) ->
     comp2(Elements, Rank, fun print_ascii/2);
-compile(Elements, Rank, fms) ->
+compile(Elements, Rank, fsm) ->
     comp2(Elements, Rank, fun make_fsm/2).
 
 comp2(Elements, Rank, Fun) ->
-    {Type, NewRank, O} = comp3(Elements, 'no-state', Fun, Rank, []),
-    io:format("Type is ~p NewRank is ~p~n", [Type, NewRank]),
-    io:format(O).
+    {NewType,  NewRank,  Output} = comp3(Elements, hangup,
+                                         'no-state', Fun, Rank, []),
+    io:format("Type is ~p NewRank is ~p~n", [NewType, NewRank]),
+    Output.
 
-comp3([], Type, _Fun, Rank, Acc) ->
-    {Type, Rank, lists:flatten(lists:reverse(Acc))};
 % these records are terminals as well
 % nothing can happen after them, so chuck the tail away
-comp3([H | T], Type, Fun, Rank, Acc)
+% and terminate here
+comp3([H | _T], _ExitType, Type, Fun, Rank, Acc)
   when is_record(H, hangup)
        orelse is_record(H, reject)
        orelse is_record(H, goto_EXT) ->
-    io:format("Hit ~p~n- so dumping ~p~n", [H, T]),
     Rank2 = bump(Rank),
     {Type, Rank2, lists:flatten(lists:reverse([Fun(H, Rank2) | Acc]))};
-comp3([H | T], Type, Fun, Rank, Acc)
+% gather is also a terminal - our gathers always have a default or a repeat
+% value in them so they never drop through (hard to reason about for most
+% folk IMHO - YMMV but hell mend ye...
+comp3([#gather{} = G | _T], ExitType, _Type, Fun, Rank, Acc) ->
+    Rank2 = bump(Rank),
+    NewRank = incr(Rank2),
+    {Resp, Def, Repeat} = split_out(G#gather.after_EXT, [], [], []),
+    % no hangup on body
+    {_, NewRank1,  NewBody1} = comp3(G#gather.body, nohangup, state,
+                                     Fun, NewRank, []),
+    {_, NewRank2,  Menu} = make_menu(Resp, Def, G#gather.autoMenu_EXT,
+                                     Fun, NewRank1),
+    NewRank3 = bump(NewRank2),
+    CloseGather = Fun("Gather", NewRank3),
+    % no hangup on response - they get a hangup internally
+    {_, NewRank4,  NewBody2} = comp3(Resp,   nohangup, state,
+                                     Fun, NewRank3, []),
+    {_, NewRank5,  NewBody3} = comp3(Def,    nohangup, state,
+                                     Fun, NewRank4, []),
+    {_, _NewRank6, NewBody4} = comp3(Repeat, nohangup, state,
+                                     Fun, NewRank5, []),
+    % drop the tail here (and drop the hangup!)
+    % also make a close for the <gather> xml
+    comp3([], nohangup, state, Fun, Rank2,
+          [NewBody4, NewBody3, NewBody2, CloseGather, Menu,
+           NewBody1, Fun(G, Rank2) | Acc]);
+% otherwise we want all calls to end so we finalise with a HANGUP
+% if they need a hangup
+comp3([], hangup, Type, Fun, Rank, Acc) ->
+    {NewType, NewRank, Hangup} = comp3([#hangup{}], hangup, Type, Fun,
+                                       Rank, []),
+    {NewType, NewRank, lists:flatten(lists:reverse([Hangup | Acc]))};
+% and if they don't we don't give 'em a hangup
+comp3([], nohangup, Type, Fun, Rank, Acc) ->
+    {Type, Rank, lists:flatten(lists:reverse(Acc))};
+comp3([H | T], ExitType, Type, Fun, Rank, Acc)
   when is_record(H, say)
        orelse is_record(H, play)
        orelse is_record(H, record)
@@ -161,39 +200,37 @@ comp3([H | T], Type, Fun, Rank, Acc)
        orelse is_record(H, function_EXT)
        orelse is_record(H, chainload_EXT) ->
     Rank2 = bump(Rank),
-    comp3(T, Type, Fun, Rank2, [Fun(H, Rank2) | Acc]);
-comp3([#gather{} = G | T], _Type, Fun, Rank, Acc) ->
+    comp3(T, ExitType, Type, Fun, Rank2, [Fun(H, Rank2) | Acc]);
+comp3([#dial{} = D | T], ExitType, _Type, Fun, Rank, Acc) ->
     Rank2 = bump(Rank),
     NewRank = incr(Rank2),
-    io:format("after_EXT is ~p~n", [G#gather.after_EXT]),
-    {Resp, Def, Repeat} = split_out(G#gather.after_EXT, [], [], []),
-    {_, NewRank1,  NewBody1} = comp3(G#gather.body, state, Fun, NewRank, []),
-    {_, NewRank2,  Menu} = make_menu(Resp, Def, G#gather.autoMenu_EXT,
-                                     Fun, NewRank1),
-    {_, NewRank3,  NewBody2} = comp3(Resp,   state, Fun, NewRank2, []),
-    {_, NewRank4,  NewBody3} = comp3(Def,    state, Fun, NewRank3, []),
-    {_, _NewRank5, NewBody4} = comp3(Repeat, state, Fun, NewRank4, []),
-    comp3(T, state, Fun, Rank2, [NewBody4, NewBody3, NewBody2, Menu, NewBody1,
-                                 Fun(G, Rank2) | Acc]);
-comp3([#dial{} = D | T], _Type, Fun, Rank, Acc) ->
+    % we don't want dial to terminate with a hangup
+    {_, _NewRank2, NewBody} = comp3(D#dial.body, nohangup, state, Fun,
+                                    NewRank, []),
+    NewRank2 = bump(NewRank),
+    CloseDial = Fun("Dial", NewRank2),
+    comp3(T, ExitType, state, Fun, Rank2,
+          [CloseDial, NewBody, Fun(D, Rank2) | Acc]);
+comp3([#response_EXT{} = R | T], ExitType, _Type, Fun, Rank, Acc) ->
     Rank2 = bump(Rank),
     NewRank = incr(Rank2),
-    {_, _NewRank2, NewBody} = comp3(D#dial.body, state, Fun, NewRank, []),
-    comp3(T, state, Fun, Rank2, [NewBody, Fun(D, Rank2) | Acc]);
-comp3([#response_EXT{} = R | T], _Type, Fun, Rank, Acc) ->
-    Rank2 = bump(Rank),
-    NewRank = incr(Rank2),
-    {_, _NewRank2, NewBody} = comp3(R#response_EXT.body, state,
+    % we want response to end in a hangup{} if they terminate
+    {_, _NewRank2, NewBody} = comp3(R#response_EXT.body, hangup, state,
                                     Fun, NewRank, []),
-    comp3(T, state, Fun, Rank2, [NewBody, Fun(R, Rank2) | Acc]);
-comp3([#default_EXT{} | T], _Type, Fun, Rank, Acc) ->
-    io:format("fix me too...~n"),
+    comp3(T, ExitType, state, Fun, Rank2,
+          [NewBody, Fun(R, Rank2) | Acc]);
+comp3([#default_EXT{} = D | T], ExitType, _Type, Fun, Rank, Acc) ->
     Rank2 = bump(Rank),
-    comp3(T, state, Fun, Rank2, Acc);
-comp3([#repeat_EXT{} | T], _Type, Fun, Rank, Acc) ->
+    % we want default to end in a hangup{} if they terminate
+    {_, _NewRank2, NewBody} = comp3(D#default_EXT.body, hangup, state,
+                                    Fun, Rank2, []),
+    comp3(T, ExitType, state, Fun, Rank2,
+          [NewBody, Fun(D, Rank2) | Acc]);
+% convert repeat into a #goto_EXT{} record
+comp3([#repeat_EXT{} | T], ExitType, _Type, Fun, Rank, Acc) ->
     Rank2 = bump(Rank),
-    io:format("and me...~n"),
-    comp3(T, state, Fun, Rank2, Acc).
+    G = #goto_EXT{goto = unbump(Rank)},
+    comp3(T, ExitType, state, Fun, Rank2, [Fun(G, Rank2) | Acc]).
 
 make_menu(_Resp, _Default, undefined, _Fun, Rank) ->
     {state, Rank, []};
@@ -201,13 +238,13 @@ make_menu(_Resp, _Default, false, _Fun, Rank) ->
     {state, Rank, []};
 make_menu(Resp,   Default, true, Fun, Rank) ->
     Menu = make_m2(Resp, Default, []),
-    comp3([Menu], state, Fun, Rank, []).
+    comp3([Menu], nohangup, state, Fun, Rank, []).
 
 make_m2([], [], Acc) ->
     #say{text = lists:flatten(lists:reverse(Acc))};
 make_m2([], [Default], Acc) ->
     Title = Default#default_EXT.title,
-    Msg = io_lib:format("Do nothing for ~s", [Title]),
+    Msg = io_lib:format("Do nothing for ~s", [string:to_upper(Title)]),
     #say{text = lists:flatten(lists:reverse([Msg | Acc]))};
 make_m2([#response_EXT{response = R, title = Tt} | T], Default, Acc) ->
     NewAcc = io_lib:format("Press ~s for ~s. ", [R, string:to_upper(Tt)]),
@@ -239,6 +276,40 @@ sort(List) ->
                   end
           end,
     lists:sort(Fun, List).
+
+make_fsm(Rec, Rank) when is_record(Rec, hangup) ->
+    {Rank, encode_record(Rec), exit};
+make_fsm(Rec, Rank) when is_record(Rec, say)
+                         orelse is_record(Rec, play)
+                         orelse is_record(Rec, record)
+                         orelse is_record(Rec, number)
+                         orelse is_record(Rec, sms)
+                         orelse is_record(Rec, pause)
+                         orelse is_record(Rec, reject)
+                         orelse is_record(Rec, client)
+                         orelse is_record(Rec, conference) ->
+        {Rank, encode_record(Rec), bump(Rank)};
+make_fsm(Rec, Rank) when is_record(Rec, function_EXT) ->
+        {Rank, Rec, bump(Rank)};
+make_fsm(Rec, Rank) when is_record(Rec, gather) ->
+        {Rank, fix_up(encode_record(Rec#gather{body = []})),
+         bump(incr(Rank))};
+make_fsm(Rec, Rank) when is_record(Rec, dial) ->
+        {Rank, fix_up(encode_record(Rec#dial{body = []})),
+         bump(incr(Rank))};
+make_fsm(Rec, Rank) when is_record(Rec, response_EXT) ->
+        {Rank, Rec#response_EXT{body = []}, bump(incr(Rank))};
+make_fsm(Rec, Rank) when is_record(Rec, default_EXT) ->
+        {Rank, Rec#default_EXT{body = []}, bump(incr(Rank))};
+make_fsm(Rec, Rank) when is_record(Rec, chainload_EXT) ->
+        {Rank, Rec, null};
+make_fsm(Rec, Rank) when is_record(Rec, goto_EXT) ->
+    {Rank, Rec, Rec#goto_EXT.goto};
+make_fsm(List, Rank) when is_list(List) ->
+    {Rank,{xml, "<" ++ List ++ "/>"}, bump(Rank)}.
+
+fix_up({xml, XML}) -> ">/" ++ LMX = lists:reverse(XML),
+                      {xml, lists:reverse(LMX) ++ ">"}.
 
 print_html(_Element, _Rank) ->
     ok.
@@ -291,6 +362,9 @@ print_2(#sms{} = S, Rank, Indent, Prefix, Postfix) ->
 print_2(#pause{length = N}, Rank, Indent, Prefix, Postfix) ->
     io_lib:format("~s~s~s - PAUSE for ~p seconds~s",
                   [Prefix, pad(Indent), Rank, N, Postfix]);
+print_2(#hangup{}, Rank, Indent, Prefix, Postfix) ->
+    io_lib:format("~s~s~s - HANGUP ~s",
+                  [Prefix, pad(Indent), Rank, Postfix]);
 print_2(#reject{reason = R}, Rank, Indent, Prefix, Postfix) ->
     R2 = case R of
              undefined -> "";
@@ -342,12 +416,9 @@ print_2(#chainload_EXT{title = T, module = M, fn = F}, Rank, Indent,
 print_2(#goto_EXT{goto = G}, Rank, Indent, Prefix, Postfix) ->
     io_lib:format("~s~s~s - GOTO ~s  ~s",
                   [Prefix, pad(Indent), Rank, G, Postfix]);
-print_2(Rec, _Rank, _Indent, _Prefix, _Postfix) ->
-    io:format("Exiting for ~p~n", [Rec]),
-    exit("nae record").
-
-make_fsm(_Element, _Rank) ->
-    ok.
+print_2(List, Rank, Indent, Prefix, Postfix) when is_list(List) ->
+    io_lib:format("~s~s~s - end of ~s (wait for response)~s",
+                  [Prefix, pad(Indent), Rank, List, Postfix]).
 
 pad(N) when is_integer(N) -> lists:flatten(lists:duplicate(N, " ")).
 
@@ -670,6 +741,10 @@ bump(Rank) ->
     [T | H] = lists:reverse(string:tokens(Rank, ".")),
     NewT = integer_to_list(list_to_integer(T) + 1),
     string:join(lists:reverse([NewT | H]), ".").
+
+unbump(Rank) ->
+    [_T | H] = lists:reverse(string:tokens(Rank, ".")),
+    string:join(lists:reverse(H), ".").
 
 incr(Rank) -> Rank ++ ".0".
 
@@ -994,26 +1069,7 @@ nesting_test_() ->
      % Nested GATHER passing
      % these are checked in later tests
      % Nested GATHER failing
-     ?_assertEqual(false, is_valid([#gather{body = [SAY]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [PLAY]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [PAUSE]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [SAY, PLAY, PAUSE]}])),
-     % non nesting verbs will fail in GATHER
-     ?_assertEqual(false, is_valid([#gather{body = [GATHER]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [DIAL]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [SMS]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [REDIRECT]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [RECORD]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [HANGUP]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [REJECT]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [GATHER, DIAL, SMS, REDIRECT,
-                                                    PAUSE, HANGUP, REJECT]}])),
-     % non-nesting nouns will fail in GATHER
-     ?_assertEqual(false, is_valid([#gather{body = [NUMBER]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [CLIENT]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [CONFERENCE]}])),
-     ?_assertEqual(false, is_valid([#gather{body = [NUMBER, CLIENT,
-                                                    CONFERENCE]}])),
+     % these are checked in later tests
 
      % Nested DIAL passing
      ?_assertEqual(true, is_valid([#dial{body = [NUMBER]}])),
@@ -1129,11 +1185,75 @@ extended_dial_test_() ->
                                                   RESPONSE, DEFAULT, GOTO]}]))
     ].
 
+nested_gather_test() ->
+    GATHER = #gather{},
+    DIAL   = #dial{},
+
+    % non-nesting verbs
+    SAY      = #say{},
+    PLAY     = #play{},
+    PAUSE    = #pause{},
+    SMS      = #sms{from = "+123", to = "+345"},
+    REDIRECT = #redirect{method = "GEt"},
+    RECORD   = #record{},
+    HANGUP   = #hangup{},
+    REJECT   = #reject{},
+
+    % nouns
+    NUMBER     = #number{send_digits = "ww234", number = "+123"},
+    CLIENT     = #client{client = "yeah"},
+    CONFERENCE = #conference{ conference = "hoot"},
+
+    RESPONSE   = #response_EXT{response = "1", body = [SAY]},
+    [
+     ?_assertEqual(false, is_valid([#gather{body = [SAY],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [PLAY],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [PAUSE],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [SAY, PLAY, PAUSE],
+                                            after_EXT = [RESPONSE]}])),
+     % non nesting verbs will fail in GATHER
+     ?_assertEqual(false, is_valid([#gather{body = [GATHER],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [DIAL],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [SMS],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [REDIRECT],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [RECORD],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [HANGUP],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [REJECT],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [GATHER, DIAL, SMS,
+                                                    REDIRECT, PAUSE,
+                                                    HANGUP, REJECT],
+                                            after_EXT = [RESPONSE]}])),
+     % non-nesting nouns will fail in GATHER
+     ?_assertEqual(false, is_valid([#gather{body = [NUMBER],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [CLIENT],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [CONFERENCE],
+                                            after_EXT = [RESPONSE]}])),
+     ?_assertEqual(false, is_valid([#gather{body = [NUMBER, CLIENT,
+                                                    CONFERENCE],
+                                            after_EXT = [RESPONSE]}]))
+    ].
+
 % these tests also includes nested gathers
 part_extension_test_() ->
     GATHER    = #gather{},
     SAY       = #say{},
     PLAY      = #play{},
+    PAUSE     = #pause{},
+    SMS       = #sms{from = "+123", to = "+345"},
+    NUMBER    = #number{number = "+123"},
+    DIAL      = #dial{body = [NUMBER]},
     FUNCTION  = #function_EXT{title = "hey!",  module = bish, fn = bash},
     CHAINLOAD = #chainload_EXT{title = "ho!", module = bosh, fn = berk},
     REPEAT    = #repeat_EXT{},
@@ -1145,18 +1265,28 @@ part_extension_test_() ->
      ?_assertEqual(false, is_valid([#function_EXT{}])),
 
      % RESPONSE_EXT passing
-     ?_assertEqual(true, is_valid([#gather{after_EXT =
-                                           [#response_EXT{response = "1",
-                                                          body = [SAY]}]}])),
-     ?_assertEqual(true, is_valid([#gather{after_EXT =
-                                           [#response_EXT{response = "1",
-                                                          body = [FUNCTION]}]}])),
-     ?_assertEqual(true, is_valid([#gather{after_EXT =
-                                           [#response_EXT{response = "1",
-                                                          body = [CHAINLOAD]}]}])),
-     ?_assertEqual(true, is_valid([#gather{after_EXT =
-                                           [#response_EXT{response = "1",
-                                                          body = [GOTO]}]}])),
+     ?_assertEqual(true,
+                   is_valid([#gather{after_EXT =
+                                     [#response_EXT{response = "1",
+                                                    body = [SAY, SMS]}]}])),
+     ?_assertEqual(true,
+                   is_valid([#gather{after_EXT =
+                                     [#response_EXT{response = "1",
+                                                    body = [FUNCTION]}]}])),
+     ?_assertEqual(true,
+                   is_valid([#gather{after_EXT =
+                                     [#response_EXT{response = "1",
+                                                    body = [CHAINLOAD]}]}])),
+     ?_assertEqual(true,
+                   is_valid([#gather{after_EXT =
+                                     [#response_EXT{response = "1",
+                                                    body = [GOTO]}]}])),
+     ?_assertEqual(true,
+                   is_valid([#gather{after_EXT =
+                                     [#response_EXT{response = "1",
+                                                    body = [SAY, CHAINLOAD,
+                                                            PLAY, PAUSE,
+                                                            GOTO, DIAL]}]}])),
      % RESPONSE_EXT failing
      ?_assertEqual(false, is_valid([#response_EXT{response = "1",
                                                   body = [GATHER]}])),
@@ -1179,7 +1309,8 @@ part_extension_test_() ->
                                                          [PLAY, SAY,
                                                           FUNCTION]}]}])),
      % There are no DEFAULT_EXT failing tests
-     ?_assertEqual(false, is_valid([#default_EXT{body = [PLAY, SAY, FUNCTION]}])),
+     ?_assertEqual(false, is_valid([#default_EXT{body = [PLAY, SAY,
+                                                         FUNCTION]}])),
 
      % CHAINLOAD_EXT passing
      ?_assertEqual(true, is_valid([#chainload_EXT{module = bosh, fn = berk}])),
@@ -1291,22 +1422,25 @@ testing() ->
     DEFAULT    = #default_EXT{title = "plerk", body = [PLAY, SAY, FUNCTION]},
     _GOTO       = #goto_EXT{goto = "1.2"},
     GATHER2    = #gather{autoMenu_EXT = true, body = [SAY, PLAY],
-                         after_EXT = [RESPONSE1, RESPONSE2,
-                                      RESPONSE3, RESPONSE4,
-                                      DEFAULT, REPEAT]},
+                         after_EXT = [RESPONSE3, REPEAT]},
     %compile([SAY, PLAY, RECORD, FUNCTION, DIAL, SMS, GATHER2, PAUSE, REJECT, GOTO],
     %        ascii).
-    compile([GATHER2], ascii).
+    io:format(compile([GATHER2], ascii)),
+    compile([GATHER2]).
 
 testing2() ->
+    GATHER    = #gather{},
     SAY       = #say{},
     PLAY      = #play{},
+    PAUSE     = #pause{},
+    SMS       = #sms{from = "+123", to = "+345"},
+    NUMBER    = #number{number = "+123"},
+    DIAL      = #dial{body = [NUMBER]},
     FUNCTION  = #function_EXT{title = "hey!",  module = bish, fn = bash},
-    RESPONSE1 = #response_EXT{title = "berk", response = "1",
-                              body = [SAY, PLAY]},
-    Load = [#gather{num_digits = 2,
-                    after_EXT = [RESPONSE1,
-                                 #default_EXT{body = [PLAY, SAY, FUNCTION]}]}],
-    {_, Output} = validate(Load),
-    io:format("~s~n", [Output]),
-    compile(Load, ascii).
+    CHAINLOAD = #chainload_EXT{title = "ho!", module = bosh, fn = berk},
+    REPEAT    = #repeat_EXT{},
+    GOTO      = #goto_EXT{goto = "dddd"},
+    validate([#gather{after_EXT = [#response_EXT{response = "1", title = "erk",
+                                                 body = [SAY, CHAINLOAD,
+                                                         PLAY, PAUSE,
+                                                         GOTO, DIAL]}]}]).
