@@ -4,6 +4,7 @@
          fuzz/0,
          sys/0,
          sys/1,
+         auth/0,
          excel/0,
          excel/1,
          excel/2 ,
@@ -12,7 +13,7 @@
          post_logged_out_TEST/2,
          post_login_TEST/4,
          post_TEST_DEBUG/0
-         ]).
+          ]).
 
 % debugging
 -export([
@@ -50,7 +51,7 @@ setup(Type, Opts) when is_list(Opts) ->
     end,
     catch hn_setup:site(?SITE, Type, Opts).
 
-all() -> excel(), sys(), security(), fuzz().
+all() -> excel(), sys(), security(), fuzz(), auth().
 
 fuzz() ->
     init_fuzz(),
@@ -118,6 +119,13 @@ sys(Suites) ->
     %% Cleanup
     [file:delete(S) || S <- filelib:wildcard(EbinDir++"*.erl")],
     ok.
+
+auth() ->
+    WC = filename:absname(?TEST_DIR)++"/auth_test",
+    Tests = filelib:wildcard(WC),
+    Opts = [ {dir, Tests} ],
+    io:format("Tests is ~p~n", [Tests]),
+    do_test(Opts).
 
 excel() ->
     excel("1"),
