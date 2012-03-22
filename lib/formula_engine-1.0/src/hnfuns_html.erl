@@ -104,7 +104,7 @@ zsubmenu2([{{P, _}, _} | T], 0, Acc) ->
 zsubmenu2([{{P, _}, V} | T], 1, Acc) ->
     P2 = hn_util:list_to_path(P),
     V2 = case V of
-             blank -> "";
+             blank -> "<i>blank</i>";
              _     -> tconv:to_s(V)
          end,
     NewAcc = {V2, "<li><a href='" ++ P2 ++ "'>"
