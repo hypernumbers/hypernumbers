@@ -647,7 +647,11 @@ process_attrs([{"formula",Val} | Rest], XRefX, AReq, Attrs) ->
     process_attrs(Rest, XRefX, AReq, Attrs2);
 process_attrs([{"input", {"dynamic_select", S}} | Rest], XRefX, AReq, Attrs) ->
     {SelPath, Ref} = split_select(S),
-    Path = muin_util:walk_path(XRefX#xrefX.path, SelPath),
+    SelPath2 = case SelPath of
+                   "/" -> "";
+                   _   -> SelPath
+               end,
+    Path = muin_util:walk_path(XRefX#xrefX.path, SelPath2),
     % it is not possible to check the url client-side so we need to do
     % a try/catch here to handle user duff user input...
     {NA, Ps, InfPs} = parse_select(XRefX, {Path, Ref}, S),
