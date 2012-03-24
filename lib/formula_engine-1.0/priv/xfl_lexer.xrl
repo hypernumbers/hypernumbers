@@ -362,6 +362,10 @@ parse_z2([?SQBRA | Rest]) -> % macro for emacs indentation only
     % Bref? Fuck it, who uses RC notation anyhoo
     {ok, ZSeg} = xfl_lexer:lex(Expr, {?mx, ?my}),
     {zseg, ZSeg, "[" ++ Expr ++ "]"};
+% this catches bugs like '=sum(/[true][true]/a1)'
+% NOTE the lack of a '/' between the two z-segs
+parse_z2([]) ->
+    exit("lex failure");
 parse_z2(Seg) ->
     {seg, Seg}.
 
