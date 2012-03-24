@@ -57,7 +57,8 @@ all() -> excel(), sys(), security(), fuzz(), auth(), ztest().
 fuzz() ->
     init_fuzz(),
     ok = generate_fuzz_tests(),
-    WC = filename:absname(?TEST_DIR)++"/funs_fuzz_test",
+    Dir = code:priv_dir(hypernumbers) ++ "/../../../",
+    WC = filename:absname(Dir ++ ?TEST_DIR)++"/funs_fuzz_test",
     io:format("WC is ~p~n", [WC]),
     Tests = filelib:wildcard(WC),
     io:format("Tests is ~p~n", [Tests]),
@@ -66,7 +67,9 @@ fuzz() ->
 
 security() ->
     init_sec(),
-    WC = filename:absname(?TEST_DIR)++"/security_test",
+    Dir = code:priv_dir(hypernumbers) ++ "/../../../",
+    WC = filename:absname(Dir ++ ?TEST_DIR)++"/security_test",
+    io:format("WC is ~p~n", [WC]),
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
     io:format("Tests is ~p~n", [Tests]),
@@ -122,14 +125,17 @@ sys(Suites) ->
     ok.
 
 ztest() ->
-    WC = filename:absname(?TEST_DIR)++"/ztest",
+    Dir = code:priv_dir(hypernumbers) ++ "/../../../",
+    io:format("dir is ~p~n", [Dir ++ ?TEST_DIR]),
+    WC = filename:absname(Dir ++ ?TEST_DIR)++"/ztest",
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
     io:format("Tests is ~p~n", [Tests]),
     do_test(Opts).
 
 auth() ->
-    WC = filename:absname(?TEST_DIR)++"/auth_test",
+    Dir = code:priv_dir(hypernumbers) ++ "/../../../",
+    WC = filename:absname(Dir ++ ?TEST_DIR)++"/auth_test",
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
     io:format("Tests is ~p~n", [Tests]),
@@ -141,14 +147,16 @@ excel() ->
 
 excel(TName) ->
     init(),
-    WC = filename:absname(?TEST_DIR)++"/excel_import_"++TName++"*_test",
+    Dir = code:priv_dir(hypernumbers) ++ "/../../../",
+    WC = filename:absname(Dir ++ ?TEST_DIR)++"/excel_import_"++TName++"*_test",
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
     do_test(Opts).
 
 excel(T, S) ->
     init(),
-    Test = filename:absname(?TEST_DIR)++"/excel_import_"++T++"_test",
+    Dir = code:priv_dir(hypernumbers) ++ "/../../../",
+    Test = filename:absname(Dir ++ ?TEST_DIR)++"/excel_import_"++T++"_test",
     Suite = S ++ "_SUITE",
     Opts = [ {dir, [Test]},
              {suite, [Suite]} ],
