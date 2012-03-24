@@ -5,6 +5,7 @@
          sys/0,
          sys/1,
          auth/0,
+         ztest/0,
          excel/0,
          excel/1,
          excel/2 ,
@@ -51,7 +52,7 @@ setup(Type, Opts) when is_list(Opts) ->
     end,
     catch hn_setup:site(?SITE, Type, Opts).
 
-all() -> excel(), sys(), security(), fuzz(), auth().
+all() -> excel(), sys(), security(), fuzz(), auth(), ztest().
 
 fuzz() ->
     init_fuzz(),
@@ -119,6 +120,13 @@ sys(Suites) ->
     %% Cleanup
     [file:delete(S) || S <- filelib:wildcard(EbinDir++"*.erl")],
     ok.
+
+ztest() ->
+    WC = filename:absname(?TEST_DIR)++"/ztest",
+    Tests = filelib:wildcard(WC),
+    Opts = [ {dir, Tests} ],
+    io:format("Tests is ~p~n", [Tests]),
+    do_test(Opts).
 
 auth() ->
     WC = filename:absname(?TEST_DIR)++"/auth_test",

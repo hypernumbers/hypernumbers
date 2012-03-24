@@ -45,6 +45,11 @@ printf "\n\n"
 printf $(./hn call 'test:excel("2e").')
 printf "\n\n"
 
+printf $(./hn call 'test:auth().')
+printf "\n\n"
+printf $(./hn call 'test:ztest().')
+printf "\n\n"
+
 ## Cleanup.
 ./hn stop
 
