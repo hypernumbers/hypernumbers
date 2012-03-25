@@ -1266,7 +1266,7 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
     Email = string:to_lower(Email0),
     Zone = case application:get_env(hypernumbers, environment) of
                {ok, development} -> "hypernumbers.dev";
-               {ok, server_dev} -> "dev.hypernumbers.com";
+               {ok, server_dev}  -> "dev.hypernumbers.com";
                {ok, production}  -> "tiny.hn"
            end,
     case factory:provision_site(Zone, Email, SType, PrevUid) of
