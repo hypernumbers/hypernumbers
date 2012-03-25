@@ -111,7 +111,9 @@ all() ->
      test8,
      test9,
      test10,
-     test11
+     test11,
+     test12,
+     test13
     ].
 
 %% Test cases starts here.
@@ -248,6 +250,28 @@ test11(Config) when is_list(Config) ->
     Got = read_raw(Path),
     pass(100, Got).
 
+test12() ->
+    [{doc, "Add some values, get a z-value, then add another one"}].
+
+test12(Config) when is_list(Config) ->
+    Path = "test12",
+    ok = load_values(Path, 99),
+    ok = load_vanilla_zformula(Path),
+    ok = add_page(Path),
+    Got = read_raw(Path),
+    pass(100, Got).
+
+test13() ->
+    [{doc, "Add some values, get a z-value, then add another one"}].
+
+test13(Config) when is_list(Config) ->
+    Path = "test13",
+    ok = load_complex_values(Path, 99),
+    ok = load_complex_zformula(Path),
+    ok = add_complex_page(Path),
+    Got = read_raw(Path),
+    pass(100, Got).
+
 %%% Internal fns
 pass(Expected, Expected) -> io:format("Pass: Expected ~p Got ~p~n",
                                       [Expected, Expected]),
@@ -277,6 +301,22 @@ read_raw(PageRoot) ->
     [{_, ZCellVal}] = new_db_api:read_attribute(ZCell, "__rawvalue"),
     ZCellVal.
 
+add_page(PageRoot) ->
+    io:format("adding page on ~p~n", [PageRoot]),
+    ZCell = #refX{site = ?SITE, path = [PageRoot, "added page"], type = url,
+                  obj = {cell, {1, 1}}},
+    ok = new_db_api:write_attributes([{ZCell, [{"formula", "1"}]}]).
+
+add_complex_page(PageRoot) ->
+    io:format("adding complex page on ~p~n", [PageRoot]),
+    ZCell1 = #refX{site = ?SITE, path = [PageRoot, "added page"], type = url,
+                   obj = {cell, {1, 1}}},
+    ZCell2 = #refX{site = ?SITE, path = [PageRoot, "added page"], type = url,
+                   obj = {cell, {1, 2}}},
+   ok = new_db_api:write_attributes([{ZCell1, [{"formula", "1"}]}]),
+   ok = new_db_api:write_attributes([{ZCell2, [{"formula", "999"}]}]).
+
+
 load_values(_PageRoot, 0) -> ok;
 load_values(PageRoot, N) when is_integer(N) andalso N > 0 ->
     io:format("loading value for page ~p on ~p~n", [N, PageRoot]),
@@ -294,7 +334,7 @@ load_complex_values(PageRoot, N) when is_integer(N) andalso N > 0 ->
                   obj = {cell, {1, 2}}},
     ok = new_db_api:write_attributes([{ZCell1, [{"formula", "1"}]}]),
     ok = new_db_api:write_attributes([{ZCell2, [{"formula", "999"}]}]),
-    load_values(PageRoot, N - 1).
+    load_complex_values(PageRoot, N - 1).
 
 poke10(PageRoot, N) when is_integer(N) andalso N > 0 ->
     io:format("Poking the value 10 into ~p on ~p~n", [N, PageRoot]),
