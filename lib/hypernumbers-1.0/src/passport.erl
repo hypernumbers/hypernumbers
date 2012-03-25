@@ -28,7 +28,7 @@
          validate_uid/1,
          is_valid_uid/1,
          get_or_create_user/1,
-          get_or_create_user/2,
+         get_or_create_user/2,
          is_user/1,
          delete_uid/1,
          create_uid/0,
