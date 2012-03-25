@@ -916,6 +916,9 @@ handle_dirty_cell(Site, Idx, Ar) ->
                                     "inline" ->
                                         % normal inlines don't have vals to recalcrecalc
                                         ok;
+                                    "inlinerich" ->
+                                        % rich inlines don't have vals to recalcrecalc
+                                        ok;
                                     "none" ->
                                         % used to have an input but it's been cleared
                                         ok;

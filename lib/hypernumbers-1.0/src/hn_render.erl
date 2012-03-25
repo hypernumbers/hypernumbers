@@ -197,9 +197,11 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
            integer(), integer(),
            integer(), integer(), integer(), integer())
           -> textdata().
-% all three inputs need to be drawn even if there is no value
+% all four inputs need to be drawn even if there is no value
 draw(undefined,Css,"inline",C,R,X,Y,W,H) ->
     draw("",Css, "inline",C,R,X,Y,W,H);
+draw(undefined,Css,"inlinerich",C,R,X,Y,W,H) ->
+    draw("",Css, "inlinerich",C,R,X,Y,W,H);
 draw(undefined,Css,{"select", _}=Inp,C,R,X,Y,W,H) ->
     draw("",Css,Inp,C,R,X,Y,W,H);
 draw(undefined,Css,{"dynamic_select", _}=Inp,C,R,X,Y,W,H) ->
@@ -238,6 +240,15 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
                 "<div class='inline' " ++ StyleIn ++
                 " data-ref='"++Cell++"'>"++Val++
                 "</div></div>";
+        "inlinerich" ->
+            Style = io_lib:format(St ++"padding:1px 1px;'",
+                                  [X, Y, W - 4, H - 2, Css]),
+            StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
+                                    [W - 8, H - 4]),
+                "<div "++Style ++">"++
+                "<textarea class='inlinerich' "
+                ++ StyleIn ++ " data-ref='"++Cell++"'>"++Val++
+                "</textarea></div>";
         {"select", Options} ->
             Style = io_lib:format(St ++"padding:1px 1px;'",
                                   [X, Y, W - 4, H - 1, Css]),
@@ -302,10 +313,12 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
          <link rel='stylesheet' href='/webcomponents/webcomponents.css' />
          <link rel='stylesheet' href='/webcomponents/webbasic.css' />
          <link rel='stylesheet' href='/tblsorter/style.css' />
+         <link rel='stylesheet' href='/jwysiwyg/jquery.wysiwyg.css' />
 
 "     ++Addons#render.css++
 "         <script src='/hypernumbers/jquery-1.7.1.min.js'></script>
          <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>-->
+         <script src='/jwysiwyg/jquery.wysiwyg.js'></script>
          <script src='/hypernumbers/err.remoterr.js'></script>
          </head>
 
@@ -315,6 +328,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
 
          <div id='outer' ", OuterStyle, ">
           <div id='clinput'></div>
+          <div id='hn_jwysiwg'></div>
           <div id='inner' class='hn_inner'>", Content, "</div>
          </div>
 
@@ -360,7 +374,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
   <script src='/hypernumbers/hn.sitedata.js'></script>
   <script src='/hypernumbers/hn.callbacks.js'></script>"
      ++ Addons#render.js ++ "" ++ Addons#render.js_reload ++
-"  <script src='/hypernumbers/hn.renderpage.js'></script>
+" <script src='/hypernumbers/hn.renderpage.js'></script>
   </body>
   </html>"].
 

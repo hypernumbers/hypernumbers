@@ -328,8 +328,17 @@ label {
                clear: both;
  }
 
-.inlineform {
-    background: url(/hypernumbers/sprite.png) -64px -1px;
+.inlineform
+{
+  background: url(/hypernumbers/sprite.png) -64px -1px;
+  }
+
+.inlinerichform
+{
+  background: url(/hypernumbers/sprite.png) -64px -8px;
+  }
+
+.inlineform, .inlinerichform {
     z-index:    9999;
     position:   absolute;
     left:       0px;
@@ -577,12 +586,20 @@ label {
              padding: 1px 1px 1px 1px;
              }
 
-.inline {
-   -moz-border-radius: 2px 2px 2px 2px;
-   -webkit-border-radius: 2px 2px 2px 2px;
-   /*margin: 1px;*/
-   border: 1px solid #ddd;
-   /*padding: 0px 1px 0px 1px;*/
+.inline
+{
+  border: 1px solid #ddd;
+  }
+
+.inlinerich
+{
+  border: 1px solid #fcf;
+  }
+
+.inline, .inlinerich
+{
+  -moz-border-radius: 2px 2px 2px 2px;
+  -webkit-border-radius: 2px 2px 2px 2px;
 }
 
 #clinput div {
