@@ -106,11 +106,15 @@ all() ->
      test3,
      test4,
      test5,
+     test5a,
      test6,
      test7,
      test8,
      test9,
      test10,
+     test10a,
+     test10b,
+     test10c,
      test11,
      test12,
      test13
@@ -168,6 +172,17 @@ test5(Config) when is_list(Config) ->
     Got = read_raw(Path),
     pass(20, Got).
 
+test5a() ->
+    [{doc, "Add lots of values and then force a recalc by deleting a cell"}].
+
+test5a(Config) when is_list(Config) ->
+    Path = "test5a",
+    ok = load_values(Path, 11),
+    ok = load_vanilla_zformula(Path),
+    ok = delete(Path, 1, 1),
+    Got = read_raw(Path),
+    pass(10, Got).
+
 test6() ->
     [{doc, "Add lots of values and then force a recalc - "
       ++ "see if we can get a race condition"}].
@@ -223,11 +238,48 @@ test10() ->
 
 test10(Config) when is_list(Config) ->
     Path = "test10",
-    ok = load_values(Path, 1),
+    ok = load_complex_values(Path, 11),
     ok = load_complex_zformula(Path),
     ok = dropcomplex(Path, 1),
     Got = read_raw(Path),
-    pass(0, Got).
+    pass(10, Got).
+
+test10a() ->
+    [{doc, "Force a recalc"}].
+
+test10a(Config) when is_list(Config) ->
+    Path = "test10a",
+    ok = load_complex_values(Path, 11),
+    ok = load_complex_zformula(Path),
+    ok = delete(Path, 1, 2),
+    Got = read_raw(Path),
+    pass(10, Got).
+
+test10b() ->
+    [{doc, "Force a recalc"}].
+
+test10b(Config) when is_list(Config) ->
+    PathX = "xxx",
+    ok = load_complex_values(PathX, 2),
+    Path = "test10b",
+    ok = load_complex_values(Path, 2),
+    ok = load_complex_zformula(Path),
+    ok = delete(Path, 1, 2),
+    Got = read_raw(Path),
+    pass(1, Got).
+
+test10c() ->
+    [{doc, "Force a recalc"}].
+
+test10c(Config) when is_list(Config) ->
+    PathX = "xxx",
+    ok = load_complex_values(PathX, 3),
+    Path = "test10c",
+    ok = load_complex_values(Path, 3),
+    ok = load_complex_zformula(Path),
+    ok = delete(Path, 1, 1),
+    Got = read_raw(Path),
+    pass(2, Got).
 
 test11() ->
     [{doc, "Add lots of values and then force a recalc - "
@@ -294,12 +346,24 @@ load_complex_zformula(PageRoot) ->
                   obj = {cell, {1, 1}}},
     ok = new_db_api:write_attributes([{ZCell, [{"formula", Formula}]}]).
 
-read_raw(PageRoot) ->
-    timer:sleep(?SLEEP),
+dump(PageRoot) ->
     ZCell = #refX{site = ?SITE, path = [PageRoot], type = url,
                   obj = {cell, {1, 1}}},
-    [{_, ZCellVal}] = new_db_api:read_attribute(ZCell, "__rawvalue"),
-    ZCellVal.
+    [{_, Cell}] = new_db_api:read_ref(ZCell),
+    io:format("Cell on ~p is ~p~n", [PageRoot, Cell]).
+
+read_raw(PageRoot) ->
+    read_raw([PageRoot], 1 ,1).
+
+read_raw(PageRoot, X, Y) ->
+    timer:sleep(?SLEEP),
+    ZCell = #refX{site = ?SITE, path = PageRoot, type = url,
+                  obj = {cell, {X, Y}}},
+    io:format("Reading ~p~n", [ZCell]),
+    case new_db_api:read_attribute(ZCell, "__rawvalue") of
+        [{_, ZCellVal}] -> ZCellVal;
+        Other           -> Other
+    end.
 
 add_page(PageRoot) ->
     io:format("adding page on ~p~n", [PageRoot]),
@@ -336,6 +400,13 @@ load_complex_values(PageRoot, N) when is_integer(N) andalso N > 0 ->
     ok = new_db_api:write_attributes([{ZCell2, [{"formula", "999"}]}]),
     load_complex_values(PageRoot, N - 1).
 
+delete(PageRoot, N, Y) when is_integer(N) andalso N > 0 ->
+    io:format("Deleting the cell for ~p on ~p~n", [N, PageRoot]),
+    ZCell = #refX{site = ?SITE, path = [PageRoot, integer_to_list(N)], type = url,
+                  obj = {cell, {1, Y}}},
+    io:format("deleting ~p~n", [ZCell]),
+    ok = new_db_api:delete(ZCell, nil).
+
 poke10(PageRoot, N) when is_integer(N) andalso N > 0 ->
     io:format("Poking the value 10 into ~p on ~p~n", [N, PageRoot]),
     ZCell = #refX{site = ?SITE, path = [PageRoot, integer_to_list(N)], type = url,
@@ -352,4 +423,15 @@ debug() ->
     init_per_suite([]),
     {ok, U} = passport:email_to_uid("test@hypernumbers.com"),
     ok = hn_groups:add_user(?SITE, "admin", U),
-    test11([]).
+    %test1([]),
+    %test2([]),
+    %test3([]),
+    %test4([]),
+    %test5([]),
+    %test5a([]),
+    %test6([]),
+    %test7([]),
+    %test8([]),
+    %test9([]),
+    %test10([]),
+    test10b([]).
