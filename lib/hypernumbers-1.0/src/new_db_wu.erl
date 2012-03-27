@@ -736,7 +736,8 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                                   orddict:store("__hasincs", t, Attrs2)
                      end,
             Attrs4 = orddict:store("preview", {Title, Wd, Ht}, Attrs3),
-            write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
+            Attrs5 = handle_merge(Ht, Wd, Attrs4),
+            write_formula_attrs(Attrs5, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents,
                                 Recompile, CircRef);
         % the formula returns a phone control
