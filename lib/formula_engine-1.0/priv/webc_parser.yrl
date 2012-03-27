@@ -108,7 +108,7 @@ c2(A, [{H} | T], C) ->
                {plainpath, "webpage"} ->
                    make_controls(NewGroups, C, webpage);
                {plainpath, "wikipage"} ->
-                   make_controls(NewGroups, C, wikpage);
+                   make_controls(NewGroups, C, wikipage);
                _Other ->
                    exit("no such view")
            end,
@@ -437,6 +437,24 @@ adv_test_() ->
               [
                {segment, {namedpage,"jingo", "bobbie"},
                 #destination{type = "default"}, [], [], [], []}
+              ]),
+
+     ?_assert(p_TEST("/[jingo, bobbie; spreadsheet, group1]/") ==
+              [
+               {segment, {namedpage,"jingo", "bobbie"},
+                #destination{type = false}, ["group1"], [], [], []}
+              ]),
+
+     ?_assert(p_TEST("/[jingo, bobbie; webpage, group1]/") ==
+              [
+               {segment, {namedpage,"jingo", "bobbie"},
+                #destination{type = false}, [], ["group1"], [], []}
+              ]),
+
+     ?_assert(p_TEST("/[jingo, bobbie; wikipage, group1]/") ==
+              [
+               {segment, {namedpage,"jingo", "bobbie"},
+                #destination{type = false}, [], [], ["group1"], []}
               ]),
 
      ?_assert(p_TEST("/[jingo, bobbie; table, group1]/") ==
