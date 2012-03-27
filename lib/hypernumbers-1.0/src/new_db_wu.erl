@@ -1690,7 +1690,6 @@ shift_cellsD(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
                              F <- read_ref_field(X, "formula", write)],
             Acc = {{From, {XOff, YOff}, Uid}, []},
             {_, DirtyCh1} = lists:foldl(fun rewrite_formulae/2, Acc, Formulas),
-
             % now rewrite any dynamic selects that are affected
             DynSels = [F || X <- DedupedChildren,
                             F <- read_ref_field(X, "input", write)],
@@ -2353,6 +2352,10 @@ offset_with_ranges1([{cellref, LineNo,
             NewAcc = {cellref, LineNo, C#cellref{text = NewCell}},
             offset_with_ranges1(T, XCell, From, {XO, YO}, Status, [NewAcc | Acc])
     end;
+% all zcellrefs need to recalc
+offset_with_ranges1([{zcellref, _, _, _} = H | T], XCell, From, Offset,
+                    _Status, Acc) ->
+    offset_with_ranges1(T, XCell, From, Offset, dirty, [H | Acc]);
 offset_with_ranges1([H | T], XCell, From, Offset, Status, Acc) ->
     offset_with_ranges1(T, XCell, From, Offset, Status, [H | Acc]).
 
