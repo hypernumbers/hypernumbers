@@ -27,11 +27,23 @@
          dump_core_table/2
         ]).
 
+% functions for clearing borked dirty queues
+-export([
+         clear_dirty_FIX/2
+        ]).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
 %%% Debug Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clear_dirty_FIX(Site, {_, _, _} = Id) ->
+    Fun = fun() ->
+                  Tbl = new_db_wu:trans(Site, dirty_queue),
+                  mnesia:delete(Tbl, Id, write)
+          end,
+    mnesia:activity(transaction, Fun).
+
 -spec force_dbsrv(string()) -> ok.
 force_dbsrv(Site) ->
     % use a spoof RefX
