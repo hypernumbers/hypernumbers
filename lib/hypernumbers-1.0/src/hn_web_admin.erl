@@ -35,7 +35,7 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
 
         "save_template" ->
             Path  = kfind("path", Args),
-            Name  = ustring:to_lower(ustring:new(kfind("name", Args))),
+            Name  = ustring:pr(ustring:to_lower(ustring:new(kfind("name", Args)))),
             NPath = string:tokens(Path, "/"),
             RefX  = #refX{site = Site, type = url, path = NPath,
                           obj= {page, "/"}},
