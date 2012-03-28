@@ -1036,6 +1036,16 @@ zeval2(XRefX, Toks) ->
     put(retvals, {Errs, ZRetVals ++ OrigRetVals}),
     Return.
 
+make_blank_infinites([], _ZPath, Acc) ->
+    Acc;
+make_blank_infinites([{cell, {X, Y}} | T], ZPath, Acc) ->
+    Cell = tconv:to_b26(X) ++ integer_to_list(Y),
+    NewAcc1 = make_inf_xrefX(ZPath, Cell),
+    make_blank_infinites(T, ZPath, [NewAcc1 | Acc]).
+
+fetch_ranges([], ZPath, Range, _ValType) ->
+    ExpRange = expand(Range),
+    {make_blank_infinites(ExpRange, ZPath, []), []};
 fetch_ranges(Paths, ZPath, Range, ValType) ->
     ExpRange = expand(Range),
     fetch_r1(Paths, ExpRange, ZPath, ValType, [], []).
@@ -1190,6 +1200,8 @@ special_flatten([H | T], Acc)                 -> special_flatten(T, [H | Acc]).
 special_f2([], Acc)      -> Acc;
 special_f2([H | T], Acc) -> special_f2(T, [H | Acc]).
 
+% these funs are just to enable to me track different paths through
+% muin when running cprof - bit of a perf testing artefact
 xx1() -> ok.
 xx2() -> ok.
 xx3() -> ok.
@@ -1202,3 +1214,4 @@ xx9() -> ok.
 xx10() -> ok.
 xx11() -> ok.
 xx12() -> ok.
+
