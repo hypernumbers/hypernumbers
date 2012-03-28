@@ -1831,18 +1831,26 @@ deref(_XChildX, Formula, _DeRefX, _Disp)
     {clean, Formula}.
 
 deref1(_XChildX, [], _DeRefX, _Disp, Acc) -> lists:reverse(Acc);
-deref1(XChildX, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Disp, Acc) ->
-    % only deref the range if it is completely obliterated by the deletion
-    #refX{obj = Obj1} = DeRefX,
-    Range = muin_util:just_ref(Text),
-    Prefix = case muin_util:just_path(Text) of
-                 "/" -> [];
-                 Pre -> Pre
-             end,
-    NewTok = case deref_overlap(Range, Obj1, Disp) of
-                 {deref, "#REF!"} -> {deref, Prefix ++ "#REF!"};
-                 {recalc, Str}    -> {recalc, Prefix ++ Str};
-                 {formula, Str}   -> {formula, Prefix ++ Str}
+deref1(XChildX, [{rangeref, _, #rangeref{path = Path, text = Text}} = H | T],
+       DeRefX, Disp, Acc) ->
+    #xrefX{path = CPath} = XChildX,
+    #refX{path = DPath, obj = Obj1} = DeRefX,
+    PathCompare = muin_util:walk_path(CPath, Path),
+    NewTok = case PathCompare of
+                 DPath ->
+                     % only deref the range if it is completely obliterated
+                     % by the deletion
+                     Range = muin_util:just_ref(Text),
+                     Prefix = case muin_util:just_path(Text) of
+                                  "/" -> [];
+                                  Pre -> Pre
+                              end,
+                     case deref_overlap(Range, Obj1, Disp) of
+                         {deref, "#REF!"} -> {deref, Prefix ++ "#REF!"};
+                         {recalc, Str}    -> {recalc, Prefix ++ Str};
+                         {formula, Str}   -> {formula, Prefix ++ Str}
+                     end;
+                 _ -> H
              end,
     deref1(XChildX, T, DeRefX, Disp, [NewTok | Acc]);
 deref1(XChildX, [{cellref, _, #cellref{path = Path, text = Text}} = H | T],

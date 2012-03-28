@@ -204,6 +204,9 @@ mk_f([], {St, A}) ->
 mk_f([{zcellref, _, _, C} | T], {St, A}) ->
     mk_f(T, {St, [C#cellref.text | A]});
 
+mk_f([{zrangeref, _, _, C} | T], {St, A}) ->
+    mk_f(T, {St, [C#rangeref.text | A]});
+
 mk_f([{errval, _, '#REF!'} | T], {St, A}) ->
     mk_f(T, {St, ["#REF!" | A]});
 
@@ -248,7 +251,7 @@ mk_f([{int, _, I} | T], {St, A}) ->
 mk_f([{float, _, {_, OrigStr}} | T], {St, A}) ->
     mk_f(T, {St, [OrigStr | A]});
 
-mk_f([{formula, _, S} | T], {St, A}) ->
+mk_f([{formula, S} | T], {St, A}) ->
     mk_f(T, {St, [S | A]});
 
 mk_f([{str, _, S} | T], {St, A}) ->
