@@ -103,6 +103,7 @@ all() ->
     [
      test1,
      test2,
+     test2a,
      test3,
      test4,
      test5,
@@ -110,6 +111,7 @@ all() ->
      test6,
      test7,
      test8,
+     test8a,
      test9,
      test10,
      test10a,
@@ -137,6 +139,16 @@ test2(Config) when is_list(Config) ->
     Path = "test2",
     ok = load_values(Path, 1),
     ok = load_vanilla_zformula(Path),
+    Got = read_raw(Path),
+    pass(1, Got).
+
+test2a() ->
+    [{doc, "Add a z-fn and then load the values"}].
+
+test2a(Config) when is_list(Config) ->
+    Path = "test2a",
+    ok = load_vanilla_zformula(Path),
+    ok = load_values(Path, 1),
     Got = read_raw(Path),
     pass(1, Got).
 
@@ -220,6 +232,16 @@ test8(Config) when is_list(Config) ->
     Path = "test8",
     ok = load_complex_values(Path, 1),
     ok = load_complex_zformula(Path),
+    Got = read_raw(Path),
+    pass(1, Got).
+
+test8a() ->
+    [{doc, "Add a complex z-fn and then a value"}].
+
+test8a(Config) when is_list(Config) ->
+    Path = "test8a",
+    ok = load_complex_zformula(Path),
+    ok = load_complex_values(Path, 1),
     Got = read_raw(Path),
     pass(1, Got).
 

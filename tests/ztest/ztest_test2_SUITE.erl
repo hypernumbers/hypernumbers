@@ -101,7 +101,11 @@ end_per_testcase(_TestCase, _Config) ->
 %%--------------------------------------------------------------------
 all() ->
     [
-     test1
+     test1,
+     test2,
+     test3,
+     test4,
+     test5
     ].
 
 %% Test cases starts here.
@@ -110,11 +114,97 @@ test1() ->
     [{doc, "Add a z-fn"}].
 
 test1(Config) when is_list(Config) ->
-    ok = load_vanilla_zformula("test1"),
-    Got = read_raw("test1"),
-    pass(0, Got).
+    Path = "test1",
+    ok = load_complex_values(Path, 11),
+    ok = load_complex_zformula(Path),
+    ok = insertrow(Path, 1),
+    % Cell11 = read_raw(lists:append([Path], ["1"]), 1, 1),
+    % io:format("Cell11 is ~p~n", [Cell11]),
+    Got = read_raw(Path),
+    pass(10, Got).
+
+test2() ->
+    [{doc, "Add a z-fn"}].
+
+test2(Config) when is_list(Config) ->
+    Path = "test2",
+    ok = load_complex_values(Path, 11),
+    ok = load_complex_zformula(Path),
+    ok = deleterow(Path, 1),
+    % Cell11 = read_raw(lists:append([Path], ["1"]), 1, 1),
+    % io:format("Cell11 is ~p~n", [Cell11]),
+    Got = read_raw(Path),
+    pass(10, Got).
+
+test3() ->
+    [{doc, "Add a z-fn"}].
+
+test3(Config) when is_list(Config) ->
+    Path = "test3",
+    ok = load_complex_values(Path, 11),
+    ok = load_complex_zformula(Path),
+    ok = insertrow(Path, 1),
+    % Cell11 = read_raw(lists:append([Path], ["1"]), 1, 1),
+    % io:format("Cell11 is ~p~n", [Cell11]),
+    Got = read_raw(Path),
+    pass(10, Got).
+
+test4() ->
+    [{doc, "Add a z-fn"}].
+
+test4(Config) when is_list(Config) ->
+    Path = "test4",
+    ok = load_complex_values(Path, 11),
+    ok = load_complex_zformula(Path),
+    ok = deleterow(Path, 1),
+    % Cell11 = read_raw(lists:append([Path], ["1"]), 1, 1),
+    % io:format("Cell11 is ~p~n", [Cell11]),
+    Got = read_raw(Path),
+    pass(10, Got).
+
+test5() ->
+    [{doc, "Add a z-fn"}].
+
+test5(Config) when is_list(Config) ->
+    Path = "test5",
+    ok = load_complex_values(Path, 11),
+    ok = load_complex_zformula(Path),
+    ok = deleterow(Path, 1),
+    % Cell11 = read_raw(lists:append([Path], ["1"]), 1, 1),
+    % io:format("Cell11 is ~p~n", [Cell11]),
+    Got = read_raw(Path),
+    pass(10, Got).
+
 
 %%% Internal fns
+deletecol(PageRoot, N) when is_integer(N) andalso N > 0 ->
+    ZCol = #refX{site = ?SITE, type = url,
+                 path = [PageRoot, integer_to_list(N)],
+                 obj = {column, {1, 1}}},
+    io:format("deleting col in ~p~n", [ZCol]),
+    ok = new_db_api:delete(ZCol, nil).
+
+insertcol(PageRoot, N) when is_integer(N) andalso N > 0 ->
+    ZCol = #refX{site = ?SITE, type = url,
+                 path = [PageRoot, integer_to_list(N)],
+                 obj = {column, {1, 1}}},
+    io:format("inserting col in ~p~n", [ZCol]),
+    ok = new_db_api:insert(ZCol, nil).
+
+deleterow(PageRoot, N) when is_integer(N) andalso N > 0 ->
+    ZRow = #refX{site = ?SITE, type = url,
+                 path = [PageRoot, integer_to_list(N)],
+                 obj = {row, {1, 1}}},
+    io:format("deleting row in ~p~n", [ZRow]),
+    ok = new_db_api:delete(ZRow, nil).
+
+insertrow(PageRoot, N) when is_integer(N) andalso N > 0 ->
+    ZRow = #refX{site = ?SITE, type = url,
+                 path = [PageRoot, integer_to_list(N)],
+                 obj = {row, {1, 1}}},
+    io:format("inserting row in ~p~n", [ZRow]),
+    ok = new_db_api:insert(ZRow, nil).
+
 pass(Expected, Expected) -> io:format("Pass: Expected ~p Got ~p~n",
                                       [Expected, Expected]),
                             'test passed';
@@ -126,14 +216,14 @@ load_vanilla_zformula(PageRoot) ->
     io:format("loading vanilla zformula for ~p~n", [PageRoot]),
     Formula = "=sum(/" ++ PageRoot ++ "/[true]/a1)",
     ZCell = #refX{site = ?SITE, path = [PageRoot], type = url,
-                  obj = {cell, {1, 1}}},
+                  obj = {cell, {5, 5}}},
     ok = new_db_api:write_attributes([{ZCell, [{"formula", Formula}]}]).
 
 load_complex_zformula(PageRoot) ->
     io:format("loading complex zformula for ~p~n", [PageRoot]),
-    Formula = "=sum(/" ++ PageRoot ++ "/[a2>1]/a1)",
+    Formula = "=sum(/" ++ PageRoot ++ "/[e6>1]/e5)",
     ZCell = #refX{site = ?SITE, path = [PageRoot], type = url,
-                  obj = {cell, {1, 1}}},
+                  obj = {cell, {5, 5}}},
     ok = new_db_api:write_attributes([{ZCell, [{"formula", Formula}]}]).
 
 dump(PageRoot) ->
@@ -143,7 +233,7 @@ dump(PageRoot) ->
     io:format("Cell on ~p is ~p~n", [PageRoot, Cell]).
 
 read_raw(PageRoot) ->
-    read_raw([PageRoot], 1 ,1).
+    read_raw([PageRoot], 5, 5).
 
 read_raw(PageRoot, X, Y) ->
     timer:sleep(?SLEEP),
@@ -158,15 +248,15 @@ read_raw(PageRoot, X, Y) ->
 add_page(PageRoot) ->
     io:format("adding page on ~p~n", [PageRoot]),
     ZCell = #refX{site = ?SITE, path = [PageRoot, "added page"], type = url,
-                  obj = {cell, {1, 1}}},
+                  obj = {cell, {5, 5}}},
     ok = new_db_api:write_attributes([{ZCell, [{"formula", "1"}]}]).
 
 add_complex_page(PageRoot) ->
     io:format("adding complex page on ~p~n", [PageRoot]),
     ZCell1 = #refX{site = ?SITE, path = [PageRoot, "added page"], type = url,
-                   obj = {cell, {1, 1}}},
+                   obj = {cell, {5, 5}}},
     ZCell2 = #refX{site = ?SITE, path = [PageRoot, "added page"], type = url,
-                   obj = {cell, {1, 2}}},
+                   obj = {cell, {5, 6}}},
    ok = new_db_api:write_attributes([{ZCell1, [{"formula", "1"}]}]),
    ok = new_db_api:write_attributes([{ZCell2, [{"formula", "999"}]}]).
 
@@ -175,7 +265,7 @@ load_values(_PageRoot, 0) -> ok;
 load_values(PageRoot, N) when is_integer(N) andalso N > 0 ->
     io:format("loading value for page ~p on ~p~n", [N, PageRoot]),
     ZCell = #refX{site = ?SITE, path = [PageRoot, integer_to_list(N)], type = url,
-                  obj = {cell, {1, 1}}},
+                  obj = {cell, {5, 5}}},
     ok = new_db_api:write_attributes([{ZCell, [{"formula", "1"}]}]),
     load_values(PageRoot, N - 1).
 
@@ -183,9 +273,9 @@ load_complex_values(_PageRoot, 0) -> ok;
 load_complex_values(PageRoot, N) when is_integer(N) andalso N > 0 ->
     io:format("loading complex value for page ~p on ~p~n", [N, PageRoot]),
     ZCell1 = #refX{site = ?SITE, path = [PageRoot, integer_to_list(N)], type = url,
-                  obj = {cell, {1, 1}}},
+                  obj = {cell, {5, 5}}},
     ZCell2 = #refX{site = ?SITE, path = [PageRoot, integer_to_list(N)], type = url,
-                  obj = {cell, {1, 2}}},
+                  obj = {cell, {5, 6}}},
     ok = new_db_api:write_attributes([{ZCell1, [{"formula", "1"}]}]),
     ok = new_db_api:write_attributes([{ZCell2, [{"formula", "999"}]}]),
     load_complex_values(PageRoot, N - 1).
@@ -193,20 +283,20 @@ load_complex_values(PageRoot, N) when is_integer(N) andalso N > 0 ->
 delete(PageRoot, N, Y) when is_integer(N) andalso N > 0 ->
     io:format("Deleting the cell for ~p on ~p~n", [N, PageRoot]),
     ZCell = #refX{site = ?SITE, path = [PageRoot, integer_to_list(N)], type = url,
-                  obj = {cell, {1, Y}}},
+                  obj = {cell, {5, Y}}},
     io:format("deleting ~p~n", [ZCell]),
     ok = new_db_api:delete(ZCell, nil).
 
 poke10(PageRoot, N) when is_integer(N) andalso N > 0 ->
     io:format("Poking the value 10 into ~p on ~p~n", [N, PageRoot]),
     ZCell = #refX{site = ?SITE, path = [PageRoot, integer_to_list(N)], type = url,
-                  obj = {cell, {1, 1}}},
+                  obj = {cell, {5, 5}}},
     ok = new_db_api:write_attributes([{ZCell, [{"formula", "10"}]}]).
 
 dropcomplex(PageRoot, N) when is_integer(N) andalso N > 0 ->
     io:format("Dropping the complex z-query into ~p on ~p~n", [N, PageRoot]),
     ZCell = #refX{site = ?SITE, path = [PageRoot, integer_to_list(N)], type = url,
-                  obj = {cell, {1, 2}}},
+                  obj = {cell, {5, 6}}},
     ok = new_db_api:write_attributes([{ZCell, [{"formula", "-1"}]}]).
 
 debug() ->
