@@ -265,10 +265,7 @@ idx(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                 case XRefX of
                     false ->
                         O2a = io_lib:format("The idx doesn't exist.~n", []),
-                        Cs = lists:sort(new_db_wu:read_ref(Payload, inside)),
-                        O3 = pretty_print(XRefX, Cs, "The idx contains:", Mode,
-                                          [[O2a] | O2]),
-                        lists:reverse(O3);
+                        lists:reverse([O2a | O2]);
                     _     ->
                         O2a  = io_lib:format("The idx points to ~p (~p) on page ~p",
                                              [Obj, hn_util:obj_to_ref(Obj), P2]),
