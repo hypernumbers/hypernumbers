@@ -826,3 +826,15 @@ label {
     background: -moz-linear-gradient(center top , #EEEEFF,
                                      #DDDDEE) repeat scroll 0 0 transparent;
 }
+
+.hn_finder_instructions
+{
+  position   : absolute;
+  height     : 190px;
+  width      : 560px;
+  text-align : center;
+  padding    : 115px 0px 0px 0px;
+  color      : darkorange;
+  font-size  : 200%;
+  z-index    : 10000003
+ }
