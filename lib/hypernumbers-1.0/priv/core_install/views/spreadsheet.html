@@ -449,33 +449,45 @@
 
     <div id="gridcontextmenu">
       <ul>
-	<li><a name="clearboth">
-	    $txt:{Clear}$ <strong>$txt:{All}$</strong></a></li>
+  <li class="hn_gridcontextmenu_expand"><a>Clear</a>
+    <ul class="hn_gridcontextsubmenu">
+  	<li><a name="clearboth">
+	    $txt:{Clear}$ $txt:{All}$</a></li>
 	 <li><a name="clearcontent">
-	    $txt:{Clear}$ <strong>$txt:{Contents}$</strong></a></li>
+	    $txt:{Clear}$ $txt:{Contents}$</a></li>
 	 <li><a name="clearformat">
-	    $txt:{Clear}$ <strong>$txt:{Format}$</strong></a></li>
-	<li class="seperator"></li>
+	    $txt:{Clear}$ $txt:{Format}$</a></li>
+    </ul>
+  </li>
+  <li class="hn_gridcontextmenu_expand"><a>Copy and Paste</a>
+    <ul class="hn_gridcontextsubmenu">
 	<li><a name="copy">
 	    Copy<span class="desc">Ctrl+C</span></a></li>
 	<li class="disabled paste"><a name="paste">
 	    Paste<span class="desc">Ctrl+V</span></a></li>
 	<li class="disabled paste"><a name="pastevalue">Paste Value</a></li>
 	<li class="disabled paste"><a name="pastestyle">Paste Style</a></li>
-	<li class="seperator"></li>
+    </ul>
+  </li>
 	<li><a name="mergecells">
 	    <span id="mergetext">Merge</span> Cells</a></li>
-	<li class="seperator"></li>
 	<li><a name="createform">Create Form</a></li>
 	<li class="seperator"></li>
-	<li><a name="insertright">Insert (shift right)</a></li>
-	<li><a name="insertdown">Insert (shift down)</a></li>
-	<li class="seperator"></li>
-	<li><a name="deleteleft">Delete (shift left)</a></li>
-	<li><a name="deleteup">Delete (shift up)</a></li>
+  <li class="hn_gridcontextmenu_expand"><a>Insert</a>
+    <ul class="hn_gridcontextsubmenu">
+    	<li><a name="insertright">Insert (shift right)</a></li>
+	   <li><a name="insertdown">Insert (shift down)</a></li>
+    </ul>
+  </li>
+  <li class="hn_gridcontextmenu_expand"><a>Delete</a>
+    <ul class="hn_gridcontextsubmenu">
+	    <li><a name="deleteleft">Delete (shift left)</a></li>
+	    <li><a name="deleteup">Delete (shift up)</a></li>
+    </ul>
+  </li>
 	<li class="seperator viewlogs"></li>
 	<li><a name="viewlogs" class="viewlogs">View Cell's History</a></li>
-      </ul>
+  </ul>
     </div>
 
     <div id="axiscontextmenucol">
