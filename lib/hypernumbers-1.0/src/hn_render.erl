@@ -209,21 +209,24 @@ draw(undefined,Css,{"dynamic_select", _}=Inp,C,R,X,Y,W,H) ->
 draw(undefined,"",_Inp,_C,_R,_X,_Y,_W,_H) -> "";
 draw(Value,Css,Inp,C,R,X,Y,W,H) ->
     % Tom wants to fix this up :(
-    Val = case Value of
+    {Val, Prompt}
+        = case Value of
               {errval, ErrVal} ->
-                  atom_to_list(ErrVal);
+                  {atom_to_list(ErrVal), false};
               {datetime, {1,1,1}  = Date, Time} ->
-                  dh_date:format("g:i A", {Date, Time});
+                  {dh_date:format("g:i A", {Date, Time}), false};
               {datetime, Date, Time} ->
-                  muin_date:to_rfc1123_string({datetime, Date, Time});
+                  {muin_date:to_rfc1123_string({datetime, Date, Time}), false};
               A when is_atom(A) ->
-                  atom_to_list(A);
+                  {atom_to_list(A), false};
               I when is_integer(I) ->
-                  integer_to_list(I);
+                  {integer_to_list(I), false};
               F when is_float(F) ->
-                  float_to_list(F);
+                  {float_to_list(F), false};
+              [] ->
+                  {[], "Enter data..."};
               _  ->
-                  Value
+                  {Value, false}
           end,
     Cell = tconv:to_b26(C) ++ integer_to_list(R),
     St = "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s",
@@ -232,22 +235,38 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
 
     case Inp of
         "inline" ->
+            Class = case Prompt of
+                        false -> "inline";
+                        _     -> "inline hn_prompt"
+                    end,
+            Val2 = case Prompt of
+                       false -> Val;
+                       _     -> Prompt
+                   end,
             Style = io_lib:format(St ++"padding:1px 1px;'",
                                   [X, Y, W - 4, H - 2, Css]),
             StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
                                     [W - 8, H - 4]),
-                "<div "++Style ++">"++
-                "<div class='inline' " ++ StyleIn ++
-                " data-ref='"++Cell++"'>"++Val++
+                "<div "++ Style ++">" ++
+                "<div class='" ++ Class ++ "' " ++ StyleIn ++
+                " data-ref='" ++ Cell ++ "'>" ++ Val2 ++
                 "</div></div>";
         "inlinerich" ->
+            Class = case Prompt of
+                        false -> "inlinerich";
+                        _     -> "inlinerich hn_richprompt"
+                    end,
+            Val2 = case Prompt of
+                       false -> Val;
+                       _     -> Prompt
+                   end,
             Style = io_lib:format(St ++"padding:1px 1px;'",
                                   [X, Y, W - 4, H - 2, Css]),
             StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
                                     [W - 8, H - 4]),
                 "<div "++Style ++">"++
-                "<textarea class='inlinerich' "
-                ++ StyleIn ++ " data-ref='"++Cell++"'>"++Val++
+                "<textarea class='" ++ Class ++ "' "
+                ++ StyleIn ++ " data-ref='" ++ Cell ++ "'>" ++ Val2 ++
                 "</textarea></div>";
         {"select", Options} ->
             Style = io_lib:format(St ++"padding:1px 1px;'",

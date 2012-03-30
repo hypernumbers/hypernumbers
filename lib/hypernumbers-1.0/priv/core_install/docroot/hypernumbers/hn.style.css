@@ -52,6 +52,13 @@ a:hover { color: #3f3f3f;}
 
 a img:hover { opacity: 0.6;}
 
+.hn_prompt
+{
+  font-size  : 80%;
+  font-style : italic;
+  color      : #99f;
+ }
+
 #editloggedin a:link, #editloggedin a:visited {
     color: darkorange;
 }
