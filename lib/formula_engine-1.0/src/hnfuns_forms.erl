@@ -125,9 +125,10 @@ input_(Label) -> input_(Label, "", common).
 %input_(Label, Default) -> input_(Label, Default, common).
 input_([Label], _Default, Trans) ->
     Form = #form{id = {Trans, Label}, kind = input},
-    Html = lists:flatten("<input type='input' class='hninput' " ++
+    Html = lists:flatten("<input type='input' class='hninput hn_prompt' " ++
                          "data-name='default' " ++
-                         "data-label='"++Label++"' />"),
+                         "data-label='"++Label++"' " ++
+                         "value='Enter data...'/>"),
     {rawform, Form, Html}.
 
 -spec textarea_([string()], string(), trans()) -> {rawform, #form{}, html()}.
@@ -135,8 +136,10 @@ textarea_(Label) -> textarea_(Label, "", common).
 %textarea_(Label, Default) -> textarea_(Label, Default, common).
 textarea_([Label], _Default, Trans) ->
     Form = #form{id = {Trans, Label}, kind = textarea},
-    Html = lists:flatten("<textarea class='hntext' data-name='default' "
-                         ++ "data-label='"++Label++"'></textarea>"),
+    Html = lists:flatten("<textarea class='hntext hn_prompt' "
+                         ++ "data-name='default' "
+                         ++ "data-label='"++Label++
+                         "'>Enter data...</textarea>"),
     {rawform, Form, Html}.
 
 -spec button_(string(), string(), string(), string()) -> {rawform, #form{}, html()}.
