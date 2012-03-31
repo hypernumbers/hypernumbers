@@ -320,7 +320,7 @@ img([Src]) ->
     Passes = [],
     [{zeds, Ranges, _, _}] = muin_collect:col([ZRef], Rules, Passes),
     case Ranges of
-        % emtpy table
+        % empty table
         [] ->
             {include, {"ZTable ", Width, Height, #incs{}}, ""};
         Ranges ->
