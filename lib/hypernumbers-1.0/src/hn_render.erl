@@ -347,7 +347,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
 
          <div id='outer' ", OuterStyle, ">
           <div id='clinput'></div>
-          <div id='hn_jwysiwg'></div>
+          <textarea id='hn_jwysiwyg'></textarea>
           <div id='inner' class='hn_inner'>", Content, "</div>
          </div>
 
