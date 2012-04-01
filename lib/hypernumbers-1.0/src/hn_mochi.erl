@@ -33,9 +33,6 @@
 -define(SHEETVIEW,   "spreadsheet").
 -define(WEBPAGE,     "webpage").
 -define(WIKI,        "wikipage").
--define(DEMO,        "demopage").
--define(WEBPREVIEW,  "webpreview").
--define(WIKIPREVIEW, "wikipreview").
 -define(LOGVIEW,     "logs").
 -define(RECALC,      "recalc").
 -define(PHONE,       "phone").
@@ -334,11 +331,6 @@ authorize_get(#refX{site = Site, path = Path},
               #qry{challenger=[]},
               #env{accept = html, uid = Uid}) ->
     auth_srv:check_get_challenger(Site, Path, Uid);
-
-%% Always allows the demopage and preview pages views
-authorize_get(_Ref, #qry{view = V}, _Env)
-  when V == ?DEMO orelse V == ?WEBPREVIEW orelse V == ?WIKIPREVIEW ->
-    allowed;
 
 % a recording is stored against a link with a hypertag signed with its url
 % so authorise anyone with any view of that page to see it
@@ -667,9 +659,6 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
             end
     end;
 
-iget(#refX{site=Site, path=Path}, page, #qry{view=?DEMO}, Env) ->
-    text_html(Env, make_demo(Site, Path));
-
 iget(#refX{site = Site} = RefX, _Type, #qry{view=?RECALC}, Env) ->
     ok = new_db_api:recalc(RefX),
     Html = hn_util:viewroot(Site) ++ "/recalc.html",
@@ -687,12 +676,6 @@ iget(Ref, cell,  #qry{view=?PHONE} = _Qry, #env{accept = json, uid = Uid} = Env)
         [Phone] -> JSON = hn_twilio_mochi:get_phone(Ref, Phone, Uid),
                    json(Env, JSON)
     end;
-
-iget(#refX{site=Site, path=Path}, page, #qry{view=?WEBPREVIEW}, Env) ->
-    text_html(Env, make_preview("web", Site, Path));
-
-iget(#refX{site=Site, path=Path}, page, #qry{view=?WIKIPREVIEW}, Env) ->
-    text_html(Env, make_preview("wiki", Site, Path));
 
 iget(Ref, page, #qry{view = ?LOGVIEW}, Env) ->
     text_html(Env, hn_logs:get_logs(Ref));
@@ -2156,62 +2139,6 @@ get_email([{_, _, _, button, none, Attrs}]) ->
     end;
 get_email([_H | T]) ->
     get_email(T).
-
-make_demo(Site, Path) ->
-    URL = Site ++ hn_util:list_to_path(Path),
-    "<!DOCTYPE html>
-<html lang='en'>
-        <head>
-        <title>Hypernumbers Demo</title>
-        <meta charset='utf-8' >
-        <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
-        </head>
-        <body class='hn_demopage' height='100%'>
-        <div class='hn_demointro'>This demo shows how you can have different views of the same spreadsheet page. This makes it possible to build robust multiuser systems - by using different views for different people on different pages. Enter data into the spreadsheet or wiki view to see these views in action. Views are managed by the <em>Views</em> menu at the right-hand side of the spreadsheet menu bar.<br /><span id='hn_demobreakout'>To breakout of this demo and start your one month free trial <a href='./#tour'>click here</a></span></div>
-<div class='hn_demopadding'>
-<iframe id='hn_spreadsheet' src='"++URL++"?view=spreadsheet'></iframe>
-</div>
-<div class='hn_demopadding'>
-<table width='100%'>
-<tr>
-<td>
-<div class='hn_demoblurb'>This is the wiki view - it is used to provide locked down data entry - one page for each person or department.</div>
-<iframe id='hn_wikipage' width='95%' src='"++URL++"?view=wikipage' /></iframe>
-</td>
-<td>
-<div class='hn_demoblurb'>This is the webpage view - it is used to give people read-only access to analysis or results that your spreadsheet provides.</div>
-<iframe id='hn_webpage' width='95%' src='"++URL++"?view=webpage' /></iframe>
-</td>
-</tr>
-</table>
-</div>
-</body>
-<!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
-<script src='/hypernumbers/jquery-1.4.2.min.js'></script>
-<script src='/hypernumbers/hn.demopage.js'></script>
-</html>".
-
-make_preview(Type, Site, Path) ->
-    URL = Site ++ hn_util:list_to_path(Path),
-    "<!DOCTYPE html>
-<html lang='en'>
-        <head>
-        <title>Hypernumbers " ++hn_util:capitalize_name(Type)++" Preview</title>
-        <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
-        <meta charset='utf-8' >
-        </head>
-        <body class='hn_demopage'>
-        <div class='hn_demointro'>To breakout of this preview <a href='./?view=spreadsheet'>click here</a></div>
-        <div class='hn_demopadding'>
-        <iframe class='hn_preview' src='"++URL++"?view=spreadsheet'></iframe>
-        <br />
-        <iframe class='hn_preview' src='"++URL++"?view="++Type++"page' /></iframe>
-        </div>
-        </body>
-        <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
-        <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
-        <script src='/hypernumbers/hn.demopage.js'></script>
-        </html>".
 
 %% catch script kiddie attempts and write them as info not error logs
 %% makes rb usable
