@@ -430,6 +430,7 @@ authorize_p2(Site, Path, Env) ->
             case Env#env.body of
                 [{"postform",   _}]      -> allowed;
                 [{"postinline", _}]      -> allowed;
+                [{"postrichinline", _}]  -> allowed;
                 [{"postwebcontrols", _}] -> allowed;
                 _                        -> denied
             end;
@@ -985,23 +986,37 @@ ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
       Env=#env{body = [{"postinline", {struct, [{"formula", Val}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    % escape the attributes to prevent script injection, etc
-    Attrs = [{"formula", hn_util:esc(Val)}],
     case new_db_api:read_attribute(Ref, "input") of
         [{#xrefX{}, "inline"}] ->
+            % escape the attributes to prevent script injection, etc
+            Attrs = [{"formula", hn_util:esc(Val)}],
             ok = new_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
             json(Env, "success");
+        [{#xrefX{}, "inlinerich"}] ->
+            case hn_html_sanitizer:is_sane(Val) of
+                {true, Val2}  -> Attrs = [{"formula", Val2}],
+                                 ok = new_db_api:write_attributes([{Ref, Attrs}],
+                                                                  Uid, Uid),
+                                 json(Env, "success");
+                false -> respond(403, Env)
+            end;
         [{#xrefX{}, {"select", Vs}}] ->
+            % escape the attributes to prevent script injection, etc
+            Attrs = [{"formula", hn_util:esc(Val)}],
             [{"formula", V}] = Attrs,
             case lists:member(V, Vs) of
-                true  -> ok = new_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
+                true  -> ok = new_db_api:write_attributes([{Ref, Attrs}],
+                                                          Uid, Uid),
                          json(Env, "success");
                 false -> respond(403, Env)
             end;
         [{#xrefX{}, {"dynamic_select", _Src, Vs}}] ->
+            % escape the attributes to prevent script injection, etc
+            Attrs = [{"formula", hn_util:esc(Val)}],
             [{"formula", V}] = Attrs,
             case lists:member(V, Vs) of
-                true  -> ok = new_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
+                true  -> ok = new_db_api:write_attributes([{Ref, Attrs}],
+                                                          Uid, Uid),
                          json(Env, "success");
                 false -> respond(403, Env)
             end;

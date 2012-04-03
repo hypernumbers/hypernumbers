@@ -846,8 +846,15 @@ label {
   z-index    : 10000003
  }
 
-#hn_jwysiwyg
+#hn_cleditor
 {
-  position : fixed;
+  position : absolute;
   display  : none;
+  }
+
+.cleditorMain
+{
+  position : absolute;
+  display  : none;
+  z-index  : 9999;
   }

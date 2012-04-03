@@ -265,9 +265,9 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
             StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
                                     [W - 8, H - 4]),
                 "<div "++Style ++">"++
-                "<textarea class='" ++ Class ++ "' "
+                "<div class='" ++ Class ++ "' "
                 ++ StyleIn ++ " data-ref='" ++ Cell ++ "'>" ++ Val2 ++
-                "</textarea></div>";
+                "</div></div>";
         {"select", Options} ->
             Style = io_lib:format(St ++"padding:1px 1px;'",
                                   [X, Y, W - 4, H - 1, Css]),
@@ -332,12 +332,12 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
          <link rel='stylesheet' href='/webcomponents/webcomponents.css' />
          <link rel='stylesheet' href='/webcomponents/webbasic.css' />
          <link rel='stylesheet' href='/tblsorter/style.css' />
-         <link rel='stylesheet' href='/jwysiwyg/jquery.wysiwyg.css' />
+         <link rel='stylesheet' href='/cleditor/jquery.cleditor.css' />
 
 "     ++Addons#render.css++
 "         <script src='/hypernumbers/jquery-1.7.1.min.js'></script>
          <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>-->
-         <script src='/jwysiwyg/jquery.wysiwyg.js'></script>
+         <script src='/cleditor/jquery.cleditor.js'></script>
          <script src='/hypernumbers/err.remoterr.js'></script>
          </head>
 
@@ -345,9 +345,10 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
 
          <span id='hidden_input'></span>
 
+         <textarea id='hn_cleditor'></textarea>
+
          <div id='outer' ", OuterStyle, ">
           <div id='clinput'></div>
-          <textarea id='hn_jwysiwyg'></textarea>
           <div id='inner' class='hn_inner'>", Content, "</div>
          </div>
 
