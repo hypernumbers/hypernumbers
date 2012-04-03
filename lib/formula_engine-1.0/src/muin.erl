@@ -459,7 +459,6 @@ get_modules() ->
      stdfuns_lookup_ref,
      stdfuns_eng,
      stdfuns_logical,
-     stdfuns_text,
      stdfuns_db,
      hnfuns_graphs,
      hnfuns_web,
