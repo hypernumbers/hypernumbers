@@ -137,14 +137,17 @@ index([{list, V1}, V2, V3, V4])  ->
     end;
 
 index([A, V]) ->
+    [V2] = col([V],
+              [eval_funs, fetch, area_first, cast_num],
+              [return_errors, {all, fun is_number/1}]),
     case (?is_area(A) orelse ?is_rangeref(A)) of
         true ->
-            case V > area_util:height(A)  of
-                true -> index([A, 1, V]);
-                _    -> index([A, V, 1])
+            case V2 > area_util:height(A)  of
+                true -> index([A, 1, V2]);
+                _    -> index([A, V2, 1])
             end;
         false ->
-            index([A, V, 1])
+            index([A, V2, 1])
     end;
 
 index([A, _V1, _V2]) when ?is_errval(A)    -> A;
@@ -166,7 +169,7 @@ index_(_Area, [X, Y]) when X < 0; Y < 0 ->
 
 index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
 
-    %% excel does boundary checking before truncating (dumb)
+    % excel does boundary checking before truncating (dumb)
     [Y, X] = [ erlang:trunc(X) || X<-[FY, FX]],
 
     case (Y > area_util:height(Area) orelse X > area_util:width(Area)) of
