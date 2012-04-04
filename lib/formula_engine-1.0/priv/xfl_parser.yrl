@@ -69,8 +69,8 @@ E -> '(' E ')' : '$2'.
 
 %%% special cases for slash ambiguity
 
-E -> E namedexpr Args  : special_div1('$1', lit('$2'), '$3').
-E -> E CellRefs        : special_div2('$1', lit('$2')).
+E -> E namedexpr '(' Args ')' : special_div1('$1', lit('$2'), '$4').
+E -> E CellRefs               : special_div2('$1', lit('$2')).
 
 %%% TRUE() and FALSE() functions:
 
