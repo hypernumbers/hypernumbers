@@ -413,6 +413,7 @@ make_s([], Ref, _Val, Acc) ->
     "<select class='hn_inlineselect "
         ++ "hn_inlineselect_wikipage' "
         ++ "data-ref='" ++ Ref ++ "'>"
+        ++ "<option selected></option>"
         ++ lists:flatten(lists:reverse(Acc))
         ++ "</select>";
 make_s([H | T], Ref, Val, Acc) ->
