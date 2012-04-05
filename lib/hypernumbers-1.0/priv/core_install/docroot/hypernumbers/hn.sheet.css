@@ -22,22 +22,14 @@ html,body {
 #hn_save_msg
 {
   display               : none;
-  position              : absolute;
-  top                   : 50px;
-  right                 : 10%;
-  z-index               : 10000005;
-  background            : white;
-  color                 : #999;
+  background            : black;
+  color                 : darkorange;
   font-weight           : bold;
+  font-size             : 10px;
   height                : 20px;
-  width                 : 120px;
-  padding               : 3px 5px;
-  border                : 3px solid #eee;
-  -moz-border-radius    : 4px 4px 4px 4px;
-  -moz-box-shadow       : 2px 2px 4px #AAA;
-  -webkit-border-radius : 4px 4px 4px 4px;
-  -webkit-box-shadow    : 2px 2px 4px #AAA;
-
+  width                 : 100%;
+  padding               : 1px;
+  text-align            : center;
 }
 
 #loading {
