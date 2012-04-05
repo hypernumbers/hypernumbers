@@ -377,8 +377,8 @@ print_incs(XRefX, Acc) ->
 
 print_i2(_Site, [], Acc) -> Acc;
 print_i2(Site, [H | T], Acc) ->
-    Msg = io_lib:format("      Javascript: ~p reloaded by: ~p~n"
-                        ++ "      CSS ~p~n",
+    Msg = io_lib:format("      Javascript: ~p~n-reloaded by: ~p~n"
+                        ++ "-      CSS ~p~n",
                         [H#include.js, H#include.js_reload, H#include.css]),
     print_i2(Site, T, [Msg | Acc]).
 
