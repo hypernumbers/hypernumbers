@@ -1172,7 +1172,12 @@ expand2(StartX, X1, Y1, X2, Y2, Acc) ->
     expand2(StartX, X1 + 1, Y1, X2, Y2, NewAcc).
 
 make_zpath([], Acc) ->
-    hn_util:list_to_path(lists:reverse(Acc));
+    [Hd | List] = lists:reverse(Acc),
+    case Hd of
+        "."  -> "." ++ hn_util:list_to_path(List);
+        ".." -> ".." ++ hn_util:list_to_path(List);
+        _    -> hn_util:list_to_path([Hd | List])
+    end;
 make_zpath([{seg, Seg} | T], Acc) ->
     make_zpath(T, [Seg | Acc]);
 make_zpath([{zseg, _, ZSeg} | T], Acc) ->
