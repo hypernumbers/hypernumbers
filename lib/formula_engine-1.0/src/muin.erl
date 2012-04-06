@@ -96,7 +96,11 @@ fetch_for_select(#zcellref{} = Z, Rti) ->
     ok = init_proc_dict(Rti),
     {zeds, Zeds, _, _} = fetch(Z, "__rawvalue"),
     {_Urls, Vals} = lists:unzip(Zeds),
-    Vals.
+    Vals;
+%% TODO work out what you need to do to make a dynamic select
+%% get a #REF element written into it
+fetch_for_select(_Other, _Rti) ->
+    ["#ERROR!"].
 
 %% @doc Runs formula given as a string.
 run_formula("#CIRCREF!", _) -> {error, ?ERRVAL_CIRCREF};
