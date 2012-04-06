@@ -669,6 +669,10 @@ parse_select(XRefX, {Path, Ref}, S) ->
         % this is what will blow up if it does...
         process_dyn(XRefX, {Path, Ref}, S)
     catch
+        error: _Error ->
+            {{"input", {"dynamic_select", S, ["#ERROR!"]}}, [], []};
+        exit: _Error ->
+            {{"input", {"dynamic_select", S, ["#ERROR!"]}}, [], []};
         throw: {errval, Err} ->
             {{"input", {"dynamic_select", S, [Err]}}, [], []}
     end.
