@@ -8,6 +8,7 @@
 -module(hnfuns_contacts).
 
 -export([
+         'display.phone.nos'/1,
          'text.answer.phone'/1,
          'manual.email'/1,
          'auto.email'/1,
@@ -22,7 +23,16 @@
 -include("errvals.hrl").
 -include("keyvalues.hrl").
 -include("twilio.hrl").
--include("twilio_web.hrl").
+
+'display.phone.nos'([]) ->
+    Site = get(site),
+        case contact_utils:get_twilio_account(Site) of
+            ?ERRVAL_PAYONLY ->
+                "No phone numbers have been purchased for this website";
+            AC ->
+                #twilio_account{site_phone_no = Site_Phone} = AC,
+                Site_Phone
+        end.
 
 'text.answer.phone'([Msg]) ->
     'text.answer.phone'([Msg, false]);

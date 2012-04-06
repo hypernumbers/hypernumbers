@@ -932,6 +932,20 @@
     ]
   },
   {
+    "fn": "display.phone.nos",
+    "category": "Phone And Email <- new!",
+    "desc": "Returns the phone numbers that are associated with the website.",
+    "experimental": false,
+    "includable": true,
+    "inexcel": false,
+    "resize": false,
+    "wizardready": true,
+    "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/display-phone-nos.html",
+    "args": [
+
+    ]
+  },
+  {
     "fn": "disqus.comments",
     "category": "Social/Web <- new!",
     "desc": "Inserts a Disqus comments box.",
