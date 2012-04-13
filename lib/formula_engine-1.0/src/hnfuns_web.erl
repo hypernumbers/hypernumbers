@@ -481,7 +481,7 @@ table_(Title, W, H, [THead | Range], Sort, Dirc) ->
                       "$(\".tablesorter\").parent().css('overflow', ",
                       "'auto');"]
              end,
-    Js = "/hypernumbers/jquery.tablesorter.min.js",
+    Js = "/hypernumbers/jquery.tablesorter.js",
     Script2 = lists:flatten(Script),
     Incs = #incs{js = [Js], js_reload = [Script2]},
     HTML = lists:flatten(["<table id='", Id,"' class='tablesorter'>",
