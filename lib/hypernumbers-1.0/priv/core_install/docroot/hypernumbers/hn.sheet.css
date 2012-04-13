@@ -1332,7 +1332,7 @@ a.toolbar-item {
   display : none;
   }
 
-#sitesaveastemplate, #siteuploadxls
+#sitesaveastemplate, #siteuploadxls, #sitenewpage
 {
   height : 180;
   background-color : #fff;
@@ -1442,9 +1442,10 @@ a.toolbar-item {
     color:#CCC;
 }
 
-#sitemypages {
-    padding: 10px 20px 20px 20px;
-}
+#sitemypages
+{
+  padding : 10px 20px 20px 20px;
+  }
 
 #finder {
     font-size: 11px;
@@ -1695,7 +1696,7 @@ a.toolbar-item {
   color       : darkorange;
   }
 
-#uploadxls, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet {
+#uploadxls, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, newspreadsheet {
     width: 100px
 }
 

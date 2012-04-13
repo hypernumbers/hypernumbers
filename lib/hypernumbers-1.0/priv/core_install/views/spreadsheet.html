@@ -81,7 +81,8 @@
       <div class="expand site" id="sitemenu">
         <span id="sitemenuwrap">Site</span>
       <div id="sitemenulist" class="expandinner">
-      <a name="sitemypages">New/Open Page...</a>
+      <a name="sitenewpage">New Page...</a>
+      <a name="sitemypages">Open Page...</a>
       <a name="sitedelete">Delete Page</a>
       <a name="sitesaveastemplate">Save As Template...</a>
       <a name="siteuploadxls">Upload .xls File...</a>
@@ -638,6 +639,14 @@
 
     <div id="pagespanel"><div id="hn-small-dialog-hdr"><span></span>
       <a id="pagesclose">x</a></div>
+      <div id="sitenewpage">
+        <form id="hn_newpageform">
+        <div>Pages are of the form <em>/some/page/</em> - and can be based on a template.</div>
+           <input type="text" id="newpage" value="" />
+           <input id="newspreadsheet" type="submit" value="New" class="button" />
+           <div id="templates"></div>
+        </form>
+      </div>
       <div id="sitesaveastemplate">
         <form id="hn_saveastemplateform">
         <div id="hn_save_as_temp_text"></div>
@@ -672,29 +681,13 @@
 	<div id="sitemypages">
 
 	  <div id="finder">
-        <div class="hn_finder_instructions" >
-          <div>you can double-click the tree to open a page</div>
-          <!-- <div>right-click for other actions</div> -->
-        </div>
 	    <div class="panewrapper">
         <div class="pane"></div>
-      </div>
-	  </div>
-        <span class="currentpageselection" style="display:none;"></span>
-        <form id="hn_newpageform">
-         <div class='hn_pagesbuttonbox' class='hn-text-right'>
-           <div><small>eg <code>/my/home/</code></small></div>
-           <div>from template:</div>
-         </div>
-         <div class='hn_pagesbuttonbox'>
-           <input type="text" id="newpage" value="" />
-           <div id="templates"></div>
-         </div>
-         <div class='hn_pagesbuttonbox'>
-           <input id="newspreadsheet" type="submit" value="New" class="button" />
-         </div>
-        </form>
-       </div>
+
+        </div>
+  	  </div>
+        <div>Double-click to open page, right click a page for more options.</div>
+        </div>
     	<div id="sitesettings" class="sitedialogwrapper">
 	    <h4>Set Password</h4>
 	    <form id="passwordform">

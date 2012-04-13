@@ -701,7 +701,7 @@ label {
               border:           1px solid #E99;
  }
 
-#hn_uploadxlsform, #hn_saveastemplateform
+#hn_uploadxlsform, #hn_saveastemplateform, #hn_newpageform
 {
   padding: 3px 3px 5px 3px;
   -moz-border-radius:    0px 0px 4px 4px;
@@ -710,25 +710,9 @@ label {
   background-color: #efefef;
 }
 
-#hn_newpageform
-{
-  float : left;
-  padding: 3px 3px 5px 3px;
-  -moz-border-radius:    4px 4px 4px 4px;
-  -webkit-border-radius: 4px 4px 4px 4px;
-  border:  1px solid #aaa;
-  background-color: #efefef;
-  margin:  0px 2px 5px 0px;
-}
-
 #hn_buttonpanel {
                   padding: 2px 0px 0px 2px;
                   }
-
-.hn_pagesbuttonbox {
-                     padding: 0px 2px 0px 2px;
-                     float: left;
-                }
 
 .hn_debug_z {
               -moz-border-radius: 4px 4px 4px 4px;
