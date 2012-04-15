@@ -2142,6 +2142,11 @@
         "name": "Alt Text",
         "desc": "The alt text",
         "type": "optional"
+      },
+      {
+        "name": "Effect",
+        "desc": "0, 1 or 2",
+        "type": "optional"
       }
     ]
   },

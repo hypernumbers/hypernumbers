@@ -201,6 +201,10 @@ link_(Src, Text, _N, _O) ->
     lists:flatten("<a href='" ++ Src ++ "' target='_blank' "
                   ++ "style='text-decoration:none;'>" ++ Text ++ "</a>").
 
+img_(Src, Alt, Style) ->
+    lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt
+                  ++ "' style ='" ++ Style ++ "' />").
+
 img_(Src, Alt) ->
     lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt ++ "'/>").
 
@@ -249,8 +253,8 @@ page([N]) ->
 
 link([Src, Text, Type, Option]) ->
     [NSrc, NText] = muin_collect:col([Src, Text],
-                                              [eval_funs, fetch, {cast, str}],
-                                              [return_errors]),
+                                     [eval_funs, fetch, {cast, str}],
+                                     [return_errors]),
     [NType, NOption] = typechecks:std_ints([Type, Option]),
     link_(NSrc, NText, NType, NOption);
 link([Src, Text, Type]) ->
@@ -263,6 +267,25 @@ link([Src, Text]) ->
     muin_collect:col([Src, Text], [eval_funs, fetch, {cast, str}],
                      [return_errors],
                      fun([NSrc, NText]) -> link_(NSrc, NText, 0, 0) end).
+
+img([Src, Alt, Effects]) ->
+    [Eff2] = typechecks:std_ints([Effects]),
+    Style = if
+                Eff2 == 0 ->
+                    "-moz-box-shadow: 2px 2px 4px #AAA;"
+                        ++ "-webkit-box-shadow: 2px 2px 4px #AAA;";
+                Eff2 == 1 ->
+                    "-moz-box-shadow: 3px 3px 6px #AAA;"
+                        ++ "-webkit-box-shadow: 3px 3px 6px #AAA;";
+                Eff2 == 2 ->
+                    "-moz-box-shadow: 4px 4px 8px #AAA;"
+                        ++ "-webkit-box-shadow: 4px 4px 8px #AAA;";
+                true -> ?ERR_VAL
+            end,
+    muin_collect:col([Src, Alt], [eval_funs, fetch, {cast, str}],
+                     [return_errors],
+                     fun([NSrc, NAlt]) ->
+                             img_(NSrc, NAlt, Style) end);
 
 img([Src, Alt]) ->
     muin_collect:col([Src, Alt], [eval_funs, fetch, {cast, str}],
