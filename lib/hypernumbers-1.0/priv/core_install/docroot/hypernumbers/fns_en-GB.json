@@ -2554,7 +2554,7 @@
     "args": [
       {
         "name": "Name",
-        "desc": "URL"
+        "desc": "URL",
         "type": "finite"
       },
       {
