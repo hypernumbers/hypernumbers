@@ -1495,11 +1495,15 @@ a.toolbar-item {
 
 #newpage, #templatename
 {
-  width: 170px;
+  width: 280px;
   padding: 2px 0px 0px 0px;
 }
 
-#templateslist, #templateslist2
+#templateslist
+{
+  width: 180px;
+  }
+#templateslist2
 {
   width: 170px;
   }
