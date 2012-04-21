@@ -3,6 +3,7 @@
 -module(hnfuns_web).
 
 -export([
+         blink/1,
          bullets/1,
          'horizontal.line.'/1,
          'vertical.line.'/1,
@@ -42,6 +43,17 @@
 -define(lorem3, "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ").
 -define(lorem4, "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ").
 -define(lorem_length, 447).
+
+% ha ha an easter egg
+blink([String]) ->
+    blink([String, true]);
+blink([String, Bool]) ->
+    [Str2] = typechecks:std_strs([String]),
+    [Bool2] = typechecks:std_bools([Bool]),
+    case Bool2 of
+        true  -> "<blink>" ++ Str2 ++ "</blink>";
+        false -> Str2
+    end.
 
 % a wee fun for stevie - not official or supported
 bullets(List) ->
