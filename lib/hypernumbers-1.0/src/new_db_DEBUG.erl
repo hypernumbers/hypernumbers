@@ -359,10 +359,15 @@ pretty_p3([K | T], Vals, Acc) ->
     NewO = case lists:keysearch(K, 1, Vals) of
                false ->
                    Acc;
+               {value, {Type, V}} when Type == "value"
+                                       orelse Type == "__rawvalue"
+                                       orelse Type == "formula" ->
+                   [io_lib:format(" ~p: ~p", [pad(Type), hn_util:esc(V)])
+                    | Acc];
                {value, {K1, V}} when is_list(V) ->
                    [io_lib:format(" ~p: ~p", [pad(K1), esc(V)]) | Acc];
                {value, {K1, V}} ->
-                       [io_lib:format(" ~p: ~p", [pad(K1), V]) | Acc]
+                   [io_lib:format(" ~p: ~p", [pad(K1), V]) | Acc]
     end,
     pretty_p3(T, Vals, NewO);
 % dump all attributes
