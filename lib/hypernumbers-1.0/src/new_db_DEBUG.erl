@@ -172,7 +172,7 @@ raw_url(Url) ->
                       [R] -> io:format("~p has idx of ~p~n",
                                        [Url, R#local_obj.idx]),
                              io:format("The local_obj is for ~p on ~p and "
-                                       ++ " has a reverse index of ~p~n",
+                                       ++ "has a reverse index of ~p~n",
                                        [hn_util:obj_to_ref(R#local_obj.obj),
                                         binary_to_term(R#local_obj.path),
                                         binary_to_term(R#local_obj.revidx)])
@@ -228,9 +228,10 @@ url(Url) -> url(Url, quiet).
 
 % use the atom 'verbose' for this mode to get everything
 % use 'log' to log the results
-url(Url, Mode) -> RefX = hn_util:url_to_refX(Url),
-                        Output = io_lib:format("Url ~p being debugged", [Url]),
-                        'DEBUG'(refX, RefX, Mode, [Output]).
+url(Url, Mode) ->
+    RefX = hn_util:url_to_refX(Url),
+    Output = io_lib:format("Url ~p being debugged", [Url]),
+    'DEBUG'(refX, RefX, Mode, [Output]).
 
 idx(Site, Idx) -> idx(Site, Idx, false).
 
@@ -277,10 +278,10 @@ idx(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
         end,
     {atomic, Msg} = mnesia:transaction(F),
     case Mode of
-        log -> [log(X) || X <- Msg];
-        _   -> [io:format(X ++ "~n") || X <- Msg]
-    end,
-    ok.
+        log -> [log(X) || X <- Msg],
+               ok;
+        _   -> lists:flatten([X ++ "<br />" || X <- Msg])
+    end.
 
 log(String) ->
     log(String, "../logs/url.log.txt").
@@ -297,18 +298,19 @@ log(String, File) ->
     end.
 
 pretty_print(XRefX, List, Slogan, Mode, Acc) ->
-    Marker = io_lib:format(" ", []),
+    Marker = io_lib:format("&nbsp;", []),
     Slogan2 = io_lib:format(Slogan, []),
     Ret = pretty_p2(List, Mode, [Marker, Slogan2 | Acc]),
     Ret2 = print_relations(XRefX, Ret),
     [Marker | Ret2].
 
-pretty_p2([], _Mode, Acc) -> ["      no attributes" | Acc];
+pretty_p2([], _Mode, Acc) -> ["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                              ++ "no attributes" | Acc];
 pretty_p2([{X, Vals} | T], Mode, Acc) when is_record(X, xrefX) ->
     #xrefX{idx = Idx, path = P, obj = O} = X,
-    NewO = io_lib:format(" ~p (~p) on ~p:",
+    NewO = io_lib:format("&nbsp;~p (~p) on ~p:",
                          [O, hn_util:obj_to_ref(O), P]),
-    NewOa = io_lib:format(" has the following idx ~p", [Idx]),
+    NewOa = io_lib:format("&nbsp;has the following idx ~p", [Idx]),
     Keys = case Mode of
                verbose -> all;
                _       -> ["formula", "value", "__hasform"]
@@ -336,19 +338,22 @@ print_rel2(S, R, Acc) ->
     O2 = print_rel3(S, R#relation.parents,    "parents",          O1),
     O3 = print_rel3(S, R#relation.infparents, "infinite parents", O2),
     O4 = print_rel3(S, R#relation.z_parents,  "z parents",        O3),
-    [io_lib:format("      is it an include? ~p", [R#relation.include]) | O4].
+    [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is it an include? ~p",
+                   [R#relation.include]) | O4].
 
-print_rel3(_S, [], Type, Acc) -> [io_lib:format("      no " ++ Type, []) | Acc];
+print_rel3(_S, [], Type, Acc) -> [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;"
+                                                ++ "&nbsp; no " ++ Type, [])
+                                  | Acc];
 print_rel3(S, OrdDict, Type, Acc) ->
-    NewAcc = io_lib:format("      " ++ Type ++ " are:", []),
+    NewAcc = io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                           ++ Type ++ " are:", []),
     print_rel4(S, OrdDict, [NewAcc | Acc]).
 
 print_rel4(_S, [], Acc) -> Acc;
 print_rel4(S, [H | T], Acc) ->
     XRefX = new_db_wu:idx_to_xrefXD(S, H),
-    NewAcc = [io_lib:format("        ~p on ~p",
-                            [hn_util:obj_to_ref(XRefX#xrefX.obj),
-                             XRefX#xrefX.path]) | Acc],
+    NewAcc = [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                            ++ "~p", [make_ref(XRefX)]) | Acc],
     print_rel4(S, T, NewAcc).
 
 pretty_p3([], _Vals, Acc) -> Acc;
@@ -357,9 +362,9 @@ pretty_p3([K | T], Vals, Acc) ->
                false ->
                    Acc;
                {value, {K1, V}} when is_list(V) ->
-                   [io_lib:format("~20s: ~p", [K1, esc(V)]) | Acc];
+                   [io_lib:format(" ~p: ~p", [pad(K1), esc(V)]) | Acc];
                {value, {K1, V}} ->
-                       [io_lib:format("~20s: ~p", [K1, V]) | Acc]
+                       [io_lib:format(" ~p: ~p", [pad(K1), V]) | Acc]
     end,
     pretty_p3(T, Vals, NewO);
 % dump all attributes
@@ -377,8 +382,9 @@ print_incs(XRefX, Acc) ->
 
 print_i2(_Site, [], Acc) -> Acc;
 print_i2(Site, [H | T], Acc) ->
-    Msg = io_lib:format("      Javascript: ~p~n-reloaded by: ~p~n"
-                        ++ "-      CSS ~p~n",
+    Msg = io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Javascript:&nbsp;"
+                        ++ "~p~n-reloaded by: ~p~n"
+                        ++ "-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CSS ~p~n",
                         [H#include.js, H#include.js_reload, H#include.css]),
     print_i2(Site, T, [Msg | Acc]).
 
@@ -392,7 +398,8 @@ print_f2(_Site, [], Acc) -> Acc;
 print_f2(Site, [H | T], Acc) ->
     #form{id={_, _, Lable}} = H,
     XRefX = new_db_wu:idx_to_xrefXD(Site, H#form.key),
-    NewAcc = [io_lib:format("      ~p on ~p of ~p called ~p",
+    NewAcc = [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                            ++ "~p on ~p of ~p called ~p",
                             [hn_util:obj_to_ref(XRefX#xrefX.obj),
                              hn_util:list_to_path(XRefX#xrefX.path),
                              H#form.kind, Lable]) | Acc],
@@ -472,3 +479,19 @@ dump_logs(Site, Idx) ->
                      [I, Ts, Uid, Ac, AcT, Ty, P, O, L2])
           end,
     [Fun(X) || X <- Records].
+
+pad(List) ->
+    Len = length(List),
+    io:format("List is ~p Len is ~p~n", [List, Len]),
+    List ++ pad2(20 - Len, []).
+
+% proper terminal
+pad2(0, Acc)            -> lists:flatten(Acc);
+pad2(N, Acc) when N > 0 -> pad2(N - 1, ["&nbsp;" | Acc]);
+% terminal if N is negative
+pad2(_N, Acc)           -> lists:flatten(Acc).
+
+make_ref(#xrefX{path = P, obj = O} = XRefX) ->
+    URL = hn_util:xrefX_to_url(XRefX),
+    Text = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
+    "<a href='" ++ URL ++ "?view=debug" ++ "'>" ++ Text ++ "</a>".

@@ -34,6 +34,7 @@
 -define(WEBPAGE,     "webpage").
 -define(WIKI,        "wikipage").
 -define(LOGVIEW,     "logs").
+-define(DEBUG,       "debug").
 -define(RECALC,      "recalc").
 -define(PHONE,       "phone").
 -define(RECORDING,   "recording").
@@ -214,7 +215,8 @@ handle_resource(Ref, Qry, Env=#env{method = 'POST'}) ->
 -spec handle_static(string(), iolist(), any()) -> any().
 handle_static(X, Site, Env)
   when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; X == ".txt";
-X == ".ico"; X == ".json"; X == ".gif"; X == ".html"; X == ".htm"; X == ".pdf" ->
+X == ".ico"; X == ".json"; X == ".gif"; X == ".html"; X == ".htm";
+X == ".pdf"; X == ".eot"; X == ".ttf"; X == ".svg" ->
     Mochi = Env#env.mochi,
     "/"++RelPath = Mochi:get(path),
     Root = hn_util:docroot(Site),
@@ -339,6 +341,9 @@ authorize_get(#refX{site = Site, path = Path}, #qry{view = ?RECORDING}, Env) ->
         {view, _} -> allowed;
         _Else     -> denied
     end;
+
+% allow all DEBUG views - we will check the user is admin later on
+authorize_get(_Ref, #qry{view = ?DEBUG}, _Env) -> allowed;
 
 % you can only see the logs if you have the spreadsheet view
 authorize_get(R, #qry{view = ?LOGVIEW} = Q, E) ->
@@ -601,7 +606,7 @@ iget(#refX{path=["_pages"]} = Ref, page, _Qry, Env) ->
     Return    = {struct, [Pages]},
     json(Env, Return);
 
-iget(#refX{site=S, path=["_statistics"]}, page, _Qury, Env) ->
+iget(#refX{site = S, path = ["_statistics"]}, page, _Qry, Env) ->
     case hn_groups:is_member(Env#env.uid, S, ["admin"]) of
         true  -> text_html(Env, syslib:make_stats_page(S));
         false -> serve_html(401, Env, [hn_util:viewroot(S), "/401.html"])
@@ -676,6 +681,13 @@ iget(Ref, cell,  #qry{view=?PHONE} = _Qry, #env{accept = json, uid = Uid} = Env)
         []      -> json(Env, {struct, [{"error", "no phone at this url"}]});
         [Phone] -> JSON = hn_twilio_mochi:get_phone(Ref, Phone, Uid),
                    json(Env, JSON)
+    end;
+
+iget(#refX{site = S} = Ref, cell, #qry{view = ?DEBUG}, Env) ->
+    case hn_groups:is_member(Env#env.uid, S, ["admin"]) of
+        true  -> Url = hn_util:refX_to_url(Ref),
+                 text_html(Env, wrap(new_db_DEBUG:url(Url, verbose)));
+        false -> serve_html(401, Env, [hn_util:viewroot(S), "/401.html"])
     end;
 
 iget(Ref, page, #qry{view = ?LOGVIEW}, Env) ->
@@ -2154,6 +2166,12 @@ get_email([{_, _, _, button, none, Attrs}]) ->
     end;
 get_email([_H | T]) ->
     get_email(T).
+
+wrap(Text) ->
+    "<html><head></head>"
+        ++ "<body style='font: 14px Courier, monospace;'>"
+        ++ Text
+        ++ "</body></html>".
 
 %% catch script kiddie attempts and write them as info not error logs
 %% makes rb usable
