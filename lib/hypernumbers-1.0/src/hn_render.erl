@@ -318,7 +318,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'",
                                [TotalWidth, TotalHeight]),
     Title = case Addons#render.title of
-                [] -> "<title>Hypernumbers - the team spreadsheet</title>\n";
+                [] -> "<title>like spreadsheets, but better</title>\n";
                 T  -> T
             end,
 
@@ -355,7 +355,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
 <div id='editspreadsheet' class='ctrlbox'>
 
  <div id='powered'>
-   <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
+   <span class='hyper'>Settings</span>
  </div>
 
  <div id='editingmenu' class='ctrlbox'>
