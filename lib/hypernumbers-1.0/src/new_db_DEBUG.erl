@@ -256,8 +256,6 @@ idx(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                               {NewRefX, [[O1a] | Output], P, Ob};
                           refX ->
                               NewX = new_db_wu:refX_to_xrefXD(Payload),
-                              io:format("NewX is ~p~nPayload is ~p~n",
-                                        [NewX, Payload]),
                               Path = Payload#refX.path,
                               Ob   = Payload#refX.obj,
                               {NewX, Output, Path, Ob}
@@ -482,7 +480,6 @@ dump_logs(Site, Idx) ->
 
 pad(List) ->
     Len = length(List),
-    io:format("List is ~p Len is ~p~n", [List, Len]),
     List ++ pad2(20 - Len, []).
 
 % proper terminal
