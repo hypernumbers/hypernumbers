@@ -46,10 +46,12 @@ make_html([H | T], Acc) ->
            format_msg(Msg)],
     make_html(T, [make_row(Row, []) | Acc]).
 
-make_row([], Acc)       -> "<tr>" ++ lists:flatten(lists:reverse(Acc)) ++ "</tr>";
-make_row([H | []], Acc) -> make_row([], ["<td>" ++ H ++ "</td>" | Acc]);
-make_row([H | T], Acc)  -> make_row(T, ["<td class='hn_grey'>" ++
-                                        H ++ "</td>" | Acc]).
+make_row([], Acc) ->
+    "<tr>" ++ lists:flatten(lists:reverse(Acc)) ++ "</tr>";
+make_row([H | []], Acc) ->
+    make_row([], ["<td>" ++ hn_util:esc(lists:flatten(H)) ++ "</td>" | Acc]);
+make_row([H | T], Acc) ->
+    make_row(T, ["<td class='hn_grey'>" ++ H ++ "</td>" | Acc]).
 
 format_msg([])                  -> [];
 format_msg(X) when is_binary(X) -> binary_to_term(X).
