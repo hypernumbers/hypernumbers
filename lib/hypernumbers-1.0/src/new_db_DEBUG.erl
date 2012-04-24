@@ -376,9 +376,7 @@ pretty_p3(all, Vals, Acc) ->
     pretty_p3(Ks, Vals, Acc).
 
 print_incs(XRefX, Acc) ->
-    io:format("XRefX is ~p~n", [XRefX]),
     Incs = new_db_wu:read_incsD(XRefX),
-    io:format("Incs is ~p~n", [Incs]),
     NewAcc = [io_lib:format("....has the following include records:", [])
               | Acc],
     print_i2(XRefX#xrefX.site, Incs, NewAcc).
