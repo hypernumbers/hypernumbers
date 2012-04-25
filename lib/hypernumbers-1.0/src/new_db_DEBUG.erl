@@ -362,10 +362,15 @@ pretty_p3([K | T], Vals, Acc) ->
                {value, {Type, V}} when Type == "value"
                                        orelse Type == "__rawvalue"
                                        orelse Type == "formula" ->
-                   [io_lib:format(" ~p: ~p", [pad(Type), hn_util:esc(V)])
+                   % only escape strings
+                   V2 = if
+                            is_list(V) -> hn_util:esc(V);
+                            true       -> V
+                        end,
+                   [io_lib:format(" ~p: ~p", [pad(Type), V2])
                     | Acc];
                {value, {K1, V}} when is_list(V) ->
-                   [io_lib:format(" ~p: ~p", [pad(K1), esc(V)]) | Acc];
+                   [io_lib:format(" ~p: ~p", [pad(K1), hn_util:esc(V)]) | Acc];
                {value, {K1, V}} ->
                    [io_lib:format(" ~p: ~p", [pad(K1), V]) | Acc]
     end,
@@ -417,9 +422,6 @@ pp(Site, Idx, XRefX, verbose, O) ->
 
     [[O1] | [[O2] | O]];
 pp(_, _, _, _, O) -> O.
-
-% fix up escaping!
-esc(X) -> X.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
