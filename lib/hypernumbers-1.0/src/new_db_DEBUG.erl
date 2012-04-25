@@ -494,6 +494,10 @@ pad2(N, Acc) when N > 0 -> pad2(N - 1, ["&nbsp;" | Acc]);
 pad2(_N, Acc)           -> lists:flatten(Acc).
 
 make_ref(#xrefX{path = P, obj = O} = XRefX) ->
-    URL = hn_util:xrefX_to_url(XRefX),
-    Text = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    "<a href='" ++ URL ++ "?view=debug" ++ "'>" ++ Text ++ "</a>".
+    RefX = hn_util:xrefX_to_refX(XRefX),
+    case RefX#refX.type of
+        url  -> URL = hn_util:xrefX_to_url(XRefX),
+                Text = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
+                "<a href='" ++ URL ++ "?view=debug" ++ "'>" ++ Text ++ "</a>";
+        gurl -> hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O)
+    end.

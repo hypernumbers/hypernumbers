@@ -581,8 +581,10 @@ obj_to_ref({range, {X1, Y1, X2, Y2}}) ->
                   tconv:to_b26(X2), text(Y2)]);
 obj_to_ref({page, "/"}) -> "".
 
+% need to work out if it is a url or a gurl
 xrefX_to_refX(#xrefX{site = S, path = P, obj = O}) ->
-    #refX{site = S, path = P, obj = O, type = url}.
+    Url = S ++ hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
+    url_to_refX(Url).
 
 xrefX_to_url(XRefX) ->
     RefX = xrefX_to_refX(XRefX),
