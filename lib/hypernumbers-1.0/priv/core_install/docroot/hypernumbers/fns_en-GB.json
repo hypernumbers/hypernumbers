@@ -3810,6 +3810,11 @@
     "wizardready": true,
     "link": "http://documentation.hypernumbers.com/contents/hypernumbers-functions/navigation/segment.html",
     "args": [
+      {
+        "name": "Offset",
+        "desc": "A negative integer",
+        "type": "optional"
+      }
 
     ]
   },

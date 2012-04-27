@@ -48,6 +48,7 @@
 blink([String]) ->
     blink([String, true]);
 blink([String, Bool]) ->
+
     [Str2] = typechecks:std_strs([String]),
     [Bool2] = typechecks:std_bools([Bool]),
     case Bool2 of
@@ -238,9 +239,21 @@ siteurl([]) ->
     Proto ++ ":" ++ Domain.
 
 segment([]) ->
-    case get(path) of
-        []   -> "";
-        List -> hd(lists:reverse(List))
+    segment([0]);
+segment([N]) when is_integer(N) ->
+    if N >= 0 ->
+            case get(path) of
+                []   -> "";
+                List -> hd(lists:reverse(List))
+            end;
+       N < 0 ->
+            case get(path) of
+                []   -> "";
+                List -> Len = length(List),
+                        if Len =< -N -> "";
+                           Len >  -N  -> lists:nth((Len + N), List)
+                        end
+            end
     end.
 
 pageurl([]) -> site([]) ++ page([]).
