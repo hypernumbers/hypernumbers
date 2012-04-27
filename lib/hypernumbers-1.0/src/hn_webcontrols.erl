@@ -144,7 +144,6 @@ get_seg(Path, Pages, Prefix) ->
                                           I           -> [I | Acc]
                                       end;
                                   nomatch ->
-                                      io:format("No match~n"),
                                       Acc
                               end;
                       _    -> Acc
