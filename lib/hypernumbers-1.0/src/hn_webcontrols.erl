@@ -120,8 +120,8 @@ parse_rest(#segment{redirect = {destination, Redir}, addspreadsheetgroups = AS,
                   "wikipage"    -> {Path, "?view=wikipage"};
                   "table"       -> {Path, "?view=table"}
               end,
-    NewPerm = make_perms([{spreadsheet, AS}, {webpage, AWb},
-                          {wikipage, AWi}, {table, AT}],
+    NewPerm = make_perms([{"spreadsheet", AS}, {"webpage", AWb},
+                          {"wikipage", AWi}, {"table", AT}],
                     []),
     {[{Path, NewPerm} | Perm], NewDest}.
 
