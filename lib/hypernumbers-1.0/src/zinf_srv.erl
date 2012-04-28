@@ -158,8 +158,8 @@ stop_cprof(Site) ->
 %%--------------------------------------------------------------------
 start_link(Site) ->
     case application:get_env(hypernumbers, startup_debug) of
-       {ok, true} -> io:format("...starting zinf_srv for ~p~n", [Site]);
-       _Other     -> ok
+        {ok, true} -> io:format("...starting zinf_srv for ~p~n", [Site]);
+        _Other     -> ok
     end,
     Id = hn_util:site_to_atom(Site, "_zinf"),
     gen_server:start_link({global, Id}, ?MODULE, [Site], []).
@@ -236,7 +236,7 @@ handle_call(_Request, _From, State) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_cast(perf_testing, State) ->
-    run_perf_test(),
+    run_perf_tests(),
     {noreply, State};
 handle_cast(start_cprof, State) ->
     cprof:start(),
@@ -300,7 +300,7 @@ handle_info(Info, State) ->
             {ok , _} = mnesia:unsubscribe({table, Tbl1, simple}),
             ok = zinf_srv:process_zinfs(S);
         {mnesia_table_event, {write, {Tbl2, _, _}, _}} ->
-             {ok , _} = mnesia:unsubscribe({table, Tbl2, simple}),
+            {ok , _} = mnesia:unsubscribe({table, Tbl2, simple}),
             ok = zinf_srv:check_zinfs(S);
         {mnesia_table_event, _} ->
             ok
@@ -554,10 +554,10 @@ dump_f([H | T], Path, Acc) ->
           end,
     Idxs = mnesia:activity(transaction, Fun),
     Fun2 = fun(X) ->
-                  String = io_lib:format("{~p,~p,~p,~p}.",
-                                         [Site, X, P2 ++ Ref, List]),
-                  dump_string(String, File)
-          end,
+                   String = io_lib:format("{~p,~p,~p,~p}.",
+                                          [Site, X, P2 ++ Ref, List]),
+                   dump_string(String, File)
+           end,
     [Fun2(X) || X <- Idxs],
     dump_f(T, Path, Acc).
 
@@ -595,15 +595,28 @@ check_bk3([H | T], {Site, Verbose, Fix, Borked, Acc}) ->
     check_bk3(T, {Site, Verbose, Fix, Borked, NewAcc}).
 
 match_tree(Tree, S, List, Fun, Htap) ->
-    iterate(gb_trees:iterator(Tree), S, List, Fun, Htap, []).
+    iterate_tree(gb_trees:iterator(Tree), S, List, Fun, Htap, []).
 
-iterate(Iter, S, [], Fun, Htap, Acc) ->
-    case gb_trees:next(Iter) of
-        none                -> [];
-        {selector, Sel, []} -> Fun(Sel);
-        {_K, _V, I2}        -> iterate(I2, S, [], Fun, Htap, Acc)
+iterate_tree(Iter, S, [], Fun, Htap, Acc) ->
+    Iter2 = gb_trees:next(Iter),
+    case Iter2 of
+        none ->
+            Acc;
+        {selector, Sel, []} ->
+            Fun(Sel);
+        {selector, Sel, I2} ->
+            NewAcc = [Fun(Sel) | Acc],
+            iterate_tree(I2, S, [], Fun, Htap, NewAcc);
+        {K, V, I2} ->
+            NewAcc = case match_seg(K, [], S, Htap) of
+                         match    -> match_tree(V, S, [], Fun, Htap);
+                         nomatch  -> [];
+                         error    -> [];
+                         circref  -> []
+                     end,
+            iterate_tree(I2, S, [], Fun, Htap, [NewAcc | Acc])
     end;
-iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
+iterate_tree(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
     case gb_trees:next(Iter) of
         none       -> lists:flatten(Acc);
         {K, V, I2} ->
@@ -613,7 +626,7 @@ iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
                          error    -> [];
                          circref  -> []
                      end,
-            iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
+            iterate_tree(I2, S, List, Fun, Htap, [NewAcc | Acc])
     end.
 
 match_seg({seg, S},     S,  _Site, _Htap) -> match;
@@ -1293,263 +1306,6 @@ testB4([]) ->
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx3]), lists:sort(List)).
 
-% cant run these tests now that we make XRefXs for zinfs and don't spoof 'em
-% simple match of 2 zsegs
-%% testC1([]) ->
-%%     Tree = gb_trees:empty(),
-%%     S = "http://example.com",
-%%     P1 = ["one", "[true]", "a", "1"],
-%%     P2 = ["one", "two", "[true]", "1"],
-%%     P3 = ["one", "[true]", "[true]", "1"],
-%%     P4 = ["[true]", "[true]", "a", "[true]"],
-%%     P5 = ["one", "two", "a", "1"],
-%%     Obj1 = {cell, {3, 4}},
-%%     Idx1 = 1,
-%%     Idx2 = 2,
-%%     Idx3 = 3,
-%%     Idx4 = 4,
-%%     Actions1 = [
-%%                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
-%%                 {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-%%                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
-%%                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
-%%               ],
-%%     Fun1 = fun({I, R}, Tr) ->
-%%                    XRefXs = lists:merge([R], expand_zrefs(R)),
-%%                    L = [{X, I} || X <- XRefXs],
-%%                    lists:foldl(fun add/2, Tr, L)
-%%           end,
-%%     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-%%     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-%%     List = check(NewTree1, RefX),
-%%     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
-%%     ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]), lists:sort(List)).
-
-%% % longer match of 2 zsegs with a seg
-%% testC2([]) ->
-%%     Tree = gb_trees:empty(),
-%%     S = "http://example.com",
-%%     P1 = ["d", "[true]", "[true]"],
-%%     P2 = ["d", "4", "7"],
-%%     Obj1 = {cell, {3, 4}},
-%%     Idx1 = 1,
-%%     Actions1 = [
-%%                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}}
-%%               ],
-
-%%     Fun1 = fun({I, R}, Tr ) ->
-%%                    XRefXs = lists:merge([R], expand_zrefs(R)),
-%%                    L = [{X, I} || X <- XRefXs],
-%%                    lists:foldl(fun add/2, Tr, L)
-%%            end,
-
-%%     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-%%     RefX = #xrefX{site = S, path = P2, obj = Obj1},
-%%     List = check(NewTree1, RefX),
-%%     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
-%%     ?assertEqual(lists:sort([Idx1]), lists:sort(List)).
-
-%% % set of different z matches
-%% testC3([]) ->
-%%     Tree = gb_trees:empty(),
-%%     S = "http://example.com",
-%%     P1 = ["d", "[true]", "[true]"],
-%%     P2 = ["[true]", "[true]", "[true]"],
-%%     P3 = ["d", "[true]", "7"],
-%%     P4 = ["d", "4", "[true]"],
-%%     P5 = ["d", "4", "7"],
-%%     Obj1 = {cell, {3, 4}},
-%%     Idx1 = 1,
-%%     Idx2 = 2,
-%%     Idx3 = 3,
-%%     Idx4 = 4,
-%%     Actions1 = [
-%%                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
-%%                 {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-%%                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
-%%                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
-%%               ],
-
-%%     Fun1 = fun({I, R}, Tr) ->
-%%                    XRefXs = lists:merge([R], expand_zrefs(R)),
-%%                    L = [{X, I} || X <- XRefXs],
-%%                    lists:foldl(fun add/2, Tr, L)
-%%            end,
-
-%%     NewTree1  = lists:foldl(Fun1, Tree, Actions1),
-%%     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-%%     List = check(NewTree1, RefX),
-%%     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
-%%     ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]), lists:sort(List)).
-
-%% % force a fail on z seg
-%% testC4([]) ->
-%%     Tree = gb_trees:empty(),
-%%     S = "http://example.com",
-%%     P1 = ["d", "[true]", "[true]"],
-%%     P2 = ["[true]", "[true]", "[true]"],
-%%     P3 = ["d", "[true]", "7"],
-%%     P4 = ["d", "4", "banjo"],
-%%     P5 = ["d", "4", "7"],
-%%     Obj1 = {cell, {3, 4}},
-%%     Idx1 = 1,
-%%     Idx2 = 2,
-%%     Idx3 = 3,
-%%     Idx4 = 4,
-%%     Actions1 = [
-%%                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
-%%                 {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-%%                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
-%%                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
-%%               ],
-
-%%     Fun1 = fun({I, R}, Tr) ->
-%%                    XRefXs = lists:merge([R], expand_zrefs(R)),
-%%                    L = [{X, I} || X <- XRefXs],
-%%                    lists:foldl(fun add/2, Tr, L)
-%%            end,
-
-%%     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-%%     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-%%     List = check(NewTree1, RefX),
-%%     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
-%%     ?assertEqual(lists:sort([Idx1, Idx2, Idx3]), lists:sort(List)).
-
-%% % force more than 1 fail of z seg
-%% testC5([]) ->
-%%     Tree = gb_trees:empty(),
-%%     S = "http://example.com",
-%%     P1 = ["d", "[true]", "loopy"],
-%%     P2 = ["[true]", "[true]", "[true]"],
-%%     P3 = ["d", "[true]", "7"],
-%%     P4 = ["d", "[true]", "banjo"],
-%%     P5 = ["d", "4", "7"],
-%%     Obj1 = {cell, {3, 4}},
-%%     Idx1 = 1,
-%%     Idx2 = 2,
-%%     Idx3 = 3,
-%%     Idx4 = 4,
-%%     Actions1 = [
-%%                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
-%%                 {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-%%                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
-%%                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
-%%               ],
-
-%%     Fun1 = fun({I, R}, Tr) ->
-%%                    XRefXs = lists:merge([R], expand_zrefs(R)),
-%%                    L = [{X, I} || X <- XRefXs],
-%%                    lists:foldl(fun add/2, Tr, L)
-%%            end,
-
-%%     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-%%     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-%%     List = check(NewTree1, RefX),
-%%     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
-%%     ?assertEqual(lists:sort([Idx2, Idx3]), lists:sort(List)).
-
-%% % add some shorter z paths that don't match
-%% testC6([]) ->
-%%     Tree = gb_trees:empty(),
-%%     S = "http://example.com",
-%%     P1 = ["[true]", "loopy"],
-%%     P2 = ["[true]", "[true]", "[true]"],
-%%     P3 = ["d", "[true]", "7"],
-%%     P4 = ["[true]", "banjo"],
-%%     P5 = ["d", "4", "7"],
-%%     Obj1 = {cell, {3, 4}},
-%%     Idx1 = 1,
-%%     Idx2 = 2,
-%%     Idx3 = 3,
-%%     Idx4 = 4,
-%%     Actions1 = [
-%%                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
-%%                 {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-%%                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
-%%                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
-%%               ],
-
-%%     Fun1 = fun({I, R}, Tr) ->
-%%                    XRefXs = lists:merge([R], expand_zrefs(R)),
-%%                    L = [{X, I} || X <- XRefXs],
-%%                    lists:foldl(fun add/2, Tr, L)
-%%            end,
-
-%%     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-%%     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-%%     List = check(NewTree1, RefX),
-%%     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
-%%     ?assertEqual(lists:sort([Idx2, Idx3]), lists:sort(List)).
-
-%% % add some longer z paths that don't match
-%% testC7([]) ->
-%%     Tree = gb_trees:empty(),
-%%     S = "http://example.com",
-%%     P1 = ["[true]", "loopy", "randy", "mandy", "shandy"],
-%%     P2 = ["[true]", "[true]", "[true]"],
-%%     P3 = ["d", "[true]", "7", "[true]"],
-%%     P4 = ["[true]", "banjo"],
-%%     P5 = ["d", "4", "7"],
-%%     Obj1 = {cell, {3, 4}},
-%%     Idx1 = 1,
-%%     Idx2 = 2,
-%%     Idx3 = 3,
-%%     Idx4 = 4,
-%%     Actions1 = [
-%%                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
-%%                 {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-%%                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
-%%                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
-%%               ],
-
-%%     Fun1 = fun({I, R}, Tr) ->
-%%                    XRefXs = lists:merge([R], expand_zrefs(R)),
-%%                    L = [{X, I} || X <- XRefXs],
-%%                    lists:foldl(fun add/2, Tr, L)
-%%            end,
-
-%%     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-%%     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-%%     List = check(NewTree1, RefX),
-%%     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
-%%     ?assertEqual(lists:sort([Idx2]), lists:sort(List)).
-
-%% % force more than 1 fail of z seg
-%% testC8([]) ->
-%%     Tree = gb_trees:empty(),
-%%     S = "http://example.com",
-%%     P1 = ["[if(true, true, false}"],
-%%     P2 = ["[true]", "4", "[if(true, true, true)]"],
-%%     P3 = ["[true]", "[true]", "7"],
-%%     P4 = ["[4 > 3]", "[or(true, true)]", "[true]"],
-%%     P5 = ["d", "4", "7"],
-%%     Obj1 = {cell, {3, 4}},
-%%     Idx1 = 1,
-%%     Idx2 = 2,
-%%     Idx3 = 3,
-%%     Idx4 = 4,
-%%     Actions1 = [
-%%                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
-%%                 {Idx2, #xrefX{site = S, path = P1, obj = Obj1}},
-%%                 {Idx1, #xrefX{site = S, path = P2, obj = Obj1}},
-%%                 {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
-%%                 {Idx1, #xrefX{site = S, path = P3, obj = Obj1}},
-%%                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
-%%                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}              ],
-
-%%     Fun1 = fun({I, R}, Tr) ->
-%%                    XRefXs = lists:merge([R], expand_zrefs(R)),
-%%                    L = [{X, I} || X <- XRefXs],
-%%                    lists:foldl(fun add/2, Tr, L)
-%%            end,
-
-%%     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-%%     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-%%     List = check(NewTree1, RefX),
-%%     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
-%%     ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]),
-%%                  lists:sort(hslists:uniq(List))).
-
 test_dump() ->
     Tree = gb_trees:empty(),
     S = "http://example.com",
@@ -1612,23 +1368,15 @@ unit_test_() ->
                fun testB3/1,
                fun testB4/1
 
-               % fun testC1/1,
-               % fun testC2/1,
-               % fun testC3/1,
-               % fun testC4/1,
-               % fun testC5/1,
-               % fun testC6/1,
-               % fun testC7/1,
-               % fun testC8/1
               ],
 
     %{setup, Setup, Cleanup,
     {setup, Setup, [{with, [], SeriesA}]}.
 
 % test the performance of the zinf server
-run_perf_test() -> Tree = gb_trees:empty(),
-                   Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-                   perf2(Stamp, Tree, 1, 100, 20, 20, 20, 20).
+run_perf_tests() -> Tree = gb_trees:empty(),
+                    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+                    perf2(Stamp, Tree, 1, 100, 20, 20, 20, 20).
 
 perf2(_Stamp, _Tree, _Idx, 0, _, 0, _,  0) -> ok;
 % order matters!
