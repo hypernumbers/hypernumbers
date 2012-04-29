@@ -510,7 +510,10 @@ table_(Title, W, H, [THead | Range], Sort, Dirc) ->
                 true  -> "0";
                 false -> "1"
             end,
-    Id = "tbl_" ++ muin_util:create_name(),
+    XX = ?mx,
+    YY = ?my,
+    Name = hn_util:obj_to_ref({cell, {XX, YY}}),
+    Id = "tbl_" ++ Name,
 
     Head = ["<thead><tr>",
             [["<th>", X,"</th>"] || X <- THead ],
@@ -520,13 +523,13 @@ table_(Title, W, H, [THead | Range], Sort, Dirc) ->
               || Row <- Range ],
     Script = if
                  Sort <  0 ->
-                     ["$(\".tablesorter\").tablesorter();",
-                     "$(\".tablesorter\").parent().css('overflow', ",
+                     ["$(\"#" ++ Id ++ "\").tablesorter();",
+                     "$(\"#" ++ Id ++ "\").parent().css('overflow', ",
                       "'auto');"];
                  Sort >= 0 ->
-                     ["$(\".tablesorter\").tablesorter({ sortList:[[",
+                     ["$(\"#" ++ Id ++ "\").tablesorter({ sortList:[[",
                       integer_to_list(Sort), ",", Dirc2, "]]});",
-                      "$(\".tablesorter\").parent().css('overflow', ",
+                      "$(\"#" ++ Id ++ "\").parent().css('overflow', ",
                       "'auto');"]
              end,
     Js = "/hypernumbers/jquery.tablesorter.js",
