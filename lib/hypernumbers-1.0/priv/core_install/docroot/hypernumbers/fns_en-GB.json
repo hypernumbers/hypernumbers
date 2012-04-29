@@ -5280,6 +5280,11 @@
         "name": "Sort Direction",
         "desc": "TRUE or FALSE.",
         "type": "optional"
+      },
+      {
+        "name": "Show link in first column",
+        "desc": "TRUE or FALSE.",
+        "type": "optional"
       }
     ]
   }

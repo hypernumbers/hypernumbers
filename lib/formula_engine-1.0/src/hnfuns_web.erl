@@ -331,10 +331,14 @@ img([Src]) ->
     'ztable.'([W, H, Headers, Z, 0, true]);
 'ztable.'([W, H, Headers, Z, Sort]) ->
     'ztable.'([W, H, Headers, Z, Sort, true]);
-'ztable.'([W, H, Headers, Z, Sort, HasLink]) ->
+'ztable.'([W, H, Headers, Z, Sort, Direction]) ->
+    'ztable.'([W, H, Headers, Z, Sort, Direction, true]);
+'ztable.'([W, H, Headers, Z, Sort, Direction, HasLink]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     funs_util:check_size(Width, Height),
+    [Sort2] = typechecks:std_ints([Sort]),
+    [Dirc2, HasL2] = typechecks:std_bools([Direction, HasLink]),
     Hds1 = lists:reverse(typechecks:html_box_contents([Headers])),
     Hds2 = case HasLink of
                true  -> ["Links" | Hds1];
@@ -357,12 +361,6 @@ img([Src]) ->
                _Else ->
                    ?ERR_VAL
                end,
-    [Sort2] = typechecks:std_ints([Sort]),
-    case HasLink of
-        true  -> ok;
-        false -> ok;
-        _     -> ?ERR_VAL
-    end,
     put(recompile, true),
     Rules = [fetch_ztable],
     Passes = [],
@@ -372,12 +370,12 @@ img([Src]) ->
         [] ->
             {include, {"ZTable ", Width, Height, #incs{}}, ""};
         Ranges ->
-            Ranges2 = fix_upzrange(Ranges, HasLink, []),
+            Ranges2 = fix_upzrange(Ranges, HasL2, []),
             Cols1 = length(Hds2),
             Cols2 = length(hd(Ranges2)),
             case Cols1 of
                 Cols2 -> table_("ZTable ", Width, Height, [Hds2 | Ranges2],
-                                Sort2, true);
+                                Sort2, Dirc2);
                 _     -> ?ERRVAL_VAL
             end
     end.
