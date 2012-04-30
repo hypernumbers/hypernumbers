@@ -1,4 +1,4 @@
--define(PhoneNo, "some phone no").
+-define(PhoneNo, "+441315101883").
 -define(AppSid, yerappsid).
--define(AccountSid, yeraccsid).
--define(AuthToken, yerauthtoken).
+-define(AccountSid, AC7a076e30da6d49119b335d3a6de43844).
+-define(AuthToken, 9248c9a2a25f6914fad9c9fb5b30e69c).
