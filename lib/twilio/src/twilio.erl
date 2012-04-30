@@ -37,7 +37,7 @@ make_call(AccountSID, AuthToken, From, To, Params) ->
 -spec send_sms(string(), string(), string(), string(), [twilio_param()]) -> twilio_response().
 send_sms(AccountSID, AuthToken, From, To, Body) ->
     % Add "From" and "To" parameters to send to twilio
-    Params2 = [{"From", From}, {"To", To} | {"Body", Body}],
+    Params2 = [{"From", From}, {"To", To}, {"Body", Body}],
 
     Path = "/Accounts/" ++ AccountSID ++ "/SMS/Messages",
 
@@ -60,6 +60,7 @@ request(AccountSID, AuthToken, get, Path, []) ->
 request(AccountSID, AuthToken, post, Path, Params) ->
     RequestURL = "https://" ++ AccountSID ++ ":" ++ AuthToken
                  ++ "@"?BASE_URL"/"?API_VERSION_2010 ++ Path,
+    
     ParamsString = expand_params(Params),
     Request = {RequestURL, [], "application/x-www-form-urlencoded", ParamsString},
     % @TODO properly parse for twilio errors
