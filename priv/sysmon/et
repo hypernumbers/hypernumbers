@@ -19,28 +19,28 @@ main([]) ->
     UpNodes = nodes(),
     io:format("These ~p nodes are up~n", [UpNodes]),
     case all_well(World, UpNodes, []) of
-    	 true -> io:format("all is well~n");
-	 Msg  -> sms(Msg)
+        true -> io:format("all is well~n");
+        Msg  -> sms(Msg)
     end.
 
 sms(Msg) ->
-   ok = application:start(inets),
-   ok = application:start(crypto),
-   ok = application:start(public_key),
-   ok = application:start(ssl),
-   {ok, ok} = twilio:send_sms(?AccountSid, ?AuthToken, ?PhoneNo, ?SUCKER, Msg).
+    ok = application:start(inets),
+    ok = application:start(crypto),
+    ok = application:start(public_key),
+    ok = application:start(ssl),
+    {ok, ok} = twilio:send_sms(?AccountSid, ?AuthToken, ?PhoneNo, ?SUCKER, Msg).
 
 all_well([], _, [])  -> true;
 all_well([], _, Acc) -> List = [atom_to_list(X) || X <- lists:reverse(Acc)],
                         List2 = string:join(List, ","),
-			Msg = io_lib:format("The following nodes are down: ~p", 
-			[List2]),
+                        Msg = io_lib:format("The following nodes are down: ~p",
+                                            [List2]),
                         lists:flatten(Msg);
 all_well([H | T], UpNodes, Acc) ->
-     case lists:member(H, UpNodes) of
-         true  -> all_well(T, UpNodes, Acc);
-         false -> all_well(T, UpNodes, [H | Acc])
-     end.
+    case lists:member(H, UpNodes) of
+        true  -> all_well(T, UpNodes, Acc);
+        false -> all_well(T, UpNodes, [H | Acc])
+    end.
 
 init() ->
     os:cmd(?EPMD),
