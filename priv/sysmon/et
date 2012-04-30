@@ -14,11 +14,12 @@
 -define(ROOT, "/hn/hypernumbers").
 
 main([]) ->
+    file:set_cwd("/hn/hypernumbers/priv/sysmon/"),
     World = init(),
+    World2 = lists:delete('et@hypernumbers.com', World),
     [code:add_pathz(X ++ "/ebin") || X <- filelib:wildcard(?ROOT ++ "/lib/*")],
     UpNodes = nodes(),
-    io:format("These ~p nodes are up~n", [UpNodes]),
-    case all_well(World, UpNodes, []) of
+    case all_well(World2, UpNodes, []) of
         true -> io:format("all is well~n");
         Msg  -> sms(Msg)
     end.
