@@ -1,0 +1,33 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+%%! -boot start_ssl -proto_dist inet_ssl -ssl_dist_opt server_certfile "/hn/hypernumbers/priv/keys/servercert.pem" -ssl_dist_opt client_certfile "/hn/hypernumbers/priv/keys/clientcert.pem" -ssl_dist_opt keyfile "/hn/hypernumbers/priv/keys/key.pem -connect_all false -kernel net_setuptime 120
+
+% ET, call home
+
+-mode(compile).
+
+-define(COOKIE, 'completelysecure').
+-define(EPMD, "/usr/local/bin/epmd -daemon").
+-define(NODES, [node1, node2, node3, node4. node5].
+
+main([Target, NStr, PostlogDir]) ->
+    init(),
+    io:format("If there aint no nodes up I'm a calling home~n", []),
+    Nodes = nodes(),
+    io:format("Node ~p is connected? ~p~n", [TNode, lists:member(TNode, Nodes)]).
+
+init() ->
+    os:cmd(?EPMD),
+    Host = net_adm:localhost(),
+    Name = list_to_atom("et@" ++ Host),
+    {ok, _} = net_kernel:start([Name, longnames]),
+    true = auth:set_cookie(?COOKIE).
+
+
+relative_date(Offset) ->
+    {Date, _} = calendar:now_to_local_time(erlang:now()),
+    Day = calendar:date_to_gregorian_days(Date),
+    format_date(calendar:gregorian_days_to_date(Day - Offset)).
+
+format_date({Y, M, D}) ->
+    lists:flatten(io_lib:format("~b-~b-~b", [D, M, Y])).
