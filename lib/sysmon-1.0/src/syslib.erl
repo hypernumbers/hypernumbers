@@ -53,8 +53,9 @@ make_stats_page(Site) ->
     Sups = convert_lf(check_supervisors(Site)),
     Qs = convert_lf(show_queues(Site)),
     Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
-    TableInfo = table_s2(Site, Tables),
+    TableInfo = table_s2(Site, Tables, technical),
     TableInfo2 = convert_lf(io_lib:format(lists:flatten(TableInfo), [])),
+    Billing = convert_lf(io_lib:format(lists:flatten(get_billing(Site)), [])),
     CPU = convert_lf(os:cmd("top -b -n 1 -u hypernumbers")),
     "<html><head></head><body><div style='font-family:monospace'>" ++
         "<h1 style='color:#ffcc00'>(Logical) Site And (Physical) " ++
@@ -63,6 +64,9 @@ make_stats_page(Site) ->
         "<h3>Are any supervisors borked?</h3>" ++
         "<small>(no news is good news here)</small><br />" ++
         Sups ++
+        "<h3>Billing Statistics</h3>" ++
+        "<small>Memory is in Erlang Words</small><br />" ++
+        Billing ++
         "<h3>Status Of Queues</h3>" ++
         "<small>(should mostly be 0 but less than 250 is OK " ++
         "for dirty_zinf)</small><br />" ++
@@ -79,24 +83,51 @@ make_stats_page(Site) ->
 table_status() ->
     Sites = hn_setup:get_sites(),
     Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
-    io:format(lists:flatten([table_s2(X, Tables) || X <- Sites])).
+    io:format(lists:flatten([table_s2(X, Tables, technical) || X <- Sites])).
 
 table_status(Site) ->
     Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
-    io:format(lists:flatten(table_s2(Site, Tables))).
+    io:format(lists:flatten(table_s2(Site, Tables, technical))).
 
-table_s2(Site, Tables) ->
+table_s2(Site, Tables, technical) ->
     Site2 = new_db_wu:get_prefix(Site),
     Tab2 = get_site_tables(Tables, Site2, []),
-    [table_s3(X) || X <- Tab2].
+    [table_s3a(X) || X <- Tab2];
+table_s2(Site, Tables, billing) ->
+    Site2 = new_db_wu:get_prefix(Site),
+    Tab2 = get_site_tables(Tables, Site2, []),
+    {Mem, Cells} = lists:foldl(fun table_s3b/2, {0, 0}, Tab2),
+    Pages = length(page_srv:get_flatpages(Site)),
+    io_lib:format("Cells:   ~p~nPages:   ~p~nMemory: ~p~n",
+                  [Cells, Pages, Mem]).
 
-table_s3(X) ->
+table_s3a(X) ->
     TabInfo = mnesia:table_info(list_to_atom(X), all),
     {size, Size} = lists:keyfind(size, 1, TabInfo),
     {memory, Memory} = lists:keyfind(memory, 1, TabInfo),
     Type = get_type(TabInfo),
     io_lib:format("~nTable: ~p~n~p Records~n~p~n~p Words of memory used~n",
                   [X, Size, Type, Memory]).
+
+table_s3b(X, {Total, Items}) ->
+    X1 = trim(X),
+    TabInfo = mnesia:table_info(list_to_atom(X), all),
+    {size, Size} = lists:keyfind(size, 1, TabInfo),
+    {memory, Memory} = lists:keyfind(memory, 1, TabInfo),
+    Type = get_type(TabInfo),
+    NewTotal = case Type of
+                   disc_copy      -> Total + Memory;
+                   ram_copy       -> Total + Memory;
+                   disc_only_copy -> Total
+               end,
+    NewItems = case X1 of
+                   "item" -> Size;
+                   _      -> Items
+               end,
+    {NewTotal, NewItems}.
+
+trim(X) -> [_, _, X1] = string:tokens(X, "&"),
+           X1.
 
 get_type(TabInfo) ->
     {ram_copies, RamC}            = lists:keyfind(ram_copies, 1, TabInfo),
@@ -445,4 +476,8 @@ conv([32 | T], Acc) -> conv(T, ["&nbsp;" | Acc]);
 conv([9 | T], Acc)  -> conv(T, ["&nbsp;&nbsp;&nbsp;&nbsp;" ++
                                 "&nbsp;&nbsp;&nbsp;&nbsp;" | Acc]);
 conv([H | T], Acc)  -> conv(T, [H | Acc]).
+
+get_billing(Site) ->
+    Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
+    table_s2(Site, Tables, billing).
 
