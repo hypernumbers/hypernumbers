@@ -12,12 +12,25 @@
 -include("keyvalues.hrl").
 -include("twilio_web.hrl").
 
+% call handling
 -export([
-         handle_recording/2,
-         log/2,
-         get_phone/3,
          handle_call/2,
          handle_phone_post/3
+        ]).
+
+% setup the softphone
+-export([
+         get_phone/3
+        ]).
+
+% display the recordings in the brower
+-export([
+         view_recording/2
+        ]).
+
+% utilities
+-export([
+         log/2
         ]).
 
 get_phone(#refX{site = _S},
@@ -25,13 +38,15 @@ get_phone(#refX{site = _S},
           _Uid) ->
     {struct, lists:flatten([P#phone.softphone_config,
                             P#phone.softphone_type])};
-get_phone(#refX{site = _S}, #phone{capability = [{manual_sms, PhoneNo, Msg}]} = P,
+get_phone(#refX{site = _S},
+          #phone{capability = [{manual_sms, PhoneNo, Msg}]} = P,
           _Uid) ->
     {struct, lists:flatten([{"phoneno", PhoneNo},
                             {"msg", Msg},
                             P#phone.softphone_config,
                             P#phone.softphone_type])};
-get_phone(#refX{site = S}, #phone{capability = [{client_outgoing, _, _}] = C} = P,
+get_phone(#refX{site = S},
+          #phone{capability = [{client_outgoing, _, _}] = C} = P,
           Uid) ->
     AC = contact_utils:get_twilio_account(S),
     #twilio_account{account_sid = AccSID, auth_token = AuthToken} = AC,
@@ -54,7 +69,7 @@ get_phone(#refX{site = S}, #phone{capability = [{client_outgoing, _, _}] = C} = 
                             P#phone.softphone_config,
                             P#phone.softphone_type])}.
 
-handle_recording(#refX{site = S, path = P}, HyperTag) ->
+view_recording(#refX{site = S, path = P}, HyperTag) ->
     HT = passport:open_hypertag(S, P, HyperTag),
     {ok, _, _, Call_SID, _, _} = HT,
     AC = contact_utils:get_twilio_account(S),
@@ -121,6 +136,8 @@ handle_call(#refX{} = Ref, #env{} = Env) ->
     Body = twilio_web_util:process_body(Env#env.body),
     handle_c2(Ref, Body).
 
+% this function head is for an outbound call
+% twilio is calling back to get the details that the user has enabled
 handle_c2(#refX{site = S, path = P},
           #twilio{called = null,
                   caller = null,
