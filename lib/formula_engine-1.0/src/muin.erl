@@ -1,4 +1,4 @@
-%% @author Hasan Veldstra <hasan@hypernumbers.com>
+%%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Interface to the formula engine/interpreter.
 
 -module(muin).
@@ -472,7 +472,8 @@ get_modules() ->
      hnfuns_contacts,
      hnfuns_controls,
      hnfuns_z,
-     hnfuns_special
+     hnfuns_special,
+     hnfuns_site
     ].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
