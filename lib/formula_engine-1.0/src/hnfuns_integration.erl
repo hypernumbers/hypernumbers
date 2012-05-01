@@ -169,9 +169,9 @@ tweet2(Message, Link) ->
     "<a href=\"http://twitter.com/home?status=" ++ Msg ++ "\">" ++ Link ++ "</a>".
 
 %% Hypernumbers Channel Name is hypernumbers
-'youtube.channel'([ChannelName]) ->
-    C = muin_col_DEPR:collect_string(ChannelName, ?default_str_rules),
-    "<script src=\"http://www.gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/youtube.xml&up_channel=" ++ C ++ "&synd=open&w=320&h=390&title=&border=%23ffffff%7C3px%2C1px+solid+%23999999&output=js\"></script>".
+%% 'youtube.channel'([ChannelName]) ->
+%%     C = muin_col_DEPR:collect_string(ChannelName, ?default_str_rules),
+%%     "<script src=\"http://www.gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/youtube.xml&up_channel=" ++ C ++ "&synd=open&w=320&h=390&title=&border=%23ffffff%7C3px%2C1px+solid+%23999999&output=js\"></script>".
 
 %% Hypernumbers merchant ID is 960226209420618
 'google.buynow'([Merchant, Cur, ItemName, ItemDesc, Price]) ->
@@ -214,71 +214,71 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
         ++"</form>".
 
 %% Hypernumbers Merchant ID is 960226209420618
-'google.buynowlist'([Merchant, Currency, Type, Bg | Rest]) ->
-    M = muin_col_DEPR:collect_string(Merchant, ?default_str_rules),
-    C = muin_col_DEPR:collect_string(Currency, ?default_str_rules),
-    Bg1 = string:to_lower(muin_col_DEPR:collect_string(Bg, ?default_str_rules)),
-    case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
-        false -> ?ERRVAL_VAL;
-        true  -> case Bg1  of
-                     "0"  -> google_buy_l2(M, C, Type, "white", Rest);
-                     "1"  -> google_buy_l2(M, C, Type, "trans", Rest);
-                     _  -> ?ERRVAL_VAL
-                 end
-    end.
+%% 'google.buynowlist'([Merchant, Currency, Type, Bg | Rest]) ->
+%%     M = muin_col_DEPR:collect_string(Merchant, ?default_str_rules),
+%%     C = muin_col_DEPR:collect_string(Currency, ?default_str_rules),
+%%     Bg1 = string:to_lower(muin_col_DEPR:collect_string(Bg, ?default_str_rules)),
+%%     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
+%%         false -> ?ERRVAL_VAL;
+%%         true  -> case Bg1  of
+%%                      "0"  -> google_buy_l2(M, C, Type, "white", Rest);
+%%                      "1"  -> google_buy_l2(M, C, Type, "trans", Rest);
+%%                      _  -> ?ERRVAL_VAL
+%%                  end
+%%     end.
 
-google_buy_l2(M, C, Type, Bg, Rest) ->
-    {Selections, Input} = get_google_bits(Type, C, Rest, [], [], 0),
-    "<form action=\"https://checkout.google.com/api/checkout/v2/checkoutForm/Merchant/" ++ M ++ "\" id=\"BB_BuyButtonForm\" method=\"post\" name=\"BB_BuyButtonForm\" target=\"_top\">"
-        ++ "<table cellpadding=\"5\" cellspacing=\"0\" width=\"1%\">"
-        ++ "<tr>"
-        ++ "<td align=\"right\" width=\"1%\">"
-        ++ Selections
-        ++ Input
-        ++ "</td>"
-        ++ "<td align=\"left\" width=\"1%\">"
-        ++ "<input alt=\"\" src=\"https://checkout.google.com/buttons/buy.gif?merchant_id=" ++ M ++ "&amp;w=117&amp;h=48&amp;style=" ++ Bg ++ "&amp;variant=text&amp;loc=en_US\" type=\"image\"/>"
-        ++ "</td>"
-        ++ "</tr>"
-        ++ "</table>"
-        ++ "</form>".
+%% google_buy_l2(M, C, Type, Bg, Rest) ->
+%%     {Selections, Input} = get_google_bits(Type, C, Rest, [], [], 0),
+%%     "<form action=\"https://checkout.google.com/api/checkout/v2/checkoutForm/Merchant/" ++ M ++ "\" id=\"BB_BuyButtonForm\" method=\"post\" name=\"BB_BuyButtonForm\" target=\"_top\">"
+%%         ++ "<table cellpadding=\"5\" cellspacing=\"0\" width=\"1%\">"
+%%         ++ "<tr>"
+%%         ++ "<td align=\"right\" width=\"1%\">"
+%%         ++ Selections
+%%         ++ Input
+%%         ++ "</td>"
+%%         ++ "<td align=\"left\" width=\"1%\">"
+%%         ++ "<input alt=\"\" src=\"https://checkout.google.com/buttons/buy.gif?merchant_id=" ++ M ++ "&amp;w=117&amp;h=48&amp;style=" ++ Bg ++ "&amp;variant=text&amp;loc=en_US\" type=\"image\"/>"
+%%         ++ "</td>"
+%%         ++ "</tr>"
+%%         ++ "</table>"
+%%         ++ "</form>".
 
-get_google_bits(_, _Cur, [], Acc1, Acc2, _C) ->
-    {get_sel(Acc1), lists:flatten(lists:reverse(Acc2))};
-%% option 0 - no quantities
-get_google_bits(0, Cur, [Name, Desc, Price | T], Acc1, Acc2, C) ->
-    {Sel, Input} = get_google_bits2(Cur, Name, Desc, Price, 1, C),
-    get_google_bits(0, Cur, T, [Sel | Acc1], [Input, Acc2], C + 1);
-%% option 1 - with quantities
-get_google_bits(1, Cur, [Name, Desc, Price, Quant | T], Acc1, Acc2, C) ->
-    {Sel, Input} = get_google_bits2(Cur, Name, Desc, Price, Quant, C),
-    get_google_bits(1, Cur, T, [Sel | Acc1], [Input, Acc2], C + 1);
-get_google_bits(_, _, _, _, _, _) ->
-    exit("invalid type of Google Buy Now button").
+%% get_google_bits(_, _Cur, [], Acc1, Acc2, _C) ->
+%%     {get_sel(Acc1), lists:flatten(lists:reverse(Acc2))};
+%% %% option 0 - no quantities
+%% get_google_bits(0, Cur, [Name, Desc, Price | T], Acc1, Acc2, C) ->
+%%     {Sel, Input} = get_google_bits2(Cur, Name, Desc, Price, 1, C),
+%%     get_google_bits(0, Cur, T, [Sel | Acc1], [Input, Acc2], C + 1);
+%% %% option 1 - with quantities
+%% get_google_bits(1, Cur, [Name, Desc, Price, Quant | T], Acc1, Acc2, C) ->
+%%     {Sel, Input} = get_google_bits2(Cur, Name, Desc, Price, Quant, C),
+%%     get_google_bits(1, Cur, T, [Sel | Acc1], [Input, Acc2], C + 1);
+%% get_google_bits(_, _, _, _, _, _) ->
+%%     exit("invalid type of Google Buy Now button").
 
-get_google_bits2(Cur, Name, Desc, Price, Quantity, C) ->
-    N = muin_col_DEPR:collect_string(Name, ?default_str_rules),
-    D = muin_col_DEPR:collect_string(Desc, ?default_str_rules),
-    P = muin_col_DEPR:collect_string(Price, ?default_str_rules),
-    Q = muin_col_DEPR:collect_string(Quantity, ?default_str_rules),
-    C1 = integer_to_list(C),
-    Sel = "<option value=\"" ++ C1 ++ "\">"
-        ++ P ++ " - " ++ N ++ "</option>",
-    Input = "<input name=\"item_option_name_" ++ C1 ++ "\""
-        ++ " type=\"hidden\" value=\"" ++ N ++ "\"/>"
-        ++ "<input name=\"item_option_price_" ++ C1 ++ "\""
-        ++ " type=\"hidden\" value=\"" ++ P ++ "\"/>"
-        ++ "<input name=\"item_option_description_" ++ C1 ++ "\""
-        ++ " type=\"hidden\" value=\"" ++ D ++ "\"/>"
-        ++ "<input name=\"item_option_quantity_" ++ C1 ++ "\""
-        ++ "type=\"hidden\" value=\"" ++ Q ++ "\"/>"
-        ++ "<input name=\"item_option_currency_" ++ Cur ++ "\""
-        ++ "type=\"hidden\" value=\"" ++ Cur ++ "\"/>",
-    {Sel, Input}.
+%% get_google_bits2(Cur, Name, Desc, Price, Quantity, C) ->
+%%     N = muin_col_DEPR:collect_string(Name, ?default_str_rules),
+%%     D = muin_col_DEPR:collect_string(Desc, ?default_str_rules),
+%%     P = muin_col_DEPR:collect_string(Price, ?default_str_rules),
+%%     Q = muin_col_DEPR:collect_string(Quantity, ?default_str_rules),
+%%     C1 = integer_to_list(C),
+%%     Sel = "<option value=\"" ++ C1 ++ "\">"
+%%         ++ P ++ " - " ++ N ++ "</option>",
+%%     Input = "<input name=\"item_option_name_" ++ C1 ++ "\""
+%%         ++ " type=\"hidden\" value=\"" ++ N ++ "\"/>"
+%%         ++ "<input name=\"item_option_price_" ++ C1 ++ "\""
+%%         ++ " type=\"hidden\" value=\"" ++ P ++ "\"/>"
+%%         ++ "<input name=\"item_option_description_" ++ C1 ++ "\""
+%%         ++ " type=\"hidden\" value=\"" ++ D ++ "\"/>"
+%%         ++ "<input name=\"item_option_quantity_" ++ C1 ++ "\""
+%%         ++ "type=\"hidden\" value=\"" ++ Q ++ "\"/>"
+%%         ++ "<input name=\"item_option_currency_" ++ Cur ++ "\""
+%%         ++ "type=\"hidden\" value=\"" ++ Cur ++ "\"/>",
+%%     {Sel, Input}.
 
-get_sel(List) -> lists:flatten(["<select name=\"item_selection_1\">",
-                                lists:reverse(List),
-                                "</select>"]).
+%% get_sel(List) -> lists:flatten(["<select name=\"item_selection_1\">",
+%%                                 lists:reverse(List),
+%%                                 "</select>"]).
 
 'facebook.like'([ID]) ->
     URL = hnfuns_web:site([]) ++ hnfuns_web:page([]),
@@ -374,34 +374,34 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
     Incs = #incs{js = [Js], js_reload = [Js_reload]},
     {preview, {"Twitter profile for " ++ U, 3, 20, Incs}, HTML}.
 
-'twitter.list'([User, ListId]) ->
-    'twitter.list'([User, ListId, User]);
-'twitter.list'([User, ListId, Title]) ->
-    'twitter.list'([User, ListId, Title, ListId]);
-'twitter.list'([User, ListId, Title, SubTitle]) ->
-    [U2, L2, T2, SubT2] = typechecks:std_strs([User, ListId, Title, SubTitle]),
-    ID = "hn_twitter_list_" ++ string:join(get(path), "_")
-        ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
-    Js = "http://widgets.twimg.com/j/2/widget.js",
-    Js_reload = "new TWTR.Widget({"
-        ++ "version: 2, "
-        ++ "id: '" ++ ID ++ "', " % we have added this
-        ++ "type: 'list', "
-        ++ "rpp: 30, "
-        ++ "interval: 6000, "
-        ++ "title: '" ++ T2 ++ "', "
-        ++ "subject: '" ++ SubT2 ++ "', "
-        ++ "width: 235, "
-        ++ "height: 340, "
-        ++ "theme: {"
-        ++ "shell: {background: '#444', color: '#eee'},"
-        ++ "tweets: {background: '#ddd', color: '#666', links: '#4444ff'}"
-        ++ "}, "
-        ++ "features: {scrollbar: true, loop: false, live: true, "
-        ++ "hashtags: true, timestamp: true, avatars: true, behavior: 'all'}"
-        ++ "}).render().setList('" ++ U2 ++"', '" ++ L2 ++ "').start();",
-    HTML = "<div id='" ++ ID ++ "'></div>",
-    Incs = #incs{js = [Js], js_reload = [Js_reload]},
-    {preview, {"Twitter List", 3, 23, Incs}, HTML}.
+%% 'twitter.list'([User, ListId]) ->
+%%     'twitter.list'([User, ListId, User]);
+%% 'twitter.list'([User, ListId, Title]) ->
+%%     'twitter.list'([User, ListId, Title, ListId]);
+%% 'twitter.list'([User, ListId, Title, SubTitle]) ->
+%%     [U2, L2, T2, SubT2] = typechecks:std_strs([User, ListId, Title, SubTitle]),
+%%     ID = "hn_twitter_list_" ++ string:join(get(path), "_")
+%%         ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
+%%     Js = "http://widgets.twimg.com/j/2/widget.js",
+%%     Js_reload = "new TWTR.Widget({"
+%%         ++ "version: 2, "
+%%         ++ "id: '" ++ ID ++ "', " % we have added this
+%%         ++ "type: 'list', "
+%%         ++ "rpp: 30, "
+%%         ++ "interval: 6000, "
+%%         ++ "title: '" ++ T2 ++ "', "
+%%         ++ "subject: '" ++ SubT2 ++ "', "
+%%         ++ "width: 235, "
+%%         ++ "height: 340, "
+%%         ++ "theme: {"
+%%         ++ "shell: {background: '#444', color: '#eee'},"
+%%         ++ "tweets: {background: '#ddd', color: '#666', links: '#4444ff'}"
+%%         ++ "}, "
+%%         ++ "features: {scrollbar: true, loop: false, live: true, "
+%%         ++ "hashtags: true, timestamp: true, avatars: true, behavior: 'all'}"
+%%         ++ "}).render().setList('" ++ U2 ++"', '" ++ L2 ++ "').start();",
+%%     HTML = "<div id='" ++ ID ++ "'></div>",
+%%     Incs = #incs{js = [Js], js_reload = [Js_reload]},
+%%     {preview, {"Twitter List", 3, 23, Incs}, HTML}.
 
 
