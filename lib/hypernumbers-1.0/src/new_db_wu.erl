@@ -50,6 +50,7 @@
          read_user_fnD/2,
          write_kvD/3,
          read_kvD/2,
+         delete_kvD/2,
          expand_ref/1,
          matching_formsD/2,
          refX_to_xrefXD/1,
@@ -298,6 +299,10 @@ read_kvD(Site, Key) ->
     Tbl = trans(Site, kvstore),
     mnesia:read(Tbl, Key, read).
 
+delete_kvD(Site, Key) ->
+    Tbl = trans(Site, kvstore),
+    mnesia:delete(Tbl, Key, write).
+
 read_styles_IMPORTD(#refX{site = Site}) ->
     Tbl = trans(Site, style),
     MS = ets:fun2ms(fun(X) -> X end),
@@ -545,7 +550,8 @@ when Ty == url orelse Ty == gurl ->
 write_attrs(XRefX, NewAttrs) -> write_attrs(XRefX, NewAttrs, nil).
 
 -spec write_attrs(#xrefX{}, [{string(), term()}], auth_srv:auth_spec()) -> ?dict.
-write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
+write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
+  when is_record(XRefX, xrefX) ->
     Op = fun(Attrs) ->
                  Is_Formula  = lists:keymember("formula", 1, NewAs),
                  Has_Form    = orddict:is_key("__hasform", Attrs),
@@ -553,6 +559,7 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                  Has_Timer   = orddict:is_key("__hastimer", Attrs),
                  Has_Phone   = orddict:is_key("__hasphone", Attrs),
                  Is_In_IncFn = orddict:is_key("__in_includeFn", Attrs),
+                 Has_Uniq    = orddict:is_key("__unique", Attrs),
                  Is_Dynamic  = is_dynamic_select(Attrs),
                  Attrs2 =
                      case Is_Formula of
@@ -578,12 +585,20 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                                       false ->
                                           A4
                                   end,
-                             case Has_Phone of
+                             A6 = case Has_Phone of
                                  true ->
                                      unattach_phoneD(XRefX),
                                      orddict:erase("__hasphone", A5);
                                  false ->
                                      A5
+                             end,
+                             case Has_Uniq of
+                                 true ->
+                                     Unique = orddict:fetch("__unique", A6),
+                                     ok = delete_kvD(S, Unique),
+                                     orddict:erase("__unique", A6);
+                                 false ->
+                                     A6
                              end;
                          false ->
                              case Is_Dynamic of
@@ -594,11 +609,13 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                                      Attrs
                              end
                      end,
+                 % erase the preview from the attributes
+                 Attrs3 = orddict:erase("preview", Attrs2),
                  case Is_In_IncFn of
                      true  -> mark_children_dirtyD(XRefX, AReq);
                      false -> ok
                  end,
-                 {clean, process_attrs(NewAs, XRefX, AReq, Attrs2)}
+                 {clean, process_attrs(NewAs, XRefX, AReq, Attrs3)}
          end,
     apply_to_attrsD(XRefX, Op, write, AReq, ?NONTRANSFORMATIVE).
 
@@ -708,9 +725,15 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
     case muin:run_formula(Fla, Rti) of
         % General error condition
         {error, {errval, Error}} ->
-            % there might have been a preview before - nuke it!
-            Attrs2 = orddict:erase("preview", Attrs),
-            write_error_attrs(Attrs2, XRefX, Formula, Error);
+            write_error_attrs(Attrs, XRefX, Formula, Error);
+        % a special return
+        {ok, {Pcode, #spec_val{} = Res, Parents, InfParents,
+              Recompile, CircRef}} ->
+            Attrs2 = proc_special(Res, XRefX, Attrs),
+            write_formula_attrs(Attrs2, XRefX, Formula, Pcode,
+                                Res#spec_val.val,
+                                {Parents, Res#spec_val.include}, InfParents,
+                                Recompile, CircRef);
         % the formula returns as rawform
         {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile,
               CircRef}} ->
@@ -789,37 +812,80 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
         % normal functions with a resize
         {ok, {Pcode, {resize, {Wd, Ht, Incs}, Res}, Parents,
               InfParents, Recompile, CircRef}} ->
-            % there might have been a preview before - nuke it!
-            Attrs2 = orddict:erase("preview", Attrs),
             Blank = #incs{},
-            Attrs3 = case Incs of
-                         Blank -> orddict:erase("__hasincs", Attrs2);
+            Attrs2 = case Incs of
+                         Blank -> orddict:erase("__hasincs", Attrs);
                          _     -> ok = update_incsD(XRefX, Incs),
-                                  orddict:store("__hasincs", t, Attrs2)
+                                  orddict:store("__hasincs", t, Attrs)
                      end,
-            Attrs4 = handle_merge(Ht, Wd, Attrs3),
-            write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
+            Attrs3 = handle_merge(Ht, Wd, Attrs2),
+            write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents,
                                 Recompile, CircRef);
         {ok, {Pcode, {timer, Spec, Res}, Parents, InfParents, Recompile,
               CircRef}} ->
-            % there might have been a preview before - nuke it!
-            Attrs2 = orddict:erase("preview", Attrs),
-            Attrs3 = orddict:store("__hastimer", t, Attrs2),
+            Attrs2 = orddict:store("__hastimer", t, Attrs),
             ok = update_timerD(XRefX, Spec),
-            write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
+            write_formula_attrs(Attrs2, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents,
                                 Recompile, CircRef);
         % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile, CircRef}} ->
             % there might have been a preview before - nuke it!
-            Attrs2 = orddict:erase("preview", Attrs),
             % mebbies there was incs, nuke 'em (WHY?)
             ok = update_incsD(XRefX, #incs{}),
-            write_formula_attrs(Attrs2, XRefX, Formula, Pcode, Res,
+            write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents,
                                 Recompile, CircRef)
     end.
+
+proc_special(#spec_val{rawform = null} = SP, XRefX, Attrs) ->
+    proc_sp1(SP, XRefX, Attrs);
+proc_special(#spec_val{rawform = _FR} = _SP, _XRefX, _Attrs) ->
+    exit("fix me 1a").
+
+proc_sp1(#spec_val{sp_webcontrol = null} = SP, XRefX, Attrs) ->
+    proc_sp2(SP, XRefX, Attrs);
+proc_sp1(#spec_val{sp_webcontrol = _WC} = _SP, _XRefX, _Attrs) ->
+    exit("fix me 2a").
+
+proc_sp2(#spec_val{sp_phone = null} = SP, XRefX, Attrs) ->
+    proc_sp3(SP, XRefX, Attrs);
+proc_sp2(#spec_val{sp_phone = Ph} = SP, XRefX, Attrs) ->
+    #sp_phone{payload = Pl} = Ph,
+    ok = attach_phoneD(XRefX, Pl),
+    NewAttrs = orddict:store("__hasphone", t, XRefX, Attrs),
+    exit("check me 1"),
+    proc_sp3(SP, XRefX, NewAttrs).
+
+proc_sp3(#spec_val{preview = null} = SP, XRefX, Attrs) ->
+    proc_sp4(SP, XRefX, Attrs);
+proc_sp3(#spec_val{preview = _Pr} = _SP, _XRefX, _Attrs) ->
+    exit("fix me 4a").
+
+proc_sp4(#spec_val{sp_incs = null} = SP, XRefX, Attrs) ->
+    proc_sp5(SP, XRefX, Attrs);
+proc_sp4(#spec_val{sp_incs = _Incs} = _SP, _XRefX, _Attrs) ->
+    exit("fix me 5a").
+
+proc_sp5(#spec_val{resize = null} = SP, XRefX, Attrs) ->
+    exit("fix me 6"),
+    proc_sp6(SP, XRefX, Attrs);
+proc_sp5(#spec_val{resize = RSz} = SP, XRefX, Attrs) ->
+    #resize{width = W, height = H} = RSz,
+    NewAttrs = handle_merge(H, W, Attrs),
+    proc_sp6(SP, XRefX, NewAttrs).
+
+proc_sp6(#spec_val{sp_timer = null} = SP, XRefX, Attrs) ->
+    proc_sp7(SP, XRefX, Attrs);
+proc_sp6(#spec_val{sp_timer = _Tr} = SP, _XRefX, _Attrs) ->
+    io:format("SP is ~p~n", [SP]),
+    exit("fix me 7a").
+
+proc_sp7(#spec_val{unique = null}, _XRefX, Attrs) ->
+    Attrs;
+proc_sp7(#spec_val{unique = Uq}, _XRefX, Attrs) ->
+    orddict:store("__unique", Uq, Attrs).
 
 handle_merge(1, 1, Attrs) -> orddict:erase("merge", Attrs);
 handle_merge(Ht, Wd, Attrs)
@@ -2700,7 +2766,7 @@ shrink2([#dirty_for_zinf{dirty = D} | T], Acc) -> shrink2(T, [D | Acc]).
 %%     NewAcc = [{X, CI} || X <- Zs2],
 %%     get_z2(T, CI, [NewAcc | Acc]).
 
-clean_up(#xrefX{} = XRefX, Attrs) ->
+clean_up(#xrefX{site = S} = XRefX, Attrs) ->
     case lists:keymember("__hasform", 1, Attrs) of
         true  -> ok = unattach_formD(XRefX);
         false -> ok
@@ -2711,6 +2777,11 @@ clean_up(#xrefX{} = XRefX, Attrs) ->
     end,
     case lists:keymember("__hastimer", 1, Attrs) of
         true  -> ok = delete_timerD(XRefX);
+        false -> ok
+    end,
+    case lists:keymember("__unique", 1, Attrs) of
+        true -> Unique = orddict:fetch("__unique", Attrs),
+                ok = delete_kvD(S, Unique);
         false -> ok
     end.
 
