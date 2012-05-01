@@ -1140,24 +1140,33 @@ update_incsD(XRefX, Incs) when is_record(XRefX, xrefX)
     Tbl = trans(S, include),
     Blank = #incs{},
     case {mnesia:read(Tbl, Idx, write), Incs} of
-        {[], Blank}     -> ok;
-        {Incs, Incs}    -> ok;
-        {[], Incs}      -> Inc = #include{idx = Idx, path = P, js = Js,
-                                     js_reload = Js_reload, css = CSS},
-                           mnesia:write(Tbl, Inc, write);
-        {OldIncs, Incs} -> NewInc = merge_incs(OldIncs, Incs),
-                           mnesia:write(Tbl, NewInc, write)
+        {[], Blank}  -> ok;
+        {Incs, Incs} -> ok;
+        _            -> Inc = #include{idx = Idx, path = P, js = Js,
+                                       js_reload = Js_reload, css = CSS},
+                        mnesia:write(Tbl, Inc, write)
     end.
 
 bring_through(Attrs, XRefX, Pars) ->
     Pars2 = [X || {Type, X} <- Pars, Type ==  local],
-    Incs = get_incs(Pars2, [], [], []),
+    Pars3 = remove_same_page(Pars2, XRefX, []),
+    Incs = get_incs(Pars3, [], [], []),
     Blank = #incs{}, % no you can't just use #incs{} in the case statement, duh!
     case Incs of
         Blank -> Attrs;
         _     -> ok = update_incsD(XRefX, Incs),
-                   orddict:store("__hasincs", t, Attrs)
+                 orddict:store("__hasincs", t, Attrs)
     end.
+
+remove_same_page([], _XRefX, Acc) ->
+    Acc;
+remove_same_page([H | T], #xrefX{path = P1} = XRefX, Acc) ->
+    #xrefX{path = P2} = H,
+    NewAcc = case P1 of
+                 P2 -> Acc;
+                 _  -> [H | Acc]
+             end,
+    remove_same_page(T, XRefX, NewAcc).
 
 get_incs([], Js, Js_R, CSS) -> #incs{js = hslists:uniq(Js),
                                      js_reload = hslists:uniq(Js_R),
@@ -2661,13 +2670,15 @@ get_page_l([H | T], Acc)                         -> get_page_l(T, [H | Acc]).
 make_blank(#refX{obj = O}, Idx) ->
     [#logging{idx = Idx, obj = O, log = term_to_binary("This cell is blank")}].
 
-merge_incs([], Incs) -> Incs;
-merge_incs([#include{js = JS1, js_reload = JSR1, css = CSS1} = Inc | T],
-           #incs{js = JS2, js_reload = JSR2, css = CSS2}) ->
-    NewIncs = Inc#include{js = hslists:uniq(lists:merge(JS1, JS2)),
-                          js_reload = hslists:uniq(lists:merge(JSR1, JSR2)),
-                          css = hslists:uniq(lists:merge(CSS1, CSS2))},
-    merge_incs(T, NewIncs).
+%% merge_incs([], Incs) ->
+%%     Incs;
+%% merge_incs([#include{js = JS1, js_reload = JSR1, css = CSS1} = Inc | T],
+%%            #incs{js = JS2, js_reload = JSR2, css = CSS2}) ->
+
+%%     NewIncs = Inc#include{js = hslists:uniq(lists:merge(JS1, JS2)),
+%%                           js_reload = hslists:uniq(lists:merge(JSR1, JSR2)),
+%%                           css = hslists:uniq(lists:merge(CSS1, CSS2))},
+%%     merge_incs(T, NewIncs).
 
 shrink([])   -> [];
 shrink(List) -> List2 = lists:sort(List),
