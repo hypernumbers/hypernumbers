@@ -416,3 +416,63 @@
           from,
           to
          }).
+
+-record(site_email,
+        {idx = null,     % points to a cell
+         email           :: string(),
+         email_validated :: boolean(),
+         signature       :: string()
+         }).
+
+-record(spec_val,
+        {
+          val,
+          rawform = null,
+          sp_webcontrol = null,
+          sp_phone = null,
+          preview = null,
+          include = false,
+          sp_incs = null,
+          resize = null,
+          sp_timer = null,
+          unique = null
+         }).
+
+-record(rawform,
+        {
+          form,
+          html
+         }).
+
+-record(sp_webcontrol,
+        {
+          payload
+         }).
+
+-record(sp_phone,
+        {
+          payload
+         }).
+
+-record(preview,
+        {
+          title,
+          width,
+          height
+         }).
+
+-record(resize,
+        {
+          width,
+          height
+         }).
+
+-record(sp_timer,
+        {
+          spec
+         }).
+
+-record(unique,
+        {
+          type
+         }).

@@ -4,66 +4,82 @@
 
 -module(emailer).
 
--define(FROM, "\"Gordon Guthrie\" <gordon@hypernumbers.com>").
--define(SIG, "Cheers\n\nGordon Guthrie\n\nCEO hypernumbers.com\n"
-        ++"+44 7776 251669\n@hypernumbers\n\n").
+-include("spriki.hrl").
 
 -export([
-         send/5,
+         get_details/1,
+         send/6,
          send_email/5
         ]).
 
-send(Type, To, CC, Site, Args) ->
+get_details(Site) ->
+    V = new_db_api:read_kv(Site, site_email),
+    DefFrom =  "\"Gordon Guthrie\" <gordon@hypernumbers.com>",
+    DefSig = "Cheers\n\nGordon Guthrie\n\nCEO hypernumbers.com\n"
+                ++"+44 7776 251669\n@hypernumbers\n\n",
+    case V of
+        [] ->
+            {DefFrom, DefSig};
+        [{kvstore, site_email, Rec}] ->
+            case Rec#site_email.email_validated of
+                true  -> {Rec#site_email.email, Rec#site_email.signature};
+                false -> {DefFrom, DefSig}
+            end
+    end.
+
+send(Type, To, CC, From, Site, Args) ->
     Name = hn_util:extract_name_from_email(To),
     {ok, URL} =  application:get_env(hypernumbers, reset_url),
-    send1(Type, To, CC, Name, Site, URL, Args).
+    send1(Type, To, CC, From, Name, Site, URL, Args).
 
-send1(invalid_invite, To, CC, Name, Site, _URL, Args) ->
+send1(invalid_invite, To, CC, From, Name, Site, _URL, Args) ->
     Person  = kfind(person,  Args),
     Details = kfind(details, Args),
     Reason  = kfind(reason,  Args),
-    Subject = "Invalid Invite for "++Person++" on "++Site,
-    EmailBody = "Dear "++Name++"\n\n"
-        ++"You tried to invite " ++Person++" to "++Details
-        ++" on "++Site++" but the invitation failed because"
-        ++Reason++".\n\nPlease return to "++Site++" and try again.\n\n"
-        ++?SIG,
-    ok = send_email(To, CC, ?FROM, Subject, EmailBody);
+    Sig     = kfind(sig,  Args),
+    Subject = "Invalid Invite for " ++ Person ++ " on " ++ Site,
+    EmailBody = "Dear " ++ Name ++ "\n\n"
+        ++ "You tried to invite " ++ Person ++ " to " ++ Details
+        ++ " on " ++ Site ++ " but the invitation failed because"
+        ++ Reason ++ ".\n\nPlease return to " ++ Site ++ " and try again.\n\n"
+        ++ Sig,
+    ok = send_email(To, CC, From, Subject, EmailBody);
 
-send1(invite_new, To, CC, Name, _Site, _URL, Args) ->
+send1(invite_new, To, CC, From, Name, _Site, _URL, Args) ->
     Invitee  = kfind(invitee, Args),
     Msg      = kfind(msg, Args),
     Hypertag = kfind(hypertag, Args),
+    Sig      = kfind(sig, Args),
     InvName  = hn_util:extract_name_from_email(Invitee),
     Subject  = "Message from "++Invitee,
     EmailBody = "Dear "++Name++"\n\n"
-        ++InvName++" has invited you to "
-        ++"go to the following webpage:\n"++Hypertag++"\n\n"
-        ++"The link will validate your user account but you "
-        ++"will have to set a password as well.\n\n"
-        ++InvName++" has also sent you the following message:\n"
+        ++ InvName ++ " has invited you to "
+        ++ "go to the following webpage:\n" ++ Hypertag ++ "\n\n"
+        ++ "The link will validate your user account but you "
+        ++ "will have to set a password as well.\n\n"
+        ++ InvName ++ " has also sent you the following message:\n"
         ++"----------------------------------------\n\n"
-        ++Msg++"\n\n"
+        ++ Msg ++ "\n\n"
         ++"----------------------------------------\n\n"
-        ++?SIG,
-    ok = send_email(To, CC, ?FROM, Subject, EmailBody);
+        ++ Sig,
+    ok = send_email(To, CC, From, Subject, EmailBody);
 
-send1(new_site_existing, Email, CC, Name, Site, _URL, _Args) ->
+send1(new_site_existing, Email, CC, From, Name, Site, _URL, Args) ->
     Subject = "Your new site is ready",
+    Sig     = kfind(sig, Args),
     EmailBody = lists:flatten(
                   ["Hi ", Name, ",\n\n",
                    "Cool, we're glad you want another site! "
                    "We've built it for you, and it's located here:\n\n ",
                    hn_util:strip80(Site), "\n\n",
-                   "Just use your existing account to login.\n\n"
-                   ?SIG,
-                   "tiny.hn and uses.hn are all trading "
-                   "names of hypernumbers.com"
+                   "Just use your existing account to login.\n\n",
+                   Sig
                   ]),
-    ok = send_email(Email, CC, ?FROM, Subject, EmailBody);
+    ok = send_email(Email, CC, From, Subject, EmailBody);
 
-send1(new_site_validate, Email, CC, Name, Site, _URL, Args) ->
+send1(new_site_validate, Email, CC, From, Name, Site, _URL, Args) ->
     Hypertag = kfind(hypertag, Args),
+    Sig      = kfind(sig, Args),
     SiteURL = hn_util:strip80(Site),
     Subject = "Your new site is ready",
     EmailBody = lists:flatten(
@@ -78,32 +94,33 @@ send1(new_site_validate, Email, CC, Name, Site, _URL, Args) ->
        "set your password ", SiteURL ++ "#settings\n\n"
        "If you have any problems just tell us "
        "and we will do our best to help "
-       "http://hypernumbers.com/support/\n\n"
-       ?SIG,
-       "tiny.hn and uses.hn are all trading "
-       "names of hypernumbers.com"
+       "http://hypernumbers.com/support/\n\n",
+       Sig
       ]),
-    ok = send_email(Email, CC, ?FROM, Subject, EmailBody);
+    ok = send_email(Email, CC, From, Subject, EmailBody);
 
-send1(invite_existing, Email, CC, Name, Site, _URL, Args) ->
+send1(invite_existing, Email, CC, From, Name, Site, _URL, Args) ->
     Invitee = kfind(invitee, Args),
     Path    = kfind(path, Args),
     Msg     = kfind(msg, Args),
+    Sig     = kfind(sig, Args),
     InvName = hn_util:extract_name_from_email(Invitee),
-    Subject = "Message from "++Invitee,
-    EmailBody = "Dear "++Name++"\n\n"
-        ++InvName++" has invited you to "
-        ++"go to the following webpage:\n"++Site++Path++"\n\n"
-        ++InvName++" has also sent you the following message:\n"
-        ++"----------------------------------------\n\n"
-        ++Msg++"\n\n"
-        ++"----------------------------------------\n\n"
-        ++"You can use your existing hypernumbers account to login.\n\n"
-        ++?SIG,
-    ok = send_email(Email, CC, ?FROM, Subject, EmailBody);
+    Subject = "Message from " ++ Invitee,
+    EmailBody = "Dear " ++ Name ++ "\n\n"
+        ++ InvName ++ " has invited you to "
+        ++ "go to the following webpage:\n"++ Site ++ Path ++ "\n\n"
+        ++ InvName ++ " has also sent you the following message:\n"
+        ++ "----------------------------------------\n\n"
+        ++ Msg ++ "\n\n"
+        ++ "----------------------------------------\n\n"
+        ++ "You can use your existing hypernumbers account to login.\n\n"
+        ++ Sig,
+    ok = send_email(Email, CC, From, Subject, EmailBody);
 
-send1(reset, To, CC, Name, Site, URL, Hash) ->
+send1(reset, To, CC, From, Name, Site, URL, Args) ->
     Subject = "Password Reset Request",
+    Hash    = kfind(hash, Args),
+    Sig     = kfind(sig, Args),
     EmailBody = "Dear " ++ Name ++"\n\n"
         ++ "Somebody has requested an password reset for this account\n"
         ++ "If it wasn't you please ignore this email.\n\n"
@@ -112,8 +129,8 @@ send1(reset, To, CC, Name, Site, URL, Hash) ->
         ++ "\n\n"
         ++ "After resetting your password you will get a link back to "
         ++ Site ++ "\n\n"
-        ++ ?SIG,
-    ok = send_email(To, CC, ?FROM, Subject, EmailBody).
+        ++ Sig,
+    ok = send_email(To, CC, From, Subject, EmailBody).
 
 send_email(To, CC, From, Subject, EmailBody) ->
     case application:get_env(hypernumbers, environment) of

@@ -15,11 +15,9 @@
          ]).
 
 configure_email([FromEmail]) ->
-    configure_email([FromEmail, "", ""]);
-configure_email([FromEmail, FromName]) ->
-    configure_email([FromEmail, FromName, ""]);
-configure_email([_FromEmail, _FromName, _Signature] = Args) ->
-    [FromE2, FromN2, Sig2] = typechecks:std_strs(Args),
+    configure_email([FromEmail, ""]);
+configure_email([_FromEmail, _Signature] = Args) ->
+    [FromE2, Sig2] = typechecks:std_strs(Args),
     Valid = hn_util:valid_email(FromE2),
     if
         Valid == false -> ?ERR_VAL;
@@ -30,21 +28,20 @@ configure_email([_FromEmail, _FromName, _Signature] = Args) ->
     V = new_db_wu:read_kvD(Site, site_email),
     % got some validation to do
     % a new email has to be validated
+    io:format("V is ~p~n", [V]),
     Rec2 = case V of
                [] ->
                    OrigIdx = null,
                    #site_email{idx = Idx, email = FromE2,
-                               email_validated = false, email_name = FromN2,
-                               signature = Sig2};
+                               email_validated = false, signature = Sig2};
                [{kvstore, site_email, Rec}] ->
                    case Rec of
                        #site_email{email = FromE2, idx = OrigIdx} ->
-                           Rec#site_email{idx = Idx, email_name = FromN2,
-                                          signature = Sig2};
+                           Rec#site_email{idx = Idx, signature = Sig2};
                        #site_email{idx = OrigIdx} ->
                            #site_email{idx = Idx, email = FromE2,
                                        email_validated = false,
-                                       email_name = FromN2, signature = Sig2}
+                                       signature = Sig2}
                    end
            end,
     % there can only be one configure_email panel at one time
@@ -52,8 +49,7 @@ configure_email([_FromEmail, _FromName, _Signature] = Args) ->
         I when I == Idx orelse I == null ->
             HTML = "<div class='hn_site_admin'>"
                 ++ "<div class='hn_site_admin_top'>Email Configuration</div>"
-                ++ "<div>" ++ Rec2#site_email.email_name
-                ++ " " ++ Rec2#site_email.email ++ "<br />"
+                ++ "<div>" ++ Rec2#site_email.email ++ "<br />"
                 ++ "<em>Has the email been validated?</em> "
                 ++ atom_to_list(Rec2#site_email.email_validated) ++ "<br />"
                 ++ "<em>Signature is:</em> " ++ Rec2#site_email.signature
