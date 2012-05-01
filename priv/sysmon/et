@@ -12,23 +12,32 @@
 -define(EPMD, "/usr/local/bin/epmd -daemon").
 -define(SUCKER, "+447776251669").
 -define(ROOT, "/hn/hypernumbers").
+-define(NODES, [
+                'hnlive@hypernumbers.com',
+                'hnlive@node2.hypernumbers.com',
+                'hnlive@node3.hypernumbers.com',
+                'hnlive@node4.hypernumbers.com',
+                'hnlive@node5.hypernumbers.com'
+               ]).
 
 main([]) ->
     file:set_cwd("/hn/hypernumbers/priv/sysmon/"),
-    World = init(),
-    World2 = lists:delete('et@hypernumbers.com', World),
+    ok = init(),
     [code:add_pathz(X ++ "/ebin") || X <- filelib:wildcard(?ROOT ++ "/lib/*")],
     UpNodes = nodes(),
-    case all_well(World2, UpNodes, []) of
+    io:format("UpNodes is ~p~n", [UpNodes]),
+    case all_well(?NODES, UpNodes, []) of
         true -> io:format("all is well~n");
         Msg  -> sms(Msg)
     end.
 
 sms(Msg) ->
+    io:format("Texting ~p to ~p~n", [Msg, ?SUCKER]),
     ok = application:start(inets),
     ok = application:start(crypto),
     ok = application:start(public_key),
     ok = application:start(ssl),
+    io:format("About to send sms~n"),
     {ok, ok} = twilio:send_sms(?AccountSid, ?AuthToken, ?PhoneNo, ?SUCKER, Msg).
 
 all_well([], _, [])  -> true;
@@ -38,6 +47,7 @@ all_well([], _, Acc) -> List = [atom_to_list(X) || X <- lists:reverse(Acc)],
                                             [List2]),
                         lists:flatten(Msg);
 all_well([H | T], UpNodes, Acc) ->
+    io:format("H is ~p UpNodes is ~p Acc is ~p~n", [H, UpNodes, Acc]),
     case lists:member(H, UpNodes) of
         true  -> all_well(T, UpNodes, Acc);
         false -> all_well(T, UpNodes, [H | Acc])
@@ -46,7 +56,11 @@ all_well([H | T], UpNodes, Acc) ->
 init() ->
     os:cmd(?EPMD),
     Host = net_adm:localhost(),
-    Name = list_to_atom("et@" ++ Host),
+    {_, _, Tag} = now(),
+    NodeName = "et" ++ integer_to_list(Tag),
+    Name = list_to_atom(NodeName ++ "@" ++ Host),
     {ok, _} = net_kernel:start([Name, longnames]),
     true = auth:set_cookie(?COOKIE),
-    net_adm:world().
+    World = net_adm:world(),
+    io:format("in init World is ~p~n", [World]),
+    ok.
