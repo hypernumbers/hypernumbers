@@ -707,18 +707,20 @@ iget(#refX{site = S} = Ref, page, #qry{view = ?RECORDING, play = Play},
             serve_html(200, Env, [Dir, File])
         end;
 
-iget(Ref, Obj, #qry{view = ?WIKI}, Env=#env{accept = html, uid = Uid})
+iget(#refX{path = P} = Ref, Obj, #qry{view = ?WIKI},
+     Env=#env{accept = html, uid = Uid})
   when Obj == page orelse Obj == range ->
     ok = status_srv:update_status(Uid, Ref, "view wiki page"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, wikipage),
-    Page = hn_render:wrap_page(Html, Width, Height, Addons, "wikipage"),
+    Page = hn_render:wrap_page(Html, P, Width, Height, Addons, "wikipage"),
     text_html_nocache(Env, Page);
 
-iget(Ref, Obj, #qry{view=?WEBPAGE}, Env=#env{accept=html,uid=Uid})
+iget(#refX{path = P} = Ref, Obj, #qry{view=?WEBPAGE},
+     Env=#env{accept=html,uid=Uid})
   when Obj == page orelse Obj == range ->
     ok = status_srv:update_status(Uid, Ref, "view webpage"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, webpage),
-    Page = hn_render:wrap_page(Html, Width, Height, Addons, "webpage"),
+    Page = hn_render:wrap_page(Html, P, Width, Height, Addons, "webpage"),
     text_html_nocache(Env, Page);
 
 iget(Ref=#refX{site=S}, page, #qry{view=FName},

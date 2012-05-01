@@ -4,7 +4,7 @@
 
 -export([content/1,
          content/2,
-         wrap_page/5,
+         wrap_page/6,
          wrap_region/3]).
 
 -include("spriki.hrl").
@@ -313,12 +313,12 @@ pget(K,L) -> proplists:get_value(K,L,undefined).
 
 pget(K,L,D) -> proplists:get_value(K,L,D).
 
--spec wrap_page([textdata()], integer(), integer(), #render{}, list()) -> [textdata()].
-wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
+-spec wrap_page([textdata()], list(), integer(), integer(), #render{}, list()) -> [textdata()].
+wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'",
                                [TotalWidth, TotalHeight]),
     Title = case Addons#render.title of
-                [] -> "<title>like spreadsheets, but better</title>\n";
+                [] -> "<title>" ++ string:join(Path, "/")  ++ "</title>\n";
                 T  -> T
             end,
 
