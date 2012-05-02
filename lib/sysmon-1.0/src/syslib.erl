@@ -405,7 +405,16 @@ sort(List) ->
     {Len5, _}  = lists:split(5, lists:reverse(lists:keysort(3, List))),
     {Heap5, _} = lists:split(5, lists:reverse(lists:keysort(4, List))),
     {Red5, _}  = lists:split(5, lists:reverse(lists:keysort(5, List))),
-    [{longest, Len5}, {heapiest, Heap5}, {most_reductions, Red5}].
+    [{longest, tartup(Len5, 3)}, {heapiest, tartup(Heap5, 4)},
+     {most_reductions, tartup(Red5, 5)}].
+
+tartup(List, Index) -> tartup2(List, Index, []).
+
+tartup2([], _, Acc) ->
+    lists:reverse(Acc);
+tartup2([H | T], Index, Acc) ->
+    NewAcc = {element(1, H), element(2, H), element(Index, H)},
+    tartup2(T, Index, [NewAcc | Acc]).
 
 log_term(Term, File) ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
