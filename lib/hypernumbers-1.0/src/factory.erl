@@ -47,13 +47,16 @@ provision_site_(Zone, Email, Type, SuggestedUid) ->
 %% directly.
 post_provision(NE, Site, Uid, Email, Name) ->
     IsValid = passport:is_valid_uid(Uid),
+    {From, Sig} = emailer:get_details(Site),
     case {NE, IsValid} of
         {existing, true} ->
-            emailer:send(new_site_existing, Email, "", Site, []);
+            emailer:send(new_site_existing, Email, "", From, Site,
+                         [{sig, Sig}]);
         {_, _}           ->
             Path = ["_validate", Name],
             Data = [{emailed, true}],
             HT = passport:create_hypertag_url(Site, Path, Uid, Email,
                                               Data, "never"),
-            emailer:send(new_site_validate, Email, "", Site, [{hypertag, HT}])
+            emailer:send(new_site_validate, Email, "", From, Site,
+                         [{sig, Sig}, {hypertag, HT}])
     end.

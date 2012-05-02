@@ -163,13 +163,15 @@ add_user2(User, Site, Args, Type) ->
     M          = kfind("msg", Args),
     {array, G} = kfind("groups", Args),
     {ok, I}    = passport:uid_to_email(User),
+    {From, Sig} = emailer:get_details(Site),
     NPath = string:tokens(P, "/"),
     case hn_util:valid_email(E) of
         false -> Dets =[{person, E},
                         {details, "become a member of the groups "++
                          format_list(G)},
-                        {reason, " the email address is invalid"}],
-                 emailer:send(invalid_invite, I, "", Site, Dets);
+                        {reason, " the email address is invalid"},
+                        {sig, Sig}],
+                 emailer:send(invalid_invite, I, "", From, Site, Dets);
         true ->
             {ok, NE, UID} = passport:get_or_create_user(E),
             % now add the users to the groups
@@ -181,8 +183,8 @@ add_user2(User, Site, Args, Type) ->
             end,
             case {NE, passport:is_valid_uid(UID)} of
                 {existing, true} ->
-                    Dets = [{invitee, I}, {path, P}, {msg, M}],
-                    emailer:send(invite_existing, E, I, Site, Dets);
+                    Dets = [{invitee, I}, {path, P}, {msg, M}, {sig, Sig}],
+                    emailer:send(invite_existing, E, I, From, Site, Dets);
                 {_, _} ->
                     Vanity = hn_util:extract_name_from_email(E),
                     HtP = ["_validate", Vanity],
@@ -190,8 +192,8 @@ add_user2(User, Site, Args, Type) ->
                     HT = passport:create_hypertag_url(Site, HtP, UID, E,
                                                       Data, "never"),
                     Dets = [{invitee, I}, {msg, M},
-                            {hypertag, HT}],
-                    emailer:send(invite_new, E, I, Site, Dets)
+                            {hypertag, HT}, {sig, Sig}],
+                    emailer:send(invite_new, E, I, From, Site, Dets)
             end,
             ok = remoting_reg:notify_refresh(Site, NPath)
     end.

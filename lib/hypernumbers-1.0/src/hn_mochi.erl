@@ -696,7 +696,7 @@ iget(Ref, page, #qry{view = ?LOGVIEW}, Env) ->
 % negotiate a recording
 iget(#refX{site = S} = Ref, page, #qry{view = ?RECORDING, play = Play},
      #env{accept = html} = Env) ->
-    case hn_twilio_mochi:handle_recording(Ref, Play) of
+    case hn_twilio_mochi:view_recording(Ref, Play) of
         {redir, Redir} ->
             E2 = Env#env{headers = [{"location", Redir} | Env#env.headers]},
             respond(303, E2),

@@ -98,16 +98,16 @@ get_page_json(Site, Path) ->
     Page = Encoder(hn_mochi:page_attributes(Ref#refX{path = Path}, #env{})),
     io_lib:format("~s", [lists:flatten(Page)]).
 
-read_user_fn(Site, Name)	->
-    Result = new_db_api:read_user_fn(Site, Name),
-    case Result of
-        []	->	{error, no_entry_in_DB};
-        _	  ->	{ok, Result}
-    end.
+%% read_user_fn(Site, Name)	->
+%%     Result = new_db_api:read_user_fn(Site, Name),
+%%     case Result of
+%%         []	->	{error, no_entry_in_DB};
+%%         _	  ->	{ok, Result}
+%%     end.
 
-delete_user_fn(Site, Name)	->
-    new_db_api:delete_user_fn(Site, Name),
-    {ok, "delete_user_fn"}.
+%% delete_user_fn(Site, Name)	->
+%%     new_db_api:delete_user_fn(Site, Name),
+%%     {ok, "delete_user_fn"}.
 
 % curie:build_fun("http://hypernumbers.dev:9000", ["function"],
 % "b8", ["b1", "b2", "b3"]).
@@ -325,11 +325,11 @@ get_cell_value(Cell, Site, Path)	->
     end.
 
 %curie:read_cell_attrs("a1", "http://hypernumbers.dev:9000", ["page3"]).
-read_cell_attrs(Cell, Site, Path)	->
-    Ref = #refX{site = Site, type = url, path = Path,
-                obj = hn_util:parse_ref(Cell)},
-    Attributes = new_db_api:read_ref(Ref),
-    io:format("Attributes are: ~p~n", [Attributes]).
+%% read_cell_attrs(Cell, Site, Path)	->
+%%     Ref = #refX{site = Site, type = url, path = Path,
+%%                 obj = hn_util:parse_ref(Cell)},
+%%     Attributes = new_db_api:read_ref(Ref),
+%%     io:format("Attributes are: ~p~n", [Attributes]).
 
 % if string starts with / regexp:split/2 wuould return [] as its representation,
 % this module gets rid of empty lists in a result list.
