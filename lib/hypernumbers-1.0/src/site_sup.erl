@@ -79,12 +79,12 @@ init([Site]) ->
               supervisor,
               [calc_sup]},
 
-             {inbound_phone_sup,
-              {inbound_phone_sup, start_link, [Site]},
+             {phonecall_sup,
+              {phonecall_sup, start_link, [Site]},
               permanent,
               infinity,
               supervisor,
-              [inbound_phone_sup]}
+              [phonecall_sup]}
 
             ]
           }}.
