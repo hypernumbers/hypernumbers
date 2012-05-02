@@ -11,7 +11,8 @@
 
 -define(notincfns, [include, tick, timestamp, snapshot, input, fixedval,
                     textarea, button, radio, select, 'create.button',
-                    'map.rows.button', 'map.sheet.button', 'map.custom.button',
+                    'map.rows.button', 'map.sheet.button',
+                    'map.custom.button',
                     'load.template.button']).
 
 % these functions are wrappers for use externally
@@ -47,7 +48,8 @@
          userdef_call/2,
          toidx/1,
          do_cell/5,
-         parse/2
+         parse/2,
+         expand/1
         ]).
 
 %% test exports
@@ -413,7 +415,7 @@ funcall(Fname, Args0) ->
              odd, int, degrees, radians, proper, index, var, steyx,
              small, skew, large, sumproduct, daverage, dcount, isref,
              irr, even,
-             include, 'tim.tabs.', 'table.'],
+             include, 'tim.tabs.', 'table.', 'phone.menu'],
 
     Args = case lists:member(Fname, Funs) of
                true  -> Args0;
@@ -668,10 +670,6 @@ fetch(#rangeref{type = finite} = Ref, ValType) ->
     XX = get(x),
     YY = get(y),
     Obj = tconv:to_b26(XX) ++ integer_to_list(YY),
-    Msg = io_lib:format("~p", [hn_util:list_to_path(get(path))++Obj]),
-    Dir = "/home/gordon/hypernumbers/var/logs/",
-    File = "rangerefs.csv",
-    hn_util:log(Msg, Dir ++ File),
     CellCoords = muin_util:expand_cellrange(Ref),
     Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows
                    Fun2 = fun({_, Y}) ->

@@ -27,6 +27,11 @@
          html_box_contents/1
         ]).
 
+-export([
+         in_range/3,
+         is_member/2
+        ]).
+
 -include("typechecks.hrl").
 
 throw_rgbcolours(X)         -> errthrow(rgbcolours(X)).
@@ -98,4 +103,17 @@ html_box_contents(Vals) ->
 is_positive([])                  -> true;
 is_positive([H | _T]) when H < 0 -> false;
 is_positive([_H | T])            -> is_positive(T).
+
+in_range(Num, Low, High) ->
+        if
+        Num  < Low                     -> ?ERR_VAL;
+        Num  > High                    -> ?ERR_VAL;
+        Num >= Low andalso Num =< High -> ok
+    end.
+
+is_member(Val, List) ->
+    case lists:member(Val, List) of
+        true  -> ok;
+        false -> ?ERR_VAL
+    end.
 
