@@ -15,8 +15,8 @@
 
 %% API
 -export([
-         start_link/0,
-         init_call/2,
+         start_link/1,
+         init_call/3,
          call_complete/1,
          recording_notification/2,
          gather_response/1,
@@ -34,10 +34,11 @@
 %%%===================================================================
 %%% API functions
 %%%===================================================================
--spec init_call(#twilio{}, list()) -> pid() | string().
-init_call(Params, TwiML_EXT) ->
+-spec init_call(list(), #twilio{}, list()) -> pid() | string().
+init_call(Site, Params, TwiML_EXT) ->
     ChildSpec = gen_child_spec(Params, TwiML_EXT),
-    case supervisor:start_child(?MODULE, ChildSpec) of
+    Id = hn_util:site_to_atom(Site, "_phonecall"),
+    case supervisor:start_child({global, Id}, ChildSpec) of
         {ok, Pid} ->
             io:format("call started...~n"),
             gen_server:call(Pid, {start_call, Params});
@@ -73,11 +74,16 @@ goto_state(Params, State) ->
 %% @doc
 %% Starts the supervisor
 %%
-%% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
+%% @spec start_link(link()) -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-start_link() ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+start_link(Site) ->
+    case application:get_env(hypernumbers, startup_debug) of
+        {ok, true} -> io:format("...starting phonecall for ~p~n", [Site]);
+        _Other     -> ok
+    end,
+    Id = hn_util:site_to_atom(Site, "_phonecall"),
+    supervisor:start_link({global, Id}, ?MODULE, [Site]).
 
 %%%===================================================================
 %%% Supervisor callbacks
@@ -96,7 +102,7 @@ start_link() ->
 %%                     {error, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([]) -> {ok,{{one_for_one,1,30}, []}}.
+init([_Site]) -> {ok,{{one_for_one,1,30}, []}}.
 
 %%%===================================================================
 %%% Internal functions
