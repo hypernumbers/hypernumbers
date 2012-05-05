@@ -18,6 +18,12 @@
          dump_q_len/1
         ]).
 
+%% Peformance Testing API
+-export([
+         start_fprof/1,
+         stop_fprof/2
+        ]).
+
 %% supervisor_bridge callbacks
 -export([init/1, terminate/2]).
 
@@ -77,6 +83,20 @@ dump_q_len(Site) ->
 is_busy(Site) ->
     Id = hn_util:site_to_atom(Site, "_dbsrv"),
     Id ! {self(), is_busy},
+    receive
+        {dbsrv_reply, Reply} -> Reply
+    end.
+
+start_fprof(Site) ->
+    Id = hn_util:site_to_atom(Site, "_dbsrv"),
+    Id ! {self(), start_fprof},
+    receive
+        {dbsrv_reply, Reply} -> Reply
+    end.
+
+stop_fprof(Site, TraceFile) ->
+    Id = hn_util:site_to_atom(Site, "_dbsrv"),
+    Id ! {self(), {stop_fprof, TraceFile}},
     receive
         {dbsrv_reply, Reply} -> Reply
     end.
@@ -180,6 +200,26 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 
         {From, dump_q_len} ->
             From ! {dbsrv_reply, length(WorkPlan)},
+            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+
+        {From, start_fprof} ->
+            Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+            Dir = "/media/logging/",
+            TraceFile = Dir ++ "profile_dbsrv" ++ Stamp ++ ".trace",
+            fprof:trace(start, TraceFile),
+            io:format("TraceFile is ~p~n", [TraceFile]),
+            From ! {dbsrv_reply, TraceFile},
+            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+
+        {From, {stop_fprof, TraceFile}} ->
+            fprof:trace(stop),
+            io:format("fprof has been stopped...~n"),
+            fprof:profile(file, TraceFile),
+            io:format("profile done...~n"),
+            Root = filename:rootname(TraceFile),
+            fprof:analyse([{dest, Root ++ ".analysis"}]),
+            io:format("analysis over...~n"),
+            From ! {dbsrv_reply, fprof_done},
             check_messages(Site, Since, QTbl, WorkPlan, Graph);
 
         _Other ->
