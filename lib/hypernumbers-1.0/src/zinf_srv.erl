@@ -605,16 +605,10 @@ iterate_tree(Iter, S, [], Fun, Htap, Acc) ->
         {selector, Sel, []} ->
             Fun(Sel);
         {selector, Sel, I2} ->
-            NewAcc = [Fun(Sel) | Acc],
-            iterate_tree(I2, S, [], Fun, Htap, NewAcc);
-        {K, V, I2} ->
-            NewAcc = case match_seg(K, [], S, Htap) of
-                         match    -> match_tree(V, S, [], Fun, Htap);
-                         nomatch  -> [];
-                         error    -> [];
-                         circref  -> []
-                     end,
-            iterate_tree(I2, S, [], Fun, Htap, [NewAcc | Acc])
+            NewAcc = Fun(Sel),
+            iterate_tree(I2, S, [], Fun, Htap, [NewAcc | Acc]);
+        {_K, _V, I2} ->
+            iterate_tree(I2, S, [], Fun, Htap, Acc)
     end;
 iterate_tree(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
     case gb_trees:next(Iter) of
