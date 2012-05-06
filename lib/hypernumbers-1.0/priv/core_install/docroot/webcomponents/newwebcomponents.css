@@ -35,7 +35,8 @@ Crumbs
 Menu
 
 **********************************************/
-.hn_sld_menu { padding: 0px; }
+.hn_sld_menu, .hn_sld_menu ul { padding: 0px; }
+
 .hn_sld_menu a { border: none;}
 .hn_sld_menu, .hn_sld_menu ul { height: 60px; list-style-type: none;text-align: left; }
 .hn_sld_menu li {
