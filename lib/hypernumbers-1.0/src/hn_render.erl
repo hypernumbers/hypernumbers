@@ -342,12 +342,10 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
          </head>
 
          <body data-view='" ++ PageType ++ "'>
-
          <span id='hidden_input'></span>
 
-         <textarea id='hn_cleditor'></textarea>
-
          <div id='outer' ", OuterStyle, ">
+         <textarea id='hn_cleditor'></textarea>
           <div id='clinput'></div>
           <div id='inner' class='hn_inner'>", Content, "</div>
          </div>
