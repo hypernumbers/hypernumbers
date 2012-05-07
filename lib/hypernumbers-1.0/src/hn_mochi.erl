@@ -396,6 +396,12 @@ authorize_post(#refX{path = [X]}, _Qry, #env{accept = json})
        X == "_parse_expression" ->
     allowed;
 
+% allow phone redirects - we will check if the environment
+% variable is set later on
+authorize_post(#refX{path = ["_services", "phoneredirect"]}, _Qry,
+               #env{accept = json}) ->
+    allowed;
+
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
                #env{accept = json, uid = Uid} = Env) ->
     case hn_groups:is_member(Uid, Site, ["admin"]) of
@@ -775,6 +781,25 @@ iget(Ref, _Type, Qry, Env) ->
     '404'(Ref, Env).
 
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
+
+% this is the path that the twilio phone redirect is wired to
+ipost(#refX{path = ["_services", "phoneredirect" | []], obj = {page, "/"}}, _Qry,
+     Env = #env{accept = html}) ->
+    Redir = case applicaton:get_env(hypernumbers, environment) of
+                {ok, development} ->
+                    true;
+                {ok, _Other} ->
+                    {ok, Services} = application:get_env(hypernumbers, services),
+                    case lists:keysearch(phoneredirect, 1, Services) of
+                        {value, {phoneredirect, false}} -> false;
+                        {value, {phoneredirect, true}}  -> true
+                    end
+            end,
+    case Redir of
+        false -> respond(401, Env);
+        true  -> Redirect = hn_twilio_mochi:redir(Env),
+                 respond(302, Env#env{headers = [Redirect | Env#env.headers]})
+    end;
 
 % this path is hardwired into the module hn_twilio_mochi.erl
 ipost(#refX{path = ["_services", "phone" | []], obj = {page, "/"}} = Ref, _Qry,
