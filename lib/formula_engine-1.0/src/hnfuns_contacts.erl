@@ -291,6 +291,7 @@ is_valid_email([H | T])  -> case hn_util:valid_email(H) of
                                 true   -> is_valid_email(T);
                                 false  -> false
                             end.
+
 get_domain("http://" ++ Domain) ->
     [D, _] = string:tokens(Domain, ":"),
     D.

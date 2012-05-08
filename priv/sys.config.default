@@ -14,7 +14,9 @@
    % 'true', note that in a development environment all services will
    % be started regardless.
    {services,
-    [{hns, true},
+    [
+     {phoneredirect, true},
+     {hns, true},
      {passport, true},
      {twilio_srv, true}
     ]},

@@ -14,6 +14,7 @@
 
 % call handling
 -export([
+         redir/1,
          handle_call/2,
          handle_phone_post/3
         ]).
@@ -66,6 +67,7 @@ get_phone(#refX{site = S},
     HyperTag = passport:create_hypertag(S, IncomingPath, Uid, Email, P2, Age),
     {struct, lists:flatten([{"phonetoken", binary_to_list(Token)},
                             {hypertag, HyperTag},
+                            {site, S},
                             P#phone.softphone_config,
                             P#phone.softphone_type])}.
 
@@ -132,6 +134,13 @@ handle_email(Phone, Args) ->
         true  -> ok = hn_net_util:email(To, CC, Fr, Su, Cn)
     end.
 
+redir(#env{} = Env) ->
+    Body = twilio_web_util:process_body(Env#env.body),
+    #twilio{custom_params = CP} = Body,
+    {"site", Site} = proplists:lookup("site", CP),
+    Redir = Site ++ "/_services/phone/",
+    {"Location", Redir}.
+
 handle_call(#refX{} = Ref, #env{} = Env) ->
     Body = twilio_web_util:process_body(Env#env.body),
     handle_c2(Ref, Body).
@@ -158,47 +167,63 @@ handle_c2(#refX{site = S, path = P},
     #xrefX{path = OrigP} = XRefX,
     OrigRef = hn_util:xrefX_to_refX(XRefX),
     OrigP2 = lists:append(OrigP, ["_contacts"]),
-    RecHyperTag = passport:create_hypertag(S, OrigP2, Uid, EMail, Data, "never"),
+    RecHyperTag = passport:create_hypertag(S, OrigP2, Uid, EMail,
+                                           Data, "never"),
     Url = hn_util:refX_to_url(OrigRef#refX{path = OrigP2, obj = {page, "/"}}),
     Link = "<a href='" ++ Url ++ "?view=recording&play="
         ++ RecHyperTag ++ "' target='recording'>Recording</a>",
     Log2 = Log#contact_log{reference = Link},
     case AppSID of
         LocalAppSID -> log(S, Log2),
-                       Phone#phone.twiml;
+                       phonecall_sup:init_call(S, Body, Phone#phone.twiml);
         _Other      -> error
     end;
-handle_c2(_Ref, #twilio{called = null,
-                        caller = null,
-                        from = null,
-                        to = null,
-                  call_duration = #twilio_duration{}}) ->
+% handle recording messages
+handle_c2(_Ref, #twilio{call_status = "completed", recording = null} = Recs) ->
     % twilio_web_util:pretty_print(Tw),
+    Path = "berk",
+    exit("fix me up in handle_c2 (1)"),
+    case Path of
+        [] ->
+            ok = phonecall_sup:call_complete(Recs),
+            {ok, 200};
+        _Sub ->
+            % do nothing here
+            {ok, 200}
+    end;
+% handle the recording message
+handle_c2(_Ref, #twilio{call_status = "completed",
+                        recording = #twilio_recording{}} = Recs) ->
+    % twilio_web_util:pretty_print(Tw),
+    Path = "balderdash",
+    exit("fix me in c2 (3)"),
+    ok = phonecall_sup:recording_notification(Recs, Path),
     {ok, 200};
+% handle inbound calls
 handle_c2(_Ref, #twilio{direction = "inbound",
-                        call_status = "ringing"}) ->
-    "<Response>"
-        ++ "<Gather action='/_services/phone/' numDigits='1'>"
-        ++ "<Say voice='woman' language='fr'>Tongs, ya bas!</Say>"
-        ++ "<Say language='de'>Gies a Digit</Say>"
-        ++ "<Say language='de'>Dont mention the war</Say>"
-        ++ "<Say language='es'>Manuel</Say>"
-        ++ "</Gather>"
-        ++ "</Response>";
-handle_c2(_Ref, #twilio{direction = "inbound",
-                        call_status = "completed"}) ->
-    {ok, 200};
+                        call_status = "ringing"} = Recs) ->
+                io:format("phone ringing...~n"),
+            TwiML_ext = twiml_ext_recipies:random(),
+    phonecall_sup:answer_phone(Recs, TwiML_ext);
 handle_c2(Ref, #twilio{direction = "inbound",
-                       call_status = "in-progress"} = Twilio) ->
+                       call_status = "in-progress"} = Recs) ->
     io:format("Call back on ~p~n", [Ref#refX.path]),
-    twilio_web_util:pretty_print(Twilio),
-    "<Response>"
-        ++ "<Say>Good man yerself!</Say>"
-        ++ "</Response>";
-handle_c2(Ref, Twilio) ->
+    twilio_web_util:pretty_print(Recs),
+    Path = "dindy",
+    exit("fix me up in handle_c2 (2)"),
+    case Path of
+        [] ->
+            io:format("response to gather...~n"),
+            phonecall_sup:gather_response(Recs);
+        [State | _] ->
+            io:format("return to state ~p~n", [State]),
+            phonecall_sup:goto_state(Recs, State)
+    end;
+handle_c2(Ref, Recs) ->
     io:format("in unhandled twilio callback for ~p...~n", [Ref#refX.path]),
-    twilio_web_util:pretty_print(Twilio),
-    {ok, 200}.
+    twilio_web_util:pretty_print(Recs),
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response>"
+        ++ "<Say>something has gone wrong, folks.</Say></Response>".
 
 validate([], _Args) ->
     true;
