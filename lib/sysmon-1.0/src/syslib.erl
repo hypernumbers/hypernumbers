@@ -60,7 +60,8 @@ make_stats_page(Site) ->
     "<html><head></head><body><div style='font-family:monospace'>" ++
         "<h1 style='color:#ffcc00'>(Logical) Site And (Physical) " ++
         "Server Statistics</h1>" ++
-        "<h2 style='color:#ffcc00'>" ++ Site ++ " Specific Stuff</h2>" ++
+        "<h2 style='color:#ffcc00'>" ++ Site
+        ++ " (" ++ atom_to_list(node()) ++ ") Specific Stuff</h2>" ++
         "<h3>Are any supervisors borked?</h3>" ++
         "<small>(no news is good news here)</small><br />" ++
         Sups ++
