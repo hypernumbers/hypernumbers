@@ -497,7 +497,7 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             % do anything else...
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
 
-            % now clean up includes, timers, and forms.
+            % now clean up includes, timers and forms.
             [ok = clean_up(X) || X <- Cells],
 
             % Rewrite formulas
@@ -2646,7 +2646,8 @@ make_new_range(Prefix, Cell1, Cell2,
     {Status, Prefix ++ NC1 ++ ":" ++ NC2}.
 
 content_attrs() ->
-    ["formula",
+    [
+     "formula",
      "value",
      "preview",
      "overwrite-color",
@@ -2658,7 +2659,9 @@ content_attrs() ->
      "__shared",
      "__area",
      "__default-align",
-     "__lastcalced"].
+     "__lastcalced",
+     "__unique"
+    ].
 
 copy_attributes(_SD, TD, []) -> TD;
 copy_attributes(SD, TD, [Key|T]) ->
@@ -2833,8 +2836,8 @@ clean_up(#xrefX{site = S} = XRefX, Attrs) ->
         false -> ok
     end,
     case lists:keymember("__unique", 1, Attrs) of
-        true -> Unique = orddict:fetch("__unique", Attrs),
-                ok = delete_kvD(S, Unique);
+        true  -> Unique = orddict:fetch("__unique", Attrs),
+                 ok = delete_kvD(S, Unique);
         false -> ok
     end.
 
