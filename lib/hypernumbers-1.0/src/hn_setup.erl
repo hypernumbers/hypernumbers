@@ -242,23 +242,24 @@ create_site_tables(Site, Type)->
 -define(TBL(N, T, I, S), {N, record_info(fields, N), T, I, S}).
 tables() ->
     [
-     ?TBL(api,            set, [],                disc_copies),
-     ?TBL(kvstore,        set, [],                disc_only_copies),
-     ?TBL(dirty_for_zinf, set, [],                disc_copies),
-     ?TBL(dirty_zinf,     set, [],                disc_copies),
-     ?TBL(dirty_queue,    set, [],                disc_copies),
-     ?TBL(item,           set, [],                disc_copies),
-     ?TBL(local_obj,      set, [obj,path,revidx], disc_copies),
-     ?TBL(del_local,      set, [],                disc_copies),
-     ?TBL(relation,       set, [],                disc_copies),
-     ?TBL(group,          set, [],                disc_copies),
-     ?TBL(style,          set, [idx],             disc_copies),
-     ?TBL(form,           set, [id],              disc_copies),
-     ?TBL(phone,          set, [],                disc_copies),
-     ?TBL(logging,        bag, [path],            disc_only_copies),
-     ?TBL(include,        set, [path],            disc_copies),
-     ?TBL(timer,          set, [],                disc_copies),
-     ?TBL(user_fns,       set, [],                disc_copies)
+     ?TBL(api,              set, [],                disc_copies),
+     ?TBL(kvstore,          set, [],                disc_only_copies),
+     ?TBL(dirty_for_zinf,   set, [],                disc_copies),
+     ?TBL(dirty_zinf,       set, [],                disc_copies),
+     ?TBL(dirty_queue,      set, [],                disc_copies),
+     ?TBL(item,             set, [],                disc_copies),
+     ?TBL(local_obj,        set, [obj,path,revidx], disc_copies),
+     ?TBL(del_local,        set, [],                disc_copies),
+     ?TBL(relation,         set, [],                disc_copies),
+     ?TBL(group,            set, [],                disc_copies),
+     ?TBL(style,            set, [idx],             disc_copies),
+     ?TBL(form,             set, [id],              disc_copies),
+     ?TBL(phone,            set, [],                disc_copies),
+     ?TBL(logging,          bag, [path],            disc_only_copies),
+     ?TBL(include,          set, [path],            disc_copies),
+     ?TBL(timer,            set, [],                disc_copies),
+     ?TBL(users_and_groups, set, [],                disc_copies),
+     ?TBL(user_fns,         set, [],                disc_copies)
     ].
 
 %% Import files on a batch basis

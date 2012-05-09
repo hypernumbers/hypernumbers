@@ -5,6 +5,7 @@
 -module(emailer).
 
 -include("spriki.hrl").
+-include("defaults.hrl").
 
 -export([
          get_details/1,
@@ -14,9 +15,8 @@
 
 get_details(Site) ->
     V = new_db_api:read_kv(Site, site_email),
-    DefFrom =  "\"Gordon Guthrie\" <gordon@hypernumbers.com>",
-    DefSig = "Cheers\n\nGordon Guthrie\n\nCEO hypernumbers.com\n"
-                ++"+44 7776 251669\n@hypernumbers\n\n",
+    DefFrom =  ?MASTER_EMAIL,
+    DefSig = ?MASTER_SIG,
     case V of
         [] ->
             {DefFrom, DefSig};
