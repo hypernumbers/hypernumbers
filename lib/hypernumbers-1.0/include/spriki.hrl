@@ -68,7 +68,14 @@
           refs        = []
          }).
 
--record(user_fns, {
+-record(users_and_groups,
+        {
+          idx,
+          nothing % needed to be a valid mnesia table!
+         }).
+
+-record(user_fns,
+        {
           name,
           ast,
           pagejson,
@@ -229,7 +236,8 @@
           account_sid,
           auth_token,
           application_sid,
-          site_phone_no
+          site_phone_no,
+          type
          }).
 
 -record(contact_log,
@@ -418,12 +426,13 @@
          }).
 
 -record(site_email,
-        {idx = null,     % points to a cell
-         email           :: string(),
-         email_validated :: boolean(),
-         signature       :: string()
+        {
+          email           :: string(),
+          email_validated :: boolean(),
+          signature       :: string()
          }).
 
+% these records are for specifiying special returns from fns
 -record(spec_val,
         {
           val,
@@ -435,6 +444,7 @@
           sp_incs = null,
           resize = null,
           sp_timer = null,
+          sp_users = null,
           unique = null
          }).
 
@@ -442,16 +452,6 @@
         {
           form,
           html
-         }).
-
--record(sp_webcontrol,
-        {
-          payload
-         }).
-
--record(sp_phone,
-        {
-          payload
          }).
 
 -record(preview,
