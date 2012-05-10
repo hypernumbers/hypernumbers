@@ -1593,7 +1593,7 @@ a.toolbar-item {
 }
 
 #hn_add_val {
-              margin: 52px 0px 0px 0px;
+              margin: 56px 0px 0px 0px;
 }
 
 #hn_add_map {
@@ -1704,7 +1704,21 @@ a.toolbar-item {
     width: 100px
 }
 
-.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #uploadxls, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, .hn-toggleviews, #hn_add_val, #hn_add_map, #hn_map_delete, #hn_map_save, #hn_map_load {
+#hn_add_val, #hn_add_map, #hn_map_delete, #hn_map_save, #hn_map_load
+{
+    background:#EEE;
+    -webkit-border-radius:3px 3px 3px 3px;
+    -moz-border-radius:3px 3px 3px 3px;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9),
+                                 to(#E3E3E3));
+    background: -moz-linear-gradient(center top , #F9F9F9,
+                                     #E3E3E3) repeat scroll 0 0 transparent;
+    border:1px solid #BBBBBB;
+    outline:medium none;
+    text-align:center;
+ }
+
+.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #uploadxls, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, .hn-toggleviews {
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;
