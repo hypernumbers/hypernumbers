@@ -651,7 +651,7 @@ iget(#refX{site=Site, path=[X | _Vanity]}, page, _Qry, Env)
     serve_html(404, Env, [hn_util:viewroot(Site), "/forgotten_password.html"]);
 
 iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
-     #qry{hypertag=HT}, _Env) when X == "_authorize" ->
+     #qry{hypertag=HT}, Env) when X == "_authorize" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, _Uid, _Email, Data, _Stamp, _Age} ->
             case proplists:get_value(emailed, Data) of
@@ -667,8 +667,8 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
                         _   ->
                             'do nothing'
                     end,
-                    io:format("need a thank you page..."),
-                    ok;
+                    serve_html(200, Env, [hn_util:viewroot(Site),
+                                          "/thankyou.html"]);
                 _Else ->
                     throw(bad_validation)
             end
