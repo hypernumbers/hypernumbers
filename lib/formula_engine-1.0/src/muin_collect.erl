@@ -68,8 +68,7 @@
 %%% * fetchdb                   fetch for database fns
 %%% * {conv, Type, Value}       converts objects of a particular type to a val
 %%% * {convflat, Type, Value}   same as conv? WTF?
-%%% * strip_preview             strips a preview off a function return
-%%% * strip_resize              strips a resize off a function return
+%%% * strip_spec                strips a special value back to a clean return
 
 %%% Passes are what happens after all the rules have been applied
 %%% * return_flat_errors    returns all the errors
@@ -80,6 +79,7 @@
 
 -include("muin_records.hrl").
 -include("typechecks.hrl").
+-include("spriki.hrl").
 
 -export([
          col/2,
@@ -313,9 +313,7 @@ rl({convflat, Type, Value}, X) ->
         _Else -> X
     end;
 
-rl(strip_resize,  {resize,  _, X}) -> X;
-
-rl(strip_preview, {preview, _, X}) -> X;
+rl(strip_spec, #spec_val{val = X}) -> X;
 
 % No Rules for this element
 rl(_Rule, Value) ->

@@ -41,7 +41,8 @@
     JS = ["/webcomponents/hn.toggle.js"],
     Js_R = ["HN.Toggle.reload();"],
     Incs = #incs{js = JS, js_reload = Js_R},
-    {preview, {"Toggle Views Button", 2, 2, Incs}, HTML}.
+    Preview = #preview{title = "Toggle Views Button", width = 2, height = 2},
+    #spec_val{val = HTML, preview = Preview, sp_incs = Incs}.
 
 'link.box.'([H, W, Z]) ->
     'link.box.'([H, W, Z, 0]);
@@ -257,25 +258,24 @@ z2(T2, Z, St2) ->
           end,
     Z2 = get_z(Fun, Z, St2),
     SubMenu = "<span>" ++ T2 ++ "</span>" ++ Z2,
-    {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
+    Preview = #preview{title = "Submenu", width = 1, height = 2},
+    #spec_val{val = SubMenu, preview = Preview}.
 
 'html.submenu'(List) -> 'tim.submenu'(List).
-    %% Rules = [eval_funs, fetch, flatten, {cast, str}],
-    %% Passes = [return_errors],
-    %% [Menu | Subs] = muin_collect:col(List, Rules, Passes),
-    %% SubMenu = "<span>"++Menu++"</span>"++menu1(lists:reverse(Subs),
-    %%                                            "", []),
-    %% {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
 
 'html.menu.'([W | Rest]) ->
+    io:format("W is ~p Rest is ~p~n", [W, Rest]),
     [W2] = typechecks:throw_std_ints([W]),
     Strings = typechecks:throw_html_box_contents(Rest),
+    io:format("W2 is ~p Rest is ~p~n", [W2, Rest]),
     Menu = 'tim.menu1'(Strings, "hn_sld_menu sld_menu1", []),
     Js   = ["/webcomponents/hn.newwebcomponents.js"],
     Js_R = ["HN.NewWebComponents.reload();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    {preview, {"Menu " ++ hd(Strings), W2, 3, Incs}, Menu}.
+    io:format("Incs is ~p~n", [Incs]),
+    Preview = #preview{title = "Menu " ++ hd(Strings), width = W2, height = 3},
+    #spec_val{val = Menu, preview = Preview, sp_incs = Incs}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -445,11 +445,11 @@ split(List) ->
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
     {resize, {1, H2, Incs}, HTML}.
 
-
 'tim.submenu'(List) ->
     [Header | Strings] = typechecks:throw_html_box_contents(List),
     SubMenu = 'tim.submenu1'(Strings, Header, "first_level", []),
-    {preview, {"Sub Menu " ++ Header, 1, 1, #incs{}}, SubMenu}.
+    Preview = #preview{title = "Sub Menu " ++ Header, width = 1, height = 1},
+    #spec_val{val = SubMenu, preview = Preview}.
 
 'tim.menu1'([], Klass, Acc) ->
     "<ul class='" ++ Klass ++ "'>" ++ lists:flatten(lists:reverse(Acc))
