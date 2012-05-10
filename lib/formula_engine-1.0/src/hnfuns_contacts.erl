@@ -236,8 +236,8 @@ check_if_paid(Fun, Args, Type) ->
             Log = #contact_log{idx = get(idx), type = "outbound call",
                                to = "+" ++ Prefix ++ PhoneNo3},
             TwiML = [
-                     #dial{callerId = Site_Phone, record = true},
-                     #number{number = Prefix ++ PhoneNo3}
+                     #dial{callerId = Site_Phone, record = true,
+                           body = [#number{number = "+" ++ Prefix ++ PhoneNo3}]}
                     ],
             Capability = [{client_outgoing, AppSID, []}],
             Type = {"softphone_type", "outbound call"},
