@@ -14,6 +14,7 @@
          snapshot/1
          ]).
 
+-include("spriki.hrl").
 -include("errvals.hrl").
 
 snapshot([Arg]) ->
@@ -46,7 +47,7 @@ tick(Options) ->
                [3, N] when N > 0 andalso N < 31 -> {monthly, N};
                _      -> ?ERR_VAL
            end,
-    {timer, Spec, stdfuns_date:now([])}.
+    #spec_val{val = stdfuns_date:now([]), sp_timer = #sp_timer{spec = Spec}}.
 
 %%%===================================================================
 %%% Internal Functions

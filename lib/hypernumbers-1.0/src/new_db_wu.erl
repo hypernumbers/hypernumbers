@@ -833,13 +833,6 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents,
                                 Recompile, CircRef);
-        {ok, {Pcode, {timer, Spec, Res}, Parents, InfParents, Recompile,
-              CircRef}} ->
-            Attrs2 = orddict:store("__hastimer", t, Attrs),
-            ok = update_timerD(XRefX, Spec),
-            write_formula_attrs(Attrs2, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents,
-                                Recompile, CircRef);
         % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile, CircRef}} ->
             % there might have been a preview before - nuke it!
@@ -898,9 +891,11 @@ proc_sp5(#spec_val{resize = RSz} = SP, XRefX, Attrs) ->
 
 proc_sp6(#spec_val{sp_timer = null} = SP, XRefX, Attrs) ->
     proc_sp7(SP, XRefX, Attrs);
-proc_sp6(#spec_val{sp_timer = _Tr} = SP, _XRefX, _Attrs) ->
-    io:format("SP is ~p~n", [SP]),
-    exit("fix me 7a").
+proc_sp6(#spec_val{sp_timer = Tr} = SP, XRefX, Attrs) ->
+    NewAttrs = orddict:store("__hastimer", t, Attrs),
+    #sp_timer{spec = Spec} = Tr,
+    ok = update_timerD(XRefX, Spec),
+    proc_sp7(SP, XRefX, NewAttrs).
 
 proc_sp7(#spec_val{sp_users = null} = SP, XRefX, Attrs) ->
     proc_sp8(SP, XRefX, Attrs);
