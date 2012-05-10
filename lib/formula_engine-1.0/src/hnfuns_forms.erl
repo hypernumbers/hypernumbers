@@ -172,7 +172,7 @@ button_(Value, Response, ResultsPath, Email) ->
     Form = #form{id = {Trans, "_"},
                  kind = button,
                  attrs = Attrs},
-    Html = lists:flatten("<input type='submit' class='hninput' value='"
+    Html = lists:flatten("<input type='submit' class='hninput button' value='"
                          ++ Value ++"'"
                          ++ " data-results='" ++ ResultsPath ++ "'"
                          ++ " data-origin='" ++ Origin ++ "?view=webpage'"
