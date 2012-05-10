@@ -309,7 +309,8 @@ z2(T2, Z, St2) ->
     Js_R = ["HN.NewWebComponents.reload_tabs();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    {include, {"Tabs box", W, H, Incs}, HTML}.
+    Preview = #preview{title = "Tabs box", width = W, height = H},
+    #spec_val{val = HTML, preview = Preview, sp_incs = Incs, include = true}.
 
 split(List) ->
     Len = length(List),
@@ -497,7 +498,7 @@ make_links(_, _) -> ?ERR_VAL.
 tabs_cast([], Acc) -> lists:reverse(Acc);
 tabs_cast([Ref | T], Acc) when ?is_cellref(Ref) orelse ?is_rangeref(Ref) ->
     Ret = hnfuns_web:include([Ref]),
-    {include, _, NewAcc} = Ret,
+    #spec_val{val = NewAcc} = Ret,
     tabs_cast(T, [NewAcc | Acc]);
 tabs_cast([H | T], Acc) ->
     [NewAcc] = typechecks:std_strs([H]),
