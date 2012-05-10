@@ -269,7 +269,8 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
         ++ "<div class='small'>(opens in new window) "
         ++ "<a href='./_contacts/'>logs</a></div>"
         ++ "</div>",
-    {phone, {Preview ++ ButtonTxt, 2, 4, Payload}, HTML}.
+    PreV = #preview{title = Preview ++ ButtonTxt, width = 2, height = 4},
+    #spec_val{val = HTML, preview = PreV, sp_phone = Payload}.
 
 compress(List) ->
     L2 = re:replace(List, " ", "", [{return, list}, global]),

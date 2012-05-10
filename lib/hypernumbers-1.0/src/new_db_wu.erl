@@ -778,16 +778,6 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs5, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents,
                                 Recompile, CircRef);
-        % the formula returns a phone control
-        {ok, {Pcode, {phone, {PreV, Wd, Ht, Payload}, Res},
-              Parents, InfParents, Recompile, CircRef}} ->
-            ok = attach_phoneD(XRefX, Payload),
-            Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
-            Attrs3 = orddict:store("__hasphone", t, Attrs2),
-            Attrs4 = handle_merge(Ht, Wd, Attrs3),
-            write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents,
-                                Recompile, CircRef);
         % the formula returns a web-hingie that needs to be previewed
         {ok, {Pcode, {preview, {PreV, Wd, Ht, Incs}, Res}, Pars,
               InfPars, Recompile, CircRef}} ->
