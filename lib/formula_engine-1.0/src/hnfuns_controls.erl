@@ -67,11 +67,13 @@
                  Form = #form{id = {'load-template-button', Title},
                               kind = "load-template-button",
                               attrs = Payload},
-                 Html = "<input id='" ++ Id ++ "'type='submit' "
+                 HTML = "<input id='" ++ Id ++ "'type='submit' "
                      ++ "class='hn-loadtemplate' value='"
                      ++ Title ++ "' data-template='"
                      ++ Template ++ "' />",
-                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
+                 Preview = #preview{title = Title, width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                           sp_incs = Incs}
     end.
 
 'map.custom.button'(List) ->
@@ -88,11 +90,13 @@
                  Form = #form{id = {'map-custom-button', Title},
                               kind = "map-custom-button",
                               attrs = Payload},
-                 Html = "<input id='" ++ Id ++ "' type='submit' "
+                 HTML = "<input id='" ++ Id ++ "' type='submit' "
                      ++ "class='hn-mapcustom' value='"
                      ++ Title ++ "' data-map-type='custom' data-map='"
                      ++ Map ++ "' />",
-                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
+                        Preview = #preview{title = Title, width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                           sp_incs = Incs}
     end.
 
 'map.sheet.button'(List) ->
@@ -109,11 +113,13 @@
                  Form = #form{id = {'map-sheet-button', Title},
                               kind = "map-sheet-button",
                               attrs = Payload},
-                 Html = "<input id='" ++ Id ++ "' type='submit' "
+                 HTML = "<input id='" ++ Id ++ "' type='submit' "
                      ++ "class='hn-mapsheet' value='"
                      ++ Title ++ "' data-map-type='sheet' data-map='"
                      ++ Map ++ "' data-map-page='" ++ Page ++"' />",
-                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
+                 Preview = #preview{title = Title, width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                           sp_incs = Incs}
     end.
 
 'map.rows.button'(List) ->
@@ -130,11 +136,13 @@
                  Form = #form{id = {'map-rows-button', Title},
                               kind = "map-rows-button",
                               attrs = Payload},
-                 Html = "<input id='" ++ Id ++ "' type='submit' "
+                 HTML = "<input id='" ++ Id ++ "' type='submit' "
                      ++ "class='hn-maprows' value='"
                      ++ Title ++ "' data-map-type='row' data-map='"
                      ++ Map ++ "' />",
-                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
+                 Preview = #preview{title = Title, width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                           sp_incs = Incs}
     end.
 
 'create.button'(List) when is_list(List) ->
@@ -163,7 +171,7 @@
             Payload = [Fun2(X) || X <- Commands3],
             Pay2 = {struct, [{createpages, {array, Payload}}]},
             Json = mochijson:encode(Pay2),
-            Html = lists:flatten("<input id='" ++ Id ++ "' type='submit' "
+            HTML = lists:flatten("<input id='" ++ Id ++ "' type='submit' "
                                  ++ "class='hn-webcontrol' value='"
                                  ++ Title ++ "' data-payload='" ++ Json ++ "' "
                                  ++ "data-action='postcreatepages'"
@@ -174,5 +182,6 @@
             % action is approved
             Form = #form{id = {'create-button', Title}, kind = "create-button",
                          attrs = Commands3},
-            {webcontrol, {Form, {Title, 2, 2, #incs{}}}, Html}
+            Preview = #preview{title = Title, height = 2, width = 2},
+            #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview}
     end.

@@ -761,23 +761,6 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                                 Res#spec_val.val,
                                 {Parents, Res#spec_val.include}, InfParents,
                                 Recompile, CircRef);
-        {ok, {Pcode, {webcontrol, {Payload, {Title, Wd, Ht, Incs}}, Res},
-              Parents, InfParents, Recompile, CircRef}} ->
-            {Trans, Label} = Payload#form.id,
-            Form = Payload#form{id = {XRefX#xrefX.path, Trans, Label}},
-            ok = attach_formD(XRefX, Form),
-            Attrs2 = orddict:store("__hasform", t, Attrs),
-            Blank = #incs{},
-            Attrs3 = case Incs of
-                         Blank -> orddict:erase("__hasincs", Attrs2);
-                         _     -> ok = update_incsD(XRefX, Incs),
-                                  orddict:store("__hasincs", t, Attrs2)
-                     end,
-            Attrs4 = orddict:store("preview", {Title, Wd, Ht}, Attrs3),
-            Attrs5 = handle_merge(Ht, Wd, Attrs4),
-            write_formula_attrs(Attrs5, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents,
-                                Recompile, CircRef);
         % the formula returns a web-hingie that needs to be previewed
         {ok, {Pcode, {preview, {PreV, Wd, Ht, Incs}, Res}, Pars,
               InfPars, Recompile, CircRef}} ->
