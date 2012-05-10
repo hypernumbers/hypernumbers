@@ -367,7 +367,8 @@ copy_cell(From = #xrefX{obj = {cell, _}},
                       [{_, As}] -> As;
                       _         -> []
                   end,
-    Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["style"])} end,
+    Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs,
+                                               ["style"])} end,
     apply_to_attrsD(To, Op, copy, Uid, ?NONTRANSFORMATIVE),
     ok;
 copy_cell(From, To, Incr, all, Uid) ->
@@ -614,13 +615,15 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
                                       false ->
                                           A6
                                   end,
-                         case Has_Users of
-                                 true ->
-                                     unattach_usersD(XRefX),
-                                     orddict:erase("__users", A6);
-                                 false ->
-                                     A7
-                             end;
+                             A8 = case Has_Users of
+                                      true ->
+                                          unattach_usersD(XRefX),
+                                          orddict:erase("__users", A6);
+                                      false ->
+                                          A7
+                                  end,
+                             % erase the preview from the attributes
+                             orddict:erase("preview", A8);
                          false ->
                              case Is_Dynamic of
                                  true ->
@@ -629,14 +632,12 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
                                  false ->
                                      Attrs
                              end
-                     end,
-                 % erase the preview from the attributes
-                 Attrs3 = orddict:erase("preview", Attrs2),
+                             end,
                  case Is_In_IncFn of
                      true  -> mark_children_dirtyD(XRefX, AReq);
                      false -> ok
                  end,
-                 {clean, process_attrs(NewAs, XRefX, AReq, Attrs3)}
+                 {clean, process_attrs(NewAs, XRefX, AReq, Attrs2)}
          end,
     apply_to_attrsD(XRefX, Op, write, AReq, ?NONTRANSFORMATIVE).
 
