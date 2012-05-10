@@ -760,22 +760,6 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                                 Res#spec_val.val,
                                 {Parents, Res#spec_val.include}, InfParents,
                                 Recompile, CircRef);
-        % the formula returns as rawform
-        {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile,
-              CircRef}} ->
-            {Trans, Label} = RawF#form.id,
-            Form = RawF#form{id = {XRefX#xrefX.path, Trans, Label}},
-            ok = attach_formD(XRefX, Form),
-            Label2 = case Label of
-                         "_" -> "Submit Button";
-                         _   -> Label
-                     end,
-            Attrs2 = orddict:store("__hasform", t, Attrs),
-            Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
-            write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Html,
-                                {Parents, false}, InfParents,
-                                Recompile, CircRef);
-        % the formula returns a web control
         {ok, {Pcode, {webcontrol, {Payload, {Title, Wd, Ht, Incs}}, Res},
               Parents, InfParents, Recompile, CircRef}} ->
             {Trans, Label} = Payload#form.id,
