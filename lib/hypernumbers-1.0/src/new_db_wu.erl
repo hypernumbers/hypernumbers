@@ -867,8 +867,11 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
 
 proc_special(#spec_val{rawform = null} = SP, XRefX, Attrs) ->
     proc_sp1(SP, XRefX, Attrs);
-proc_special(#spec_val{rawform = _FR} = _SP, _XRefX, _Attrs) ->
-    exit("fix me 1a").
+proc_special(#spec_val{rawform = RF} = SP, XRefX, Attrs) ->
+    #rawform{form = Form} = RF,
+    ok = attach_formD(XRefX, Form),
+    NewAttrs = orddict:store("__hasform", t, Attrs),
+    proc_sp1(SP, XRefX, NewAttrs).
 
 proc_sp1(#spec_val{sp_webcontrol = null} = SP, XRefX, Attrs) ->
     proc_sp2(SP, XRefX, Attrs);

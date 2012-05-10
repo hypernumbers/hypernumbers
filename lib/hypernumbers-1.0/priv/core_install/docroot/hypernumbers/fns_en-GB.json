@@ -297,40 +297,6 @@
         ]
     },
     {
-        "fn": "button",
-        "category": "Forms <- new!",
-        "desc": "Create a button for submitting a form.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/button.html",
-        "args": [
-            {
-                "name": "Title",
-                "desc": "Text to appear on the button.",
-                "type": "optional"
-            },
-            {
-                "name": "Response",
-                "desc": "The text to appear in the message for the user.",
-                "type": "optional"
-            },
-            {
-                "name": "Page",
-                "desc": "The page to put the responses on.",
-                "type": "optional"
-            },
-            {
-                "name": "Emails",
-                "desc": "A list of emails to notify when the form is used.",
-                "type": "optional"
-            }
-
-        ]
-    },
-    {
         "fn": "ceiling",
         "category": "Maths And Trigonometry",
         "desc": "Rounds a number up to the nearest multiple of significance.",
@@ -1495,7 +1461,64 @@
         ]
     },
     {
-        "fn": "fixedval",
+        "fn": "floor",
+        "category": "Maths And Trigonometry",
+        "desc": "Rounds a number down to the nearest multiple of significance.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/maths-and-trigonometry/floor.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "The number to be rounded up.",
+                "type": "finite"
+            },
+            {
+                "name": "Significance",
+                "desc": "The number whose multiple is to be rounded up to.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "form.button",
+        "category": "Forms <- new!",
+        "desc": "Create a button for submitting a form.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/form-button.html",
+        "args": [
+            {
+                "name": "Title",
+                "desc": "Text to appear on the button.",
+                "type": "optional"
+            },
+            {
+                "name": "Response",
+                "desc": "The text to appear in the message for the user.",
+                "type": "optional"
+            },
+            {
+                "name": "Page",
+                "desc": "The page to put the responses on.",
+                "type": "optional"
+            },
+            {
+                "name": "Emails",
+                "desc": "A list of emails to notify when the form is used.",
+                "type": "optional"
+            }
+
+        ]
+    },
+    {
+        "fn": "form.fixedval",
         "category": "Forms <- new!",
         "desc": "Allows a calculated valued to be specified in a form.",
         "experimental": false,
@@ -1503,7 +1526,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/fixedval.html",
+        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/form-fixedval.html",
         "args": [
             {
                 "name": "Label",
@@ -1523,24 +1546,83 @@
         ]
     },
     {
-        "fn": "floor",
-        "category": "Maths And Trigonometry",
-        "desc": "Rounds a number down to the nearest multiple of significance.",
+        "fn": "form.input",
+        "category": "Forms <- new!",
+        "desc": "Create a single line text input for a form.",
         "experimental": false,
         "includable": true,
-        "inexcel": true,
+        "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/maths-and-trigonometry/floor.html",
+        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/form-input.html",
         "args": [
             {
-                "name": "Number",
-                "desc": "The number to be rounded up.",
+                "name": "Label",
+                "desc": "Some text.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "form.radio",
+        "category": "Forms <- new!",
+        "desc": "Create a set of radio buttons for a form.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/form-radio.html",
+        "args": [
+            {
+                "name": "Label",
+                "desc": "Some text.",
                 "type": "finite"
             },
             {
-                "name": "Significance",
-                "desc": "The number whose multiple is to be rounded up to.",
+                "name": "Options",
+                "desc": "A reference to a list of items.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "form.select",
+        "category": "Forms <- new!",
+        "desc": "Create a drop down select box for a form.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/form-select.html",
+        "args": [
+            {
+                "name": "Label",
+                "desc": "Some text.",
+                "type": "finite"
+            },
+            {
+                "name": "Options",
+                "desc": "A reference to a list of items.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "form.textarea",
+        "category": "Forms <- new!",
+        "desc": "Create a textarea for a form.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/form-textarea.html",
+        "args": [
+            {
+                "name": "Label",
+                "desc": "Some text.",
                 "type": "finite"
             }
         ]
@@ -2244,24 +2326,6 @@
                 "name": "Reference Type",
                 "desc": "A boolean.",
                 "type": "optional"
-            }
-        ]
-    },
-    {
-        "fn": "input",
-        "category": "Forms <- new!",
-        "desc": "Create a single line text input for a form.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/input.html",
-        "args": [
-            {
-                "name": "Label",
-                "desc": "Some text.",
-                "type": "finite"
             }
         ]
     },
@@ -3504,29 +3568,6 @@
         ]
     },
     {
-        "fn": "radio",
-        "category": "Forms <- new!",
-        "desc": "Create a set of radio buttons for a form.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/radio.html",
-        "args": [
-            {
-                "name": "Label",
-                "desc": "Some text.",
-                "type": "finite"
-            },
-            {
-                "name": "Options",
-                "desc": "A reference to a list of items.",
-                "type": "finite"
-            }
-        ]
-    },
-    {
         "fn": "rate",
         "category": "Financial",
         "desc": "Caculates the interest rate per period for an annuity.",
@@ -3839,29 +3880,6 @@
                 "type": "optional"
             }
 
-        ]
-    },
-    {
-        "fn": "select",
-        "category": "Forms <- new!",
-        "desc": "Create a drop down select box for a form.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/select.html",
-        "args": [
-            {
-                "name": "Label",
-                "desc": "Some text.",
-                "type": "finite"
-            },
-            {
-                "name": "Options",
-                "desc": "A reference to a list of items.",
-                "type": "finite"
-            }
         ]
     },
     {
@@ -4603,24 +4621,6 @@
             {
                 "name": "Format",
                 "desc": "The format that is to be applied.",
-                "type": "finite"
-            }
-        ]
-    },
-    {
-        "fn": "textarea",
-        "category": "Forms <- new!",
-        "desc": "Create a textarea for a form.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/web-forms/textarea.html",
-        "args": [
-            {
-                "name": "Label",
-                "desc": "Some text.",
                 "type": "finite"
             }
         ]
