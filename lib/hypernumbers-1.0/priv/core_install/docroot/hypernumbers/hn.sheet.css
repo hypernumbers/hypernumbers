@@ -1704,7 +1704,7 @@ a.toolbar-item {
     width: 100px
 }
 
-.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #uploadxls, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, .hn-toggleviews {
+.button, .tournavigate, #hn-outboundphone, .hn-maprows, .hn-mapsheet, .hn-mapcustom, .hn-loadtemplate, .hn-webcontrol, .hn_userdef_btn,  #uploadxls, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, .hn-toggleviews, #hn_add_val, #hn_add_map, #hn_map_delete, #hn_map_save, #hn_map_load {
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;
