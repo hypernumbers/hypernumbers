@@ -151,8 +151,9 @@
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     {Data, Colours} = chunk_spark(List),
-    {resize, {Width, Height, #incs{}},
-     spark1(make_sparksize(Width, Height), Data, Colours)}.
+    Resize = #resize{width = Width, height = Height},
+    HTML = spark1(make_sparksize(Width, Height), Data, Colours),
+    #spec_val{val = HTML, resize = Resize}.
 
 chunk_spark([Lines | List]) ->
     [Lines1] = typechecks:throw_std_ints([Lines]),
@@ -198,7 +199,8 @@ spark1(Size, Data, Colours) ->
     Chart = make_chart2([{?type, ?PIECHART}, {?size, make_size(Width, Height)},
                 {?axes, "x"}, {?colours, "bb2222"},
                 {?piecolours, "0,444499,11.5"} | Opts]),
-    {resize, {Width, Height, #incs{}}, Chart}.
+    Resize = #resize{width = Width, height = Height},
+    #spec_val{val = Chart, resize = Resize}.
 
 'sparkbar.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -214,7 +216,8 @@ spark1(Size, Data, Colours) ->
      Img = sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
                       Colours, BarSize, Rest, []),
     Img2 = "<div class='hn_sparkS'>" ++ Img ++ "</div>",
-    {resize, {Width, Height, #incs{}}, Img2}.
+    Resize = #resize{width = Width, height = Height},
+    #spec_val{val = Img2, resize = Resize}.
 
 'sparkhist.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -230,50 +233,56 @@ spark1(Size, Data, Colours) ->
     Img = sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
                      Colours, BarSize, Rest, []),
     Img2 = "<div class='hn_spark'>" ++ Img ++ "</div>",
-    {resize, {Width, Height, #incs{}}, Img2}.
+    Resize = #resize{width = Width, height = Height},
+    #spec_val{val = Img2, resize = Resize}.
 
 'histogram.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_histogram(List),
     {DataX, DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
-    {resize, {Width, Height, #incs{}},
-     eq_hist1(Type, make_size(Width, Height), DataX, DataY, MinY, MaxY,
-                            Colours, Rest, [])}.
+    Resize = #resize{width = Width, height = Height},
+    HTML = eq_hist1(Type, make_size(Width, Height), DataX, DataY, MinY, MaxY,
+                    Colours, Rest, []),
+    #spec_val{val = HTML, resize = Resize}.
 
 'equigraph.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_equigraph(List),
     {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
-    {resize, {Width, Height, #incs{}},
-     eq_hist1(equi, make_size(Width, Height), DataX, DataY, MinY, MaxY, Colours,
-                            Rest, [{?tickmarks, ?BOTHAXES}])}.
+    Resize = #resize{width = Width, height = Height},
+    HTML = eq_hist1(equi, make_size(Width, Height), DataX, DataY,
+                    MinY, MaxY, Colours, Rest, [{?tickmarks, ?BOTHAXES}]),
+    #spec_val{val = HTML, resize = Resize}.
 
 'dategraph.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_dategraph(List, double),
     {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
-    {resize, {Width, Height, #incs{}},
-     dg1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
-        StartDate, EndDate, [{?tickmarks, ?BOTHAXES}])}.
+     Resize = #resize{width = Width, height = Height},
+     HTML = dg1(make_size(Width, Height), Data, Scale, AxesLabPos,
+                Colours, Rest, StartDate, EndDate, [{?tickmarks, ?BOTHAXES}]),
+    #spec_val{val = HTML, resize = Resize}.
 
 'linegraph.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    {resize, {Width, Height, #incs{}},
-     xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
-        [{?tickmarks, ?BOTHAXES}])}.
+    Resize = #resize{width = Width, height = Height},
+    HTML = xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
+               [{?tickmarks, ?BOTHAXES}]),
+    #spec_val{val = HTML, resize = Resize}.
 
 'xy.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    {resize, {Width, Height, #incs{}},
-     xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
-        [{?tickmarks, ?BOTHAXES}])}.
+    Resize = #resize{width = Width, height = Height},
+    HTML = xy1(make_size(Width, Height), Data, Scale, AxesLabPos,
+               Colours, Rest, [{?tickmarks, ?BOTHAXES}]),
+    #spec_val{val = HTML, resize = Resize}.
 
 chunk_sparkbar([Type, Lines| List]) ->
     [Type2, Lines2] = typechecks:throw_std_ints([Type, Lines]),
@@ -691,8 +700,9 @@ make_c2([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
 'speedo.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
-    {resize, {Width, Height, #incs{}},
-     speedo(make_size(Width, Height),  List)}.
+    Resize = #resize{width = Width, height = Height},
+    HTML = speedo(make_size(Width, Height),  List),
+    #spec_val{val = HTML, resize = Resize}.
 
 speedo(Size, [V])               -> speedo1(Size, V, "", "",   ?SPEEDOPARAMS);
 speedo(Size, [V, Tt])           -> speedo1(Size, V, Tt, "",   ?SPEEDOPARAMS);

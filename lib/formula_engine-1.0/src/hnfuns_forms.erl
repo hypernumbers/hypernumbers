@@ -28,7 +28,6 @@
 -include("hypernumbers.hrl").
 
 -type trans() :: common | string().
--type html() :: string().
 
 'form.input'(Args) -> input(Args).
 'form.textarea'(Args) -> textarea(Args).
@@ -135,7 +134,7 @@ fixedval_([Label, Val, Show]) ->
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
--spec input_([string()], string(), trans()) -> {rawform, #form{}, html()}.
+-spec input_([string()], string(), trans()) -> #spec_val{}.
 input_(Label) -> input_(Label, "", common).
 %input_(Label, Default) -> input_(Label, Default, common).
 input_([Label], _Default, Trans) ->
@@ -148,7 +147,7 @@ input_([Label], _Default, Trans) ->
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
--spec textarea_([string()], string(), trans()) -> {rawform, #form{}, html()}.
+-spec textarea_([string()], string(), trans()) -> #spec_val{}.
 textarea_(Label) -> textarea_(Label, "", common).
 %textarea_(Label, Default) -> textarea_(Label, Default, common).
 textarea_([Label], _Default, Trans) ->
@@ -161,7 +160,7 @@ textarea_([Label], _Default, Trans) ->
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
--spec button_(string(), string(), string(), string()) -> {rawform, #form{}, html()}.
+-spec button_(string(), string(), string(), string()) -> #spec_val{}.
 button_(Value, Response, ResultsPath, Email) ->
     Trans = common,
     Origin = hn_util:list_to_path(muin:context_setting(path)),
@@ -183,7 +182,7 @@ button_(Value, Response, ResultsPath, Email) ->
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
--spec select_(string(), [string()]) -> {rawform, #form{}, html()}.
+-spec select_(string(), [string()]) -> #spec_val{}.
 select_(Label, Options) ->
     Trans = common,
     Form = #form{id = {Trans, Label},
@@ -197,7 +196,7 @@ select_(Label, Options) ->
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
--spec radio_(string(), [string()]) -> {rawform, #form{}, html()}.
+-spec radio_(string(), [string()]) -> #spec_val{}.
 radio_(Label, Options) ->
     Trans = common,
     Name = "tmp_" ++ muin_util:create_name(),
