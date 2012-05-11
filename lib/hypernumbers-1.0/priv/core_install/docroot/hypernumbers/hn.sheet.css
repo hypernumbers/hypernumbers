@@ -1783,9 +1783,9 @@ a.toolbar-item {
 }
 
 .hyper {
-    color:black;
-    font:13px georgia,garamond,serif;
-    text-decoration:none;
+    color           : #666;
+    font            : 13px georgia,garamond,serif;
+    text-decoration : none;
 }
 
 .numbers {
