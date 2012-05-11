@@ -25,7 +25,8 @@ debug1(Zed, [{zeds, Matches, NoMatches, Errs}]) ->
         ++ "<div>z-query is: " ++ Zed ++ "</div>"
         ++ make_matches(Matches) ++ make_no_matches(NoMatches) ++ make_errs(Errs)
         ++ "</div>",
-    {resize, {5, 10, #incs{}}, Html}.
+    Resize = #resize{width = 5, height = 10},
+    #spec_val{val = Html, resize = Resize}.
 
 make_matches([]) -> "<div class='hn_debug_hd'>no pages match</div>";
 make_matches(L)  ->

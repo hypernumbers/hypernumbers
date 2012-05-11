@@ -49,7 +49,7 @@ blink([String]) ->
     blink([String, true]);
 blink([String, Bool]) ->
 
-    [Str2] = typechecks:std_strs([String]),
+    [Str2]  = typechecks:std_strs([String]),
     [Bool2] = typechecks:std_bools([Bool]),
     case Bool2 of
         true  -> "<blink>" ++ Str2 ++ "</blink>";
@@ -86,7 +86,8 @@ vline1(H, N, M, Colour) ->
     Div = "<div style='display:block;height:100%;width:50%;border-right:"
         ++ integer_to_list(N2) ++ "px " ++ Style ++ " " ++ Col ++ "'></div>"
         ++ "<div style='display:block;width:50%;'></div>",
-    {resize, {1, H2, #incs{}}, Div}.
+    Resize = #resize{width = 1, height = H2},
+    #spec_val{val = Div, resize = Resize}.
 
 'horizontal.line.'([W, N, M, Colour]) ->
     hline1(W, N, M, Colour);
@@ -104,7 +105,8 @@ hline1(W, N, M, Colour) ->
     Div = "<div style='display:block;height:50%;width:100%;border-bottom:"
         ++ integer_to_list(N2) ++ "px " ++ Style ++ " " ++ Col ++ "'></div>"
         ++ "<div style='display:block;width:100%;'></div>",
-    {resize, {W2, 1, #incs{}}, Div}.
+    Resize = #resize{width = W2, height = 1},
+    #spec_val{val = Div, resize = Resize}.
 
 make_style(I) -> case I of
                      0 -> "solid";

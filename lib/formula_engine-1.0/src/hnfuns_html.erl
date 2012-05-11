@@ -156,11 +156,13 @@ links2([{{P, _}, V} | T], 2, Acc) ->
     [H2] = typechecks:throw_std_ints([H]),
     [T2] = typechecks:throw_std_strs([Text]),
     funs_util:check_size(W2, H2),
-    {resize, {W2, H2, #incs{}}, "<span class='hn-wc-headline hn-wc-wd-"
+    Resize = #resize{width = W2, height = H2},
+    HTML =  "<span class='hn-wc-headline hn-wc-wd-"
      ++ integer_to_list(W2) ++
      " hn-wc-ht-" ++ integer_to_list(H2) ++ "' " ++
      "style='position:absolute;top:25%;left:0%;'>"
-     ++ T2 ++ "</span>"}.
+     ++ T2 ++ "</span>",
+    #spec_val{val = HTML, resize = Resize}.
 
 'html.ruledbox.'(List) -> 'html.box.1'("white", "none", 99, "single", List).
 
@@ -178,23 +180,30 @@ links2([{{P, _}, V} | T], 2, Acc) ->
     funs_util:check_size(W, H),
     BodyStyle = "hn-wc-ht-body2-" ++ Height,
     [H1] = typechecks:throw_html_box_contents([Headline]),
-    {resize, {W, H, #incs{}}, box(Width, Height, Background, Border, Style, Lines,
-                                 BodyStyle, [H1, Content, Footer])};
-'html.box.1'(Background, Border, Style, Lines, [Width, Height, Headline, Content]) ->
+    Resize = #resize{width = W, height = H},
+    HTML = box(Width, Height, Background, Border, Style, Lines,
+               BodyStyle, [H1, Content, Footer]),
+    #spec_val{val = HTML, resize = Resize};
+'html.box.1'(Background, Border, Style, Lines,
+             [Width, Height, Headline, Content]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
     funs_util:check_size(W, H),
     BodyStyle = "hn-wc-ht-body1-" ++ Height,
     [H1] = typechecks:throw_html_box_contents([Headline]),
-    {resize, {W, H, #incs{}}, box(Width, Height, Background, Border, Style, Lines,
-                                 BodyStyle, [H1, Content])};
+    Resize = #resize{width = W, height = H},
+    HTML = box(Width, Height, Background, Border, Style, Lines,
+               BodyStyle, [H1, Content]),
+    #spec_val{val = HTML, resize = Resize};
 'html.box.1'(Background, Border, Style, Lines, [Width, Height, Content]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
     funs_util:check_size(W, H),
     BodyStyle = "hn-wc-ht-" ++ Height,
-    {resize, {W, H, #incs{}}, box(Width, Height, Background, Border, Style, Lines,
-                                 BodyStyle, [Content])}.
+    Resize = #resize{width = W, height = H},
+    HTML = box(Width, Height, Background, Border, Style, Lines,
+               BodyStyle, [Content]),
+    #spec_val{val = HTML, resize = Resize}.
 
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Content]) ->
     [C1] = typechecks:throw_html_box_contents([Content]),
@@ -389,7 +398,8 @@ split(List) ->
         ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
         ++ "<h6 class='hn_sld_footer'>" ++ F1 ++ "</h6>"
         ++ "</div>",
-    {resize, {W, H, Incs}, Box};
+    Resize = #resize{width = W, height = H},
+    #spec_val{val = Box, resize = Resize, sp_incs = Incs};
 
 'tim.box.1'(Class, W, H, [Content, Headline], Incs) ->
     [H1] = typechecks:throw_html_box_contents([Headline]),
@@ -402,7 +412,8 @@ split(List) ->
         ++ "<h4>" ++ H1 ++ "</h4>"
         ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
         ++ "</div>",
-    {resize, {W, H, Incs}, Box};
+    Resize = #resize{width = W, height = H},
+    #spec_val{val = Box, resize = Resize, sp_incs = Incs};
 
 'tim.box.1'(Class, W, H, [Content], Incs) ->
     [C1] = typechecks:throw_html_box_contents([Content]),
@@ -412,7 +423,8 @@ split(List) ->
     Box = "<div class='" ++ Class2 ++ "'>"
         ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
         ++ "</div>",
-    {resize, {W, H, Incs}, Box}.
+    Resize = #resize{width = W, height = H},
+    #spec_val{val = Box, resize = Resize, sp_incs = Incs}.
 
 'tim.headline.'([W, Text]) ->
     [W2] = typechecks:throw_std_ints([W]),
@@ -426,7 +438,8 @@ split(List) ->
     Js_R = ["HN.NewWebComponents.reload();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    {resize, {W2, Height, Incs}, HTML}.
+    Resize = #resize{width = W, height = Height},
+    #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
 
 'tim.horizontal.line.'([W]) ->
     [W2] = typechecks:throw_std_ints([W]),
@@ -435,7 +448,8 @@ split(List) ->
     Js_R = ["HN.NewWebComponents.reload();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    {resize, {W2, 1, Incs}, HTML}.
+    Resize = #resize{width = W2, height = 1},
+    #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
 
 'tim.vertical.line.'([H]) ->
     [H2] = typechecks:throw_std_ints([H]),
@@ -444,7 +458,8 @@ split(List) ->
     Js_R = ["HN.NewWebComponents.reload();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    {resize, {1, H2, Incs}, HTML}.
+    Resize = #resize{width = 1, height = H2},
+    #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
 
 'tim.submenu'(List) ->
     [Header | Strings] = typechecks:throw_html_box_contents(List),
