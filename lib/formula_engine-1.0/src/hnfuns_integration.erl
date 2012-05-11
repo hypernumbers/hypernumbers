@@ -88,8 +88,9 @@
         ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
         ++ "/?ie=UTF8&amp;ll=" ++ Lat2 ++ "," ++ Long2
         ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>",
-    {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2,
-               8, 16, #incs{}}, HTML}.
+    Preview = #preview{title = "Google Map for Lat: " ++ Lat2
+                       ++ " Long: " ++ Long2, width = 8, height = 16},
+    #spec_val{val = HTML, preview = Preview}.
 
 %'twitter.search_'(_Term, _Title) ->
 %    "Todo".
@@ -116,7 +117,8 @@
         ++ "         document.getElementsByTagName('body')[0]).appendChild(dsq);"
         ++ "})();",
     Incs = #incs{js_reload = [Reload]},
-    {resize, {8, 15, Incs}, HTML}.
+    Resize = #resize{width = 8, height = 15},
+    #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
 
 'generic.integration.'([W, H, HTML]) ->
     gen_i(W, H, HTML, [], [], [], false);
@@ -138,8 +140,11 @@ gen_i(W, H, HTML, Js, JsRel, CSS, ShowPreview) ->
     WCSS2 = wrap(CSS2),
     Incs = #incs{js = WJs2, js_reload = WJsRel2, css = WCSS2},
     case ShowP2 of
-        false -> {resize, {Width, Height, Incs}, HTML2};
-        true  -> {preview, {"Generic Integration", Width, Height, Incs}, HTML2}
+        false -> Resize = #resize{width = Width, height = Height},
+                 #spec_val{val = HTML, resize = Resize, sp_incs = Incs};
+        true  -> Preview = #preview{title = "Generic Integration",
+                                    width = Width, height = Height},
+                 #spec_val{val = HTML2, preview = Preview, sp_incs = Incs}
     end.
 
 wrap([]) -> [];
@@ -156,7 +161,8 @@ wrap(X)  -> [X].
         ++ "xfbml=1"],
     Reload = ["FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');"],
     Incs = #incs{js = Js, js_reload = Reload},
-    {preview, {"Facebook Comments", 8, 10, Incs},  HTML}.
+    Preview = #preview{title = "Facebook Comments", width = 8, height = 10},
+    #spec_val{val = HTML, preview = Preview, sp_incs = Incs}.
 
 'twitter.tweet'([Message]) ->
     tweet2(Message, "Tweet This");
@@ -307,7 +313,8 @@ fb_like(ID, URL, Layout, Faces) ->
                        ++ F1
                        ++ "&amp;width=152&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80' scrolling='no' frameborder='0' style='border:none; overflow:hidden; height:80px;' allowTransparency='true'></iframe>"
            end,
-    {preview, {"Facebook Like Button", 3, 8, #incs{}}, HTML}.
+    Preview = #preview{title = "Facebook Like Button", width = 3, height = 8},
+    #spec_val{val = HTML, preview = Preview}.
 
 valid("0", "0") -> {"standard",     "true"};
 valid("1", "0") -> {"button_count", "true"};
@@ -323,7 +330,9 @@ valid(_, _) -> false.
         ++ " header=true' scrolling='no' frameborder='0' "
         ++ " allowTransparency='true' style='border:none; "
         ++ "overflow:hidden; width:472px; height:606px'></iframe>",
-    {preview, {"Facebook Like of " ++ P, 6, 31, #incs{}}, HTML}.
+    Preview = #preview{title = "Facebook Like of " ++ P,
+                       width = 6, height = 31},
+    #spec_val{val = HTML, preview = Preview}.
 
 %% Hypernumbers Twitter UserName is hypernumbers
 'twitter.button'([UserName]) ->
@@ -372,7 +381,9 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "}).render().setUser('" ++ U ++ "').start();",
     HTML = "<div id='" ++ ID ++ "'></div>",
     Incs = #incs{js = [Js], js_reload = [Js_reload]},
-    {preview, {"Twitter profile for " ++ U, 3, 20, Incs}, HTML}.
+    Preview = #preview{title = "Twitter profile for " ++ U,
+                       width = 3, height = 20},
+    #spec_val{val = HTML, preview = Preview, sp_incs = Incs}.
 
 %% 'twitter.list'([User, ListId]) ->
 %%     'twitter.list'([User, ListId, User]);
@@ -403,5 +414,4 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
 %%     HTML = "<div id='" ++ ID ++ "'></div>",
 %%     Incs = #incs{js = [Js], js_reload = [Js_reload]},
 %%     {preview, {"Twitter List", 3, 23, Incs}, HTML}.
-
 

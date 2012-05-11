@@ -13,6 +13,7 @@
 -include("syslib.hrl").
 
 -export([
+         mark_users_and_groups_dirty/1,
          delete_siteonly/2,
          read_siteonly/2,
          write_siteonly/3,
@@ -92,6 +93,16 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+mark_users_and_groups_dirty(Site) ->
+    Report = mnesia_mon:get_stamp("mark_users_and_groups_dirty"),
+    Fun = fun() ->
+                   mnesia_mon:report(Report),
+                   new_db_wu:mark_users_and_groups_dirtyD(Site)
+           end,
+    % use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet", Report).
+
 -spec wait_for_dirty(string()) -> ok.
 wait_for_dirty(Site) ->
     case dbsrv:is_busy(Site) of

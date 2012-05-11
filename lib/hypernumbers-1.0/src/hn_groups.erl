@@ -5,6 +5,7 @@
 -module(hn_groups).
 
 -export([
+         get_groups/1,
          get_all_groups/1,
          create_group/2,
          delete_group/2,
@@ -24,6 +25,20 @@
 
 -include("spriki.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
+
+-spec get_groups(string()) -> [string()].
+get_groups(Site) ->
+    Tbl = new_db_wu:trans(Site, group),
+    Fun1 = fun(#group{name = Name, members = Members}, Acc) ->
+                   Mem2 = gb_sets:to_list(Members),
+                   Mem3 = [X || {ok, X} <- [passport:uid_to_email(XX) || XX <- Mem2]],
+                   NewAcc = {Name, Mem3},
+                   [NewAcc | Acc]
+           end,
+    Fun2 = fun() ->
+                  mnesia:foldl(Fun1, [], Tbl)
+          end,
+    mnesia:activity(transaction, Fun2).
 
 -spec get_all_groups(string()) -> [string()].
 get_all_groups(Site) ->
@@ -57,7 +72,8 @@ create_group(Site, GroupN) ->
                 case mnesia:read(Tbl, GroupN, read) of
                     [] ->
                         Group = #group{name = GroupN},
-                        mnesia:write(Tbl, Group, write);
+                        mnesia:write(Tbl, Group, write),
+                        new_db_api:mark_users_and_groups_dirty(Site);
                     _ ->
                         ok
                 end
@@ -67,7 +83,11 @@ create_group(Site, GroupN) ->
 -spec delete_group(string(), string()) -> ok.
 delete_group(Site, GroupN) ->
     Tbl = new_db_wu:trans(Site, group),
-    mnesia:activity(transaction, fun mnesia:delete/3, [Tbl,GroupN,write]).
+    Fun = fun() ->
+                  mnesia:delete(Tbl, GroupN, write),
+                  new_db_api:mark_users_and_groups_dirty(Site)
+          end,
+    mnesia:activity(transaction, Fun).
 
 -spec add_user(string(), string(), auth_srv:uid()) -> ok | no_group.
 add_user(Site, GroupN, Uid) ->
@@ -77,7 +97,8 @@ add_user(Site, GroupN, Uid) ->
                     [G] ->
                         Members = gb_sets:add(Uid, G#group.members),
                         G2 = G#group{members=Members},
-                        mnesia:write(Tbl, G2, write);
+                        mnesia:write(Tbl, G2, write),
+                        new_db_api:mark_users_and_groups_dirty(Site);
                     _ ->
                         no_group
                 end
@@ -92,7 +113,8 @@ rem_user(Site, GroupN, Uid) ->
                     [G] ->
                         Members = gb_sets:delete_any(Uid, G#group.members),
                         G2 = G#group{members=Members},
-                        mnesia:write(Tbl, G2, write);
+                        mnesia:write(Tbl, G2, write),
+                        new_db_api:mark_users_and_groups_dirty(Site);
                     _ ->
                         no_group
                 end
@@ -107,7 +129,8 @@ set_users(Site, GroupN, Users) ->
                     [G] ->
                         Members = gb_sets:from_list(Users),
                         G2 = G#group{members=Members},
-                        mnesia:write(Tbl, G2, write);
+                        mnesia:write(Tbl, G2, write),
+                        new_db_api:mark_users_and_groups_dirty(Site);
                     _ ->
                         no_group
                 end

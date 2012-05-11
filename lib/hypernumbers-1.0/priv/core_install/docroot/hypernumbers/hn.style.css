@@ -595,7 +595,7 @@ label {
 
 .inline
 {
-  border: 1px solid #ddd;
+  border: 1px solid #999;
   }
 
 .inlinerich
@@ -762,6 +762,23 @@ label {
   font-weight: bold;
   font-size : 14pt;
   }
+
+.hn_site_admin table
+{
+  height : auto;
+  width  : auto;
+  }
+
+.hn_site_admin td
+{
+  padding: 0px 20px 0px 0px;
+  }
+
+.hn_site_admin em
+{
+  font-weight: bold;
+  color:       #ff6000;
+ }
 
 .hn_inlineselect {
                    width: 100%;

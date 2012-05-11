@@ -30,8 +30,9 @@
             ?ERRVAL_PAYONLY ->
                 "No phone numbers have been purchased for this website";
             AC ->
-                #twilio_account{site_phone_no = Site_Phone} = AC,
-                Site_Phone
+                #twilio_account{site_phone_no = Site_Phone,
+                               type = Type} = AC,
+                Site_Phone ++ " (" ++ Type ++ ")"
         end.
 
 'text.answer.phone'([Msg]) ->
@@ -124,14 +125,16 @@ check(To, Su, Cn, CC, Reply) ->
 
 'auto.robocall'([Condition, PhoneNo, Msg, Prefix]) ->
     check_if_paid(fun 'auto.robocall2'/2,
-                  [Condition, PhoneNo, Msg, normalise(Prefix)]);
+                  [Condition, PhoneNo, Msg, normalise(Prefix)], outbound);
 'auto.robocall'([Condition, PhoneNo, Msg]) ->
-    check_if_paid(fun 'auto.robocall2'/2, [Condition, PhoneNo, Msg, ""]).
+    check_if_paid(fun 'auto.robocall2'/2, [Condition, PhoneNo, Msg, ""],
+                  outbound).
 
 'manual.sms.out'([PhoneNo, Msg, Prefix]) ->
-    check_if_paid(fun 'manual.sms.out2'/2, [PhoneNo, Msg, normalise(Prefix)]);
+    check_if_paid(fun 'manual.sms.out2'/2, [PhoneNo, Msg, normalise(Prefix)],
+                 outbound);
 'manual.sms.out'([PhoneNo, Msg]) ->
-    check_if_paid(fun 'manual.sms.out2'/2, [PhoneNo, Msg, ""]).
+    check_if_paid(fun 'manual.sms.out2'/2, [PhoneNo, Msg, ""], outbound).
 
 'manual.sms.out2'([PhoneNo, Msg, Prefix], _AC) ->
     [PhoneNo2] = typechecks:std_strs([PhoneNo]),
@@ -152,17 +155,28 @@ check(To, Su, Cn, CC, Reply) ->
 
 'auto.sms.out'([Condition, PhoneNo, Msg, Prefix]) ->
     check_if_paid(fun 'auto.sms.out2'/2,
-                  [Condition, PhoneNo, Msg, normalise(Prefix)]);
+                  [Condition, PhoneNo, Msg, normalise(Prefix)], outbound);
 'auto.sms.out'([Condition, PhoneNo, Msg]) ->
-    check_if_paid(fun 'auto.sms.out2'/2, [Condition, PhoneNo, Msg, ""]).
+    check_if_paid(fun 'auto.sms.out2'/2,
+                  [Condition, PhoneNo, Msg, ""], outbound).
 
-check_if_paid(Fun, Args) ->
+check_if_paid(Fun, Args, Type) ->
     Site = get(site),
     case contact_utils:get_twilio_account(Site) of
         ?ERRVAL_PAYONLY ->
             ?ERRVAL_PAYONLY;
-        AC              ->
-            Fun(Args, AC)
+        AC ->
+            case Type of
+                outbound ->
+                    Fun(Args, AC);
+                inbound ->
+                    case AC#twilio_account.type of
+                        full ->
+                            Fun(Args, AC);
+                        outbound ->
+                            ?ERRVAL_PAYONLY
+                    end
+            end
     end.
 
 'auto.robocall2'([Condition, PhoneNo, Msg, Prefix], AC) ->
@@ -221,11 +235,10 @@ check_if_paid(Fun, Args) ->
             PhoneNo3 = compress(PhoneNo2),
             Log = #contact_log{idx = get(idx), type = "outbound call",
                                to = "+" ++ Prefix ++ PhoneNo3},
-            TwiML = "<Response>" ++
-                "<Dial callerId='" ++ Site_Phone ++ "' record='true'>" ++
-                "<Number>" ++ Prefix ++ PhoneNo3 ++ "</Number>"
-                "</Dial>" ++
-                "</Response>",
+            TwiML = [
+                     #dial{callerId = Site_Phone, record = true,
+                           body = [#number{number = "+" ++ Prefix ++ PhoneNo3}]}
+                    ],
             Capability = [{client_outgoing, AppSID, []}],
             Type = {"softphone_type", "outbound call"},
             Config = [{"button_txt", "(+" ++ Prefix ++ ") " ++ PhoneNo3},
@@ -256,7 +269,8 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
         ++ "<div class='small'>(opens in new window) "
         ++ "<a href='./_contacts/'>logs</a></div>"
         ++ "</div>",
-    {phone, {Preview ++ ButtonTxt, 2, 4, Payload}, HTML}.
+    PreV = #preview{title = Preview ++ ButtonTxt, width = 2, height = 4},
+    #spec_val{val = HTML, preview = PreV, sp_phone = Payload}.
 
 compress(List) ->
     L2 = re:replace(List, " ", "", [{return, list}, global]),

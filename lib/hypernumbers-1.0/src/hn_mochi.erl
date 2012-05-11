@@ -242,6 +242,7 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
   when X == "_invite";
        X == "_mynewsite";
        X == "_validate";
+       X == "_authorize";
        X == "_hooks";
        X == "_logout" ->
     allowed;
@@ -648,9 +649,34 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
 iget(#refX{site=Site, path=[X | _Vanity]}, page, _Qry, Env)
   when X == "_forgotten_password" ->
     serve_html(404, Env, [hn_util:viewroot(Site), "/forgotten_password.html"]);
+
 iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
-     #qry{hypertag=HT},
-     Env) when X == "_invite"; X == "_validate" ->
+     #qry{hypertag=HT}, Env) when X == "_authorize" ->
+    case passport:open_hypertag(Site, Path, HT) of
+        {ok, _Uid, _Email, Data, _Stamp, _Age} ->
+            case proplists:get_value(emailed, Data) of
+                true  ->
+                    [{kvstore, site_email, {OldIdx, SE}}]
+                        = new_db_api:read_kv(Site, site_email),
+                    Idx = proplists:get_value(idx, Data),
+                    case OldIdx of
+                        Idx ->
+                            Rec = {Idx, SE#site_email{email_validated = true}},
+                            ok = new_db_api:write_kv(Site, site_email, Rec),
+                            ok = new_db_api:mark_idx_dirty(Site, Idx);
+                        _   ->
+                            'do nothing'
+                    end,
+                    serve_html(200, Env, [hn_util:viewroot(Site),
+                                          "/thankyou.html"]);
+                _Else ->
+                    throw(bad_validation)
+            end
+    end;
+
+iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
+     #qry{hypertag=HT}, Env)
+  when X == "_invite"; X == "_validate" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, Data, Stamp, Age} ->
             case proplists:get_value(emailed, Data) of

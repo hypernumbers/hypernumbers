@@ -61,9 +61,8 @@ get_phone(#refX{site = S},
     IncomingPath = ["_services", "phone"],
     % now add the current user into the phone log
     {ok, Email} = passport:uid_to_email(Uid),
-    #phone{log = Log} = P,
-    Log2 = Log#contact_log{from = Email},
-    P2 = P#phone{log = Log2},
+    #phone{idx = Idx} = P,
+    P2 = [Idx, Email],
     HyperTag = passport:create_hypertag(S, IncomingPath, Uid, Email, P2, Age),
     {struct, lists:flatten([{"phonetoken", binary_to_list(Token)},
                             {hypertag, HyperTag},
@@ -153,36 +152,37 @@ handle_c2(#refX{site = S, path = P},
                   from = null,
                   to = null,
                   call_duration = null} = Body) ->
+    io:format("starting outbound call~n"),
     AC = contact_utils:get_twilio_account(S),
     #twilio_account{application_sid = LocalAppSID} = AC,
     #twilio{application_sid = AppSID, custom_params = CP} = Body,
     {"hypertag", HyperTag} = proplists:lookup("hypertag", CP),
     HT = passport:open_hypertag(S, P, HyperTag),
-    {ok, Uid, EMail, Phone, _, _} = HT,
+    {ok, Uid, EMail, [Idx, OrigEmail], _, _} = HT,
+    XRefX = new_db_api:idx_to_xrefX(S, Idx),
+    #xrefX{path = OrigP} = XRefX,
+    OrigRef = hn_util:xrefX_to_refX(XRefX),
+    [Phone] = new_db_api:get_phone(OrigRef),
     Log = Phone#phone.log,
     Data = Body#twilio.call_sid,
     % gonnae build the hypertag with the original refX so we can check it
     % for security
-    XRefX = new_db_api:idx_to_xrefX(S, Phone#phone.idx),
-    #xrefX{path = OrigP} = XRefX,
-    OrigRef = hn_util:xrefX_to_refX(XRefX),
     OrigP2 = lists:append(OrigP, ["_contacts"]),
     RecHyperTag = passport:create_hypertag(S, OrigP2, Uid, EMail,
                                            Data, "never"),
     Url = hn_util:refX_to_url(OrigRef#refX{path = OrigP2, obj = {page, "/"}}),
     Link = "<a href='" ++ Url ++ "?view=recording&play="
         ++ RecHyperTag ++ "' target='recording'>Recording</a>",
-    Log2 = Log#contact_log{reference = Link},
+    Log2 = Log#contact_log{reference = Link, from = OrigEmail},
     case AppSID of
         LocalAppSID -> log(S, Log2),
                        phonecall_sup:init_call(S, Body, Phone#phone.twiml);
         _Other      -> error
     end;
 % handle recording messages
-handle_c2(_Ref, #twilio{call_status = "completed", recording = null} = Recs) ->
+handle_c2(#refX{path = Path},
+          #twilio{call_status = "completed", recording = null} = Recs) ->
     % twilio_web_util:pretty_print(Tw),
-    Path = "berk",
-    exit("fix me up in handle_c2 (1)"),
     case Path of
         [] ->
             ok = phonecall_sup:call_complete(Recs),
@@ -204,7 +204,7 @@ handle_c2(_Ref, #twilio{direction = "inbound",
                         call_status = "ringing"} = Recs) ->
                 io:format("phone ringing...~n"),
             TwiML_ext = twiml_ext_recipies:random(),
-    phonecall_sup:answer_phone(Recs, TwiML_ext);
+    phonecall_sup:init_call(Recs, TwiML_ext);
 handle_c2(Ref, #twilio{direction = "inbound",
                        call_status = "in-progress"} = Recs) ->
     io:format("Call back on ~p~n", [Ref#refX.path]),

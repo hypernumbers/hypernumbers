@@ -295,6 +295,25 @@ transform("table." ++ R, Args) ->
 transform("ztable." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("ztable."), [W , H | Args]};
+transform("phone.menu." ++ R = Fun, Args) ->
+    case R of
+        Fn when Fn == "say"
+        orelse Fn == "play"
+        orelse Fn == "record"
+        orelse Fn == "number"
+        orelse Fn == "dial"
+        orelse Fn == "sms"
+        orelse Fn == "redirect"
+        orelse Fn == "pause" -> {list_to_atom(Fun), Args};
+        _                    -> {W, H} = get_dims(R),
+                                {list_to_atom("phone.menu."), [W , H | Args]}
+    end;
+transform("users.and.groups." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("users.and.groups."), [W , H | Args]};
+transform("factory." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("factory."), [W , H | Args]};
 % single parameter stuff
 transform("tim.headline." ++ R, Args) ->
     {list_to_atom("tim.headline."), [R | Args]};
@@ -415,7 +434,7 @@ funcall(Fname, Args0) ->
              odd, int, degrees, radians, proper, index, var, steyx,
              small, skew, large, sumproduct, daverage, dcount, isref,
              irr, even,
-             include, 'tim.tabs.', 'table.', 'phone.menu'],
+             include, 'tim.tabs.', 'table.', 'phone.menu.'],
 
     Args = case lists:member(Fname, Funs) of
                true  -> Args0;
@@ -667,9 +686,6 @@ fetch(#rangeref{type = Type, path = Path} = Ref, ValType)
 % error_logger:info_msg("Somebody tried a row or column rangeref~n"),
 % ?ERRVAL_ERR;
 fetch(#rangeref{type = finite} = Ref, ValType) ->
-    XX = get(x),
-    YY = get(y),
-    Obj = tconv:to_b26(XX) ++ integer_to_list(YY),
     CellCoords = muin_util:expand_cellrange(Ref),
     Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows
                    Fun2 = fun({_, Y}) ->

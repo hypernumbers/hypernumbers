@@ -8,6 +8,7 @@
 -module(hnfuns_controls).
 
 -export([
+         'factory.'/1,
          'create.button'/1,
          'map.rows.button'/1,
          'map.sheet.button'/1,
@@ -17,6 +18,40 @@
 
 -include("spriki.hrl").
 -include("errvals.hrl").
+
+'factory.'([W, H]) ->
+    'factory.'([W, H, "Create Site", "blank"]);
+'factory.'([W, H, Title]) ->
+    'factory.'([W, H, Title, "blank"]);
+'factory.'([W, H, Title, Type | Rest]) ->
+    [W2, H2] = typechecks:std_ints([W, H]),
+    [Title2, Type2] = typechecks:std_strs([Title, Type]),
+    Rest2 = typechecks:std_strs(Rest),
+    Type3 = list_to_existing_atom(Type2),
+    % The Rest should consist of a set of doubles:
+    % * a descriptive text
+    % * a location to stick the text in
+    case stdfuns_info:iseven([length(Rest)]) of
+        true  -> ok;
+        false -> ?ERR_VAL
+    end,
+    Id = "id_" ++ muin_util:create_name(),
+    Payload = {struct, [{"signup",{struct,[{"sitetype", Type3}]}}]},
+    Js = ["/webcomponents/hn.factory.js"],
+    Reload = ["HN.Factory.reload();"],
+    CSS = ["/webcomponents/hn.factory.css"],
+    Incs = #incs{js = Js, js_reload = Reload, css= CSS},
+    Form = #form{id = {factory, Type2},
+                 kind = "factory",
+                 attrs = Payload},
+    HTML = "<div class='hn_factory'>"
+        ++ "<input id='" ++ Id ++ "' class='button factory' "
+        ++ "type='submit' value='" ++ Title ++ "' />"
+        ++ "</div>",
+    Preview = #preview{title = "Factory: " ++ Title2,
+                       width = W2, height = H2},
+    #spec_val{val = HTML, sp_webcontrol = Form, sp_incs = Incs,
+              preview = Preview}.
 
 'load.templates.button'(List) ->
     [Title, Template] = typechecks:std_strs(List),
@@ -32,11 +67,13 @@
                  Form = #form{id = {'load-template-button', Title},
                               kind = "load-template-button",
                               attrs = Payload},
-                 Html = "<input id='" ++ Id ++ "'type='submit' "
+                 HTML = "<input id='" ++ Id ++ "'type='submit' "
                      ++ "class='hn-loadtemplate' value='"
                      ++ Title ++ "' data-template='"
                      ++ Template ++ "' />",
-                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
+                 Preview = #preview{title = Title, width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                           sp_incs = Incs}
     end.
 
 'map.custom.button'(List) ->
@@ -53,11 +90,13 @@
                  Form = #form{id = {'map-custom-button', Title},
                               kind = "map-custom-button",
                               attrs = Payload},
-                 Html = "<input id='" ++ Id ++ "' type='submit' "
+                 HTML = "<input id='" ++ Id ++ "' type='submit' "
                      ++ "class='hn-mapcustom' value='"
                      ++ Title ++ "' data-map-type='custom' data-map='"
                      ++ Map ++ "' />",
-                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
+                        Preview = #preview{title = Title, width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                           sp_incs = Incs}
     end.
 
 'map.sheet.button'(List) ->
@@ -74,11 +113,13 @@
                  Form = #form{id = {'map-sheet-button', Title},
                               kind = "map-sheet-button",
                               attrs = Payload},
-                 Html = "<input id='" ++ Id ++ "' type='submit' "
+                 HTML = "<input id='" ++ Id ++ "' type='submit' "
                      ++ "class='hn-mapsheet' value='"
                      ++ Title ++ "' data-map-type='sheet' data-map='"
                      ++ Map ++ "' data-map-page='" ++ Page ++"' />",
-                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
+                 Preview = #preview{title = Title, width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                           sp_incs = Incs}
     end.
 
 'map.rows.button'(List) ->
@@ -95,11 +136,13 @@
                  Form = #form{id = {'map-rows-button', Title},
                               kind = "map-rows-button",
                               attrs = Payload},
-                 Html = "<input id='" ++ Id ++ "' type='submit' "
+                 HTML = "<input id='" ++ Id ++ "' type='submit' "
                      ++ "class='hn-maprows' value='"
                      ++ Title ++ "' data-map-type='row' data-map='"
                      ++ Map ++ "' />",
-                 {webcontrol, {Form, {Title, 2, 2, Incs}}, Html}
+                 Preview = #preview{title = Title, width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                           sp_incs = Incs}
     end.
 
 'create.button'(List) when is_list(List) ->
@@ -128,7 +171,7 @@
             Payload = [Fun2(X) || X <- Commands3],
             Pay2 = {struct, [{createpages, {array, Payload}}]},
             Json = mochijson:encode(Pay2),
-            Html = lists:flatten("<input id='" ++ Id ++ "' type='submit' "
+            HTML = lists:flatten("<input id='" ++ Id ++ "' type='submit' "
                                  ++ "class='hn-webcontrol' value='"
                                  ++ Title ++ "' data-payload='" ++ Json ++ "' "
                                  ++ "data-action='postcreatepages'"
@@ -139,5 +182,6 @@
             % action is approved
             Form = #form{id = {'create-button', Title}, kind = "create-button",
                          attrs = Commands3},
-            {webcontrol, {Form, {Title, 2, 2, #incs{}}}, Html}
+            Preview = #preview{title = Title, height = 2, width = 2},
+            #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview}
     end.

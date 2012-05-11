@@ -96,7 +96,7 @@ flat_strs(Vals) ->
     muin_collect:col(Vals, Rules, Passes).
 
 html_box_contents(Vals) ->
-    Rules = [eval_funs, fetch, flatten, strip_resize, strip_preview, {cast, str}],
+    Rules = [eval_funs, fetch, flatten, strip_spec, {cast, str}],
     Passes = [return_errors, {all, fun muin_collect:is_string/1}],
     muin_collect:col(Vals, Rules, Passes).
 
