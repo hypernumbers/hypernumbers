@@ -8,12 +8,18 @@
 -module(hnfuns_forms).
 
 -export([
-         input/1,
-         textarea/1,
-         button/1,
-         radio/1,
-         select/1,
-         fixedval/1
+         'form.input'/1,
+         'form.textarea'/1,
+         'form.button'/1,
+         'form.radio'/1,
+         'form.select'/1,
+         'form.fixedval'/1,
+         input/1,    % deprecated
+         textarea/1, % deprecated
+         button/1,   % deprecated
+         radio/1,    % deprecated
+         select/1,   % deprecated
+         fixedval/1  % deprecated
         ]).
 
 -include("spriki.hrl").
@@ -23,6 +29,13 @@
 
 -type trans() :: common | string().
 -type html() :: string().
+
+'form.input'(Args) -> input(Args).
+'form.textarea'(Args) -> textarea(Args).
+'form.button'(Args) -> button(Args).
+'form.radio'(Args) -> radio(Args).
+'form.select'(Args) -> select(Args).
+'form.fixedval'(Args) -> fixedval(Args).
 
 %-define(default_str_rules, [first_array, cast_numbers, cast_bools,
 %                            cast_blanks, cast_dates ]).
@@ -106,7 +119,7 @@ valid_emails([E | T]) ->
 
 fixedval_([Label, Val, Show]) ->
     Trans = common,
-    Form = #form{id ={Trans, Label}, kind = fixedval, restrictions = [Val]},
+    Form = #form{id = {Trans, Label}, kind = fixedval, restrictions = [Val]},
     Html = case Show of
                true  -> "<input type='text' readonly class='hnfixedval'"
                             ++ "value=\""++ Val ++ "\""
@@ -118,7 +131,9 @@ fixedval_([Label, Val, Show]) ->
                             ++" data-name='default'"
                             ++ "data-label='" ++ Label ++ "' />"
            end,
-    {rawform, Form, Html}.
+    Preview = #preview{title = Label, width = 1, height = 1},
+    #spec_val{val = Html, preview = Preview,
+              rawform = #rawform{form = Form, html = Html}}.
 
 -spec input_([string()], string(), trans()) -> {rawform, #form{}, html()}.
 input_(Label) -> input_(Label, "", common).
@@ -129,7 +144,9 @@ input_([Label], _Default, Trans) ->
                          "data-name='default' " ++
                          "data-label='"++Label++"' " ++
                          "value='Enter data...'/>"),
-    {rawform, Form, Html}.
+    Preview = #preview{title = Label, width = 1, height = 1},
+    #spec_val{val = Html, preview = Preview,
+              rawform = #rawform{form = Form, html = Html}}.
 
 -spec textarea_([string()], string(), trans()) -> {rawform, #form{}, html()}.
 textarea_(Label) -> textarea_(Label, "", common).
@@ -140,7 +157,9 @@ textarea_([Label], _Default, Trans) ->
                          ++ "data-name='default' "
                          ++ "data-label='"++Label++
                          "'>Enter data...</textarea>"),
-    {rawform, Form, Html}.
+    Preview = #preview{title = Label, width = 1, height = 1},
+    #spec_val{val = Html, preview = Preview,
+              rawform = #rawform{form = Form, html = Html}}.
 
 -spec button_(string(), string(), string(), string()) -> {rawform, #form{}, html()}.
 button_(Value, Response, ResultsPath, Email) ->
@@ -153,13 +172,16 @@ button_(Value, Response, ResultsPath, Email) ->
     Form = #form{id = {Trans, "_"},
                  kind = button,
                  attrs = Attrs},
-    Html = lists:flatten("<input type='submit' class='hninput' value='"
+    Html = lists:flatten("<input type='submit' class='hninput button' value='"
                          ++ Value ++"'"
                          ++ " data-results='" ++ ResultsPath ++ "'"
                          ++ " data-origin='" ++ Origin ++ "?view=webpage'"
                          ++ " data-form-name='default' data-response='"
                          ++ Response ++ "' />"),
-    {rawform, Form, Html}.
+    Preview = #preview{title = Value ++ " Submit Button",
+                       width = 1, height = 1},
+    #spec_val{val = Html, preview = Preview,
+              rawform = #rawform{form = Form, html = Html}}.
 
 -spec select_(string(), [string()]) -> {rawform, #form{}, html()}.
 select_(Label, Options) ->
@@ -171,7 +193,9 @@ select_(Label, Options) ->
     Html = lists:flatten("<select class='hninput' data-name='default' "++
                          "data-label='" ++ Label ++ "' >" ++ Opts ++
                          "</select>"),
-    {rawform, Form, Html}.
+    Preview = #preview{title = Label, width = 1, height = 1},
+    #spec_val{val = Html, preview = Preview,
+              rawform = #rawform{form = Form, html = Html}}.
 
 -spec radio_(string(), [string()]) -> {rawform, #form{}, html()}.
 radio_(Label, Options) ->
@@ -190,7 +214,9 @@ radio_(Label, Options) ->
     Html = lists:flatten("<div class='hninput' data-name='default' "++
                          "data-label='" ++ Label ++ "' >" ++ Opts ++
                          "</div>"),
-    {rawform, Form, Html}.
+    Preview = #preview{title = Label, width = 1, height = 1},
+    #spec_val{val = Html, preview = Preview,
+              rawform = #rawform{form = Form, html = Html}}.
 
 make_radio(Name, Opt) ->
     ID = "id_"++muin_util:create_name(),

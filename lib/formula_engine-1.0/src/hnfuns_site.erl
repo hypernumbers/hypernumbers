@@ -144,7 +144,7 @@ phsay(Text, Voice, Language, Loop) ->
                 ++ "<em>Has the email been validated?</em> "
                 ++ atom_to_list(SE#site_email.email_validated) ++ "<br />"
                 ++ "<em>Signature is:</em> " ++ SE#site_email.signature
-                ++ "</div>",
+                ++ "</div></div>",
             ok = new_db_wu:write_kvD(Site, site_email, {Idx, SE}),
             case SE#site_email.email_validated of
                 false -> send_invite(FromE2, Idx);

@@ -367,7 +367,8 @@ copy_cell(From = #xrefX{obj = {cell, _}},
                       [{_, As}] -> As;
                       _         -> []
                   end,
-    Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["style"])} end,
+    Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs,
+                                               ["style"])} end,
     apply_to_attrsD(To, Op, copy, Uid, ?NONTRANSFORMATIVE),
     ok;
 copy_cell(From, To, Incr, all, Uid) ->
@@ -614,13 +615,15 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
                                       false ->
                                           A6
                                   end,
-                         case Has_Users of
-                                 true ->
-                                     unattach_usersD(XRefX),
-                                     orddict:erase("__users", A6);
-                                 false ->
-                                     A7
-                             end;
+                             A8 = case Has_Users of
+                                      true ->
+                                          unattach_usersD(XRefX),
+                                          orddict:erase("__users", A6);
+                                      false ->
+                                          A7
+                                  end,
+                             % erase the preview from the attributes
+                             orddict:erase("preview", A8);
                          false ->
                              case Is_Dynamic of
                                  true ->
@@ -629,14 +632,12 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
                                  false ->
                                      Attrs
                              end
-                     end,
-                 % erase the preview from the attributes
-                 Attrs3 = orddict:erase("preview", Attrs2),
+                             end,
                  case Is_In_IncFn of
                      true  -> mark_children_dirtyD(XRefX, AReq);
                      false -> ok
                  end,
-                 {clean, process_attrs(NewAs, XRefX, AReq, Attrs3)}
+                 {clean, process_attrs(NewAs, XRefX, AReq, Attrs2)}
          end,
     apply_to_attrsD(XRefX, Op, write, AReq, ?NONTRANSFORMATIVE).
 
@@ -755,105 +756,10 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
         % a special return
         {ok, {Pcode, #spec_val{} = Res, Parents, InfParents,
               Recompile, CircRef}} ->
-            Attrs2 = proc_special(Res, XRefX, Attrs),
+            Attrs2 = proc_special(Res, XRefX, Attrs, Parents),
             write_formula_attrs(Attrs2, XRefX, Formula, Pcode,
                                 Res#spec_val.val,
                                 {Parents, Res#spec_val.include}, InfParents,
-                                Recompile, CircRef);
-        % the formula returns as rawform
-        {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile,
-              CircRef}} ->
-            {Trans, Label} = RawF#form.id,
-            Form = RawF#form{id = {XRefX#xrefX.path, Trans, Label}},
-            ok = attach_formD(XRefX, Form),
-            Label2 = case Label of
-                         "_" -> "Submit Button";
-                         _   -> Label
-                     end,
-            Attrs2 = orddict:store("__hasform", t, Attrs),
-            Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
-            write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Html,
-                                {Parents, false}, InfParents,
-                                Recompile, CircRef);
-        % the formula returns a web control
-        {ok, {Pcode, {webcontrol, {Payload, {Title, Wd, Ht, Incs}}, Res},
-              Parents, InfParents, Recompile, CircRef}} ->
-            {Trans, Label} = Payload#form.id,
-            Form = Payload#form{id = {XRefX#xrefX.path, Trans, Label}},
-            ok = attach_formD(XRefX, Form),
-            Attrs2 = orddict:store("__hasform", t, Attrs),
-            Blank = #incs{},
-            Attrs3 = case Incs of
-                         Blank -> orddict:erase("__hasincs", Attrs2);
-                         _     -> ok = update_incsD(XRefX, Incs),
-                                  orddict:store("__hasincs", t, Attrs2)
-                     end,
-            Attrs4 = orddict:store("preview", {Title, Wd, Ht}, Attrs3),
-            Attrs5 = handle_merge(Ht, Wd, Attrs4),
-            write_formula_attrs(Attrs5, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents,
-                                Recompile, CircRef);
-        % the formula returns a phone control
-        {ok, {Pcode, {phone, {PreV, Wd, Ht, Payload}, Res},
-              Parents, InfParents, Recompile, CircRef}} ->
-            ok = attach_phoneD(XRefX, Payload),
-            Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
-            Attrs3 = orddict:store("__hasphone", t, Attrs2),
-            Attrs4 = handle_merge(Ht, Wd, Attrs3),
-            write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents,
-                                Recompile, CircRef);
-        % the formula returns a web-hingie that needs to be previewed
-        {ok, {Pcode, {preview, {PreV, Wd, Ht, Incs}, Res}, Pars,
-              InfPars, Recompile, CircRef}} ->
-            Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
-            Blank = #incs{},
-            Attrs3 = case Incs of
-                         Blank -> orddict:erase("__hasincs", Attrs2);
-                         _     -> ok = update_incsD(XRefX, Incs),
-                                  orddict:store("__hasincs", t, Attrs2)
-                     end,
-            Attrs4 = handle_merge(Ht, Wd, Attrs3),
-            write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
-                                {Pars, false}, InfPars,
-                                Recompile, CircRef);
-        % special case for the include function (special dirty!)
-        {ok, {Pcode, {include, {PreV, Wd, Ht, Incs}, Res}, Pars,
-              InfPars, Recompile, CircRef}} ->
-            Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
-            Blank = #incs{},
-            Attrs3 = case Incs of
-                         Blank -> orddict:erase("__hasincs", Attrs2);
-                         _     -> ok = update_incsD(XRefX, Incs),
-                                  orddict:store("__hasincs", t, Attrs2)
-                     end,
-            % with include you might need to bring incs through from
-            % whatever is included so some jiggery might be required
-            % on the pokey
-            Attrs4 = handle_merge(Ht, Wd, Attrs3),
-            Attrs5 = bring_through(Attrs4, XRefX, Pars),
-            write_formula_attrs(Attrs5, XRefX, Formula, Pcode, Res,
-                                {Pars, true}, InfPars,
-                                Recompile, CircRef);
-        % normal functions with a resize
-        {ok, {Pcode, {resize, {Wd, Ht, Incs}, Res}, Parents,
-              InfParents, Recompile, CircRef}} ->
-            Blank = #incs{},
-            Attrs2 = case Incs of
-                         Blank -> orddict:erase("__hasincs", Attrs);
-                         _     -> ok = update_incsD(XRefX, Incs),
-                                  orddict:store("__hasincs", t, Attrs)
-                     end,
-            Attrs3 = handle_merge(Ht, Wd, Attrs2),
-            write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents,
-                                Recompile, CircRef);
-        {ok, {Pcode, {timer, Spec, Res}, Parents, InfParents, Recompile,
-              CircRef}} ->
-            Attrs2 = orddict:store("__hastimer", t, Attrs),
-            ok = update_timerD(XRefX, Spec),
-            write_formula_attrs(Attrs2, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents,
                                 Recompile, CircRef);
         % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile, CircRef}} ->
@@ -865,65 +771,76 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
                                 Recompile, CircRef)
     end.
 
-proc_special(#spec_val{rawform = null} = SP, XRefX, Attrs) ->
-    proc_sp1(SP, XRefX, Attrs);
-proc_special(#spec_val{rawform = _FR} = _SP, _XRefX, _Attrs) ->
-    exit("fix me 1a").
+proc_special(#spec_val{rawform = null} = SP, XRefX, Attrs, Pars) ->
+    proc_sp1(SP, XRefX, Attrs, Pars);
+proc_special(#spec_val{rawform = RF} = SP, XRefX, Attrs, Pars) ->
+    #rawform{form = Form} = RF,
+    ok = attach_formD(XRefX, Form),
+    NewAttrs = orddict:store("__hasform", t, Attrs),
+    proc_sp1(SP, XRefX, NewAttrs, Pars).
 
-proc_sp1(#spec_val{sp_webcontrol = null} = SP, XRefX, Attrs) ->
-    proc_sp2(SP, XRefX, Attrs);
-proc_sp1(#spec_val{sp_webcontrol = WC} = SP, XRefX, Attrs) ->
+proc_sp1(#spec_val{sp_webcontrol = null} = SP, XRefX, Attrs, Pars) ->
+    proc_sp2(SP, XRefX, Attrs, Pars);
+proc_sp1(#spec_val{sp_webcontrol = WC} = SP, XRefX, Attrs, Pars) ->
     {Trans, Label} = WC#form.id,
     Form = WC#form{id = {XRefX#xrefX.path, Trans, Label}},
     ok = attach_formD(XRefX, Form),
     NewAttrs = orddict:store("__hasform", t, Attrs),
-    proc_sp2(SP, XRefX, NewAttrs).
+    proc_sp2(SP, XRefX, NewAttrs, Pars).
 
-proc_sp2(#spec_val{sp_phone = null} = SP, XRefX, Attrs) ->
-    proc_sp3(SP, XRefX, Attrs);
-proc_sp2(#spec_val{sp_phone = Pl} = SP, XRefX, Attrs) ->
+proc_sp2(#spec_val{sp_phone = null} = SP, XRefX, Attrs, Pars) ->
+    proc_sp3(SP, XRefX, Attrs, Pars);
+proc_sp2(#spec_val{sp_phone = Pl} = SP, XRefX, Attrs, Pars) ->
     ok = attach_phoneD(XRefX, Pl),
     NewAttrs = orddict:store("__hasphone", t, Attrs),
-    proc_sp3(SP, XRefX, NewAttrs).
+    proc_sp3(SP, XRefX, NewAttrs, Pars).
 
-proc_sp3(#spec_val{preview = null} = SP, XRefX, Attrs) ->
-    proc_sp4(SP, XRefX, Attrs);
-proc_sp3(#spec_val{preview = Pr} = SP, XRefX, Attrs) ->
+proc_sp3(#spec_val{preview = null} = SP, XRefX, Attrs, Pars) ->
+    proc_sp4(SP, XRefX, Attrs, Pars);
+proc_sp3(#spec_val{preview = Pr} = SP, XRefX, Attrs, Pars) ->
     #preview{title = Title, height = Ht, width = Wd} = Pr,
     NewAttrs = orddict:store("preview", {Title, Wd, Ht}, Attrs),
     NewAttrs2 = handle_merge(Ht, Wd, NewAttrs),
-    proc_sp4(SP, XRefX, NewAttrs2).
+    proc_sp4(SP, XRefX, NewAttrs2, Pars).
 
-proc_sp4(#spec_val{sp_incs = null} = SP, XRefX, Attrs) ->
+proc_sp4(#spec_val{include = false} = SP, XRefX, Attrs, _Pars) ->
     proc_sp5(SP, XRefX, Attrs);
-proc_sp4(#spec_val{sp_incs = Incs} = SP, XRefX, Attrs) ->
-    ok = update_incsD(XRefX, Incs),
-    NewAttrs = orddict:store("__hasincs", t, Attrs),
+proc_sp4(#spec_val{include = true} = SP, XRefX, Attrs, Pars) ->
+    NewAttrs = bring_through(Attrs, XRefX, Pars),
     proc_sp5(SP, XRefX, NewAttrs).
 
-proc_sp5(#spec_val{resize = null} = SP, XRefX, Attrs) ->
+proc_sp5(#spec_val{sp_incs = null} = SP, XRefX, Attrs) ->
     proc_sp6(SP, XRefX, Attrs);
-proc_sp5(#spec_val{resize = RSz} = SP, XRefX, Attrs) ->
-    #resize{width = W, height = H} = RSz,
-    NewAttrs = handle_merge(H, W, Attrs),
+proc_sp5(#spec_val{sp_incs = Incs} = SP, XRefX, Attrs) ->
+    ok = update_incsD(XRefX, Incs),
+    NewAttrs = orddict:store("__hasincs", t, Attrs),
     proc_sp6(SP, XRefX, NewAttrs).
 
-proc_sp6(#spec_val{sp_timer = null} = SP, XRefX, Attrs) ->
+proc_sp6(#spec_val{resize = null} = SP, XRefX, Attrs) ->
     proc_sp7(SP, XRefX, Attrs);
-proc_sp6(#spec_val{sp_timer = _Tr} = SP, _XRefX, _Attrs) ->
-    io:format("SP is ~p~n", [SP]),
-    exit("fix me 7a").
+proc_sp6(#spec_val{resize = RSz} = SP, XRefX, Attrs) ->
+    #resize{width = W, height = H} = RSz,
+    NewAttrs = handle_merge(H, W, Attrs),
+    proc_sp7(SP, XRefX, NewAttrs).
 
-proc_sp7(#spec_val{sp_users = null} = SP, XRefX, Attrs) ->
+proc_sp7(#spec_val{sp_timer = null} = SP, XRefX, Attrs) ->
     proc_sp8(SP, XRefX, Attrs);
-proc_sp7(#spec_val{sp_users = true} = SP, XRefX, Attrs) ->
-    ok = attach_usersD(XRefX),
-    NewAttrs = orddict:store("__users", t, Attrs),
+proc_sp7(#spec_val{sp_timer = Tr} = SP, XRefX, Attrs) ->
+    NewAttrs = orddict:store("__hastimer", t, Attrs),
+    #sp_timer{spec = Spec} = Tr,
+    ok = update_timerD(XRefX, Spec),
     proc_sp8(SP, XRefX, NewAttrs).
 
-proc_sp8(#spec_val{unique = null}, _XRefX, Attrs) ->
+proc_sp8(#spec_val{sp_users = null} = SP, XRefX, Attrs) ->
+    proc_sp9(SP, XRefX, Attrs);
+proc_sp8(#spec_val{sp_users = true} = SP, XRefX, Attrs) ->
+    ok = attach_usersD(XRefX),
+    NewAttrs = orddict:store("__users", t, Attrs),
+    proc_sp9(SP, XRefX, NewAttrs).
+
+proc_sp9(#spec_val{unique = null}, _XRefX, Attrs) ->
     Attrs;
-proc_sp8(#spec_val{unique = Uq}, _XRefX, Attrs) ->
+proc_sp9(#spec_val{unique = Uq}, _XRefX, Attrs) ->
     orddict:store("__unique", Uq, Attrs).
 
 handle_merge(1, 1, Attrs) -> orddict:erase("merge", Attrs);
