@@ -599,7 +599,7 @@ iget(#refX{site = S, path = ["_site"]}, page, #qry{map = Name}, Env) when Name =
     Maps = {struct, [hn_import:read_map(S, Name)]},
     json(Env, Maps);
 
-iget(#refX{site=S, path=["_site"]}, page, _Qry, Env) ->
+iget(#refX{site = S, path = ["_site"]}, page, _Qry, Env) ->
     Groups    = {"groups", {array, hn_groups:get_all_groups(S)}},
     Templates = {"templates", {array, hn_util:get_templates(S)}},
     Maps      = {"maps", {array, hn_util:get_maps(S)}},
@@ -1045,6 +1045,8 @@ ipost(Ref=#refX{path=["_user"]}, _Qry,
     throw("can't set language right now");
 %% ok = hn_users:update(Site, Uid, "language", Lang),
 %% json(Env, "success");
+
+%% ipost of factory provisioning
 
 %% ipost for inline editable cells
 ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
