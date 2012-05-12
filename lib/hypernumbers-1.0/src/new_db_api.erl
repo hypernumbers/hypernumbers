@@ -13,7 +13,10 @@
 -include("syslib.hrl").
 
 -export([
-         mark_users_and_groups_dirty/1,
+         clear_factory/1,
+         make_factory/1,
+         make_factory/2,
+         mark_site_dirty/1,
          delete_siteonly/2,
          read_siteonly/2,
          write_siteonly/3,
@@ -93,11 +96,39 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-mark_users_and_groups_dirty(Site) ->
-    Report = mnesia_mon:get_stamp("mark_users_and_groups_dirty"),
+clear_factory(Site) ->
+    Report = mnesia_mon:get_stamp("cler_factory"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:delete_kvD(Site, factory),
+                  new_db_wu:mark_site_dirtyD(Site)
+          end,
+    % use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet", Report).
+
+make_factory(Site) ->
+    make_factory2(Site, all).
+
+make_factory(Site, List) when is_list(List) ->
+    make_factory2(Site, List).
+
+make_factory2(Site, Terms) ->
+    Report = mnesia_mon:get_stamp("make_factory"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:write_kvD(Site, factory, Terms),
+                  new_db_wu:mark_site_dirtyD(Site)
+          end,
+    % use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet", Report).
+
+mark_site_dirty(Site) ->
+    Report = mnesia_mon:get_stamp("mark_site_dirty"),
     Fun = fun() ->
                    mnesia_mon:report(Report),
-                   new_db_wu:mark_users_and_groups_dirtyD(Site)
+                   new_db_wu:mark_site_dirtyD(Site)
            end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},

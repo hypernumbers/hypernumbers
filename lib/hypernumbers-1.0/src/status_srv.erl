@@ -21,9 +21,23 @@
 
 -include("spriki.hrl").
 
--record(site, {site, time_purged = calendar:now_to_universal_time(now()), list}).
--record(user, {name, details}).
--record(details, {path, change, timestamp = calendar:now_to_universal_time(now())}).
+-record(status_site,
+        {
+          site,
+          time_purged = calendar:now_to_universal_time(now()),
+          list
+         }).
+-record(status_user,
+        {
+          name,
+          details
+         }).
+-record(status_details,
+        {
+          path,
+          change,
+          timestamp = calendar:now_to_universal_time(now())
+         }).
 %-record(jstree, {data, attr, state, children}).
 
 %%%===================================================================
@@ -94,9 +108,9 @@ init([]) ->
 handle_call({get_status, Site}, _From, {Old, New}) ->
     {NewState, Struct} = case lists:keysearch(Site, 2, Old) of
                              false      -> {Old, []};
-                             {value, R} -> #site{list = L} = R,
+                             {value, R} -> #status_site{list = L} = R,
                                            {N, St} = transform_status(L),
-                                           R2 = R#site{list = N},
+                                           R2 = R#status_site{list = N},
                                            L2 = lists:keyreplace(Site, 2, Old, R2),
                                            {L2, St}
                          end,
@@ -186,31 +200,31 @@ transform_status([H | T], Acc1, Acc2) ->
     transform_status(T, NewAcc1, NewAcc2).
 
 make_first_record(U, S, P, Ch) ->
-    D = #details{path = P, change = Ch},
-    User = #user{name = U, details = [D]},
-    #site{site = S, list = [User]}.
+    D = #status_details{path = P, change = Ch},
+    User = #status_user{name = U, details = [D]},
+    #status_site{site = S, list = [User]}.
 
 add_to_site(SiteRec, U, S, P, Ch, _St) ->
-    #site{list = List} = SiteRec,
-    D = #details{path = P, change = Ch},
+    #status_site{list = List} = SiteRec,
+    D = #status_details{path = P, change = Ch},
     List2 = case lists:keysearch(U, 2, List) of
-              false      -> [#user{name = U, details = [D]} | List];
+              false      -> [#status_user{name = U, details = [D]} | List];
               {value, R} -> U2 = add_to_user(R, P, D),
                             lists:keyreplace(U, 2, List, U2)
           end,
-    #site{site = S, list = List2}.
+    #status_site{site = S, list = List2}.
 
 add_to_user(R, P, D) ->
-    #user{details = OldD} = R,
+    #status_user{details = OldD} = R,
     case lists:keysearch(P, 2, OldD) of
-             false        -> R#user{details = [D | OldD]};
+             false        -> R#status_user{details = [D | OldD]};
              {value, _D2} -> NewD = lists:keyreplace(P, 2, OldD, D),
-                             R#user{details = NewD}
+                             R#status_user{details = NewD}
          end.
 
-purge(#user{name = N, details = D}) ->
+purge(#status_user{name = N, details = D}) ->
     NewD = purge_details(D),
-    NewU = #user{name = N, details = NewD},
+    NewU = #status_user{name = N, details = NewD},
     case NewD of
         [] -> {NewU, {struct, []}};
         _  -> {NewU, [{(N), {struct, extract(NewD)}}]}
@@ -226,7 +240,7 @@ purge_d1([], Acc)      -> A2 = lists:reverse(Acc),
                               length(A2) >  5 -> [A, B, C, D, E | _F] = A2,
                                                  [A, B, C, D , E]
                           end;
-purge_d1([H | T], Acc) -> #details{timestamp = Ts} = H,
+purge_d1([H | T], Acc) -> #status_details{timestamp = Ts} = H,
                           Now = calendar:now_to_universal_time(now()),
                           {D, _} = ?diff(Ts, Now),
                           if
@@ -237,7 +251,7 @@ purge_d1([H | T], Acc) -> #details{timestamp = Ts} = H,
 extract(List) -> extract1(List, []).
 
 extract1([], Acc) -> lists:reverse(Acc);
-extract1([#details{path = P, change = Ch, timestamp = Ts} | T], Acc) ->
+extract1([#status_details{path = P, change = Ch, timestamp = Ts} | T], Acc) ->
     P2 = hn_util:list_to_path(P),
     Msg = get_msg(Ts),
     Acc2 = {P2, {struct, [{Ch, Msg}]}},

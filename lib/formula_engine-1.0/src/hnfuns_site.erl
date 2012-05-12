@@ -37,8 +37,7 @@
             ++ "</td></tr>" || {G, M} <- Groups]
         ++ "</table></div>",
     Resize = #resize{width = W2, height = H2},
-    #spec_val{val = lists:flatten(HTML), resize = Resize,
-              sp_users = true}.
+    #spec_val{val = lists:flatten(HTML), resize = Resize, sp_site = true}.
 
 'phone.menu.'([W, H | List]) ->
     Site = get(site),

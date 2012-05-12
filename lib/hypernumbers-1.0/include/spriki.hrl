@@ -68,7 +68,7 @@
           refs        = []
          }).
 
--record(users_and_groups,
+-record(site,
         {
           idx,
           nothing % needed to be a valid mnesia table!
@@ -444,7 +444,7 @@
           sp_incs = null,
           resize = null,
           sp_timer = null,
-          sp_users = null,
+          sp_site = null,
           unique = null
          }).
 

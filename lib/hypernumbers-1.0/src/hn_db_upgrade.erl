@@ -10,10 +10,10 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_site_table_2011_05_12/0,
          upgrade_phone_records_2012_05_08/0,
-         add_users_and_groups_table_2011_05_08/0,
          change_hns_record_table/0,
-         add_site_table_2012_03_05/0,
+         add_siteonly_table_2012_03_05/0,
          write_twilio_kvs/3,
          write_twilio_spoof_kvs/0,
          write_twilio_use_kvs/0,
@@ -80,6 +80,21 @@
 %% upgrade_1776/0
         ]).
 
+add_site_table_2011_05_12() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tables = mnesia:system_info(local_tables),
+                   Tbl = new_db_wu:trans(Site, site),
+                   case lists:member(Tbl, Tables) of
+                       true  -> mnesia:delete_table(Site);
+                       false -> ok
+                   end,
+                   Fields = record_info(fields, site),
+                   make_table(Site, site, Fields, disc_copies)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
 upgrade_phone_records_2012_05_08() ->
     Sites = hn_setup:get_sites(),
     F2 = fun(Site) ->
@@ -101,22 +116,6 @@ upgrade_phone_records_2012_05_08() ->
     lists:foreach(F2, Sites),
     ok.
 
-add_users_and_groups_table_2011_05_08() ->
-    Sites = hn_setup:get_sites(),
-    Fun1 = fun(Site) ->
-                   Tables = mnesia:system_info(local_tables),
-                   Tbl = new_db_wu:trans(Site, users_and_groups),
-                   case lists:member(Tbl, Tables) of
-                       true  -> mnesia:delete_table(Site);
-                       false -> ok
-                   end,
-                   Fields = record_info(fields, users_and_groups),
-                   make_table(Site, users_and_groups,
-                              Fields, disc_copies)
-           end,
-    lists:foreach(Fun1, Sites),
-    ok.
-
 write_twilio_kvs(Site, AppSID, PhoneNo)
   when is_list(PhoneNo)->
     AccSID = "AC7a076e30da6d49119b335d3a6de43844",
@@ -132,7 +131,8 @@ write_twilio_spoof_kvs() ->
     AC = #twilio_account{account_sid     = "aaaa",
                          auth_token      = "bbbb",
                          application_sid = "cccc",
-                         site_phone_no   = "+441315101875"},
+                         site_phone_no   = "+441315101875",
+                         type            = "full"},
     new_db_api:write_kv(Site, ?twilio, AC).
 
 write_twilio_dev_kvs() ->
@@ -161,7 +161,7 @@ change_hns_record_table() ->
     io:format("Ret is ~p~n", [Ret]),
     ok.
 
-add_site_table_2012_03_05() ->
+add_siteonly_table_2012_03_05() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
                    Tables = mnesia:system_info(local_tables),

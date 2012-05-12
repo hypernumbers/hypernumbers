@@ -106,7 +106,8 @@ errornum(?ERRVAL_CIRCREF) -> 8;
 errornum(?ERRVAL_AUTH)    -> 9;
 errornum(?ERRVAL_FORM)    -> 10;
 errornum(?ERRVAL_CANTINC) -> 11;
-errornum(?ERRVAL_PAYONLY) -> 12.
+errornum(?ERRVAL_PAYONLY) -> 12;
+errornum(?ERRVAL_NOTFACT) -> 13.
 %% THERE IS NO errornum FOR #MOCHIJSON! AS IT IS A BUG NOT A PROPER ERROR MESSAGE!
 
 'error.type'([X]) when ?is_errval(X)                  -> errornum(X);
@@ -134,7 +135,6 @@ iseven([V1]) ->
 
 %% @todo needs a test case written because it is not an Excel 97 function
 isodd([Num]) -> not(iseven([Num])).
-
 
 %% Returns true only for booleans or arrays where element (1,1) is a boolean.
 %% (Returns false for ranges regardless of what's in them.)
