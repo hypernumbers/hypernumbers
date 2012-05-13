@@ -132,7 +132,7 @@ write_twilio_spoof_kvs() ->
                          auth_token      = "bbbb",
                          application_sid = "cccc",
                          site_phone_no   = "+441315101875",
-                         type            = "full"},
+                         type            = full},
     new_db_api:write_kv(Site, ?twilio, AC).
 
 write_twilio_dev_kvs() ->
@@ -140,7 +140,8 @@ write_twilio_dev_kvs() ->
     AC = #twilio_account{account_sid     = "AC7a076e30da6d49119b335d3a6de43844",
                          auth_token      = "9248c9a2a25f6914fad9c9fb5b30e69c",
                          application_sid = "APe2c6b02daf974b699fb14591cc7bbd79",
-                         site_phone_no   = "+441315101875"},
+                         site_phone_no   = "+441315101875",
+                         type            = full},
     new_db_api:write_kv(Site, ?twilio, AC).
 
 write_twilio_use_kvs() ->
@@ -148,7 +149,8 @@ write_twilio_use_kvs() ->
     AC = #twilio_account{account_sid     = "AC7a076e30da6d49119b335d3a6de43844",
                          auth_token      = "9248c9a2a25f6914fad9c9fb5b30e69c",
                          application_sid = "APf2b5e475549b404e8ff26ed1a9fb8bcb",
-                         site_phone_no   = "+441315101883"},
+                         site_phone_no   = "+441315101883",
+                         type            = fulll},
     new_db_api:write_kv(Site, ?twilio, AC).
 
 change_hns_record_table() ->
