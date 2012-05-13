@@ -37,16 +37,19 @@
     end.
 
 'factory.'([W, H]) ->
-    'factory.'([W, H, "Create Site"]);
+    'factory.'([W, H, "Create A New Vixo Site"]);
 'factory.'([W, H, Title]) ->
     'factory.'([W, H, Title, "blank"]);
 'factory.'([W, H, Title, Type]) ->
-    'factory.'([W, H, Title, Type, ""]);
-'factory.'([W, H, Title, Type, Desc | Rest]) ->
+    Text = "Create a site of type: '" ++ Type ++ "'",
+    'factory.'([W, H, Title, Type, Text, "Create Site >>"]);
+'factory.'([W, H, Title, Type, Desc, ButtonTxt | Rest]) ->
     % first check if the site is able to be a factory
     [W2, H2] = typechecks:std_ints([W, H]),
-    [Title2, Type2, Desc2] = typechecks:std_strs([Title, Type, Desc]),
-    io:format("Title2 is ~p Type2 is ~p Desc2 is ~p~n", [Title2, Type2, Desc2]),
+    List = [Title, Type, Desc, ButtonTxt],
+    [Title2, Type2, Desc2, BtnTxt2] = typechecks:std_strs(List),
+    % make sure the sitetype exists
+    Type3 = hn_util:site_type_exists(Type2),
     % check if the site is a factory site and which site types it
     % can create
     V = new_db_wu:read_kvD(?msite, factory),
@@ -54,61 +57,61 @@
         [] ->
             #spec_val{val = ?ERRVAL_NOTFACT, sp_site = true};
         [{kvstore, factory, all}] ->
-            factory2(W2, H2, Title2, Type2, Desc2, Rest);
+            factory2(W2, H2, Title2, Type3, Desc2, BtnTxt2, Rest);
         [{kvstore, factory, List}] when is_list(List) ->
             % now check if the site type is in the list
-            case lists:member(Type2, List) of
-                true  -> factory2(W2, H2, Title2, Type2, Desc2, Rest);
+            case lists:member(Type3, List) of
+                true  -> factory2(W2, H2, Title2, Type3, Desc2, BtnTxt2, Rest);
                 false -> #spec_val{val = ?ERRVAL_VAL, sp_site = true}
             end
     end.
 
-factory2(W, H, Title, Type, Desc, Rest) ->
+factory2(W, H, Title, Type, Desc, BtnTxt, Rest) ->
     Rest = typechecks:std_strs(Rest),
     % The Rest should consist of a set of doubles:
     % * a descriptive text
     % * a location to stick the text in
     case stdfuns_info:iseven([length(Rest)]) of
-        true  -> factory3(W, H, Title, Type, Desc, Rest);
+        true  -> factory3(W, H, Title, Type, Desc, BtnTxt, Rest);
         false -> #spec_val{val = ?ERRVAL_VAL, sp_site = true}
     end.
 
-factory3(W, H, Title, Type, Desc, Rest) ->
+factory3(W, H, Title, Type, Desc, BtnTxt, Rest) ->
     Ref = hn_util:obj_to_ref({cell, {?mx, ?my}}),
-    Body = make_body(Rest, []),
+    {Body, Payload} = make_body(Rest, [], []),
     Id = "id_" ++ muin_util:create_name(),
-    Payload = {struct, [{"signup",{struct,[{"sitetype", Type}]}}]},
     Js = ["/webcomponents/hn.factory.js"],
     Reload = ["HN.Factory.reload();"],
     CSS = ["/webcomponents/hn.factory.css"],
     Incs = #incs{js = Js, js_reload = Reload, css= CSS},
-    Form = #form{id = {factory, Type},
+    Form = #form{id = {factory, atom_to_list(Type)},
                  kind = "factory",
+                 restrictions = {"sitetype", Type},
                  attrs = Payload},
     HTML = "<div class='hn_factory'>"
         ++ "<h2>" ++ Title ++ "</h2>"
         ++ "<p>" ++ Desc ++ "</p>"
         ++ Body
         ++ "<p class='hn_factory_txt'>Please enter your email address:</p>"
-        ++ "<input class='hn_factory_input' "
-        ++ "data-location='email' type='text' />"
+        ++ "<input class='hn_factory_email' type='text' />"
         ++ "<div class='hn_factory_container'>"
         ++ "<input id='" ++ Id ++ "' class='button factory' "
-        ++ "type='submit' data-ref='" ++ Ref ++ "' "
-        ++ "data-sitetype='" ++ Type ++ "' "
-        ++ "value='" ++ Title ++ "' />"
+        ++ "type='submit' data-type='" ++ atom_to_list(Type) ++ "' "
+        ++ "data-ref='" ++ Ref ++ "' "
+        ++ "value='" ++ BtnTxt ++ "' />"
         ++ "</div>"
         ++ "</div>",
     PreV = #preview{title = "Factory: " ++ Title, width = W, height = H},
     #spec_val{val = HTML, sp_webcontrol = Form, sp_incs = Incs,
               preview = PreV, sp_site = true}.
 
-make_body([], Acc) -> lists:flatten(Acc);
-make_body([Desc, Input | T], Acc) ->
+make_body([], Acc1, Acc2) -> {lists:flatten(lists:reverse(Acc1)),
+                              lists:reverse(Acc2)};
+make_body([Desc, Input | T], Acc1, Acc2) ->
     % test the input to see if it is a valid cell/path combo
     ok = is_valid(Input),
-    NewAcc = make_b2(Desc, Input),
-    make_body(T, [NewAcc | Acc]).
+    NewAcc1 = make_b2(Desc, Input),
+    make_body(T, [NewAcc1 | Acc1], [Input | Acc2]).
 
 make_b2(Desc, Input) ->
     "<p class='hn_factory_txt'>" ++ Desc ++ "</p>"

@@ -9,7 +9,7 @@
   font    : inherit;
   }
 
-.hn_factory input[type=text]
+.hn_factory input[type=text], hn_factory_email
 {
   width : 100%;
   border: 1px solid #999;
