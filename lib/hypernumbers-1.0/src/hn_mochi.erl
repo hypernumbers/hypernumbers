@@ -815,10 +815,9 @@ ipost(#refX{path = ["_services", "phoneredirect" | []], obj = {page, "/"}}, _Qry
                 {ok, development} ->
                     true;
                 {ok, _Other} ->
-                    {ok, Services} = application:get_env(hypernumbers, services),
-                    case lists:keysearch(phoneredirect, 1, Services) of
-                        {value, {phoneredirect, false}} -> false;
-                        {value, {phoneredirect, true}}  -> true
+                    case application:get_env(hypernumbers, redirect) of
+                        {ok, false} -> false;
+                        {ok, true}  -> true
                     end
             end,
     case Redir of

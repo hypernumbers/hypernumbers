@@ -15,11 +15,13 @@
    % be started regardless.
    {services,
     [
-     {phoneredirect, true},
      {hns, true},
      {passport, true},
      {twilio_srv, true}
     ]},
+
+   % Should this sever be running the phone redirect?
+   {phoneredirect, true},
 
    % Url to synchronize cookies against.
    {sync_url, "http://hypernumbers.com"},
