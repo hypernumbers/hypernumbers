@@ -83,6 +83,7 @@ site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
             ok = create_blank_z_and_infs(Site),
             ok = create_blank_pages(Site),
             ok = init_telephony(Site),
+            ok = create_userfiles(Site),
             ok = sitemaster_sup:add_site(Site),
             ok = update(Site, Type, Opts, ToLoad),
             get_initial_params(Site)
@@ -376,3 +377,6 @@ init_telephony(Site) ->
                          site_phone_no   = "+441315101875",
                          type            = "outbound"},
     new_db_api:write_kv(Site, ?twilio, AC).
+
+create_userfiles(Site) ->
+    filelib:ensure_dir(hn_util:userfilesroot(Site) ++ "force").

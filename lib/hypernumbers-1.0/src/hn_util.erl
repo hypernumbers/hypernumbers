@@ -23,6 +23,7 @@
          etlroot/1,
          viewroot/1,
          docroot/1,
+         userfilesroot/1,
 
          path_tokens/1,
          parse_zpath/1,
@@ -154,15 +155,23 @@ strip(Ext, File) ->
 etlroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/etl".
+
 templateroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/templates".
+
 docroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/docroot".
+
 viewroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/views".
+
+userfilesroot(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site)++"/docroot/userfiles/".
+
 
 path_tokens(P) -> tokens(P, [], []).
 
