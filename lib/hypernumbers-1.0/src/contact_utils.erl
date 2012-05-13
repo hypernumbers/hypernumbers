@@ -8,6 +8,7 @@
 -module(contact_utils).
 
 -export([
+         check_if_paid/3,
          get_recording_details/2,
          robocall/3,
          post_sms/3,
@@ -17,6 +18,25 @@
 -include("keyvalues.hrl").
 -include("errvals.hrl").
 -include("spriki.hrl").
+
+check_if_paid(Fun, Args, Type) ->
+    Site = get(site),
+    case contact_utils:get_twilio_account(Site) of
+        ?ERRVAL_PAYONLY ->
+            ?ERRVAL_PAYONLY;
+        AC ->
+            case Type of
+                outbound ->
+                    Fun(Args, AC);
+                inbound ->
+                    case AC#twilio_account.type of
+                        full ->
+                            Fun(Args, AC);
+                        outbound ->
+                            ?ERRVAL_PAYONLY
+                    end
+            end
+    end.
 
 robocall(AC, Number, Msg) when is_integer(Number) ->
     robocall(AC, integer_to_list(Number), Msg);
