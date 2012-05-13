@@ -375,7 +375,7 @@ init_telephony(Site) ->
                          auth_token      = "bbbb",
                          application_sid = "cccc",
                          site_phone_no   = "+441315101875",
-                         type            = "outbound"},
+                         type            = outbound},
     new_db_api:write_kv(Site, ?twilio, AC).
 
 create_userfiles(Site) ->
