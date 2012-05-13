@@ -240,7 +240,7 @@ uptodate(File, Dir) ->
                 true  -> true
             end;
 
-        _Blah -> io:format("Recompile ~p because ~p~n", [File, _Blah]),
+        Other -> io:format("Recompile ~p~n- because ~p~n", [File, Other]),
                  false
     end.
 
