@@ -12,6 +12,7 @@
 
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
+-include("keyvalues.hrl").
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
@@ -120,7 +121,6 @@ create_server_dev_zone() ->
     hns:create_zone(?DEV_ZONE, 1, 26, Gen),
     ok.
 
-
 local_hypernumbers() ->
     Site = "http://hypernumbers.dev:9000",
     {ok, _, Uid1} = passport:get_or_create_user("test@hypernumbers.com"),
@@ -133,7 +133,9 @@ local_hypernumbers() ->
             hn_groups:add_user(Site, "guest", Uid2),
             passport:set_password(Uid1, "i!am!secure"),
             passport:set_password(Uid2, "i!am!secure"),
-            ok = hn_db_admin:disc_only(Site);
+            ok = hn_db_admin:disc_only(Site),
+            ok = upgrade_twilio(),
+            ok = new_db_api:make_factory("http://hypernumbers.dev:9000");
         {error, site_exists} ->
             io:format("Hypernumbers Local: Site ~p exists~n", [Site]),
             ok
@@ -166,3 +168,10 @@ production_tasks() ->
     % play nice children, and reset the cwd, there, there
     file:set_cwd(CWD),
     ok.
+
+upgrade_twilio() ->
+    [R] = new_db_api:read_kv("http://hypernumbers.dev:9000", ?twilio),
+    {kvstore, ?twilio, Rec} = R,
+    new_db_api:write_kv("http://hypernumbers.dev:9000", ?twilio,
+                        Rec#twilio_account{type = full}).
+
