@@ -1,0 +1,36 @@
+.hn_factory
+{
+  -moz-border-radius : 4px 4px 4px 4px;
+  -moz-box-shadow    : 2px 2px 4px #AAA;
+  -webkit-border-radius : 4px 4px 4px 4px;
+  -webkit-box-shadow    : 2px 2px 4px #AAA;
+  border  : 1px solid #ff6000;
+  padding : 10px;
+  font    : inherit;
+  }
+
+.hn_factory input[type=text]
+{
+  width : 100%;
+  border: 1px solid #999;
+  -moz-border-radius: 2px 2px 2px 2px;
+  -webkit-border-radius: 2px 2px 2px 2px;
+ }
+
+.hn_factory_txt
+{
+  margin: 10px 0px 3px 0px;
+  }
+
+.hn_factory_container
+{
+  margin : 10px 0 0 0;
+  height : 52px;
+  }
+
+.hn_factory .button
+{
+  width  : 156px;
+  height : 42px;
+  float  : right;
+  }
