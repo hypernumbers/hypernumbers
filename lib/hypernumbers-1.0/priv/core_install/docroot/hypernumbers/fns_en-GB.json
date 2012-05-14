@@ -2252,6 +2252,16 @@
                 "name": "Effect",
                 "desc": "0, 1 or 2",
                 "type": "optional"
+            },
+            {
+                "name": "Width",
+                "desc": "width as a percentage or in pixels",
+                "type": "optional"
+            },
+            {
+                "name": "Height",
+                "desc": "height as a percentage or in pixels",
+                "type": "optional"
             }
         ]
     },
