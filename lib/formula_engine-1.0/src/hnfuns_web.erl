@@ -218,6 +218,11 @@ link_(Src, Text, _N, _O) ->
     lists:flatten("<a href='" ++ Src ++ "' target='_blank' "
                   ++ "style='text-decoration:none;'>" ++ Text ++ "</a>").
 
+img_(Src, Alt, Style, W, H) ->
+    lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt
+                  ++ "' style ='" ++ Style ++ "' width='" ++ W ++ "' "
+                  ++ " height='" ++ H ++ "' />").
+
 img_(Src, Alt, Style) ->
     lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt
                   ++ "' style ='" ++ Style ++ "' />").
@@ -297,20 +302,26 @@ link([Src, Text]) ->
                      [return_errors],
                      fun([NSrc, NText]) -> link_(NSrc, NText, 0, 0) end).
 
+img([Src, Alt, Effects, Width]) ->
+    img([Src, Alt, Effects, Width, "100%"]);
+
+img([Src, Alt, Effects, Width, Height]) ->
+    [W2, H2] = typechecks:std_strs([Width, Height]),
+    % check if the width and heights are valid
+    W3 = re:replace(W2, " ", "", [{return, list}, global]),
+    H3 = re:replace(H2, " ", "", [{return, list}, global]),
+    ok = is_valid(W3),
+    ok = is_valid(H3),
+    [Eff2] = typechecks:std_ints([Effects]),
+    Style = img_style(Eff2),
+    muin_collect:col([Src, Alt], [eval_funs, fetch, {cast, str}],
+                     [return_errors],
+                     fun([NSrc, NAlt]) ->
+                             img_(NSrc, NAlt, Style, W3, H3) end);
+
 img([Src, Alt, Effects]) ->
     [Eff2] = typechecks:std_ints([Effects]),
-    Style = if
-                Eff2 == 0 ->
-                    "-moz-box-shadow: 2px 2px 4px #AAA;"
-                        ++ "-webkit-box-shadow: 2px 2px 4px #AAA;";
-                Eff2 == 1 ->
-                    "-moz-box-shadow: 3px 3px 6px #AAA;"
-                        ++ "-webkit-box-shadow: 3px 3px 6px #AAA;";
-                Eff2 == 2 ->
-                    "-moz-box-shadow: 4px 4px 8px #AAA;"
-                        ++ "-webkit-box-shadow: 4px 4px 8px #AAA;";
-                true -> ?ERR_VAL
-            end,
+    Style = img_style(Eff2),
     muin_collect:col([Src, Alt], [eval_funs, fetch, {cast, str}],
                      [return_errors],
                      fun([NSrc, NAlt]) ->
@@ -323,6 +334,30 @@ img([Src, Alt]) ->
 img([Src]) ->
     muin_collect:col([Src], [eval_funs, fetch, {cast, str}], [return_errors],
                      fun([NSrc]) -> img_(NSrc) end).
+
+is_valid(X) ->
+    % reverse and check for acceptable post-fixes
+    X2 = lists:reverse(X),
+    case X2 of
+        "xp" ++ Rest -> case tconv:to_num(lists:reverse(Rest)) of
+                            {error, nan} -> ?ERR_VAL;
+                            _            -> ok
+                        end;
+        "%" ++ Rest  -> case tconv:to_num(lists:reverse(Rest)) of
+                            {error, nan} -> ?ERR_VAL;
+                            _            -> ok
+                        end;
+        _            -> ?ERR_VAL
+    end.
+
+img_style(0)  -> "";
+img_style(1)  -> "-moz-box-shadow: 2px 2px 4px #AAA;"
+                     ++ "-webkit-box-shadow: 2px 2px 4px #AAA;";
+img_style(2)  -> "-moz-box-shadow: 3px 3px 6px #AAA;"
+                     ++ "-webkit-box-shadow: 3px 3px 6px #AAA;";
+img_style(3)  -> "-moz-box-shadow: 4px 4px 8px #AAA;"
+                     ++ "-webkit-box-shadow: 4px 4px 8px #AAA;";
+img_style(_N) ->  ?ERR_VAL.
 
 
 %'twitter.search'([])          -> 'twitter.search'(["hello"]);
