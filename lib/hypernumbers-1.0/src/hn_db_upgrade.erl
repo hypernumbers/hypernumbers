@@ -5,7 +5,6 @@
 -module(hn_db_upgrade).
 
 -include("spriki.hrl").
--include("hypernumbers.hrl").
 -include("keyvalues.hrl").
 
 %% Upgrade functions that were applied at upgrade_REV
@@ -62,8 +61,8 @@
          unload_from_mem/0,
          reload_into_mem/0,
          upgrade_doubler_2011_03_14/0,
-         %upgrade_item_2011_03_14/0,
-         %upgrade_local_obj_2011_03_14/0,
+         % upgrade_item_2011_03_14/0,
+         % upgrade_local_obj_2011_03_14/0,
          upgrade_auth_srv_2011_03_13/0,
          upgrade_loc_obj_2011_03_01/0,
          upgrade_row_col_2011_02_04/0,
@@ -71,13 +70,13 @@
          upgrade_pages_2011_01_26/0,
          upgrade_zinf_2011_01_17/0,
          upgrade_2011_01_07/0
-%% upgrade_1519/0,
-%% upgrade_1556/0,
-%% upgrade_1630/0,
-%% upgrade_1641/0,
-%% upgrade_1743_A/0,
-%% upgrade_1743_B/0,
-%% upgrade_1776/0
+         % upgrade_1519/0,
+         % upgrade_1556/0,
+         % upgrade_1630/0,
+         % upgrade_1641/0,
+         % upgrade_1743_A/0,
+         % upgrade_1743_B/0,
+         % upgrade_1776/0
         ]).
 
 add_site_table_2011_05_12() ->
