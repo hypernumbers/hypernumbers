@@ -54,6 +54,29 @@
         ]
     },
     {
+        "fn": "anchor",
+        "category": "Layout <- new!",
+        "desc": "Puts an html anchor into a cell",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/social-media-and-web-integration/anchor.html",
+        "args": [
+            {
+                "name": "Anchor Name",
+                "desc": "A string",
+                "type": "finite"
+            },
+            {
+                "name": "Anchor Text",
+                "desc": "A string",
+                "type": "optional"
+            }
+        ]
+    },
+    {
         "fn": "and",
         "category": "Logical",
         "desc": "Returns true if all the logic arguments supplied evaluate to TRUE",
