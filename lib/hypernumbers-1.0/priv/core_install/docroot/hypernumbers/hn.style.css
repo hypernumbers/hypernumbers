@@ -746,6 +746,11 @@ label {
                 text-decoration: underline;
                }
 
+.hn_scroll
+{
+  overflow: auto;
+  }
+
 .hn_site_admin
 {
   -moz-border-radius: 4px 4px 4px 4px;
@@ -772,6 +777,7 @@ label {
 .hn_site_admin td
 {
   padding: 0px 20px 0px 0px;
+  line-height: 16px;
   }
 
 .hn_site_admin em

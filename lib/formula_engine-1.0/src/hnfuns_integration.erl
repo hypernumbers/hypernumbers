@@ -73,17 +73,23 @@
 %% Exported functions
 %%
 
-vimeo([Video]) ->
-    [V2] = typechecks:std_strs([Video]),
+vimeo([Video, Tag]) ->
+    [V2, Tg2] = typechecks:std_strs([Video, Tag]),
+    Id = "id_" ++ muin_util:create_name(),
     HTML = "<div class='hn_vimeo'>"
-        ++ "<iframe src='http://player.vimeo.com/video/" ++ V2
-        ++ "?color=ffffff&title=0&byline=0&portrait=0 "
-        ++ "width='750' height='421' frameborder='0'  "
+        ++ "<iframe id='" ++ Id ++ "' class='hn_vim' data-tag='" ++ Tg2 ++ "' "
+        ++ "src='http://player.vimeo.com/video/" ++ V2
+        ++ "?color=ffffff&title=0&byline=0&portrait=0&"
+        ++ "api=1&player_id=" ++ Id ++ "' "
+        ++ "width='750' height='421' frameborder='0' "
         ++ "webkitAllowFullScreen mozallowfullscreen "
         ++ "allowFullScreen></iframe></div>",
-    Preview = #preview{title = "Vimeo", width = 10, height = 20},
+    Preview = #preview{title = "Vimeo " ++ Tg2, width = 10, height = 20},
+    JS = ["/webcomponents/hn.vimeo.js",
+          "/webcomponents/froogaloop.js"],
+    Reload = ["HN.Vimeo.reload();"],
     CSS = ["http://files.vixo.com/vixo/css/vixo.css"],
-    Incs = #incs{css = CSS},
+    Incs = #incs{js = JS, js_reload = Reload, css = CSS},
     #spec_val{val = HTML, sp_incs = Incs, preview = Preview}.
 
 'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
