@@ -1712,7 +1712,7 @@
                 "type": "optional"
             },
             {
-                "name": "Javascript Reload",
+                "name": "Js Reload",
                 "desc": "A javascript snippet as text.",
                 "type": "optional"
             },
