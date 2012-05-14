@@ -10,7 +10,9 @@
 -include("spriki.hrl").
 -include("typechecks.hrl").
 
--export(['html.headline.'/1,
+-export([
+         anchor/1,
+         'html.headline.'/1,
          'html.plainbox.'/1,
          'html.box.'/1,
          'html.alert.'/1,
@@ -34,6 +36,19 @@
          'tim.submenu'/1,
          'tim.tabs.'/1
         ]).
+
+anchor([Anchor]) ->
+    [A2] = typechecks:std_strs([Anchor]),
+    Preview = #preview{title = "Anchor " ++ Anchor,
+                       width = 1, height = 1},
+    HTML = "<a name='" ++ A2 ++ "'></a>",
+    #spec_val{val = HTML, preview = Preview};
+anchor([Anchor, Text]) ->
+    [A2, Txt2] = typechecks:std_strs([Anchor, Text]),
+    Preview = #preview{title = "Anchor " ++ Anchor,
+                       width = 1, height = 1},
+    HTML = "<a name='" ++ A2 ++ "'>" ++ Txt2 ++ "</a>",
+    #spec_val{val = HTML, preview = Preview}.
 
 'toggle.views'([]) ->
     HTML = lists:flatten("<input type='submit' value='' "
