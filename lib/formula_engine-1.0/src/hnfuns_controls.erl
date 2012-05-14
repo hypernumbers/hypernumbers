@@ -11,6 +11,7 @@
 
 % careful adding 'factory.XXX' fns as factory.WxH will swallow them in muin
 -export([
+         'upload.file.'/1,
          'factory.'/1,
          'factory.info'/1,
          'create.button'/1,
@@ -22,6 +23,65 @@
 
 -include("spriki.hrl").
 -include("errvals.hrl").
+
+'upload.file.'([W, H]) ->
+    'upload.file.'([W, H, "Upload Files"]);
+'upload.file.'([W, H, Title]) ->
+    'upload.file.'([W, H, Title, "Upload Files >>"]);
+'upload.file.'([W, H, Title, ButtonText]) ->
+    'upload.file.'([W, H, Title, ButtonText, 0]);
+'upload.file.'([W, H, Title, ButtonText, Options]) ->
+    [W2, H2, O2] = typechecks:std_ints([W, H, Options]),
+    % there are some minimum sizes for a file upload panel
+    if
+        W2 <  5                 -> ?ERR_VAL;
+        H2 <  9                 -> ?ERR_VAL;
+        W2 >= 5 andalso H2 >= 9 -> ok
+    end,
+    [Title2, BtnTxt2] = typechecks:std_strs([Title, ButtonText]),
+    Restrictions = get_restrictions(O2),
+    Files = filelib:wildcard(hn_util:userfilesroot(?msite) ++ "*"),
+    HTML = "<div class='hn_site_admin' style='display:none;'>"
+        ++ "<div class='hn_site_admin_top'>" ++ Title2 ++ "</div>"
+        ++ "<div class='hn_scroll'>"
+        ++ make_body(lists:sort(Files), [])
+        ++ "</div>"
+        ++ "<div class='hn_site_admin_container'>"
+        ++ "<input class='hn_file_upload button' type='button' "
+        ++ "value='" ++ BtnTxt2 ++ "' />"
+        ++ "</div>"
+        ++ "</div>",
+    JS      = ["/webcomponents/hn.siteadmin.js",
+              "/hypernumbers/ajaxfileupload.js"],
+    Reload  = ["HN.SiteAdmin.reload();"],
+    CSS     = ["/webcomponents/hn.siteadmin.css"],
+    Incs    = #incs{js = JS, js_reload = Reload, css = CSS},
+    Preview = #preview{title = "File Upload", width = W2, height = H2},
+    #spec_val{val = HTML, preview = Preview, sp_incs = Incs, sp_site = true}.
+
+make_body([], Acc) ->
+    TBody = lists:flatten(lists:reverse(Acc)),
+    "<table>"
+        ++ "<thead><tr><td><em>Files</em></td><td></td></tr></thead>"
+        ++ TBody ++ "</table>";
+make_body([H | T], Acc) ->
+    FileName = filename:basename(H),
+    Ext = filename:extension(H),
+    NewAcc = "<tr><td>" ++ FileName ++ "</td><td><code>"
+        ++ make_fn(FileName, Ext) ++ "</code></td></tr>",
+    make_body(T, [NewAcc | Acc]).
+
+make_fn(FileName, Type)
+  when Type == ".png" orelse Type == ".gif" orelse Type == ".jpg" ->
+    "=img(\"" ++ FileName ++ "\")";
+make_fn(FileName, _) ->
+    "=link(\"" ++ FileName ++ "\", \"" ++ FileName ++ "\")".
+
+get_restrictions(0)  -> [];
+get_restrictions(1)  -> [".png", ".jpg", ".gif"];
+get_restrictions(2)  -> [".doc", ".xls", ".pdf", ".ppt", ".xlsx", ".docx"];
+get_restrictions(3)  -> lists:merge(get_restrictions(1), get_restrictions(2));
+get_restrictions(_N) -> ?ERR_VAL.
 
 'factory.info'([]) ->
     V = new_db_wu:read_kvD(?msite, factory),
@@ -79,22 +139,23 @@ factory2(W, H, Title, Type, Desc, BtnTxt, Rest) ->
 factory3(W, H, Title, Type, Desc, BtnTxt, Rest) ->
     Ref = hn_util:obj_to_ref({cell, {?mx, ?my}}),
     {Body, Payload} = make_body(Rest, [], []),
-    Id = "id_" ++ muin_util:create_name(),
-    Js = ["/webcomponents/hn.factory.js"],
+    Id     = "id_" ++ muin_util:create_name(),
+    Js     = ["/webcomponents/hn.factory.js"],
     Reload = ["HN.Factory.reload();"],
-    CSS = ["/webcomponents/hn.factory.css"],
-    Incs = #incs{js = Js, js_reload = Reload, css= CSS},
-    Form = #form{id = {factory, atom_to_list(Type)},
+    CSS    = ["/webcomponents/hn.factory.css",
+              "/webcomponents/hn.siteadmin.css"],
+    Incs   = #incs{js = Js, js_reload = Reload, css= CSS},
+    Form   = #form{id = {factory, atom_to_list(Type)},
                  kind = "factory",
                  restrictions = {"sitetype", Type},
                  attrs = Payload},
-    HTML = "<div class='hn_factory'>"
-        ++ "<h2>" ++ Title ++ "</h2>"
+    HTML = "<div class='hn_factory hn_site_admin'>"
+        ++ "<div class='hn_site_admin_top'>" ++ Title ++ "</div>"
         ++ "<p>" ++ Desc ++ "</p>"
         ++ Body
         ++ "<p class='hn_factory_txt'>Please enter your email address:</p>"
         ++ "<input class='hn_factory_email' type='text' />"
-        ++ "<div class='hn_factory_container'>"
+        ++ "<div class='hn_site_admin_container'>"
         ++ "<input id='" ++ Id ++ "' class='button factory' "
         ++ "type='submit' data-type='" ++ atom_to_list(Type) ++ "' "
         ++ "data-ref='" ++ Ref ++ "' "
@@ -178,7 +239,7 @@ is_valid(Input) ->
                      ++ "class='hn-mapcustom' value='"
                      ++ Title ++ "' data-map-type='custom' data-map='"
                      ++ Map ++ "' />",
-                        Preview = #preview{title = Title, width = 2, height = 2},
+                 Preview = #preview{title = Title, width = 2, height = 2},
                  #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
                            sp_incs = Incs}
     end.
