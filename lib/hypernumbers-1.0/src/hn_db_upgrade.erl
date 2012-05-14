@@ -99,17 +99,16 @@ upgrade_phone_records_2012_05_08() ->
     Sites = hn_setup:get_sites(),
     F2 = fun(Site) ->
                  F1 = fun() ->
-                              case  new_db_api:read_kv(Site, ?twilio) of
-                                  [] -> ok;
-                                  [{kvstore, ?twilio, R}] ->
-                                      {twilio_account, AccSid, Auth, AppSid, Phone} = R,
-                                      R2 = #twilio_account{account_sid = AccSid,
-                                                           auth_token = Auth,
-                                                           application_sid = AppSid,
-                                                           site_phone_no = Phone,
-                                                           type = full},
-                                      new_db_api:write_kv(Site, ?twilio, R2)
-                              end
+                              NewAccSid = "AC7a076e30da6d49119b335d3a6de43844",
+                              NewAuthTk = "9248c9a2a25f6914fad9c9fb5b30e69c",
+                              NewAppSid = "AP93d273f3cc624008805842376d561bed",
+                              NewPhone = "+441315101897",
+                              R = #twilio_account{account_sid = NewAccSid,
+                                                  auth_token = NewAuthTk,
+                                                  application_sid = NewAppSid,
+                                                  site_phone_no = NewPhone,
+                                                  type = outbound},
+                              new_db_api:write_kv(Site, ?twilio, R)
                       end,
                  mnesia:activity(transaction, F1)
          end,
