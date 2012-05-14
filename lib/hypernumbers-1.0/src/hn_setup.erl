@@ -371,10 +371,13 @@ pget(Key, List, Default) ->
     proplists:get_value(Key, List, Default).
 
 init_telephony(Site) ->
-    AC = #twilio_account{account_sid     = "aaaa",
-                         auth_token      = "bbbb",
-                         application_sid = "cccc",
-                         site_phone_no   = "+441315101875",
+    AccSid = "AC7a076e30da6d49119b335d3a6de43844",
+    AuthTk = "9248c9a2a25f6914fad9c9fb5b30e69c",
+    AppSid = "AP93d273f3cc624008805842376d561bed",
+    AC = #twilio_account{account_sid     = AccSid,
+                         auth_token      = AuthTk,
+                         application_sid = AppSid,
+                         site_phone_no   = "+441315101897",
                          type            = outbound},
     new_db_api:write_kv(Site, ?twilio, AC).
 
