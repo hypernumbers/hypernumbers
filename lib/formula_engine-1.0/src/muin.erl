@@ -319,6 +319,9 @@ transform("factory." ++ R = Fun, Args) ->
         _      -> {W, H} = get_dims(R),
                   {list_to_atom("factory."), [W , H | Args]}
     end;
+transform("upload.file." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("upload.file."), [W , H | Args]};
 % single parameter stuff
 transform("tim.headline." ++ R, Args) ->
     {list_to_atom("tim.headline."), [R | Args]};
