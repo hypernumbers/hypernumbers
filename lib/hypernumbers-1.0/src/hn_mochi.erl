@@ -243,7 +243,6 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
        X == "_mynewsite";
        X == "_validate";
        X == "_authorize";
-       X == "_hooks";
        X == "_logout" ->
     allowed;
 
@@ -392,7 +391,6 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
 %% Allow special posts to occur
 authorize_post(#refX{path = [X]}, _Qry, #env{accept = json})
   when X == "_login";
-       X == "_hooks";
        X == "_forgotten_password";
        X == "_parse_expression" ->
     allowed;
@@ -599,7 +597,7 @@ iget(#refX{site = S, path = ["_site"]}, page, #qry{map = Name}, Env) when Name =
     Maps = {struct, [hn_import:read_map(S, Name)]},
     json(Env, Maps);
 
-iget(#refX{site=S, path=["_site"]}, page, _Qry, Env) ->
+iget(#refX{site = S, path = ["_site"]}, page, _Qry, Env) ->
     Groups    = {"groups", {array, hn_groups:get_all_groups(S)}},
     Templates = {"templates", {array, hn_util:get_templates(S)}},
     Maps      = {"maps", {array, hn_util:get_maps(S)}},
@@ -815,10 +813,9 @@ ipost(#refX{path = ["_services", "phoneredirect" | []], obj = {page, "/"}}, _Qry
                 {ok, development} ->
                     true;
                 {ok, _Other} ->
-                    {ok, Services} = application:get_env(hypernumbers, services),
-                    case lists:keysearch(phoneredirect, 1, Services) of
-                        {value, {phoneredirect, false}} -> false;
-                        {value, {phoneredirect, true}}  -> true
+                    case application:get_env(hypernumbers, redirect) of
+                        {ok, false} -> false;
+                        {ok, true}  -> true
                     end
             end,
     case Redir of
@@ -1046,10 +1043,29 @@ ipost(Ref=#refX{path=["_user"]}, _Qry,
 %% ok = hn_users:update(Site, Uid, "language", Lang),
 %% json(Env, "success");
 
+%% ipost of factory provisioning
+ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
+      #env{uid = PrevUid, body = [{"signup", Body}]} = Env) ->
+    {struct, List} = Body,
+    {"sitetype", SiteType} = lists:keyfind("sitetype", 1, List),
+    {"email", Email} = lists:keyfind("email", 1, List),
+    {"data", {struct, Data}} = lists:keyfind("data", 1, List),
+    SType2 = hn_util:site_type_exists(SiteType),
+    Email2 = string:to_lower(Email),
+    Transaction = factory,
+    [Expected] = new_db_api:matching_forms(Ref, Transaction),
+    case hn_security:validate_factory(Expected, SType2, Data) of
+        true ->
+            provision_site(RootSite, PrevUid, SType2, Email2, Data, Env);
+        false ->
+            json(Env, {struct, [{"result", "error"},
+                                {"reason", 401}]})
+    end;
+
 %% ipost for inline editable cells
-ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
-      Env=#env{body = [{"postinline", {struct, [{"formula", Val}]}}],
-               uid = Uid}) ->
+ipost(#refX{obj = {cell, _}} = Ref, _Qry,
+      #env{body = [{"postinline", {struct, [{"formula", Val}]}}],
+               uid = Uid} = Env) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     case new_db_api:read_attribute(Ref, "input") of
         [{#xrefX{}, "inline"}] ->
@@ -1320,33 +1336,6 @@ ipost(#refX{site = Site, path = _P}, _Qry,
         ok              -> json(Env, {struct, [{"result", "success"}]});
         {error, Reason} -> ?E("invalid _admin request ~p~n", [Reason]),
                            json(Env, {struct, [{"failure", Reason}]})
-    end;
-
-ipost(#refX{site=RootSite, path=["_hooks"]},
-      _Qry, Env=#env{body=Body, uid=PrevUid}) ->
-    [{"signup",{struct,[{"email",Email0} , {"sitetype", SiteType}]}}] = Body,
-    SType = site_type_exists(SiteType),
-    Email = string:to_lower(Email0),
-    Zone = case application:get_env(hypernumbers, environment) of
-               {ok, development} -> "hypernumbers.dev";
-               {ok, server_dev}  -> "dev.hypernumbers.com";
-               {ok, production}  -> "tiny.hn"
-           end,
-    case factory:provision_site(Zone, Email, SType, PrevUid) of
-        {ok, new, Site, Node, Uid, Name, InitialView} ->
-            log_signup(RootSite, Site, Node, Uid, Email),
-            Opaque = [{param, InitialView}],
-            Expiry = "never",
-            Url = passport:create_hypertag_url(Site, ["_mynewsite", Name],
-                                              Uid, Email, Opaque, Expiry),
-            json(Env, {struct, [{"result", "success"}, {"url", Url}]});
-        {ok, existing, Site, Node, Uid, _Name, InitialView} ->
-            log_signup(RootSite, Site, Node, Uid, Email),
-            json(Env, {struct, [{"result", "success"},
-                                {"url", Site ++ InitialView}]});
-        {error, invalid_email} ->
-            Str = "Sorry, the email provided was invalid, please try again.",
-            json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
     end;
 
 ipost(#refX{site = Site, path = _P}, _Qry,
@@ -1935,18 +1924,6 @@ nocache() ->
      {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
      {"Pragma",       "no-cache"}].
 
-%% function to prevent doing an uncheck list_to_atom...
-%% only converts lists if they are in the file system
-site_type_exists(Type) ->
-    Root = code:lib_dir(hypernumbers) ++ "/priv/site_types/*/",
-    Paths = filelib:wildcard(Root),
-    Rev = [lists:reverse(string:tokens(X, "/")) || X <- Paths],
-    Types = [X || [X | _Rest] <- Rev],
-    case lists:member(Type, Types) of
-        true  -> list_to_atom(Type);
-        false -> exit("invalid type being commissioned....")
-    end.
-
 passport_running() ->
     {ok, Services} = application:get_env(hypernumbers, services),
     case lists:keysearch(passport, 1, Services) of
@@ -2225,6 +2202,29 @@ wrap(Text) ->
         ++ "<body style='font: 14px Courier, monospace;'>"
         ++ Text
         ++ "</body></html>".
+
+provision_site(RootSite, PrevUid, SiteType, Email, Data, Env) ->
+    Zone = case application:get_env(hypernumbers, environment) of
+               {ok, development} -> "hypernumbers.dev";
+               {ok, server_dev}  -> "dev.hypernumbers.com";
+               {ok, production}  -> "tiny.hn"
+           end,
+    case factory:provision_site(Zone, Email, SiteType, PrevUid, Data) of
+        {ok, new, Site, Node, Uid, Name, InitialView} ->
+            log_signup(RootSite, Site, Node, Uid, Email),
+            Opaque = [{param, InitialView}],
+            Expiry = "never",
+            Url = passport:create_hypertag_url(Site, ["_mynewsite", Name],
+                                              Uid, Email, Opaque, Expiry),
+            json(Env, {struct, [{"result", "success"}, {"url", Url}]});
+        {ok, existing, Site, Node, Uid, _Name, InitialView} ->
+            log_signup(RootSite, Site, Node, Uid, Email),
+            json(Env, {struct, [{"result", "success"},
+                                {"url", Site ++ InitialView}]});
+        {error, invalid_email} ->
+            Str = "Sorry, the email provided was invalid, please try again.",
+            json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
+    end.
 
 %% catch script kiddie attempts and write them as info not error logs
 %% makes rb usable

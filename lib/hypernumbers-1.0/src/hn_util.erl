@@ -12,6 +12,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         site_type_exists/1,
          split_emails/1,
          read_lines/1,
          esc/1,
@@ -23,6 +24,7 @@
          etlroot/1,
          viewroot/1,
          docroot/1,
+         userfilesroot/1,
 
          path_tokens/1,
          parse_zpath/1,
@@ -154,15 +156,22 @@ strip(Ext, File) ->
 etlroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/etl".
+
 templateroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/templates".
+
 docroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/docroot".
+
 viewroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/views".
+
+userfilesroot(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site)++"/docroot/userfiles/".
 
 path_tokens(P) -> tokens(P, [], []).
 
@@ -897,6 +906,18 @@ add_views() ->
           auth_srv:add_view(Site, [], ["admin"], "webpage"),
           auth_srv:add_view(Site, ["[**]"], ["admin"], "webpage")
       end || Site <- hn_setup:get_sites()].
+
+%% function to prevent doing an unchecked list_to_atom...
+%% only converts lists if they are in the file system
+site_type_exists(Type) ->
+    Root = code:lib_dir(hypernumbers) ++ "/priv/site_types/*/",
+    Paths = filelib:wildcard(Root),
+    Rev = [lists:reverse(string:tokens(X, "/")) || X <- Paths],
+    Types = [X || [X | _Rest] <- Rev],
+    case lists:member(Type, Types) of
+        true  -> list_to_atom(Type);
+        false -> exit("invalid type being commissioned....")
+    end.
 
 split_emails(List) ->
     List2 = split_emails([List], " ", []),

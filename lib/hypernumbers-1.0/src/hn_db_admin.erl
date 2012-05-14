@@ -22,9 +22,10 @@
                            "del_local",
                            "phone",
                            "relation",
+                           "site",
+                           "siteonly",
                            "style",
                            "timer",
-                           "users_and_groups",
                            "user_fns"
                           ]).
 

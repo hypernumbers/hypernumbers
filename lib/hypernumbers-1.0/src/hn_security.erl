@@ -3,15 +3,28 @@
 -module(hn_security).
 
 -export([
+         validate_factory/3,
          validate_form/2,
          validate_create_pages/2
         ]).
 
--export([banjo/0]).
-
 %% APIs-export([validate/2]).
 -include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
+
+validate_factory(Expected, Type, Data) ->
+    #form{restrictions = {"sitetype", EType}, attrs = Attrs} = Expected,
+    case {EType, valid_fac_attrs(Data, Attrs)} of
+        {Type, true} -> true;
+        _            -> false
+    end.
+
+% needent supply all the attrs, can only supply the listed attrs
+valid_fac_attrs([], _)               -> true;
+valid_fac_attrs([{K, _V} | T], List) -> case lists:member(K, List) of
+                                            false -> false;
+                                            true  -> valid_fac_attrs(T, List)
+                                        end.
 
 validate_create_pages([], _Submitted)     -> false;
 validate_create_pages([H | T], Submitted) ->
@@ -253,9 +266,6 @@ basic_select_bad_val_test_() ->
            {struct,[{"label","Start date"},{"formula",[]}]},
            {struct,[{"label","Initiative Links"},{"formula",[]}]},
            {struct,[{"label","Approval docs"},{"formula",[]}]}]).
-
-banjo() ->
-    validate_form(?E1, ?G1).
 
 sec_test_() ->
     Expected = ?E1,

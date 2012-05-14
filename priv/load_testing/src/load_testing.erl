@@ -53,13 +53,13 @@
 -export([
          log/2,
          get_time/0
-         ]).
+        ]).
 
 % exports for spawning
 -export([
          log_memory/1,
          log_memory_LOOP/2
-         ]).
+        ]).
 
 percept() ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
@@ -91,18 +91,17 @@ test_pret() -> spawn(load_testing, test_pret_SPAWN, []).
 test() -> spawn(load_testing, test_SPAWN, []).
 
 test_pret_SPAWN() ->
-    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
+    Stamp = dh_date:format("Y_M_d_H_i_s"),
     load_testing:load(Stamp, disc_only,
                       [{run, [
                               trash_db,
-                              %z_test
                               load_pret
-                             ]}
-                      %%  {cprof,
-                      %%   [
-                      %%    load_pret
-                      %%   ]}
-                     ]).
+                             ]},
+                       {cprof,
+                        [
+                         load_pret
+                        ]}
+                      ]).
 
 test_SPAWN() ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
@@ -174,19 +173,19 @@ profile_zs() ->
     RefX = #refX{site = ?site, path = Path, obj = {page, "/"}},
     Template = "minizs",
     ok = hn_templates:load_template(RefX, Template).
-    %fprof:trace(stop),
-    %fprof:profile(file, TraceFile),
-    %fprof:analyse([{dest, Dir ++ "profile_zs" ++ Stamp ++ ".analysis"}]).
+%fprof:trace(stop),
+%fprof:profile(file, TraceFile),
+%fprof:analyse([{dest, Dir ++ "profile_zs" ++ Stamp ++ ".analysis"}]).
 
 test_zs() ->
     %Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
     %Dir = /media/logging/
     %TraceFile = Dir ++ "test_zs" ++ Stamp ++ ".trace",
-    %%fprof:trace(start, TraceFile),
+%%fprof:trace(start, TraceFile),
     test_z2(?no_of_zquery_profiles, ?no_of_zquery_profiles).
-    %%fprof:trace(stop),
-    %%fprof:profile(file, TraceFile),
-    %%fprof:analyse([{dest, Dir ++ "test_zs" ++ Stamp ++ ".analysis"}]).
+%%fprof:trace(stop),
+%%fprof:profile(file, TraceFile),
+%%fprof:analyse([{dest, Dir ++ "test_zs" ++ Stamp ++ ".analysis"}]).
 
 test_z2(_Max, 0) -> ok;
 test_z2(Max, N) ->
@@ -207,8 +206,8 @@ load_2(Stamp, Type, Spec) when Type == disc_only orelse Type == disc_and_mem ->
     load_3(Stamp, Type, Spec);
 load_2(_Stamp, Type, _Spec) ->
     io:format("Invalid parameter. Type is ~p and it should "
-                 ++ "be one of 'disc_only' or 'disc_and_mem'~n",
-                 [Type]).
+              ++ "be one of 'disc_only' or 'disc_and_mem'~n",
+              [Type]).
 
 load_3(Stamp, Type, Spec) ->
 
@@ -410,15 +409,15 @@ info(X) ->
     Len1  = case process_info(X, [message_queue_len]) of
                 [{message_queue_len, Len}] -> Len;
                 undefined                   -> 0
-           end,
+            end,
     Heap1  = case process_info(X, [heap_size]) of
-               [{heap_size, Heap}] -> Heap;
-               undefined           -> 0
+                 [{heap_size, Heap}] -> Heap;
+                 undefined           -> 0
              end,
     Reds1  = case process_info(X, [reductions]) of
-               [{reductions, Reds}] -> Reds;
-               undefined            -> 0
-           end,
+                 [{reductions, Reds}] -> Reds;
+                 undefined            -> 0
+             end,
     {X, Fn1, Len1, Heap1, Reds1}.
 
 sort(Names, List) ->
@@ -496,34 +495,62 @@ load_calcs2(Stamp, Prefix, NoOfPages) ->
     ok = load_pages("calculations" ++ Stamp, ?calcspage, Prefix,
                     NoOfPages, NoOfPages).
 
-load_pret(_Stamp) ->
+load_pret(Stamp) ->
     Dir = "/home/gordon/hypernumbers/var/sites/" ++
         "load.hypernumbers.dev&9000/",
+    Lable = Stamp ++ ".pret_loads.csv",
     Files = [
-             %% "processed_10_11_2011_13305034822493.csv",
-             %% "processed_11_11_2011_13305855022505.csv",
-             %% "processed_12_11_2011_13305855022505.csv",
-             %% "processed_13_11_2011_13302248222517.csv",
-             %% "processed_13_11_2011_13304119122529.csv",
-             %% "processed_14_11_2011_13302248222517.csv",
-             %% "processed_15_11_2011_13303082622543.csv",
-             %% "processed_16_11_2011_13305855022505.csv",
-             %% "processed_17_11_2011_13305855022505.csv",
-             %% "processed_18_11_2011_13303082622543.csv",
-             %% "processed_19_11_2011_13303082622543.csv",
-             %% "processed_20_11_2011_13303082622543.csv",
-             "testing.csv"
+             % "processed_10_11_2011_13305034822493.csv",
+             % "processed_11_11_2011_13305855022505.csv",
+             % "processed_12_11_2011_13305855022505.csv",
+             % "processed_13_11_2011_13302248222517.csv",
+             % "processed_13_11_2011_13304119122529.csv",
+             % "processed_14_11_2011_13302248222517.csv",
+             % "processed_15_11_2011_13303082622543.csv",
+             % "processed_16_11_2011_13305855022505.csv",
+             % "processed_17_11_2011_13305855022505.csv",
+             % "processed_18_11_2011_13303082622543.csv",
+             % "processed_19_11_2011_13303082622543.csv",
+             "processed_20_11_2011_13303082622543.csv",
+             "pret_final_loadline.csv"
+             %"testing.csv"
             ],
     Map = "pret",
-    load_pret2(Dir, Files, Map).
+    load_pret2(Lable, Dir, Files, Map).
 
-load_pret2(_Dir, [], _Map) ->
+load_pret2(_Lable, _Dir, [],_Map) ->
     ok;
-load_pret2(Dir, [H | T], Map) ->
+load_pret2(Lable, Dir, [H | T], Map) ->
+    % StartTime = get_time(),
+    % TraceFile = case H of
+    %                "pret_final_loadline" ++ _Rest1 ->
+    %                    dbsrv:start_fprof("http://load.hypernumbers.dev:9000");
+    %                _ ->
+    %                    ok
+    %            end,
     Ret = hn_import:etl_to_custom(Dir ++ "/uploads/" ++ H, ?site,
                                   Dir ++ "/etl/" ++ Map ++ ".map"),
-    io:format("Loading ~p ~p~n", [H, Ret]),
-    load_pret2(Dir, T, Map).
+    io:format("~p has loaded on ~p~n", [H, Ret]),
+    % case H of
+    %    "pret_final_loadline" ++ _Rest2 ->
+    %        Ret2 = dbsrv:stop_fprof("http://load.hypernumbers.dev:9000",
+    %                               TraceFile),
+    %        io:format("dbsrv stopped with ~p~n", [Ret2]);
+    %     _ ->
+    %         ok
+    % end,
+    % EndTime = get_time(),
+    % Msg = io_lib:format("~p,~p", [length(T) + 1, EndTime - StartTime]),
+    % ok = log(Msg, Lable),
+    load_pret2(Lable, Dir, T, Map).
+
+close(TraceFile) ->
+    case dbsrv:is_busy("http://load.hypernumbers.dev:9000") of
+        true -> timer:sleep(1000),
+                close(TraceFile);
+        false -> dbsrv:stop_fprof("http://load.hypernumbers.dev:9000",
+                                  TraceFile)
+    end.
 
 load_data(Stamp) ->
     load_data2(Stamp, ?dataprefix, ?no_of_datapages).

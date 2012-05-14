@@ -349,6 +349,7 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
           <div id='clinput'></div>
           <div id='inner' class='hn_inner'>", Content, "</div>
          </div>
+    <span id='hidden_input'></span>
 
 <div id='editspreadsheet' class='ctrlbox'>
 

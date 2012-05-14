@@ -18,6 +18,7 @@
 -define(ERRVAL_MOCHI,   {errval, '#MOCHIJSON!'}). % THIS IS A TEMPORARY ERROR MSG AND MUST BE MADE TO GO AWAY! ITS A BUG!!
 -define(ERRVAL_CANTINC, {errval, '#CANTINC!'}).
 -define(ERRVAL_PAYONLY, {errval, '#PAYONLY!'}).
+-define(ERRVAL_NOTFACT, {errval, '#NOTFACTORY!'}).
 
 %% Return an error.
 -define(ERR_NULL,    throw(?ERRVAL_NULL)).
@@ -33,3 +34,5 @@
 -define(ERR_MOCHI,   throw(?ERRVAL_MOCHI)).
 -define(ERR_CANTINC, throw(?ERRVAL_CANTINC)).
 -define(ERR_PAYONLY, throw(?ERRVAL_PAYONLY)).
+-define(ERR_NOTFACT, throw(?ERRVAL_NOTFACT)).
+

@@ -14,6 +14,8 @@
 -include("muin_proc_dict.hrl").
 -include("defaults.hrl").
 
+-define(check_paid, contact_utils:check_if_paid).
+
 % WARNING!
 % when adding more fns of the type phone.menu.xxx you need to stop
 % muin swallowing them by looking for phone.menu.WxH
@@ -37,15 +39,17 @@
             ++ "</td></tr>" || {G, M} <- Groups]
         ++ "</table></div>",
     Resize = #resize{width = W2, height = H2},
-    #spec_val{val = lists:flatten(HTML), resize = Resize,
-              sp_users = true}.
+    #spec_val{val = lists:flatten(HTML), resize = Resize, sp_site = true}.
 
 'phone.menu.'([W, H | List]) ->
+    ?check_paid(fun 'phone.menu2'/3, [W, H, List], inbound).
+
+'phone.menu2'(W, H, List) ->
     Site = get(site),
     Idx = get(idx),
     V = new_db_wu:read_kvD(Site, site_phone_menu),
     OrigIdx = case V of
-                  []                                   -> null;
+                  []                                           -> null;
                   [{kvstore, site_phone_menu, {OldIdx, null}}] -> OldIdx
               end,
     case OrigIdx of

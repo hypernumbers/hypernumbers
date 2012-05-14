@@ -60,7 +60,7 @@
          read_ref/2, read_ref/3, read_ref_field/3,
          read_relations/2,
          read_relationsD/3,
-         mark_users_and_groups_dirtyD/1,
+         mark_site_dirtyD/1,
          mark_these_dirtyD/2,
          mark_these_idxs_dirtyD/3,
          mark_dirty_for_inclD/2,
@@ -574,7 +574,7 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
                  Has_Phone   = orddict:is_key("__hasphone", Attrs),
                  Is_In_IncFn = orddict:is_key("__in_includeFn", Attrs),
                  Has_Uniq    = orddict:is_key("__unique", Attrs),
-                 Has_Users   = orddict:is_key("__users", Attrs),
+                 Has_Site   = orddict:is_key("__site", Attrs),
                  Is_Dynamic  = is_dynamic_select(Attrs),
                  Attrs2 =
                      case Is_Formula of
@@ -615,10 +615,10 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
                                       false ->
                                           A6
                                   end,
-                             A8 = case Has_Users of
+                             A8 = case Has_Site of
                                       true ->
-                                          unattach_usersD(XRefX),
-                                          orddict:erase("__users", A6);
+                                          unattach_siteD(XRefX),
+                                          orddict:erase("__site", A6);
                                       false ->
                                           A7
                                   end,
@@ -641,8 +641,8 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
          end,
     apply_to_attrsD(XRefX, Op, write, AReq, ?NONTRANSFORMATIVE).
 
-mark_users_and_groups_dirtyD(Site) ->
-    Tbl = trans(Site, users_and_groups),
+mark_site_dirtyD(Site) ->
+    Tbl = trans(Site, site),
     Idxs = mnesia:all_keys(Tbl),
     mark_these_idxs_dirtyD(Idxs, Site, nil).
 
@@ -831,11 +831,11 @@ proc_sp7(#spec_val{sp_timer = Tr} = SP, XRefX, Attrs) ->
     ok = update_timerD(XRefX, Spec),
     proc_sp8(SP, XRefX, NewAttrs).
 
-proc_sp8(#spec_val{sp_users = null} = SP, XRefX, Attrs) ->
+proc_sp8(#spec_val{sp_site = null} = SP, XRefX, Attrs) ->
     proc_sp9(SP, XRefX, Attrs);
-proc_sp8(#spec_val{sp_users = true} = SP, XRefX, Attrs) ->
-    ok = attach_usersD(XRefX),
-    NewAttrs = orddict:store("__users", t, Attrs),
+proc_sp8(#spec_val{sp_site = true} = SP, XRefX, Attrs) ->
+    ok = attach_siteD(XRefX),
+    NewAttrs = orddict:store("__site", t, Attrs),
     proc_sp9(SP, XRefX, NewAttrs).
 
 proc_sp9(#spec_val{unique = null}, _XRefX, Attrs) ->
@@ -999,9 +999,9 @@ delete_incsD(#xrefX{idx = Idx, site = S}) ->
     Tbl = trans(S, include),
     mnesia:delete(Tbl, Idx, write).
 
--spec unattach_usersD(#xrefX{}) -> ok.
-unattach_usersD(#xrefX{site = Site, idx = Idx}) ->
-    Tbl = trans(Site, users_and_groups),
+-spec unattach_siteD(#xrefX{}) -> ok.
+unattach_siteD(#xrefX{site = Site, idx = Idx}) ->
+    Tbl = trans(Site, site),
     mnesia:delete(Tbl, Idx, write).
 
 -spec unattach_phoneD(#xrefX{}) -> ok.
@@ -1127,10 +1127,10 @@ based_styleD(#xrefX{site = Site} = XRefX, BaseIdx, Name, Val) ->
             BaseIdx %% <- strange..
     end.
 
--spec attach_usersD(#xrefX{}) -> ok.
-attach_usersD(#xrefX{idx = Idx, site = Site}) ->
-    Tbl = trans(Site, users_and_groups),
-    ok = mnesia:write(Tbl, #users_and_groups{idx = Idx}, write).
+-spec attach_siteD(#xrefX{}) -> ok.
+attach_siteD(#xrefX{idx = Idx, site = Site}) ->
+    Tbl = trans(Site, site),
+    ok = mnesia:write(Tbl, #site{idx = Idx}, write).
 
 -spec attach_phoneD(#xrefX{}, #phone{}) -> ok.
 attach_phoneD(#xrefX{idx = Idx, site = Site}, Phone) ->

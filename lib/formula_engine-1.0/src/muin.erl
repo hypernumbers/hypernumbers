@@ -295,6 +295,7 @@ transform("table." ++ R, Args) ->
 transform("ztable." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("ztable."), [W , H | Args]};
+% stop 'em getting swallowed by phone.menu.WxH
 transform("phone.menu." ++ R = Fun, Args) ->
     case R of
         Fn when Fn == "say"
@@ -311,9 +312,13 @@ transform("phone.menu." ++ R = Fun, Args) ->
 transform("users.and.groups." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("users.and.groups."), [W , H | Args]};
-transform("factory." ++ R, Args) ->
-    {W, H} = get_dims(R),
-    {list_to_atom("factory."), [W , H | Args]};
+% stop 'em getting swallowed by factory.WxH
+transform("factory." ++ R = Fun, Args) ->
+    case R of
+        "info" -> {list_to_atom(Fun), Args};
+        _      -> {W, H} = get_dims(R),
+                  {list_to_atom("factory."), [W , H | Args]}
+    end;
 % single parameter stuff
 transform("tim.headline." ++ R, Args) ->
     {list_to_atom("tim.headline."), [R | Args]};

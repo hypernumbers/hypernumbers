@@ -7,6 +7,8 @@
 
 -module(hnfuns_contacts).
 
+-define(check_paid, contact_utils:check_if_paid).
+
 -export([
          'display.phone.nos'/1,
          'text.answer.phone'/1,
@@ -17,7 +19,7 @@
          'auto.robocall'/1,
          'phone.out'/1,
          'phone.in'/1
-         ]).
+        ]).
 
 -include("spriki.hrl").
 -include("errvals.hrl").
@@ -26,20 +28,22 @@
 
 'display.phone.nos'([]) ->
     Site = get(site),
-        case contact_utils:get_twilio_account(Site) of
-            ?ERRVAL_PAYONLY ->
-                "No phone numbers have been purchased for this website";
-            AC ->
-                #twilio_account{site_phone_no = Site_Phone,
-                               type = Type} = AC,
-                Site_Phone ++ " (" ++ Type ++ ")"
-        end.
+    case contact_utils:get_twilio_account(Site) of
+        ?ERRVAL_PAYONLY ->
+            "No phone numbers have been purchased for this website";
+        AC ->
+            #twilio_account{site_phone_no = Site_Phone, type = Type} = AC,
+            Site_Phone ++ " (" ++ Type ++ ")"
+    end.
 
 'text.answer.phone'([Msg]) ->
     'text.answer.phone'([Msg, false]);
 'text.answer.phone'([Msg, IsMan]) ->
     'text.answer.phone'([Msg, IsMan, "en-gb"]);
 'text.answer.phone'([Msg, IsMan, Language]) ->
+    ?check_paid(fun 'text.answer.phone2'/3, [Msg, IsMan, Language], inbound).
+
+'text.answer.phone2'(Msg, IsMan, Language) ->
     [Msg2, L2] = typechecks:std_strs([Msg, Language]),
     L3 = string:to_lower(L2),
     [IsMan2] = typechecks:std_bools([IsMan]),
@@ -123,88 +127,67 @@ check(To, Su, Cn, CC, Reply) ->
         true  -> [string:join(To3, ";"), Su2, Cn2, string:join(CC3, ";"), Fr]
     end.
 
-'auto.robocall'([Condition, PhoneNo, Msg, Prefix]) ->
-    check_if_paid(fun 'auto.robocall2'/2,
-                  [Condition, PhoneNo, Msg, normalise(Prefix)], outbound);
-'auto.robocall'([Condition, PhoneNo, Msg]) ->
-    check_if_paid(fun 'auto.robocall2'/2, [Condition, PhoneNo, Msg, ""],
-                  outbound).
+'auto.robocall'([Cond, PhNo, Msg, Prefix]) ->
+    Pr2 = normalise(Prefix),
+    ?check_paid(fun 'auto.robocall2'/2, [Cond, PhNo, Msg, Pr2], outbound);
+'auto.robocall'([Cond, PhNo, Msg]) ->
+    ?check_paid(fun 'auto.robocall2'/2, [Cond, PhNo, Msg, ""], outbound).
 
-'manual.sms.out'([PhoneNo, Msg, Prefix]) ->
-    check_if_paid(fun 'manual.sms.out2'/2, [PhoneNo, Msg, normalise(Prefix)],
-                 outbound);
-'manual.sms.out'([PhoneNo, Msg]) ->
-    check_if_paid(fun 'manual.sms.out2'/2, [PhoneNo, Msg, ""], outbound).
+'manual.sms.out'([PhNo, Msg, Prefix]) ->
+    Pr2 = normalise(Prefix),
+    ?check_paid(fun 'manual.sms.out2'/2, [PhNo, Msg, Pr2], outbound);
+'manual.sms.out'([PhNo, Msg]) ->
+    ?check_paid(fun 'manual.sms.out2'/2, [PhNo, Msg, ""], outbound).
 
-'manual.sms.out2'([PhoneNo, Msg, Prefix], _AC) ->
-    [PhoneNo2] = typechecks:std_strs([PhoneNo]),
+'manual.sms.out2'([PhNo, Msg, Prefix], _AC) ->
+    [PhNo2] = typechecks:std_strs([PhNo]),
     Msg2 = rightsize(Msg, ?SMSLength),
-    PhoneNo3 = compress(PhoneNo2),
+    PhNo3 = compress(PhNo2),
     Log = #contact_log{idx = get(idx), type = "manual sms",
-                       to = "+" ++ Prefix ++ PhoneNo3, contents = Msg2},
+                       to = "+" ++ Prefix ++ PhNo3, contents = Msg2},
     TwiML = "",
-    Capability = [{manual_sms, "+" ++ Prefix ++ PhoneNo3, Msg2}],
+    Capability = [{manual_sms, "+" ++ Prefix ++ PhNo3, Msg2}],
     Type ={"softphone_type", "manual sms"},
-    Config = [{"button_txt", "(+" ++ Prefix ++ ") " ++ PhoneNo3},
+    Config = [{"button_txt", "(+" ++ Prefix ++ ") " ++ PhNo3},
               {"headline_txt", "Send SMS"}],
     Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
                    softphone_type = Type, softphone_config = Config},
     Headline = "Send SMS",
-    ButtonTxt = "(+" ++ Prefix ++ ") " ++ PhoneNo3,
+    ButtonTxt = "(+" ++ Prefix ++ ") " ++ PhNo3,
     phone(Phone, "Manual SMS: ",  Headline, ButtonTxt).
 
-'auto.sms.out'([Condition, PhoneNo, Msg, Prefix]) ->
-    check_if_paid(fun 'auto.sms.out2'/2,
-                  [Condition, PhoneNo, Msg, normalise(Prefix)], outbound);
-'auto.sms.out'([Condition, PhoneNo, Msg]) ->
-    check_if_paid(fun 'auto.sms.out2'/2,
-                  [Condition, PhoneNo, Msg, ""], outbound).
+'auto.sms.out'([Cond, PhNo, Msg, Prefix]) ->
+    Pr2 = normalise(Prefix),
+    ?check_paid(fun 'auto.sms.out2'/2, [Cond, PhNo, Msg, Pr2], outbound);
+'auto.sms.out'([Cond, PhNo, Msg]) ->
+    ?check_paid(fun 'auto.sms.out2'/2, [Cond, PhNo, Msg, ""], outbound).
 
-check_if_paid(Fun, Args, Type) ->
-    Site = get(site),
-    case contact_utils:get_twilio_account(Site) of
-        ?ERRVAL_PAYONLY ->
-            ?ERRVAL_PAYONLY;
-        AC ->
-            case Type of
-                outbound ->
-                    Fun(Args, AC);
-                inbound ->
-                    case AC#twilio_account.type of
-                        full ->
-                            Fun(Args, AC);
-                        outbound ->
-                            ?ERRVAL_PAYONLY
-                    end
-            end
-    end.
-
-'auto.robocall2'([Condition, PhoneNo, Msg, Prefix], AC) ->
-    [Condition] = typechecks:std_bools([Condition]),
-    [PhoneNo2] = typechecks:std_strs([PhoneNo]),
-    PhoneNo3 = compress(PhoneNo2),
+'auto.robocall2'([Cond, PhNo, Msg, Prefix], AC) ->
+    [Cond] = typechecks:std_bools([Cond]),
+    [PhNo2] = typechecks:std_strs([PhNo]),
+    PhNo3 = compress(PhNo2),
     [Msg2] = typechecks:std_strs([Msg]),
-    case Condition of
+    case Cond of
         true ->
-            case contact_utils:robocall(AC, "+" ++ Prefix ++ PhoneNo2, Msg2) of
-                {ok, ok} -> "Robocal: " ++ Msg2 ++ " made to phone " ++ PhoneNo3;
+            case contact_utils:robocall(AC, "+" ++ Prefix ++ PhNo2, Msg2) of
+                {ok, ok} -> "Robocal: " ++ Msg2 ++ " made to phone " ++ PhNo3;
                 _        -> ?ERRVAL_ERR
             end;
         false ->
-            "Robocall: " ++ Msg2 ++ " to be sent to phone " ++ PhoneNo3
+            "Robocall: " ++ Msg2 ++ " to be sent to phone " ++ PhNo3
     end.
 
-'auto.sms.out2'([Condition, PhoneNo, Msg, Prefix], AC) ->
-    [Condition] = typechecks:std_bools([Condition]),
-    [PhoneNo2] = typechecks:std_strs([PhoneNo]),
-    PhoneNo3 = "+" ++ Prefix ++ compress(PhoneNo2),
+'auto.sms.out2'([Cond, PhNo, Msg, Prefix], AC) ->
+    [Cond] = typechecks:std_bools([Cond]),
+    [PhNo2] = typechecks:std_strs([PhNo]),
+    PhNo3 = "+" ++ Prefix ++ compress(PhNo2),
     Msg2 = rightsize(Msg, ?SMSLength),
     Log = #contact_log{idx = get(idx), type = "automatic sms",
-                       to = PhoneNo3, contents = Msg2},
+                       to = PhNo3, contents = Msg2},
     S = get(site),
-    case Condition of
+    case Cond of
         true ->
-            case contact_utils:post_sms(AC, PhoneNo3, Msg2) of
+            case contact_utils:post_sms(AC, PhNo3, Msg2) of
                 {ok, ok} ->
                     spawn(hn_twilio_mochi, log,
                           [S, Log#contact_log{status = "ok"}]),
@@ -215,42 +198,44 @@ check_if_paid(Fun, Args, Type) ->
                     ?ERRVAL_ERR
             end;
         false ->
-            "SMS: " ++ Msg2 ++ " to be sent to phone " ++ PhoneNo3
+            "SMS: " ++ Msg2 ++ " to be sent to phone " ++ PhNo3
     end.
 
-'phone.out'([PhoneNo, Prefix]) ->
-    'phone.out2'(PhoneNo, normalise(Prefix));
-'phone.out'([PhoneNo]) ->
-    'phone.out2'(PhoneNo, "").
+'phone.out'([PhNo, Prefix]) ->
+    'phone.out2'(PhNo, normalise(Prefix));
+'phone.out'([PhNo]) ->
+    'phone.out2'(PhNo, "").
 
-'phone.out2'(PhoneNo, Prefix) ->
+'phone.out2'(PhNo, Prefix) ->
     Site = get(site),
     case contact_utils:get_twilio_account(Site) of
         ?ERRVAL_PAYONLY ->
             ?ERRVAL_PAYONLY;
-        AC              ->
+        AC ->
             #twilio_account{application_sid = AppSID,
                             site_phone_no = Site_Phone} = AC,
-            [PhoneNo2] = typechecks:std_strs([PhoneNo]),
-            PhoneNo3 = compress(PhoneNo2),
+            [PhNo2] = typechecks:std_strs([PhNo]),
+            PhNo3 = compress(PhNo2),
             Log = #contact_log{idx = get(idx), type = "outbound call",
-                               to = "+" ++ Prefix ++ PhoneNo3},
+                               to = "+" ++ Prefix ++ PhNo3},
             TwiML = [
                      #dial{callerId = Site_Phone, record = true,
-                           body = [#number{number = "+" ++ Prefix ++ PhoneNo3}]}
+                           body = [#number{number = "+" ++ Prefix ++ PhNo3}]}
                     ],
             Capability = [{client_outgoing, AppSID, []}],
             Type = {"softphone_type", "outbound call"},
-            Config = [{"button_txt", "(+" ++ Prefix ++ ") " ++ PhoneNo3},
+            Config = [{"button_txt", "(+" ++ Prefix ++ ") " ++ PhNo3},
                       {"headline_txt", "Make Phone Call"}],
             Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
                            softphone_type = Type, softphone_config = Config},
             Headline = "Make Phone Call",
-            ButtonTxt = "(+" ++ Prefix ++ ") " ++ PhoneNo3,
+            ButtonTxt = "(+" ++ Prefix ++ ") " ++ PhNo3,
             phone(Phone, "Phone Out: ", Headline, ButtonTxt)
     end.
 
-'phone.in'([]) ->
+'phone.in'([]) -> ?check_paid(fun 'phone.in2'/1, [], inbound).
+
+'phone.in2'([]) ->
     phone(#phone{}, "Phone In: ", "yerk", "berk").
 
 phone(Payload, Preview, Headline, ButtonTxt) ->
@@ -295,7 +280,7 @@ rightsize(Msg, Size) ->
     Length = length(Msg2),
     if
         Length > Size  -> {Msg3, _} = lists:split(Size, Msg2),
-                         Msg3;
+                          Msg3;
         Length =< Size -> Msg2
     end.
 

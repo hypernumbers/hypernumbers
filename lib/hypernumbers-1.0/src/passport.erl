@@ -374,16 +374,19 @@ handle_call({get_or_create_user, Email, SuggestedUid}, _From, State) ->
                         {ok, existing, U};
                     _ ->
                         case mnesia:read(service_passport_user, SuggestedUid)
-                        of
+                            of
                             [] ->
                                 User = #user{uid = SuggestedUid,
                                              email = Email},
                                 mnesia:write(service_passport_user,
-                                             User,
-                                             write),
+                                             User, write),
                                 {ok, new, User#user.uid};
                             _ ->
-                                {error, cannot_replace_existing_id}
+                                UID = create_uid(),
+                                User = #user{uid = UID, email = Email},
+                                mnesia:write(service_passport_user,
+                                             User, write),
+                                {ok, new, User#user.uid}
                         end
                 end
         end,

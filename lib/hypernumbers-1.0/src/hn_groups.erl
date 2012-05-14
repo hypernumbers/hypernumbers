@@ -73,7 +73,7 @@ create_group(Site, GroupN) ->
                     [] ->
                         Group = #group{name = GroupN},
                         mnesia:write(Tbl, Group, write),
-                        new_db_api:mark_users_and_groups_dirty(Site);
+                        new_db_api:mark_site_dirty(Site);
                     _ ->
                         ok
                 end
@@ -85,7 +85,7 @@ delete_group(Site, GroupN) ->
     Tbl = new_db_wu:trans(Site, group),
     Fun = fun() ->
                   mnesia:delete(Tbl, GroupN, write),
-                  new_db_api:mark_users_and_groups_dirty(Site)
+                  new_db_api:mark_site_dirty(Site)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -98,7 +98,7 @@ add_user(Site, GroupN, Uid) ->
                         Members = gb_sets:add(Uid, G#group.members),
                         G2 = G#group{members=Members},
                         mnesia:write(Tbl, G2, write),
-                        new_db_api:mark_users_and_groups_dirty(Site);
+                        new_db_api:mark_site_dirty(Site);
                     _ ->
                         no_group
                 end
@@ -114,7 +114,7 @@ rem_user(Site, GroupN, Uid) ->
                         Members = gb_sets:delete_any(Uid, G#group.members),
                         G2 = G#group{members=Members},
                         mnesia:write(Tbl, G2, write),
-                        new_db_api:mark_users_and_groups_dirty(Site);
+                        new_db_api:mark_site_dirty(Site);
                     _ ->
                         no_group
                 end

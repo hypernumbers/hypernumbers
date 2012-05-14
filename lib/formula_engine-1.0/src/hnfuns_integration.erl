@@ -13,6 +13,7 @@
 % working functions
 -export([
          'generic.integration.'/1,
+         vimeo/1,
          'facebook.comments'/1,
          'disqus.comments'/1,
          'twitter.button'/1,
@@ -71,6 +72,19 @@
 %%
 %% Exported functions
 %%
+
+vimeo([Video]) ->
+    [V2] = typechecks:std_strs([Video]),
+    HTML = "<div class='hn_vimeo'>"
+        ++ "<iframe src='http://player.vimeo.com/video/" ++ V2
+        ++ "?color=ffffff&title=0&byline=0&portrait=0 "
+        ++ "width='750' height='421' frameborder='0'  "
+        ++ "webkitAllowFullScreen mozallowfullscreen "
+        ++ "allowFullScreen></iframe></div>",
+    Preview = #preview{title = "Vimeo", width = 10, height = 20},
+    CSS = ["http://files.vixo.com/vixo/css/vixo.css"],
+    Incs = #incs{css = CSS},
+    #spec_val{val = HTML, sp_incs = Incs, preview = Preview}.
 
 'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
 'google.map'([Long, Lat, Zoom]) ->
