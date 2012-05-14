@@ -102,9 +102,12 @@ get_restrictions(_N) -> ?ERR_VAL.
     'factory.'([W, H, Title, "blank"]);
 'factory.'([W, H, Title, Type]) ->
     Text = "Create a site of type: '" ++ Type ++ "'",
+    'factory.'([W, H, Title, Type, Text	]);
+'factory.'([W, H, Title, Type, Text]) ->
     'factory.'([W, H, Title, Type, Text, "Create Site >>"]);
 'factory.'([W, H, Title, Type, Desc, ButtonTxt | Rest]) ->
     % first check if the site is able to be a factory
+    [Title, Type, Desc, ButtonTxt, Rest]),
     [W2, H2] = typechecks:std_ints([W, H]),
     List = [Title, Type, Desc, ButtonTxt],
     [Title2, Type2, Desc2, BtnTxt2] = typechecks:std_strs(List),
