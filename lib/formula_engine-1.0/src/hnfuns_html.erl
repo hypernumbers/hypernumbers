@@ -12,6 +12,7 @@
 
 -export([
          anchor/1,
+         'html.panel.'/1,
          'html.headline.'/1,
          'html.plainbox.'/1,
          'html.box.'/1,
@@ -36,6 +37,43 @@
          'tim.submenu'/1,
          'tim.tabs.'/1
         ]).
+
+'html.panel.'([W, H, Text, BgCol1, BgCol2, TextColour]) ->
+    'html.panel.'([W, H, Text, BgCol1, BgCol2, TextColour, 0]) ;
+'html.panel.'([W, H, Text, BgCol1, BgCol2, TextColour, Style]) ->
+    'html.panel.'([W, H, Text, BgCol1, BgCol2, TextColour, Style, "#eee"]);
+'html.panel.'([W, H, Text, BgCol1, BgCol2, TextColour, Style, BorderColour]) ->
+    [W2, H2, S2] = typechecks:std_ints([W, H, Style]),
+    [Txt2] = typechecks:std_strs([Text]),
+    BgC1 = typechecks:rgbcolours(BgCol1),
+    BgC2 = typechecks:rgbcolours(BgCol2),
+    TxtC = typechecks:rgbcolours(TextColour),
+    BrC = typechecks:rgbcolours(BorderColour),
+    Resize = #resize{width = W2, height = H2},
+    BaseStyle = "color:" ++ TxtC ++ ";"
+        ++ "background:" ++ "-webkit-gradient(linear, 0 40%, 0 70%, from("
+        ++ BgC1 ++ "), to(" ++ BgC2 ++ "));"
+        ++ "background:" ++ "-moz-linear-gradient(center top, " ++ BgC1
+        ++ ", " ++ BgC2 ++ ") repeat scroll 0 0 transparent;"
+        ++ "bacground-color:" ++ BgC1 ++ ";"
+        ++ "-moz-border-radius:12px;"
+        ++ "-webkit-border-radius:12px;"
+        ++ "border-radius:12px;"
+        ++ "display:none;",
+    Style2 = case S2 of
+                 0 -> BaseStyle;
+                 1 -> BaseStyle ++ "border:1px solid " ++ BrC ++ ";";
+                 2 -> BaseStyle ++ "border:1px solid " ++ BrC ++ ";"
+                          ++ "-moz-box-shadow: 2px 2px 4px #AAA;"
+                          ++ "-webkit-box-shadow: 2px 2px 4px #AAA;";
+                 _ -> ?ERR_VAL
+             end,
+    HTML = "<div class='hn_html_panel' style='" ++ Style2 ++ "' >"
+        ++ Txt2 ++ "</div>",
+    JS = ["/webcomponents/hn.htmlpanel.js"],
+    Reload = ["HN.HTMLPanel.reload();"],
+    Incs = #incs{js = JS, js_reload = Reload},
+    #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
 
 anchor([Anchor]) ->
     [A2] = typechecks:std_strs([Anchor]),
@@ -94,10 +132,10 @@ anchor([Anchor, Text]) ->
     [Al1] = typechecks:std_ints([Alert]),
     Z2 = get_z(fun make_links/2, Z, Style),
     L = [H, W, Headline, Z2, Footer],
-     case BT1 of
-         3 -> 'html.box.1'("grey", "single", Al1, "none", L);
-         _ -> ?ERR_VAL
-     end.
+    case BT1 of
+        3 -> 'html.box.1'("grey", "single", Al1, "none", L);
+        _ -> ?ERR_VAL
+    end.
 
 get_z(Fun, Z, Style) ->
     case muin_collect:col([Z], [fetch, fetch_z_debug, blank_as_str],
@@ -115,7 +153,7 @@ zsubmenu2([], _, Acc) ->
 zsubmenu2([{{P, _}, _} | T], 0, Acc) ->
     P2 = hn_util:list_to_path(P),
     NewAcc = {P2, "<li><a href='" ++ P2 ++ "'>"
-        ++ P2 ++ "</a></li>"},
+              ++ P2 ++ "</a></li>"},
     zsubmenu2(T, 0, [NewAcc | Acc]);
 zsubmenu2([{{P, _}, V} | T], 1, Acc) ->
     P2 = hn_util:list_to_path(P),
@@ -124,13 +162,13 @@ zsubmenu2([{{P, _}, V} | T], 1, Acc) ->
              _     -> tconv:to_s(V)
          end,
     NewAcc = {V2, "<li><a href='" ++ P2 ++ "'>"
-        ++ V2 ++ "</a></li>"},
+              ++ V2 ++ "</a></li>"},
     zsubmenu2(T, 1, [NewAcc | Acc]);
 zsubmenu2([{{P, _}, _} | T], 2, Acc) ->
     P2 = hn_util:list_to_path(P),
     V = lists:last(P),
     NewAcc = {V, "<li><a href='" ++ P2 ++ "'>"
-        ++ V ++ "</a></li>"},
+              ++ V ++ "</a></li>"},
     zsubmenu2(T, 2, [NewAcc | Acc]).
 
 links2([], 2, Acc) ->
@@ -144,7 +182,7 @@ links2([], _St, Acc) ->
 links2([{{P, _}, _} | T], 0, Acc) ->
     P2 = hn_util:list_to_path(P),
     NewAcc = {P2, "<div><a href='" ++ P2 ++ "'>"
-        ++ P2 ++ "</a></div>"},
+              ++ P2 ++ "</a></div>"},
     links2(T, 0, [NewAcc | Acc]);
 links2([{{P, _}, V} | T], 1, Acc) ->
     P2 = hn_util:list_to_path(P),
@@ -153,7 +191,7 @@ links2([{{P, _}, V} | T], 1, Acc) ->
              _     -> tconv:to_s(V)
          end,
     NewAcc = {V2, "<div><a href='" ++ P2 ++ "'>"
-        ++ V2 ++ "</a></div>"},
+              ++ V2 ++ "</a></div>"},
     links2(T, 1, [NewAcc | Acc]);
 links2([{{P, _}, V} | T], 2, Acc) ->
     P2 = hn_util:list_to_path(P),
@@ -162,8 +200,8 @@ links2([{{P, _}, V} | T], 2, Acc) ->
              _     -> tconv:to_s(V)
          end,
     NewAcc = {P2, "<tr><td><a href='" ++ P2 ++ "'>"
-        ++ P2 ++ "</a></td><td>" ++ V2
-        ++ "</td></tr>"},
+              ++ P2 ++ "</a></td><td>" ++ V2
+              ++ "</td></tr>"},
     links2(T, 2, [NewAcc | Acc]).
 
 'html.headline.'([W, H, Text]) ->
@@ -173,10 +211,10 @@ links2([{{P, _}, V} | T], 2, Acc) ->
     funs_util:check_size(W2, H2),
     Resize = #resize{width = W2, height = H2},
     HTML =  "<span class='hn-wc-headline hn-wc-wd-"
-     ++ integer_to_list(W2) ++
-     " hn-wc-ht-" ++ integer_to_list(H2) ++ "' " ++
-     "style='position:absolute;top:25%;left:0%;'>"
-     ++ T2 ++ "</span>",
+        ++ integer_to_list(W2) ++
+        " hn-wc-ht-" ++ integer_to_list(H2) ++ "' " ++
+        "style='position:absolute;top:25%;left:0%;'>"
+        ++ T2 ++ "</span>",
     #spec_val{val = HTML, resize = Resize}.
 
 'html.ruledbox.'(List) -> 'html.box.1'("white", "none", 99, "single", List).
@@ -329,7 +367,7 @@ z2(T2, Z, St2) ->
                           "' class='hn_sld_tabs'>",
                           Headers, Tabs, "</div>"]),
     Js   = ["/webcomponents/hn.newwebcomponents.js",
-           "/webcomponents/jquery.tabs.js"],
+            "/webcomponents/jquery.tabs.js"],
     Js_R = ["HN.NewWebComponents.reload_tabs();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
@@ -484,7 +522,7 @@ split(List) ->
 
 'tim.menu1'([], Klass, Acc) ->
     "<ul class='" ++ Klass ++ "'>" ++ lists:flatten(lists:reverse(Acc))
-++ "</ul>";
+        ++ "</ul>";
 'tim.menu1'([H | T], Klass, Acc) ->
     Line = "<li>" ++ H ++ "</li>",
     'tim.menu1'(T, Klass, [Line | Acc]).
