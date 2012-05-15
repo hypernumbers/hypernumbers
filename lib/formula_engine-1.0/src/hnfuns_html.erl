@@ -58,8 +58,7 @@
         ++ "bacground-color:" ++ BgC1 ++ ";"
         ++ "-moz-border-radius:12px;"
         ++ "-webkit-border-radius:12px;"
-        ++ "border-radius:12px;"
-        ++ "height: 97%;",
+        ++ "border-radius:12px;",
     Style2 = case S2 of
                  0 -> BaseStyle;
                  1 -> BaseStyle ++ "border:1px solid " ++ BrC ++ ";";
