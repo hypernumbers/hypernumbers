@@ -487,11 +487,11 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
 
 
 include([CellRef]) when ?is_cellref(CellRef) ->
-    #cellref{col={offset, X}, row={offset, Y}, path=Path} = CellRef,
-    RelRan = #rangeref{type=finite,
-                       path=Path,
-                       tl = {{offset, X}, {offset, Y}},
-                       br = {{offset, X}, {offset, Y}}},
+    #cellref{col = C, row = R, path = Path} = CellRef,
+    RelRan = #rangeref{type = finite,
+                       path = Path,
+                       tl = {C, R},
+                       br = {C, R}},
     include([RelRan]);
 include([RelRan]) when ?is_rangeref(RelRan) ->
     OldPath = RelRan#rangeref.path,
