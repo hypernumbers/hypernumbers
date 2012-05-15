@@ -59,7 +59,7 @@
         ++ "-moz-border-radius:12px;"
         ++ "-webkit-border-radius:12px;"
         ++ "border-radius:12px;"
-        ++ "display:none;",
+        ++ "height: 97%;",
     Style2 = case S2 of
                  0 -> BaseStyle;
                  1 -> BaseStyle ++ "border:1px solid " ++ BrC ++ ";";
