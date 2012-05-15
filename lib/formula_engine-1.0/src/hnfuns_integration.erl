@@ -215,14 +215,15 @@ google_buy_n1(Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
                                                 ?ERR_NOTSETUP;
         [{kvstore, "google_merchant_id", M}] -> ok
     end,
+    [M2] = typechecks:std_strs([M]),
     C = muin_col_DEPR:collect_string(Cur, ?default_str_rules),
     Bg1 = string:to_lower(muin_col_DEPR:collect_string(Bg, ?default_str_rules)),
     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
         false -> ?ERRVAL_VAL;
         true  -> case Bg1 of
-                     "0" -> google_buy_n2(M, C, ItemName, ItemDesc,
+                     "0" -> google_buy_n2(M2, C, ItemName, ItemDesc,
                                           Price, Quantity, "white");
-                     "1" -> google_buy_n2(M, C, ItemName, ItemDesc,
+                     "1" -> google_buy_n2(M2, C, ItemName, ItemDesc,
                                           Price, Quantity, "trans");
                      _ -> ?ERRVAL_VAL
                  end
