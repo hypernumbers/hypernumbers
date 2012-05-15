@@ -1763,11 +1763,6 @@
         "link": "http://documentation.vixo.com/contents/vixo-functions/social-media-and-web-integration/google-buynow.html",
         "args": [
             {
-                "name": "Merchant ID",
-                "desc": "Get it from Google Checkout",
-                "type": "finite"
-            },
-            {
                 "name": "Currency",
                 "desc": "ISO 4217 Currency Code",
                 "type": "finite"
