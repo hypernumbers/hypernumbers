@@ -87,7 +87,7 @@ get_restrictions(_N) -> ?ERR_VAL.
     V = new_db_wu:read_kvD(?msite, factory),
     case V of
         [] ->
-            #spec_val{val = ?ERRVAL_NOTFACT, sp_site = true};
+            #spec_val{val = ?ERRVAL_NOTSETUP, sp_site = true};
         [{kvstore, factory, all}] ->
             #spec_val{val = "This site can create any site type",
                       sp_site = true};
@@ -117,7 +117,7 @@ get_restrictions(_N) -> ?ERR_VAL.
     V = new_db_wu:read_kvD(?msite, factory),
     case V of
         [] ->
-            #spec_val{val = ?ERRVAL_NOTFACT, sp_site = true};
+            #spec_val{val = ?ERRVAL_NOTSETUP, sp_site = true};
         [{kvstore, factory, all}] ->
             factory2(W2, H2, Title2, Type3, Desc2, BtnTxt2, Rest);
         [{kvstore, factory, List}] when is_list(List) ->
