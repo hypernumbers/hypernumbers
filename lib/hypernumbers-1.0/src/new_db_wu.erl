@@ -574,7 +574,7 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
                  Has_Phone   = orddict:is_key("__hasphone", Attrs),
                  Is_In_IncFn = orddict:is_key("__in_includeFn", Attrs),
                  Has_Uniq    = orddict:is_key("__unique", Attrs),
-                 Has_Site   = orddict:is_key("__site", Attrs),
+                 Has_Site    = orddict:is_key("__site", Attrs),
                  Is_Dynamic  = is_dynamic_select(Attrs),
                  Attrs2 =
                      case Is_Formula of
@@ -798,7 +798,7 @@ proc_sp2(#spec_val{sp_phone = Pl} = SP, XRefX, Attrs, Pars) ->
 proc_sp3(#spec_val{preview = null} = SP, XRefX, Attrs, Pars) ->
     proc_sp4(SP, XRefX, Attrs, Pars);
 proc_sp3(#spec_val{preview = Pr} = SP, XRefX, Attrs, Pars) ->
-    #preview{title = Title, height = Ht, width = Wd} = Pr,
+    {Title, Wd, Ht} = merge_precedence(Pr, Attrs),
     NewAttrs = orddict:store("preview", {Title, Wd, Ht}, Attrs),
     NewAttrs2 = handle_merge(Ht, Wd, NewAttrs),
     proc_sp4(SP, XRefX, NewAttrs2, Pars).
@@ -842,6 +842,17 @@ proc_sp9(#spec_val{unique = null}, _XRefX, Attrs) ->
     Attrs;
 proc_sp9(#spec_val{unique = Uq}, _XRefX, Attrs) ->
     orddict:store("__unique", Uq, Attrs).
+
+% merge take precendence over preview...
+merge_precedence(Pr, Attrs) ->
+    #preview{title = Title, width = Wd, height = Ht} = Pr,
+    case orddict:is_key("merge", Attrs) of
+        false -> {Title, Wd, Ht};
+        true  -> {struct, List} = orddict:fetch("merge", Attrs),
+                 {"right", R} = lists:keyfind("right", 1, List),
+                 {"down",  D} = lists:keyfind("down", 1, List),
+                 {Title, R + 1, D + 1}
+    end.
 
 handle_merge(1, 1, Attrs) -> orddict:erase("merge", Attrs);
 handle_merge(Ht, Wd, Attrs)
@@ -2789,3 +2800,7 @@ split_select(String) ->
                    hn_util:list_to_path(SimplePath)
            end,
     {Path, Ref}.
+
+%% writeif(Str, Vals, {cell, {6, 14}}) ->
+%%     io:format(Str, Vals);
+%% writeif(_, _, _) -> ok.
