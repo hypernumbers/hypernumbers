@@ -5,6 +5,7 @@
 -module(hn_groups).
 
 -export([
+         make_admin/2,
          get_groups/1,
          get_all_groups/1,
          create_group/2,
@@ -25,6 +26,16 @@
 
 -include("spriki.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
+
+% a fn to create a new site admin
+-spec make_admin(string(), string()) -> ok | {error, list()}.
+make_admin(Site, Email) when is_list(Site) andalso is_list(Email) ->
+    case hn_util:valid_email(Email) of
+        false -> {error, "invalid email"};
+        true  -> {ok, _, User} = passport:get_or_create_user(Email),
+                 passport:validate_uid(User),
+                 add_user(Site, "admin", User)
+    end.
 
 -spec get_groups(string()) -> [string()].
 get_groups(Site) ->
