@@ -378,7 +378,7 @@ img_style(_N) ->  ?ERR_VAL.
     funs_util:check_size(Width, Height),
     [Sort2] = typechecks:std_ints([Sort]),
     [Dirc2, HasL2] = typechecks:std_bools([Direction, HasLink]),
-    Hds1 = lists:reverse(typechecks:html_box_contents([Headers])),
+    Hds1 = typechecks:html_box_contents([Headers]),
     Hds2 = case HasLink of
                true  -> ["Links" | Hds1];
                false -> Hds1
