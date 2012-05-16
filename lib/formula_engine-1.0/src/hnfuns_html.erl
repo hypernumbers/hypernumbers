@@ -325,16 +325,13 @@ z2(T2, Z, St2) ->
 'html.submenu'(List) -> 'tim.submenu'(List).
 
 'html.menu.'([W | Rest]) ->
-    io:format("W is ~p Rest is ~p~n", [W, Rest]),
     [W2] = typechecks:throw_std_ints([W]),
     Strings = typechecks:throw_html_box_contents(Rest),
-    io:format("W2 is ~p Rest is ~p~n", [W2, Rest]),
     Menu = 'tim.menu1'(Strings, "hn_sld_menu sld_menu1", []),
     Js   = ["/webcomponents/hn.newwebcomponents.js"],
     Js_R = ["HN.NewWebComponents.reload();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    io:format("Incs is ~p~n", [Incs]),
     Preview = #preview{title = "Menu " ++ hd(Strings), width = W2, height = 3},
     #spec_val{val = Menu, preview = Preview, sp_incs = Incs}.
 
