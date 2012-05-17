@@ -16,7 +16,8 @@
 
 -export([export/1, export/2,
          import/1, import/2,
-         export_as_sitetype/2
+         export_as_sitetype/2,
+         export_as_sitetype/3
          ]).
 
 -define(join, filename:join).
@@ -24,6 +25,11 @@
 %% Exports a site as a sitemod that can be loaded by a factory
 -spec export_as_sitetype(list(), atom()) -> ok.
 export_as_sitetype(Site, NewType) ->
+    export_as_sitetype(Site, NewType, "admin").
+
+export_as_sitetype(Site, NewType, open) ->
+    export_as_sitetype(Site, NewType, "admin");
+export_as_sitetype(Site, NewType, Group) when is_list(Group) ->
     SiteTypes = ?join([code:priv_dir(hypernumbers), "site_types"]),
     Dest = ?join([SiteTypes, NewType]),
     ok = export_site(Dest, Site),
@@ -32,6 +38,7 @@ export_as_sitetype(Site, NewType) ->
     %% Rename files
     file:rename(?join([Dest, "groups.export"]),
                 ?join([Dest, "groups.script"])),
+    ok = post_process_groups(?join([Dest, "groups.script"]), Group),
     file:rename(?join([Dest, "permissions.export"]),
                 ?join([Dest, "permissions.script"])),
 
@@ -40,6 +47,14 @@ export_as_sitetype(Site, NewType) ->
     [ hn_util:delete_directory( ?join([SiteTypes, NewType, ?join(Dir)]) )
       || Dir <- [["etf"], ["views"], ["docroot"]] ],
     ok.
+
+post_process_groups(File, Group) ->
+    {ok, Groups} = file:consult(File),
+    StrippedGroups = [X || X <- Groups, element(1, X) =/= add_user],
+    NewGroups = lists:append(StrippedGroups, [{add_user, [{uid, '$creator'},
+                                                          {group, Group}]}]),
+    NewG2 = lists:flatten([io_lib:format("~p.~n", [X]) || X <- NewGroups]),
+    ok = file:write_file(File, NewG2).
 
 %% Export sites to the given directory.
 export(Dest) ->
