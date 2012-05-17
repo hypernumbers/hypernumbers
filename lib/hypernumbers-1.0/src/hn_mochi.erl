@@ -198,6 +198,7 @@ handle_resource(Ref, Qry, Env=#env{method = 'GET'}) ->
 handle_resource(Ref, _Qry,
                 Env=#env{method='POST', body=multipart,
                          mochi=Mochi, uid=Uid}) ->
+    io:format("in upload...~n"),
     {ok, UserName} = passport:uid_to_email(Uid),
     {ok, File, Name, Data} = hn_file_upload:handle_upload(Mochi, Ref,
                                                           UserName),
@@ -469,6 +470,7 @@ authorize_p3(Site, Path, Env) ->
     end.
 
 authorize_upload(#refX{site = S, path = P}, _Qry,  #env{uid = Uid}) ->
+    io:format("In authorize_upload...~n"),
     Views = auth_srv:get_views(S, P, Uid),
     case has_appropriate_view(Views) of
         false -> {upload, denied};
