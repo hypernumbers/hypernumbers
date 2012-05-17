@@ -822,9 +822,12 @@ proc_sp2(#spec_val{sp_phone = Pl} = SP, XRefX, Attrs, Pars) ->
 proc_sp3(#spec_val{preview = null} = SP, XRefX, Attrs, Pars) ->
     proc_sp4(SP, XRefX, Attrs, Pars);
 proc_sp3(#spec_val{preview = Pr} = SP, XRefX, Attrs, Pars) ->
-    {Title, Wd, Ht} = merge_precedence(Pr, Attrs),
+    #preview{title = Title, width = Wd, height = Ht} = Pr,
     NewAttrs = orddict:store("preview", {Title, Wd, Ht}, Attrs),
-    NewAttrs2 = handle_merge(Ht, Wd, NewAttrs),
+     NewAttrs2 = case orddict:is_key("merge", NewAttrs) of
+                     true -> NewAttrs;
+                     false -> handle_merge(Ht, Wd, NewAttrs)
+                 end,
     proc_sp4(SP, XRefX, NewAttrs2, Pars).
 
 proc_sp4(#spec_val{include = false} = SP, XRefX, Attrs, _Pars) ->
@@ -844,7 +847,10 @@ proc_sp6(#spec_val{resize = null} = SP, XRefX, Attrs) ->
     proc_sp7(SP, XRefX, Attrs);
 proc_sp6(#spec_val{resize = RSz} = SP, XRefX, Attrs) ->
     #resize{width = W, height = H} = RSz,
-    NewAttrs = handle_merge(H, W, Attrs),
+    NewAttrs = case orddict:is_key("merge", Attrs) of
+                     true -> Attrs;
+                     false -> handle_merge(H, W, Attrs)
+                 end,
     proc_sp7(SP, XRefX, NewAttrs).
 
 proc_sp7(#spec_val{sp_timer = null} = SP, XRefX, Attrs) ->
@@ -866,17 +872,6 @@ proc_sp9(#spec_val{unique = null}, _XRefX, Attrs) ->
     Attrs;
 proc_sp9(#spec_val{unique = Uq}, _XRefX, Attrs) ->
     orddict:store("__unique", Uq, Attrs).
-
-% merge take precendence over preview...
-merge_precedence(Pr, Attrs) ->
-    #preview{title = Title, width = Wd, height = Ht} = Pr,
-    case orddict:is_key("merge", Attrs) of
-        false -> {Title, Wd, Ht};
-        true  -> {struct, List} = orddict:fetch("merge", Attrs),
-                 {"right", R} = lists:keyfind("right", 1, List),
-                 {"down",  D} = lists:keyfind("down", 1, List),
-                 {Title, R + 1, D + 1}
-    end.
 
 handle_merge(1, 1, Attrs) -> orddict:erase("merge", Attrs);
 handle_merge(Ht, Wd, Attrs)

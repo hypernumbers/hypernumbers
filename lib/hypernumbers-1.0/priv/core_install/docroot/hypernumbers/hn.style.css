@@ -672,33 +672,30 @@ label {
   margin: 2px;
   }
 
-.hn_html_preview
+.hn_html_preview, .hn-include
  {
-  font-size:        90%;
-  font-weight:      bold;
-  background-color: #EEE;
-  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#EEE),
-                                 to(#CCC));
-  background: -moz-linear-gradient(center top , #EEE,
-                                     #CCC) repeat scroll 0 0 transparent;
-  color:            #777;
-  margin:           2px;
-  padding:          1px 1px 1px 1px;
   -moz-border-radius:    4px 4px 4px 4px;
   -webkit-border-radius: 4px 4px 4px 4px;
-  border:           2px solid #E99;
+  color:            #666;
   }
 
-.hn-include {
-              font-size:  12px;
-              height: auto;
-              color: #FFF;
-              background-color: #79bd8f;
-              width: auto;
-              padding:          4px 4px 4px 4px;
-              -moz-border-radius:    4px 4px 4px 4px;
-              -webkit-border-radius: 4px 4px 4px 4px;
-              border:           1px solid #E99;
+.hn_html_preview
+{
+  font-size:        75%;
+  padding:          1px 1px 1px 2px;
+  border:           1px solid #A99;
+  background-color: #fbfbfb;
+  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#fefefe),
+                                 to(#eee));
+  background: -moz-linear-gradient(center top , #fefefe,
+                                     #eee) repeat scroll 0 0 transparent;
+ }
+
+.hn-include
+{
+  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#eefefe), to(#cceeee));
+  background: -moz-linear-gradient(center top , #eefefe, #cceeee) repeat scroll 0 0 transparent;
+  background-color: #eefefe;
  }
 
 #hn_uploadxlsform, #hn_saveastemplateform, #hn_newpageform
