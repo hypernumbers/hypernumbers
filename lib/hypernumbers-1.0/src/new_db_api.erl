@@ -13,6 +13,7 @@
 -include("syslib.hrl").
 
 -export([
+         revert/3,
          clear_factory/1,
          make_factory/1,
          make_factory/2,
@@ -96,8 +97,16 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+revert(#refX{} = RefX, Revision, UID) ->
+    Report = mnesia_mon:get_stamp("revert"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:revertD(RefX, Revision, UID)
+          end,
+    write_activity(RefX, Fun, "quiet", Report).
+
 clear_factory(Site) ->
-    Report = mnesia_mon:get_stamp("cler_factory"),
+    Report = mnesia_mon:get_stamp("clear_factory"),
     Fun = fun() ->
                   mnesia_mon:report(Report),
                   new_db_wu:delete_kvD(Site, factory),

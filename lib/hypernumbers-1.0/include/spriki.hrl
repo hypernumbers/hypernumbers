@@ -157,6 +157,13 @@
           log
          }).
 
+-record(sublog,
+        {
+          msg,
+          oldformula,
+          newformula
+         }).
+
 -record(group,
         {
           name = [],

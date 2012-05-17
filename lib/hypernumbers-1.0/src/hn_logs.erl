@@ -23,37 +23,61 @@ get_logs(RefX) when is_record(RefX, refX)->
                   end
           end,
     Logs = lists:sort(Fun, new_db_api:get_logs(RefX)),
-    tidy_up(Logs, hn_util:refX_to_url(RefX)).
+    URL = hn_util:refX_to_url(RefX),
+    tidy_up(Logs, URL, hn_util:refX_to_url(RefX)).
 
-tidy_up(Logs, Title) ->
+tidy_up(Logs, URL, Title) ->
     "<html><head><title = '" ++ Title ++ "></title>"
-        ++ "<link href='/hypernumbers/logs.css' rel='stylesheet' />"
+        ++ "<link href='/hypernumbers/hn.logs.css' rel='stylesheet' />"
+        ++ "<link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />"
         ++ "</head><body>"
-        ++ make_html(Logs, [])
-        ++ "</body></html>".
+        ++ make_html(Logs, URL, [])
+        ++ "</body>"
+        ++ "<script src='/hypernumbers/jquery-1.7.1.js'></script>"
+        ++ "<script src='/hypernumbers/json2.min.js'></script>"
+        ++ "<script src='/hypernumbers/hn.logs.js'></script>"
+        ++ "</html>".
 
-make_html([], Acc) -> "<table><thead><td></td><td>User</td><td>At The Time</td>"
-                          "<td></td><td></td><td>Change</td></thead>" ++
-                          lists:flatten(Acc) ++ "</table>";
-make_html([H | T], Acc) ->
-    #logging{idx = _I, timestamp = Tm, uid = U, action = A, actiontype = AT,
-          type = _Ty, path = _P, obj = O, log = Msg} = H,
-    Date = dh_date:format("d/m/y h:m", util2:timestamp_to_date(Tm)),
+make_html([], _URL, Acc) ->
+    "<table><thead><td></td><td></td><td>User</td><td>At The Time</td>"
+        "<td></td><td></td><td>Change</td></thead>" ++
+        lists:flatten(Acc) ++ "</table>";
+make_html([H | T], URL, Acc) ->
+    make_html(T, URL, [make_row(H) | Acc]).
+
+make_row(#logging{idx = _I, timestamp = Tm, uid = U, action = A,
+                  actiontype = AT, type = _Ty, path = _P, obj = O,
+                  log = Msg}) ->
+    Date = dh_date:format("d/m/y h:m:s", util2:timestamp_to_date(Tm)),
     Date2 = io_lib:format("~s", [Date]),
     {ok, Email} = passport:uid_to_email(U),
-    Row = [Date2, Email, hn_util:obj_to_ref(O),
-           format_actions_and_type(A), format_actions_and_type(AT),
-           format_msg(Msg)],
-    make_html(T, [make_row(Row, []) | Acc]).
+    Ref = hn_util:obj_to_ref(O),
+    A2 = format_actions_and_type(A),
+    AT2 = format_actions_and_type(AT),
+    Msg2 = format_msg(Msg),
+    Rev = integer_to_list(Tm),
+    Button = case Msg of
+                 #sublog{} ->
+                     "<input class='button' type='button' value='Revert'"
+                         ++ "data-reversion='" ++ Rev ++ "' />";
+                 _ ->
+                     ""
+             end,
+    "<tr>"
+        ++ td(Date2,  1)
+        ++ td(Button, 1)
+        ++ td(Email,  1)
+        ++ td(Ref,    1)
+        ++ td(A2,     1)
+        ++ td(AT2,    1)
+        ++ td(Msg2,   0)
+        ++ "</tr>".
 
-make_row([], Acc) ->
-    "<tr>" ++ lists:flatten(lists:reverse(Acc)) ++ "</tr>";
-make_row([H | []], Acc) ->
-    make_row([], ["<td>" ++ hn_util:esc(lists:flatten(H)) ++ "</td>" | Acc]);
-make_row([H | T], Acc) ->
-    make_row(T, ["<td class='hn_grey'>" ++ H ++ "</td>" | Acc]).
+td(X, 0) -> "<td>" ++ X ++ "</td>";
+td(X, 1) -> "<td class='hn_grey'>" ++ X ++ "</td>".
 
 format_msg([])                  -> [];
+format_msg(#sublog{msg = Msg})  -> binary_to_term(Msg);
 format_msg(X) when is_binary(X) -> binary_to_term(X).
 
 format_actions_and_type([])                -> [];

@@ -24,6 +24,7 @@
 -define(NONTRANSFORMATIVE, false).
 
 -export([
+         revertD/3,
          delete_siteonlyD/2,
          read_siteonlyD/2,
          write_siteonlyD/3,
@@ -99,6 +100,29 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+revertD(#refX{site = S, path = P, obj = {cell, _} = O} = RefX, Rev, UID) ->
+    P2 = hn_util:list_to_path(P),
+    Table = trans(S, logging),
+    case mnesia:index_read(Table, P2, #logging.path) of
+        [] ->
+            ok;
+        Recs ->
+            % although you read all the revisions off the page
+            % you should check that the revision being read is actually
+            % from the same cell as in the ref
+            [R] = [X#logging.log || X <- Recs,
+                                    integer_to_list(X#logging.timestamp) == Rev,
+                                    X#logging.obj == O],
+            case R of
+                #sublog{newformula = NF} ->
+                    XRefX = refX_to_xrefXD(RefX),
+                    _ = write_attrs(XRefX, [{"formula", NF}], UID),
+                    ok;
+                _ ->
+                    ok
+            end
+    end.
+
 delete_siteonlyD(#refX{site = S}, Type) ->
     Tbl = trans(S, siteonly),
     mnesia:delete(Tbl, Type, write).
@@ -1330,7 +1354,8 @@ log_write(#xrefX{idx = Idx, site = S, path = P, obj = O}, Old,
     L2 = term_to_binary(L),
     Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = "",
                    type = cell, path = hn_util:list_to_path(P),
-                   obj = O, log = L2},
+                   obj = O, log = #sublog{msg = L2, oldformula = OldF,
+                                         newformula = NewF}},
     write_logD(S, Log).
 
 write_logD(Site, Log) ->

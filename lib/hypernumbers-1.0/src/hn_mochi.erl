@@ -1139,13 +1139,20 @@ ipost(Ref=#refX{site = S, path = P} = Ref, _Qry,
     end;
 
 % run a web control
-ipost(Ref=#refX{obj = {page, _}}, _Qry,
-      Env=#env{body = [{"postwebcontrols", Actions}],
-               uid = Uid}) ->
+ipost(Ref = #refX{obj = {page, _}}, _Qry,
+      Env = #env{body = [{"postwebcontrols", Actions}],
+                 uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "created some pages"),
     run_actions(Ref, Env, mochijson:decode(Actions), Uid);
 
-ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
+% revert a cell to an old value
+ipost(Ref = #refX{obj = {cell, _}} = Ref, _Qry,
+      Env = #env{body = [{"revert_to", Revision}],
+                 uid = Uid}) ->
+    ok = new_db_api:revert(Ref, Revision, Uid),
+    json(Env, "success");
+
+ipost(Ref, _Qry, Env = #env{body = [{"set", {struct, Attr}}], uid = Uid})
   when Attr =/= [] ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     case Attr of
