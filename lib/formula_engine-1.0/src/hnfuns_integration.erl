@@ -202,28 +202,23 @@ tweet2(Message, Link) ->
 %%     "<script src=\"http://www.gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/youtube.xml&up_channel=" ++ C ++ "&synd=open&w=320&h=390&title=&border=%23ffffff%7C3px%2C1px+solid+%23999999&output=js\"></script>".
 
 %% Hypernumbers merchant ID is 960226209420618
-'google.buynow'([Cur, ItemName, ItemDesc, Price]) ->
-    google_buy_n1(Cur, ItemName, ItemDesc, Price, 1, 0);
-'google.buynow'([Cur, ItemName, ItemDesc, Price, Quantity]) ->
-    google_buy_n1(Cur, ItemName, ItemDesc, Price, Quantity, 0);
-'google.buynow'([Cur, ItemName, ItemDesc, Price, Quantity, Bg]) ->
-    google_buy_n1(Cur, ItemName, ItemDesc, Price, Quantity, Bg).
+'google.buynow'([MerchantId, Cur, ItemName, ItemDesc, Price]) ->
+    google_buy_n1(MerchantId, Cur, ItemName, ItemDesc, Price, 1, 0);
+'google.buynow'([MerchantId, Cur, ItemName, ItemDesc, Price, Quantity]) ->
+    google_buy_n1(MerchantId, Cur, ItemName, ItemDesc, Price, Quantity, 0);
+'google.buynow'([MerchantId, Cur, ItemName, ItemDesc, Price, Quantity, Bg]) ->
+    google_buy_n1(MerchantId, Cur, ItemName, ItemDesc, Price, Quantity, Bg).
 
-google_buy_n1(Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
-    case new_db_wu:read_kvD(?msite, "google_merchant_id") of
-        []                                   -> M = nothing,
-                                                ?ERR_NOTSETUP;
-        [{kvstore, "google_merchant_id", M}] -> ok
-    end,
-    [M2] = typechecks:std_strs([M]),
+google_buy_n1(MerchantId, Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
+    [M] = typechecks:std_strs([MerchantId]),
     C = muin_col_DEPR:collect_string(Cur, ?default_str_rules),
     Bg1 = string:to_lower(muin_col_DEPR:collect_string(Bg, ?default_str_rules)),
     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
         false -> ?ERRVAL_VAL;
         true  -> case Bg1 of
-                     "0" -> google_buy_n2(M2, C, ItemName, ItemDesc,
+                     "0" -> google_buy_n2(M, C, ItemName, ItemDesc,
                                           Price, Quantity, "white");
-                     "1" -> google_buy_n2(M2, C, ItemName, ItemDesc,
+                     "1" -> google_buy_n2(M, C, ItemName, ItemDesc,
                                           Price, Quantity, "trans");
                      _ -> ?ERRVAL_VAL
                  end
