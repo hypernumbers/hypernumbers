@@ -108,16 +108,24 @@ get_restrictions(_N) -> ?ERR_VAL.
 'factory.'([W, H, Title, Type, Text]) ->
     'factory.'([W, H, Title, Type, Text, "Create Site >>"]);
 'factory.'([W, H, Title, Type, Desc, ButtonTxt]) ->
-    'factory.'([W, H, Title, Type, Desc, ButtonTxt, ""]);
-'factory.'([W, H, Title, Type, Desc, ButtonTxt, Goto | Rest]) ->
+    'factory.'([W, H, Title, Type, Desc, ButtonTxt,
+                "Thanks, you will be emailed details of your new site."]);
+'factory.'([W, H, Title, Type, Desc, ButtonTxt, ResponseMsg]) ->
+    'factory.'([W, H, Title, Type, Desc, ButtonTxt, ResponseMsg, ""]);
+'factory.'([W, H, Title, Type, Desc, ButtonTxt, Response, Goto | Rest]) ->
     % first check if the site is able to be a factory
     [W2, H2] = typechecks:std_ints([W, H]),
     % check if the site is a factory site and which site types it
     % can create
     V = new_db_wu:read_kvD(?msite, factory),
-    List = [Title, Type, Desc, ButtonTxt],
-    [Tt2, Type2, Desc2, BTxt2] = typechecks:std_strs(List),
-    [G2] = typechecks:std_strs([Goto]),
+    List = [Title, Type, Desc, ButtonTxt, Response],
+    [Tt2, Type2, Desc2, BTxt2, Rsp2] = typechecks:std_strs(List),
+    G2 = case typechecks:std_strs([Goto]) of
+             [""]    -> RefX = #refX{site = ?msite, path = ?mpath,
+                                     obj = {page, "/"}},
+                        hn_util:refX_to_url(RefX);
+             [Other] -> Other
+           end,
     % can't just error because this is a site special formula
     % so you huftae catch it and pass out an #VALUE! error
     % manually...
@@ -134,7 +142,7 @@ get_restrictions(_N) -> ?ERR_VAL.
         [{kvstore, factory, all}] ->
             case Valid of
                 {sitetype, _} ->
-                    factory2(W2, H2, Tt2, Type2, Desc2, BTxt2, G2, Rest);
+                    factory2(W2, H2, Tt2, Type2, Desc2, BTxt2, Rsp2, G2, Rest);
                 error ->
                     #spec_val{val = ?ERRVAL_VAL, sp_site = true}
             end;
@@ -144,7 +152,7 @@ get_restrictions(_N) -> ?ERR_VAL.
                         case lists:member(Type3, List) of
                             true  ->
                                 factory2(W2, H2, Tt2, Type2, Desc2,
-                                         BTxt2, G2, Rest);
+                                         BTxt2, Rsp2, G2, Rest);
                             false ->
                                 #spec_val{val = ?ERRVAL_VAL, sp_site = true}
                         end;
@@ -153,20 +161,17 @@ get_restrictions(_N) -> ?ERR_VAL.
                 end
     end.
 
-factory2(W, H, Title, Type, Desc, BtnTxt, Goto, Rest) ->
+factory2(W, H, Title, Type, Desc, BtnTxt, Rsp2, Goto, Rest) ->
     Rest2 = typechecks:std_strs(Rest),
     % The Rest should consist of a set of doubles:
     % * a descriptive text
     % * a location to stick the text in
     case stdfuns_info:iseven([length(Rest2)]) of
-        true  -> factory3(W, H, Title, Type, Desc, BtnTxt, Goto, Rest2);
+        true  -> factory3(W, H, Title, Type, Desc, BtnTxt, Rsp2, Goto, Rest2);
         false -> #spec_val{val = ?ERRVAL_VAL, sp_site = true}
     end.
 
-factory3(W, H, Title, Type, Desc, BtnTxt, Goto, Rest) ->
-    io:format("W is ~p H is ~p Title is ~p Type is ~p~n"
-              ++ "Desc is ~p BtnTxt is ~p Goto is ~p Rest is ~p~n",
-              [W, H, Title, Type, Desc, BtnTxt, Goto, Rest]),
+factory3(W, H, Title, Type, Desc, BtnTxt, Rsp, Goto, Rest) ->
     Ref = hn_util:obj_to_ref({cell, {?mx, ?my}}),
     {Body, Payload} = make_body(Rest, [], []),
     Id     = "id_" ++ muin_util:create_name(),
@@ -190,6 +195,7 @@ factory3(W, H, Title, Type, Desc, BtnTxt, Goto, Rest) ->
         ++ "type='submit' data-type='" ++ Type ++ "' "
         ++ "data-ref='" ++ Ref ++ "' "
         ++ "data-goto='" ++ Goto ++ "' "
+        ++ "data-response='" ++ Rsp ++ "' "
         ++ "value='" ++ BtnTxt ++ "' />"
         ++ "</div>"
         ++ "<div class='hn_factory_feedback'></div>"

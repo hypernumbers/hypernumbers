@@ -30,6 +30,11 @@
          get_json_post/1    % Used for mochilog replay rewrites
         ]).
 
+% exports for spawning
+-export([
+         provision_site/6
+        ]).
+
 -define(SHEETVIEW,   "spreadsheet").
 -define(WEBPAGE,     "webpage").
 -define(WIKI,        "wikipage").
@@ -1054,14 +1059,22 @@ ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
     {"data", {struct, Data}} = lists:keyfind("data", 1, List),
     SType2 = hn_util:site_type_exists(SiteType),
     Email2 = string:to_lower(Email),
-    Transaction = factory,
-    [Expected] = new_db_api:matching_forms(Ref, Transaction),
-    case hn_security:validate_factory(Expected, SType2, Data) of
-        true ->
-            provision_site(RootSite, PrevUid, SType2, Email2, Data, Env);
+    case hn_util:valid_email(Email) of
         false ->
             json(Env, {struct, [{"result", "error"},
-                                {"reason", 401}]})
+                               {"reason", "invalid_email"}]});
+        true ->
+            Transaction = factory,
+            [Expected] = new_db_api:matching_forms(Ref, Transaction),
+            case hn_security:validate_factory(Expected, SType2, Data) of
+                true ->
+                    spawn(hn_mochi, provision_site,
+                          [RootSite, PrevUid, SType2, Email2, Data, Env]),
+                    json(Env, "success");
+                false ->
+                    json(Env, {struct, [{"result", "error"},
+                                        {"reason", 401}]})
+            end
     end;
 
 %% ipost for inline editable cells

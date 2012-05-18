@@ -14,9 +14,10 @@
 
 validate_factory(Expected, Type, Data) ->
     #form{restrictions = {"sitetype", EType}, attrs = Attrs} = Expected,
-    case {EType, valid_fac_attrs(Data, Attrs)} of
+    EType2 = list_to_existing_atom(EType),
+    case {EType2, valid_fac_attrs(Data, Attrs)} of
         {Type, true} -> true;
-        _            -> false
+        _Other       -> false
     end.
 
 % needent supply all the attrs, can only supply the listed attrs
