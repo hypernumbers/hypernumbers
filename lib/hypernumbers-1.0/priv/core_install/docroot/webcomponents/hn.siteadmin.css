@@ -4,6 +4,7 @@
   -moz-box-shadow    : 2px 2px 4px #AAA;
   -webkit-border-radius : 4px 4px 4px 4px;
   -webkit-box-shadow    : 2px 2px 4px #AAA;
+  box-shadow    : 2px 2px 4px #AAA;
   border  : 1px solid #ff6000;
   padding : 10px;
   font    : inherit;
