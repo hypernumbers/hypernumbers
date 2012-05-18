@@ -56,8 +56,10 @@
     Reload  = ["HN.SiteAdmin.reload();"],
     CSS     = ["/webcomponents/hn.siteadmin.css"],
     Incs    = #incs{js = JS, js_reload = Reload, css = CSS},
-    Preview = #preview{title = "File Upload", width = W2, height = H2},
-    #spec_val{val = HTML, preview = Preview, sp_incs = Incs, sp_site = true}.
+    Preview = "File Upload",
+    Resize = #resize{width = W2, height = H2},
+    #spec_val{val = HTML, preview = Preview, sp_incs = Incs,
+              resize = Resize, sp_site = true}.
 
 make_body([], Acc) ->
     TBody = lists:flatten(lists:reverse(Acc)),
@@ -105,40 +107,66 @@ get_restrictions(_N) -> ?ERR_VAL.
     'factory.'([W, H, Title, Type, Text	]);
 'factory.'([W, H, Title, Type, Text]) ->
     'factory.'([W, H, Title, Type, Text, "Create Site >>"]);
-'factory.'([W, H, Title, Type, Desc, ButtonTxt | Rest]) ->
+'factory.'([W, H, Title, Type, Desc, ButtonTxt]) ->
+    'factory.'([W, H, Title, Type, Desc, ButtonTxt, ""]);
+'factory.'([W, H, Title, Type, Desc, ButtonTxt, Goto | Rest]) ->
     % first check if the site is able to be a factory
     [W2, H2] = typechecks:std_ints([W, H]),
-    List = [Title, Type, Desc, ButtonTxt],
-    [Title2, Type2, Desc2, BtnTxt2] = typechecks:std_strs(List),
-    % make sure the sitetype exists
-    Type3 = hn_util:site_type_exists(Type2),
     % check if the site is a factory site and which site types it
     % can create
     V = new_db_wu:read_kvD(?msite, factory),
+    List = [Title, Type, Desc, ButtonTxt],
+    [Tt2, Type2, Desc2, BTxt2] = typechecks:std_strs(List),
+    [G2] = typechecks:std_strs([Goto]),
+    % can't just error because this is a site special formula
+    % so you huftae catch it and pass out an #VALUE! error
+    % manually...
+    Valid = try
+                {sitetype, hn_util:site_type_exists(Type2)}
+                catch
+                    error : _ -> error;
+                    exit  : _ -> error;
+                    throw : _ -> error
+                end,
     case V of
         [] ->
             #spec_val{val = ?ERRVAL_NOTSETUP, sp_site = true};
         [{kvstore, factory, all}] ->
-            factory2(W2, H2, Title2, Type3, Desc2, BtnTxt2, Rest);
+            case Valid of
+                {sitetype, _} ->
+                    factory2(W2, H2, Tt2, Type2, Desc2, BTxt2, G2, Rest);
+                error ->
+                    #spec_val{val = ?ERRVAL_VAL, sp_site = true}
+            end;
         [{kvstore, factory, List}] when is_list(List) ->
-            % now check if the site type is in the list
-            case lists:member(Type3, List) of
-                true  -> factory2(W2, H2, Title2, Type3, Desc2, BtnTxt2, Rest);
-                false -> #spec_val{val = ?ERRVAL_VAL, sp_site = true}
-            end
+                case Valid of
+                    {sitetype, Type3} ->
+                        case lists:member(Type3, List) of
+                            true  ->
+                                factory2(W2, H2, Tt2, Type2, Desc2,
+                                         BTxt2, G2, Rest);
+                            false ->
+                                #spec_val{val = ?ERRVAL_VAL, sp_site = true}
+                        end;
+                    error ->
+                        #spec_val{val = ?ERRVAL_VAL, sp_site = true}
+                end
     end.
 
-factory2(W, H, Title, Type, Desc, BtnTxt, Rest) ->
-    Rest = typechecks:std_strs(Rest),
+factory2(W, H, Title, Type, Desc, BtnTxt, Goto, Rest) ->
+    Rest2 = typechecks:std_strs(Rest),
     % The Rest should consist of a set of doubles:
     % * a descriptive text
     % * a location to stick the text in
-    case stdfuns_info:iseven([length(Rest)]) of
-        true  -> factory3(W, H, Title, Type, Desc, BtnTxt, Rest);
+    case stdfuns_info:iseven([length(Rest2)]) of
+        true  -> factory3(W, H, Title, Type, Desc, BtnTxt, Goto, Rest2);
         false -> #spec_val{val = ?ERRVAL_VAL, sp_site = true}
     end.
 
-factory3(W, H, Title, Type, Desc, BtnTxt, Rest) ->
+factory3(W, H, Title, Type, Desc, BtnTxt, Goto, Rest) ->
+    io:format("W is ~p H is ~p Title is ~p Type is ~p~n"
+              ++ "Desc is ~p BtnTxt is ~p Goto is ~p Rest is ~p~n",
+              [W, H, Title, Type, Desc, BtnTxt, Goto, Rest]),
     Ref = hn_util:obj_to_ref({cell, {?mx, ?my}}),
     {Body, Payload} = make_body(Rest, [], []),
     Id     = "id_" ++ muin_util:create_name(),
@@ -147,7 +175,7 @@ factory3(W, H, Title, Type, Desc, BtnTxt, Rest) ->
     CSS    = ["/webcomponents/hn.factory.css",
               "/webcomponents/hn.siteadmin.css"],
     Incs   = #incs{js = Js, js_reload = Reload, css= CSS},
-    Form   = #form{id = {factory, atom_to_list(Type)},
+    Form   = #form{id = {factory, Type},
                  kind = "factory",
                  restrictions = {"sitetype", Type},
                  attrs = Payload},
@@ -159,14 +187,17 @@ factory3(W, H, Title, Type, Desc, BtnTxt, Rest) ->
         ++ "<input class='hn_factory_email' type='text' />"
         ++ "<div class='hn_site_admin_container'>"
         ++ "<input id='" ++ Id ++ "' class='button factory' "
-        ++ "type='submit' data-type='" ++ atom_to_list(Type) ++ "' "
+        ++ "type='submit' data-type='" ++ Type ++ "' "
         ++ "data-ref='" ++ Ref ++ "' "
+        ++ "data-goto='" ++ Goto ++ "' "
         ++ "value='" ++ BtnTxt ++ "' />"
         ++ "</div>"
+        ++ "<div class='hn_factory_feedback'></div>"
         ++ "</div>",
-    PreV = #preview{title = "Factory: " ++ Title, width = W, height = H},
+    PreV = "Factory: " ++ Title,
+    Resize = #resize{width = W, height = H},
     #spec_val{val = HTML, sp_webcontrol = Form, sp_incs = Incs,
-              preview = PreV, sp_site = true}.
+              resize = Resize, preview = PreV, sp_site = true}.
 
 make_body([], Acc1, Acc2) -> {lists:flatten(lists:reverse(Acc1)),
                               lists:reverse(Acc2)};
@@ -218,8 +249,10 @@ is_valid(Input) ->
                      ++ "class='hn-loadtemplate' value='"
                      ++ Title ++ "' data-template='"
                      ++ Template ++ "' />",
-                 Preview = #preview{title = Title, width = 2, height = 2},
-                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                 Preview = Title,
+                 Resize = #resize{width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form,
+                           resize = Resize, preview = Preview,
                            sp_incs = Incs}
     end.
 
@@ -241,8 +274,10 @@ is_valid(Input) ->
                      ++ "class='hn-mapcustom' value='"
                      ++ Title ++ "' data-map-type='custom' data-map='"
                      ++ Map ++ "' />",
-                 Preview = #preview{title = Title, width = 2, height = 2},
-                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                 Preview = Title,
+                 Resize = #resize{width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form,
+                           resize = Resize, preview = Preview,
                            sp_incs = Incs}
     end.
 
@@ -264,8 +299,10 @@ is_valid(Input) ->
                      ++ "class='hn-mapsheet' value='"
                      ++ Title ++ "' data-map-type='sheet' data-map='"
                      ++ Map ++ "' data-map-page='" ++ Page ++"' />",
-                 Preview = #preview{title = Title, width = 2, height = 2},
-                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                 Preview = Title,
+                 Resize= #resize{width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form,
+                           resize = Resize, preview = Preview,
                            sp_incs = Incs}
     end.
 
@@ -287,8 +324,10 @@ is_valid(Input) ->
                      ++ "class='hn-maprows' value='"
                      ++ Title ++ "' data-map-type='row' data-map='"
                      ++ Map ++ "' />",
-                 Preview = #preview{title = Title, width = 2, height = 2},
-                 #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview,
+                 Preview = Title,
+                 Resize = #resize{width = 2, height = 2},
+                 #spec_val{val = HTML, sp_webcontrol = Form,
+                           resize = Resize, preview = Preview,
                            sp_incs = Incs}
     end.
 
@@ -329,6 +368,8 @@ is_valid(Input) ->
             % action is approved
             Form = #form{id = {'create-button', Title}, kind = "create-button",
                          attrs = Commands3},
-            Preview = #preview{title = Title, height = 2, width = 2},
-            #spec_val{val = HTML, sp_webcontrol = Form, preview = Preview}
+            Preview = Title,
+            Resize = #resize{height = 2, width = 2},
+            #spec_val{val = HTML, sp_webcontrol = Form,
+                      resize = Resize, preview = Preview}
     end.

@@ -130,7 +130,7 @@ fixedval_([Label, Val, Show]) ->
                             ++" data-name='default'"
                             ++ "data-label='" ++ Label ++ "' />"
            end,
-    Preview = #preview{title = Label, width = 1, height = 1},
+    Preview = Label,
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
@@ -143,7 +143,7 @@ input_([Label], _Default, Trans) ->
                          "data-name='default' " ++
                          "data-label='"++Label++"' " ++
                          "value='Enter data...'/>"),
-    Preview = #preview{title = Label, width = 1, height = 1},
+    Preview = Label,
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
@@ -156,7 +156,7 @@ textarea_([Label], _Default, Trans) ->
                          ++ "data-name='default' "
                          ++ "data-label='"++Label++
                          "'>Enter data...</textarea>"),
-    Preview = #preview{title = Label, width = 1, height = 1},
+    Preview = Label,
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
@@ -177,8 +177,7 @@ button_(Value, Response, ResultsPath, Email) ->
                          ++ " data-origin='" ++ Origin ++ "?view=webpage'"
                          ++ " data-form-name='default' data-response='"
                          ++ Response ++ "' />"),
-    Preview = #preview{title = Value ++ " Submit Button",
-                       width = 1, height = 1},
+    Preview = Value ++ " Submit Button",
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
@@ -192,7 +191,7 @@ select_(Label, Options) ->
     Html = lists:flatten("<select class='hninput' data-name='default' "++
                          "data-label='" ++ Label ++ "' >" ++ Opts ++
                          "</select>"),
-    Preview = #preview{title = Label, width = 1, height = 1},
+    Preview = Label,
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
@@ -213,7 +212,7 @@ radio_(Label, Options) ->
     Html = lists:flatten("<div class='hninput' data-name='default' "++
                          "data-label='" ++ Label ++ "' >" ++ Opts ++
                          "</div>"),
-    Preview = #preview{title = Label, width = 1, height = 1},
+    Preview = Label,
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 

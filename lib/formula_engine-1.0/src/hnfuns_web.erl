@@ -190,8 +190,9 @@ trail2([H | T] = L, Acc) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     [HTML2] = typechecks:throw_std_strs([HTML]),
-    PreV = #preview{title = "Raw HTML", width = Width, height = Height},
-    #spec_val{val = HTML2, preview = PreV}.
+    PreV = "Raw HTML",
+    Resize = #resize{width = Width, height = Height},
+    #spec_val{val = HTML2, resize = Resize, preview = PreV}.
 
 'iframe.'([W, H, URL]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -200,8 +201,9 @@ trail2([H | T] = L, Acc) ->
     IFrame = "<iframe class='hn-wc-ht-" ++ integer_to_list(Height)
         ++ " hn-wc-wd-" ++ integer_to_list(Width) ++ "' src='" ++
         URL2 ++ "' frameborder='0'></iframe>",
-    PreV = #preview{title = "IFrame: " ++ URL2, width = Width, height = Height},
-    #spec_val{val = IFrame, preview = PreV}.
+    PreV = "IFrame: " ++ URL2,
+    Resize = #resize{width = Width, height = Height},
+    #spec_val{val = IFrame, resize = Resize, preview = PreV}.
 
 %background_(Url, Rest) ->
 %    lists:flatten("<style type='text/css'>body{background:url("
@@ -407,8 +409,10 @@ img_style(_N) ->  ?ERR_VAL.
     case Ranges of
         % empty table
         [] ->
-            PreV = #preview{title = "ZTable", width = Width, height = Height},
-            #spec_val{val = "", preview = PreV, include = true};
+            PreV = "ZTable",
+            Resize = #resize{width = Width, height = Height},
+            #spec_val{val = "", preview = PreV, resize = Resize,
+                      include = true};
         Ranges ->
             Ranges2 = fix_upzrange(Ranges, HasL2, []),
             Cols1 = length(Hds2),
@@ -463,9 +467,10 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
             SubLen = trunc(length(Ref2)/Len),
             case make_ref3(Ref2, SubLen, []) of
                 [] -> % empty table
-                    PreV = #preview{title = "Table", width = Width,
-                                    height = Height},
-                    #spec_val{val = "", preview = PreV, include = true};
+                    PreV = "Table",
+                    Resize = #resize{width = Width, height = Height},
+                    #spec_val{val = "", preview = PreV, resize = Resize,
+                              include = true};
                 Ref3 ->
                     [Hd | Body] = Ref3,
                     % negative sort index means reverse the natural order
@@ -521,10 +526,10 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
                           {W2, H2} = get_preview(Width, Height),
                           HTML = hn_render:wrap_region(Html, Width, Height),
                           HTML2 = lists:flatten(HTML),
-                          Preview = #preview{title = Title, width = W2,
-                                             height = H2},
+                          Preview = Title,
+                          Resize = #resize{width = W2, height = H2},
                           #spec_val{val = HTML2, preview = Preview,
-                                    include = true};
+                                    resize = Resize, include = true};
                 true  -> ?ERRVAL_CANTINC
             end
     end.
@@ -580,8 +585,10 @@ table_(Title, W, H, [THead | Range], Sort, Dirc) ->
     Incs = #incs{js = [Js], js_reload = [Script2]},
     HTML = lists:flatten(["<table id='", Id,"' class='tablesorter'>",
                           Head, Rows, "</table>"]),
-    PreV = #preview{title = Title, width = W, height = H},
-    #spec_val{val = HTML, preview = PreV, include = true, sp_incs = Incs}.
+    PreV = Title,
+    Resize = #resize{width = W, height = H},
+    #spec_val{val = HTML, preview = PreV, include = true,
+              resize = Resize, sp_incs = Incs}.
 
 make_ref3([], _SubLen, Acc) -> lists:reverse(Acc);
 make_ref3(List, SubLen, Acc) ->

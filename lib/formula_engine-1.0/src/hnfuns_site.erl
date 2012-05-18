@@ -80,9 +80,11 @@
 'phone.menu.play'([Url, Loop]) ->
     [U2] = typechecks:std_strs([Url]),
     [Lp2] = typechecks:std_pos_ints([Loop]),
-    Preview = #preview{title = "PLAY: " ++ U2, width = 2, height = 2},
+    Preview = "PLAY: " ++ U2,
+    Resize = #resize{width = 2, height = 2},
     SAY = #play{url = U2, loop = Lp2},
-    #spec_val{val = "", preview = Preview, sp_phone = #phone{twiml = [SAY]}}.
+    #spec_val{val = "", preview = Preview, resize = Resize,
+              sp_phone = #phone{twiml = [SAY]}}.
 
 'phone.menu.say'([Text]) ->
     phsay(Text, "woman", "en-gb", 1);
@@ -105,9 +107,11 @@ phsay(Text, Voice, Language, Loop) ->
                              Tit;
                 Len =< 30 -> Text2
             end,
-    Preview = #preview{title = "SAY: " ++ Title, width = 2, height = 2},
+    Preview = "SAY: " ++ Title,
+    Resize = #resize{width = 2, height = 2},
     SAY = #say{text = Text2, voice = V2, language = L2, loop = Lp2},
-    #spec_val{val = "", preview = Preview, sp_phone = #phone{twiml = [SAY]}}.
+    #spec_val{val = "", preview = Preview, resize = Resize,
+              sp_phone = #phone{twiml = [SAY]}}.
 
 'configure.email'([FromEmail]) ->
     'configure.email'([FromEmail, ""]);

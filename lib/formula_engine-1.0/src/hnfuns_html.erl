@@ -76,15 +76,13 @@
 
 anchor([Anchor]) ->
     [A2] = typechecks:std_strs([Anchor]),
-    Preview = #preview{title = "Anchor " ++ Anchor,
-                       width = 1, height = 1},
-    HTML = "<a name='" ++ A2 ++ "'></a>",
+    Preview = "Anchor " ++ Anchor,
+    HTML = "<a class='hn_anchor'name='" ++ A2 ++ "'></a>",
     #spec_val{val = HTML, preview = Preview};
 anchor([Anchor, Text]) ->
     [A2, Txt2] = typechecks:std_strs([Anchor, Text]),
-    Preview = #preview{title = "Anchor " ++ Anchor,
-                       width = 1, height = 1},
-    HTML = "<a name='" ++ A2 ++ "'>" ++ Txt2 ++ "</a>",
+    Preview = "Anchor " ++ Anchor,
+    HTML = "<a class='hn_anchor' name='" ++ A2 ++ "'>" ++ Txt2 ++ "</a>",
     #spec_val{val = HTML, preview = Preview}.
 
 'toggle.views'([]) ->
@@ -93,8 +91,9 @@ anchor([Anchor, Text]) ->
     JS = ["/webcomponents/hn.toggle.js"],
     Js_R = ["HN.Toggle.reload();"],
     Incs = #incs{js = JS, js_reload = Js_R},
-    Preview = #preview{title = "Toggle Views Button", width = 2, height = 2},
-    #spec_val{val = HTML, preview = Preview, sp_incs = Incs}.
+    Preview = "Toggle Views Button",
+    Resize = #resize{width = 2, height = 2},
+    #spec_val{val = HTML, preview = Preview, resize = Resize, sp_incs = Incs}.
 
 'link.box.'([H, W, Z]) ->
     'link.box.'([H, W, Z, 0]);
@@ -319,8 +318,9 @@ z2(T2, Z, St2) ->
           end,
     Z2 = get_z(Fun, Z, St2),
     SubMenu = "<span>" ++ T2 ++ "</span>" ++ Z2,
-    Preview = #preview{title = "Submenu", width = 1, height = 2},
-    #spec_val{val = SubMenu, preview = Preview}.
+    Preview = "Submenu",
+    Resize = #resize{width = 1, height = 2},
+    #spec_val{val = SubMenu, preview = Preview, resize = Resize}.
 
 'html.submenu'(List) -> 'tim.submenu'(List).
 
@@ -332,8 +332,9 @@ z2(T2, Z, St2) ->
     Js_R = ["HN.NewWebComponents.reload();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    Preview = #preview{title = "Menu " ++ hd(Strings), width = W2, height = 3},
-    #spec_val{val = Menu, preview = Preview, sp_incs = Incs}.
+    Preview = "Menu " ++ hd(Strings),
+    Resize = #resize{width = W2, height = 3},
+    #spec_val{val = Menu, preview = Preview, resize = Resize, sp_incs = Incs}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -367,8 +368,10 @@ z2(T2, Z, St2) ->
     Js_R = ["HN.NewWebComponents.reload_tabs();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
     Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    Preview = #preview{title = "Tabs box", width = W, height = H},
-    #spec_val{val = HTML, preview = Preview, sp_incs = Incs, include = true}.
+    Preview = "Tabs box",
+    Resize = #resize{width = W, height = H},
+    #spec_val{val = HTML, preview = Preview, sp_incs = Incs, resize = Resize,
+              include = true}.
 
 split(List) ->
     Len = length(List),
@@ -513,8 +516,9 @@ split(List) ->
 'tim.submenu'(List) ->
     [Header | Strings] = typechecks:throw_html_box_contents(List),
     SubMenu = 'tim.submenu1'(Strings, Header, "first_level", []),
-    Preview = #preview{title = "Sub Menu " ++ Header, width = 1, height = 1},
-    #spec_val{val = SubMenu, preview = Preview}.
+    Preview = "Sub Menu " ++ Header,
+    Resize = #resize{width = 1, height = 1},
+    #spec_val{val = SubMenu, resize = Resize, preview = Preview}.
 
 'tim.menu1'([], Klass, Acc) ->
     "<ul class='" ++ Klass ++ "'>" ++ lists:flatten(lists:reverse(Acc))

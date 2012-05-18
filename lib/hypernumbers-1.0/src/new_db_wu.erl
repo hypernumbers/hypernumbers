@@ -822,13 +822,8 @@ proc_sp2(#spec_val{sp_phone = Pl} = SP, XRefX, Attrs, Pars) ->
 proc_sp3(#spec_val{preview = null} = SP, XRefX, Attrs, Pars) ->
     proc_sp4(SP, XRefX, Attrs, Pars);
 proc_sp3(#spec_val{preview = Pr} = SP, XRefX, Attrs, Pars) ->
-    #preview{title = Title, width = Wd, height = Ht} = Pr,
-    NewAttrs = orddict:store("preview", {Title, Wd, Ht}, Attrs),
-     NewAttrs2 = case orddict:is_key("merge", NewAttrs) of
-                     true -> NewAttrs;
-                     false -> handle_merge(Ht, Wd, NewAttrs)
-                 end,
-    proc_sp4(SP, XRefX, NewAttrs2, Pars).
+    NewAttrs = orddict:store("preview", Pr, Attrs),
+    proc_sp4(SP, XRefX, NewAttrs, Pars).
 
 proc_sp4(#spec_val{include = false} = SP, XRefX, Attrs, _Pars) ->
     proc_sp5(SP, XRefX, Attrs);
@@ -847,10 +842,7 @@ proc_sp6(#spec_val{resize = null} = SP, XRefX, Attrs) ->
     proc_sp7(SP, XRefX, Attrs);
 proc_sp6(#spec_val{resize = RSz} = SP, XRefX, Attrs) ->
     #resize{width = W, height = H} = RSz,
-    NewAttrs = case orddict:is_key("merge", Attrs) of
-                     true -> Attrs;
-                     false -> handle_merge(H, W, Attrs)
-                 end,
+    NewAttrs = handle_merge(H, W, Attrs),
     proc_sp7(SP, XRefX, NewAttrs).
 
 proc_sp7(#spec_val{sp_timer = null} = SP, XRefX, Attrs) ->

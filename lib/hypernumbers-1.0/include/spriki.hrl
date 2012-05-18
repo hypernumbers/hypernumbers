@@ -461,13 +461,6 @@
           html
          }).
 
--record(preview,
-        {
-          title,
-          width,
-          height
-         }).
-
 -record(resize,
         {
           width,
