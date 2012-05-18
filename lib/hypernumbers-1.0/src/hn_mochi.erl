@@ -768,7 +768,7 @@ iget(Ref=#refX{site=S}, page, #qry{view=FName},
 iget(#refX{site = Site, path = Path}, page,
      #qry{updates = Time, paths = More}, Env=#env{accept = json})
   when Time /= undefined, More /= undefined ->
-    Paths = [Path | [ string:tokens(X, "/") || X<-string:tokens(More, ",")]],
+    Paths = [Path | [ string:tokens(X, "/") || X <- string:tokens(More, ",")]],
     remoting_request(Env, Site, Paths, Time);
 
 iget(#refX{site = S}, page, #qry{status = []}, Env) ->
@@ -777,7 +777,7 @@ iget(#refX{site = S}, page, #qry{status = []}, Env) ->
 iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
     json(Env, auth_srv:get_as_json(S, P));
 
-iget(Ref, page, #qry{pages = []}, Env=#env{accept = json}) ->
+iget(Ref, page, #qry{pages = []}, Env = #env{accept = json}) ->
     json(Env, pages(Ref));
 
 iget(Ref, page, _Qry, Env=#env{accept = json}) ->
