@@ -799,7 +799,9 @@ proc_special(#spec_val{rawform = null} = SP, XRefX, Attrs, Pars) ->
     proc_sp1(SP, XRefX, Attrs, Pars);
 proc_special(#spec_val{rawform = RF} = SP, XRefX, Attrs, Pars) ->
     #rawform{form = Form} = RF,
-    ok = attach_formD(XRefX, Form),
+    {Trans, Label} = Form#form.id,
+    Form2 = Form#form{id = {XRefX#xrefX.path, Trans, Label}},
+    ok = attach_formD(XRefX, Form2),
     NewAttrs = orddict:store("__hasform", t, Attrs),
     proc_sp1(SP, XRefX, NewAttrs, Pars).
 
