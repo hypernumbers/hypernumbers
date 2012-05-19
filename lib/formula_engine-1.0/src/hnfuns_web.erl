@@ -490,15 +490,16 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
 %        [return_errors, {all, fun muin_collect:is_string/1}],
 %        fun([Url, Extra]) -> background_(Url, Extra) end).
 
-
-include([CellRef]) when ?is_cellref(CellRef) ->
+include([Ref]) ->
+    include([Ref, none]);
+include([CellRef | Title]) when ?is_cellref(CellRef) ->
     #cellref{col = C, row = R, path = Path} = CellRef,
     RelRan = #rangeref{type = finite,
                        path = Path,
                        tl = {C, R},
                        br = {C, R}},
-    include([RelRan]);
-include([RelRan]) when ?is_rangeref(RelRan) ->
+    include([RelRan | Title]);
+include([RelRan | Title]) when ?is_rangeref(RelRan) ->
     OldPath = RelRan#rangeref.path,
     OrigPath = get(path),
     NewPath = muin_util:walk_path(OrigPath, OldPath),
@@ -517,16 +518,24 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             Obj = {range, {X1, Y1, X2, Y2}},
             Ref = #refX{site = Site, type = url, path = Path, obj = Obj},
             % throw an error if we are trying to bring controls through
-            Title = "<div class='hn-include'>Including data from "
-                ++ hn_util:list_to_path(NewPath)
-                ++ hn_util:obj_to_ref(Obj) ++ "</div>",
+            Title2 = case Title of
+                         none ->
+                             "<div class='hn-include'>Including data from "
+                                 ++ hn_util:list_to_path(NewPath)
+                                 ++ hn_util:obj_to_ref(Obj) ++ "</div>";
+                         _ ->
+                             [Tt] = typechecks:throw_std_strs(Title),
+                             "<div class='hn-include'>Including: " ++ Tt
+                                 ++ " from " ++ hn_util:list_to_path(NewPath)
+                                 ++ hn_util:obj_to_ref(Obj) ++ "</div>"
+                     end,
             case new_db_wu:has_forms(Ref) of
                 false ->  Content = hn_render:content(Ref),
                           {{Html, Width, Height}, _Addons} = Content,
                           {W2, H2} = get_preview(Width, Height),
                           HTML = hn_render:wrap_region(Html, Width, Height),
                           HTML2 = lists:flatten(HTML),
-                          Preview = Title,
+                          Preview = Title2,
                           Resize = #resize{width = W2, height = H2},
                           #spec_val{val = HTML2, preview = Preview,
                                     resize = Resize, include = true};

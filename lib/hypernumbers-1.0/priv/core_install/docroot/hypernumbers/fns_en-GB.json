@@ -2348,6 +2348,11 @@
                 "name": "Range",
                 "desc": "The range of cells to include.",
                 "type": "finite"
+            },
+            {
+                "name": "Title",
+                "desc": "A title to be shown in the preview",
+                "type": "optional"
             }
         ]
     },
