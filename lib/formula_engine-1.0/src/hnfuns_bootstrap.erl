@@ -50,7 +50,10 @@ get_titles([_, T | R], Acc) ->
 make_buttons([], _Class, Acc) ->
     lists:reverse(Acc);
 make_buttons([Link, Text | Rest], Class, Acc) ->
-    NewAcc = "<button class='btn " ++ Class ++ "' "
-        ++ "onclick='javascript:window.location=\"" ++ Link ++ "\";' >"
-        ++ Text ++ "</button>",
+    C = case Class of
+            [] -> "btn";
+            _  -> "btn "
+        end,
+    NewAcc = "<a class='" ++ C ++ Class ++ "' " ++ "href='" ++ Link ++ "'>"
+        ++ Text ++ "</a>",
     make_buttons(Rest, Class, [NewAcc | Acc]).

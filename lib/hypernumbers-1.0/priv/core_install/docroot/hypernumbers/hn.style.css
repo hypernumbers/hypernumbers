@@ -47,7 +47,6 @@ a {
     color: inherit;
 }
 
-a:link, a:visited { text-decoration: none; border-bottom: 1px dashed;}
 a:hover { color: #3f3f3f;}
 
 a img:hover { opacity: 0.6;}
