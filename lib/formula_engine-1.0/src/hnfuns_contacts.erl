@@ -33,7 +33,7 @@
             "No phone numbers have been purchased for this website";
         AC ->
             #twilio_account{site_phone_no = Site_Phone, type = Type} = AC,
-            Site_Phone ++ " (" ++ Type ++ ")"
+            Site_Phone ++ " (" ++ atom_to_list(Type) ++ ")"
     end.
 
 'text.answer.phone'([Msg]) ->
