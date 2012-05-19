@@ -64,7 +64,7 @@ rgbcolours([$#| Rest]) ->
     end.
 
 std_bools(Vals) ->
-    Rules = [first_array, fetch_name, fetch_ref, eval_funs, {cast,bool}],
+    Rules = [first_array, fetch_name, fetch_ref, eval_funs, {cast, bool}],
     Passes = [return_errors, {all, fun is_atom/1}],
     muin_collect:col(Vals, Rules, Passes).
 
@@ -75,12 +75,12 @@ std_strs(Vals) ->
 
 std_nums(Vals) ->
     Rules = [eval_funs, fetch, area_first, {cast, num}],
-    Passes = [return_errors],
+    Passes = [return_errors, {all, fun is_number/1}],
     muin_collect:col(Vals, Rules, Passes).
 
 std_ints(Vals) ->
     Rules = [eval_funs, fetch, area_first, {cast, int}],
-    Passes = [return_errors],
+    Passes = [return_errors, {all, fun is_integer/1}],
     muin_collect:col(Vals, Rules, Passes).
 
 std_pos_ints(Vals) ->
