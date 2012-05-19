@@ -340,6 +340,14 @@ transform("tim.menu." ++ R, Args) ->
     {list_to_atom("tim.menu."), [R | Args]};
 transform("html.menu." ++ R, Args) ->
     {list_to_atom("html.menu."), [R | Args]};
+transform("menu.buttons." ++ R, Args) ->
+    {list_to_atom("menu.buttons."), [R | Args]};
+transform("menu.mini.buttons." ++ R, Args) ->
+    {list_to_atom("menu.mini.buttons."), [R | Args]};
+transform("menu.small.buttons." ++ R, Args) ->
+    {list_to_atom("menu.small.buttons."), [R | Args]};
+transform("menu.large.buttons." ++ R, Args) ->
+    {list_to_atom("menu.large.buttons."), [R | Args]};
 % thse clauses needs to be captured to stop the next one capturing it!
 transform("html.submenu", Args) ->
     {list_to_atom("html.submenu"), Args};
@@ -505,7 +513,8 @@ get_modules() ->
      hnfuns_controls,
      hnfuns_z,
      hnfuns_special,
-     hnfuns_site
+     hnfuns_site,
+     hnfuns_bootstrap
     ].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
