@@ -23,6 +23,7 @@
          write_siteonly/3,
          idx_to_xrefX/2,
          get_phone/1,
+         get_phone/2,
          does_page_exist/1,
          delete_api/2,
          write_api/2,
@@ -314,6 +315,14 @@ write_siteonly(#refX{} = RefX, Type, Payload) ->
                       [_R] ->
                           {error, exists}
                   end
+          end,
+    mnesia_mon:log_act(transaction, Fun, Report).
+
+get_phone(Site, Idx) ->
+    Report = mnesia_mon:get_stamp("get_phone"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:get_phone(Site, Idx)
           end,
     mnesia_mon:log_act(transaction, Fun, Report).
 

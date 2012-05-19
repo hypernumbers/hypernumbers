@@ -42,9 +42,9 @@
     #spec_val{val = lists:flatten(HTML), resize = Resize, sp_site = true}.
 
 'phone.menu.'([W, H | List]) ->
-    ?check_paid(fun 'phone.menu2'/3, [W, H, List], inbound).
+    ?check_paid(fun 'phone.menu2'/2, [W, H, List], inbound).
 
-'phone.menu2'(W, H, List) ->
+'phone.menu2'([W, H, List], _Acnt) ->
     Site = get(site),
     Idx = get(idx),
     V = new_db_wu:read_kvD(Site, site_phone_menu),
@@ -67,7 +67,9 @@
             % for phone menus the payload is null
             ok = new_db_wu:write_kvD(Site, site_phone_menu, {Idx, null}),
             RSz = #resize{width = W2, height = H2},
-            #spec_val{val = HTML, resize = RSz, unique = site_phone_menu};
+            #spec_val{val = HTML, resize = RSz,
+                      sp_phone = #phone{twiml = TwiML},
+                      unique = site_phone_menu};
         OldI ->
             Uniq = new_db_wu:idx_to_xrefXD(Site, OldI),
             #xrefX{path = P, obj = {cell, _} = O} = Uniq,

@@ -25,9 +25,13 @@ get_phone_menu(S) ->
     case new_db_api:read_kv(S, site_phone_menu) of
         [] -> [_Proto, "//" ++ Domain, Port] = string:tokens(S, ":"),
               Site = say_site(Domain, Port),
-              [#say{text = Site ++ " is not configured for incoming calls"}];
+              [#say{text = Site ++ " is not configured for incoming calls",
+                   voice = "woman", language = "en_gb"}];
         [{kvstore, site_phone_menu, {Idx, null}}] ->
-            [#say{text = "fix me boy"}]
+            io:format("Idx is ~p~n", [Idx]),
+            [Phone] = new_db_api:get_phone(S, Idx),
+            #phone{twiml = TwiML} = Phone,
+            TwiML
     end.
 
 say_site(Domain, "80") ->
@@ -41,7 +45,7 @@ say_subbies(Domain) ->
 
 check_if_paid(Fun, Args, Type) ->
     Site = get(site),
-    case contact_utils:get_twilio_account(Site) of
+    case get_twilio_account(Site) of
         ?ERRVAL_PAYONLY ->
             ?ERRVAL_PAYONLY;
         AC ->

@@ -29,6 +29,7 @@
          read_siteonlyD/2,
          write_siteonlyD/3,
          get_phone/1,
+         get_phone/2,
          does_page_exist/1,
          has_cell_been_deletedD/2,
          proc_dirties_for_zinfD/3,
@@ -137,19 +138,28 @@ write_siteonlyD(#refX{site = S} = RefX, Type, Payload) ->
     Siteonly = #siteonly{type = Type, idx = XRefX#xrefX.idx, payload = Payload},
     mnesia:write(Tbl, Siteonly, write).
 
+get_phone(Site, Idx) ->
+    get_p2D(Site, Idx).
+
+% this shim is only to keep the api the same and break out the
+% database accessing fns for cprof :(
+get_p2D(Site, Idx) ->
+    Tbl = trans(Site, phone),
+    mnesia:read(Tbl, Idx, read).
+
 % see if there is a phone - might not be, mebbies the cell doesn't exist
 get_phone(#refX{obj = {Type, _}} = RefX)
   when Type == cell orelse Type == range ->
     XRefXs = expand_ref(RefX),
-    get_phone2(XRefXs, []).
+    get_phoneD(XRefXs, []).
 
-get_phone2([], Acc) ->
+get_phoneD([], Acc) ->
     lists:flatten(lists:reverse(Acc));
-get_phone2([XRefX | T], Acc) ->
+get_phoneD([XRefX | T], Acc) ->
     #xrefX{site = S, idx = Idx} = XRefX,
     Tbl = trans(S, phone),
     NewAcc = mnesia:read(Tbl, Idx, read),
-    get_phone2(T, [NewAcc | Acc]).
+    get_phoneD(T, [NewAcc | Acc]).
 
 does_page_exist(#refX{site = S, obj = {page , "/"}} = RefX) ->
     case read_objs(RefX, inside) of
