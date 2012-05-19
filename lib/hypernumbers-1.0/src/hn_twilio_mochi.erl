@@ -34,6 +34,11 @@
          log/2
         ]).
 
+% debug
+-export([
+         handle_c2_DEBUG/1
+        ]).
+
 get_phone(#refX{site = _S},
           #phone{capability = [{manual_email, _To, _Fr, _CC, _Su, _Cn}]} = P,
           _Uid) ->
@@ -142,7 +147,7 @@ redir(#env{} = Env) ->
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
     Body = twilio_web_util:process_body(Env#env.body),
-    %twilio_ext:log_terms(Body, "twilio.params.log"),
+    twilio_ext:log_terms(Body, "twilio.params.log"),
     handle_c2(Ref, Body).
 
 % this function head is for an outbound call
@@ -180,13 +185,13 @@ handle_c2(#refX{site = S, path = P},
                        phonecall_sup:init_call(S, Body, Phone#phone.twiml);
         _Other      -> error
     end;
-% handle recording messages
-handle_c2(#refX{path = Path},
+% handle call complete
+handle_c2(#refX{site = S, path = Path},
           #twilio{call_status = "completed", recording = null} = Recs) ->
-    % twilio_web_util:pretty_print(Tw),
+    twilio_web_util:pretty_print(Recs),
     case Path of
         [] ->
-            ok = phonecall_sup:call_complete(Recs),
+            ok = phonecall_sup:call_complete(S, Recs),
             {ok, 200};
         _Sub ->
             % do nothing here
@@ -204,7 +209,7 @@ handle_c2(_Ref, #twilio{call_status = "completed",
 handle_c2(#refX{site = S}, #twilio{direction = "inbound",
                         call_status = "ringing"} = Recs) ->
                 io:format("phone ringing...~n"),
-            TwiML_ext = twiml_ext_recipies:random(),
+            TwiML_ext = twiml_ext_recipies:recipe(1),
     phonecall_sup:init_call(S, Recs, TwiML_ext);
 handle_c2(Ref, #twilio{direction = "inbound",
                        call_status = "in-progress"} = Recs) ->
@@ -265,3 +270,7 @@ log(Site, #contact_log{} = Log) ->
              ],
     new_db_api:handle_form_post(RefX2, Array, nil).
 
+% debugging interface
+handle_c2_DEBUG(Body) ->
+    Ref = #refX{site = "http://hypernumbers.dev:9000", path = []},
+    handle_c2(Ref, Body).

@@ -17,10 +17,10 @@
 -export([
          start_link/1,
          init_call/3,
-         call_complete/1,
-         recording_notification/2,
-         gather_response/1,
-         goto_state/2
+         call_complete/2,
+         recording_notification/3,
+         gather_response/2,
+         goto_state/3
          %call_in_progress/2
         ]).
 
@@ -46,28 +46,28 @@ init_call(Site, Params, TwiML_EXT) ->
             {error, Other}
     end.
 
--spec call_complete(#twilio{}) -> pid() | string().
-call_complete(Params) ->
+-spec call_complete(string(), #twilio{}) -> pid() | string().
+call_complete(Site, Params) ->
     Call = Params#twilio.call_sid,
-    Pid = get_pid(Call),
+    Pid = get_pid(Site, Call),
     gen_server:call(Pid, {call_complete, Params}).
 
--spec recording_notification(#twilio{}, list()) -> pid() | string().
-recording_notification(Params, Path) ->
+-spec recording_notification(string(), #twilio{}, list()) -> pid() | string().
+recording_notification(Site, Params, Path) ->
     Call = Params#twilio.call_sid,
-    Pid = get_pid(Call),
+    Pid = get_pid(Site,Call),
     gen_server:call(Pid, {recording_notification, Params, Path}).
 
--spec gather_response(#twilio{}) -> pid() | string().
-gather_response(Params) ->
+-spec gather_response(string(),#twilio{}) -> pid() | string().
+gather_response(Site, Params) ->
     Call = Params#twilio.call_sid,
-    Pid = get_pid(Call),
+    Pid = get_pid(Site, Call),
     gen_server:call(Pid, {gather_response, Params}).
 
--spec goto_state(#twilio{}, list()) -> pid() | string().
-goto_state(Params, State) ->
+-spec goto_state(string(), #twilio{}, list()) -> pid() | string().
+goto_state(Site, Params, State) ->
     Call = Params#twilio.call_sid,
-    Pid = get_pid(Call),
+    Pid = get_pid(Site, Call),
     gen_server:call(Pid, {goto_state, Params, State}).
 
 %%--------------------------------------------------------------------
@@ -112,8 +112,9 @@ gen_child_spec(S, TwiML_EXT) ->
     {CallSID, {phonecall_srv, start_link, [S, TwiML_EXT]},
      transient, brutal_kill, worker, [phonecall_srv]}.
 
-get_pid(Call) ->
-    Servers = supervisor:which_children(phonecall_sup),
+get_pid(Site, Call) ->
+    Id = hn_util:site_to_atom(Site, "_phonecall"),
+    Servers = supervisor:which_children({global, Id}),
     case lists:keyfind(Call, 1, Servers) of
         false             -> exit("server doesn't exist");
         {Call, Pid, _, _} -> case Pid of
