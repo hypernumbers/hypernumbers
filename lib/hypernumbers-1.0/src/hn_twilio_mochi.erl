@@ -142,6 +142,7 @@ redir(#env{} = Env) ->
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
     Body = twilio_web_util:process_body(Env#env.body),
+    %twilio_ext:log_terms(Body, "twilio.params.log"),
     handle_c2(Ref, Body).
 
 % this function head is for an outbound call
@@ -200,11 +201,11 @@ handle_c2(_Ref, #twilio{call_status = "completed",
     ok = phonecall_sup:recording_notification(Recs, Path),
     {ok, 200};
 % handle inbound calls
-handle_c2(_Ref, #twilio{direction = "inbound",
+handle_c2(#refX{site = S}, #twilio{direction = "inbound",
                         call_status = "ringing"} = Recs) ->
                 io:format("phone ringing...~n"),
             TwiML_ext = twiml_ext_recipies:random(),
-    phonecall_sup:init_call(Recs, TwiML_ext);
+    phonecall_sup:init_call(S, Recs, TwiML_ext);
 handle_c2(Ref, #twilio{direction = "inbound",
                        call_status = "in-progress"} = Recs) ->
     io:format("Call back on ~p~n", [Ref#refX.path]),

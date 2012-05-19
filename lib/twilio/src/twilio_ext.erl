@@ -12,9 +12,9 @@
         ]).
 
 % debugging exports
-%-export([
-%         log_terms/2
-%        ]).
+-export([
+         log_terms/2
+        ]).
 
 -include("twilio.hrl").
 -include("twilio_web.hrl").
@@ -62,13 +62,13 @@ handle(Params, Path) ->
                 ++ "<Say>something has gone wrong, folks.</Say></Response>"
     end.
 
-%% log_terms(Terms, File) ->
-%%     Str = lists:flatten(io_lib:format("~p.~n", [Terms])),
-%%     _Return = filelib:ensure_dir(File),
-%%     case file:open(File, [append]) of
-%%         {ok, Id} ->
-%%             io:fwrite(Id, "~s~n", [Str]),
-%%             file:close(Id);
-%%         _ ->
-%%             error
-%%     end.
+log_terms(Terms, File) ->
+    Str = lists:flatten(io_lib:format("~p.~n", [Terms])),
+    _Return = filelib:ensure_dir(File),
+    case file:open(File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [Str]),
+            file:close(Id);
+        _ ->
+            error
+    end.
