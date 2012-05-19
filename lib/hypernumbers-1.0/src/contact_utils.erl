@@ -8,6 +8,7 @@
 -module(contact_utils).
 
 -export([
+         get_phone_menu/1,
          check_if_paid/3,
          get_recording_details/2,
          robocall/3,
@@ -18,6 +19,25 @@
 -include("keyvalues.hrl").
 -include("errvals.hrl").
 -include("spriki.hrl").
+-include("twilio.hrl").
+
+get_phone_menu(S) ->
+    case new_db_api:read_kv(S, site_phone_menu) of
+        [] -> [_Proto, "//" ++ Domain, Port] = string:tokens(S, ":"),
+              Site = say_site(Domain, Port),
+              [#say{text = Site ++ " is not configured for incoming calls"}];
+        [{kvstore, site_phone_menu, {Idx, null}}] ->
+            [#say{text = "fix me boy"}]
+    end.
+
+say_site(Domain, "80") ->
+    say_subbies(Domain);
+say_site(Domain, Port) ->
+    say_subbies(Domain) ++ " port " ++ Port.
+
+say_subbies(Domain) ->
+    Subbies = string:tokens(Domain, "."),
+    string:join(Subbies, " dot ").
 
 check_if_paid(Fun, Args, Type) ->
     Site = get(site),

@@ -85,10 +85,10 @@ view_recording(#refX{site = S, path = P}, HyperTag) ->
         {"recordings", {array, [{struct, D3}]}} ->
             {"uri", URI} = proplists:lookup("uri", D3),
             URI2 = re:replace(URI, ".json$", ".mp3", [global, {return, list}]), %"
-            {redir, "https://api.twilio.com" ++ URI2};
-        {"recordings", {array, []}} ->
-            no_recording
-    end.
+                              {redir, "https://api.twilio.com" ++ URI2};
+                              {"recordings", {array, []}} ->
+                                     no_recording
+                             end.
 
 handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
     case Body of
@@ -185,19 +185,15 @@ handle_c2(#refX{site = S, path = P},
                        phonecall_sup:init_call(S, Body, Phone#phone.twiml);
         _Other      -> error
     end;
-% handle call complete
-handle_c2(#refX{site = S, path = Path},
-          #twilio{call_status = "completed", recording = null} = Recs) ->
-    twilio_web_util:pretty_print(Recs),
-    case Path of
-        [] ->
-            ok = phonecall_sup:call_complete(S, Recs),
-            {ok, 200};
-        _Sub ->
-            % do nothing here
-            {ok, 200}
-    end;
-% handle the recording message
+
+% handle inbound calls coming in from cold
+handle_c2(#refX{site = S}, #twilio{direction = "inbound",
+                                   call_status = "ringing"} = Recs) ->
+    io:format("phone ringing...~n"),
+    TwiML_ext = contact_utils:get_phone_menu(S),
+    phonecall_sup:init_call(S, Recs, TwiML_ext);
+
+% handle the recording message being sent prior to hangup
 handle_c2(_Ref, #twilio{call_status = "completed",
                         recording = #twilio_recording{}} = Recs) ->
     % twilio_web_util:pretty_print(Tw),
@@ -205,12 +201,8 @@ handle_c2(_Ref, #twilio{call_status = "completed",
     exit("fix me in c2 (3)"),
     ok = phonecall_sup:recording_notification(Recs, Path),
     {ok, 200};
-% handle inbound calls
-handle_c2(#refX{site = S}, #twilio{direction = "inbound",
-                        call_status = "ringing"} = Recs) ->
-                io:format("phone ringing...~n"),
-            TwiML_ext = twiml_ext_recipies:recipe(1),
-    phonecall_sup:init_call(S, Recs, TwiML_ext);
+
+% handle another (?) inprogress bit of a call
 handle_c2(Ref, #twilio{direction = "inbound",
                        call_status = "in-progress"} = Recs) ->
     io:format("Call back on ~p~n", [Ref#refX.path]),
@@ -224,6 +216,19 @@ handle_c2(Ref, #twilio{direction = "inbound",
         [State | _] ->
             io:format("return to state ~p~n", [State]),
             phonecall_sup:goto_state(Recs, State)
+    end;
+
+% handle call complete message when a call terminates
+handle_c2(#refX{site = S, path = Path},
+          #twilio{call_status = "completed", recording = null} = Recs) ->
+    twilio_web_util:pretty_print(Recs),
+    case Path of
+        [] ->
+            ok = phonecall_sup:call_complete(S, Recs),
+            {ok, 200};
+        _Sub ->
+            % do nothing here
+            {ok, 200}
     end;
 handle_c2(Ref, Recs) ->
     io:format("in unhandled twilio callback for ~p...~n", [Ref#refX.path]),
@@ -267,7 +272,7 @@ log(Site, #contact_log{} = Log) ->
                        {"formula", Log#contact_log.reference}]},
              {struct, [{"label", "status"},
                        {"formula", Log#contact_log.status}]}
-             ],
+            ],
     new_db_api:handle_form_post(RefX2, Array, nil).
 
 % debugging interface
