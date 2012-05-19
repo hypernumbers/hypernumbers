@@ -114,9 +114,9 @@ revertD(#refX{site = S, path = P, obj = {cell, _} = O} = RefX, Rev, UID) ->
                                     integer_to_list(X#logging.timestamp) == Rev,
                                     X#logging.obj == O],
             case R of
-                #sublog{newformula = NF} ->
+                #sublog{oldformula = OF} ->
                     XRefX = refX_to_xrefXD(RefX),
-                    _ = write_attrs(XRefX, [{"formula", NF}], UID),
+                    _ = write_attrs(XRefX, [{"formula", OF}], UID),
                     ok;
                 _ ->
                     ok
