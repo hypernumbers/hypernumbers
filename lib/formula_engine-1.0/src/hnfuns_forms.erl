@@ -14,12 +14,12 @@
          'form.radio'/1,
          'form.select'/1,
          'form.fixedval'/1,
-         input/1,    % deprecated
-         textarea/1, % deprecated
-         button/1,   % deprecated
-         radio/1,    % deprecated
-         select/1,   % deprecated
-         fixedval/1  % deprecated
+         input/1,            % deprecated
+         textarea/1,         % deprecated
+         button/1,           % deprecated
+         radio/1,            % deprecated
+         select/1,           % deprecated
+         fixedval/1          % deprecated
         ]).
 
 -include("spriki.hrl").
@@ -27,38 +27,42 @@
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
 
--type trans() :: common | string().
+-define(col, muin_collect:col).
 
-'form.input'(Args) -> input(Args).
+'form.input'(Args)    -> input(Args).
 'form.textarea'(Args) -> textarea(Args).
-'form.button'(Args) -> button(Args).
-'form.radio'(Args) -> radio(Args).
-'form.select'(Args) -> select(Args).
+'form.button'(Args)   -> button(Args).
+'form.radio'(Args)    -> radio(Args).
+'form.select'(Args)   -> select(Args).
 'form.fixedval'(Args) -> fixedval(Args).
 
-%-define(default_str_rules, [first_array, cast_numbers, cast_bools,
-%                            cast_blanks, cast_dates ]).
-
-fixedval([Label, Val]) -> fixedval([Label, Val, true]);
+fixedval([Label, Val]) ->
+    fixedval([Label, Val, true]);
 fixedval([Label, Val, Show]) ->
-    Label2 = muin_collect:col([Label], [first_array, fetch, {cast,str}],
-                [return_errors, {all, fun muin_collect:is_string/1}]),
-    Val2 = muin_collect:col([Val], [first_array, fetch, {cast,str}],
+    Label2 = ?col([Label], [first_array, fetch, {cast,str}],
+                  [return_errors, {all, fun muin_collect:is_string/1}]),
+    Val2 = ?col([Val], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     Show2 = typechecks:std_bools([Show]),
     muin_util:run_or_err([Label2, Val2, Show2], fun fixedval_/1).
 
-input([])   -> input([""]);
+input([]) ->
+    input([""]);
 input([V1]) ->
-    Label = muin_collect:col([V1], [first_array, fetch, {cast,str}],
-                [return_errors, {all, fun muin_collect:is_string/1}]),
-    muin_util:run_or_err([Label], fun input_/1).
+    input([V1, "Enter data..."]);
+input([V1, V2]) ->
+    [Lbl, Int] = ?col([V1, V2], [first_array, fetch, {cast,str}],
+                      [return_errors, {all, fun muin_collect:is_string/1}]),
+    muin_util:run([Lbl, Int], fun input_/1).
 
-textarea([])   -> textarea([""]);
+textarea([])->
+    textarea([""]);
 textarea([V1]) ->
-    Label = muin_collect:col([V1], [first_array, fetch, {cast,str}],
-                [return_errors, {all, fun muin_collect:is_string/1}]),
-    muin_util:run_or_err([Label], fun textarea_/1).
+    textarea([V1, "Enter data..."]);
+textarea([V1, V2]) ->
+    [Lbl, Int] = ?col([V1, V2], [first_array, fetch, {cast,str}],
+                      [return_errors, {all, fun muin_collect:is_string/1}]),
+    muin_util:run([Lbl, Int], fun textarea_/1).
 
 button([])      ->
     button(["Submit Form"]);
@@ -70,28 +74,32 @@ button([Title, Response, Results]) ->
     button([Title, Response, Results, none]);
 button([Title, Response, Results, Email]) ->
     Email2 = validate_email(Email),
-    muin_collect:col([Title, Response, Results],
-                     [first_array, fetch, {cast,str}],
-                     [return_errors, {all, fun muin_collect:is_string/1}],
-                     fun([NTitle, NResponse, NResult]) ->
-                             button_(NTitle, NResponse, NResult, Email2)
-                     end).
+    ?col([Title, Response, Results],
+         [first_array, fetch, {cast,str}],
+         [return_errors, {all, fun muin_collect:is_string/1}],
+         fun([NTitle, NResponse, NResult]) ->
+                 button_(NTitle, NResponse, NResult, Email2)
+         end).
 
-select([])      -> select([""]);
-select([Label]) -> select([Label, {array, [["option 1", "option 2"]]}]);
+select([]) ->
+    select([""]);
+select([Label]) ->
+    select([Label, {array, [["option 1", "option 2"]]}]);
 select([V1, V2]) ->
-    [Label] = muin_collect:col([V1], [first_array, fetch, {cast,str}],
-                [return_errors, {all, fun muin_collect:is_string/1}]),
-    Opts = muin_collect:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
+    [Label] = ?col([V1], [first_array, fetch, {cast,str}],
+                   [return_errors, {all, fun muin_collect:is_string/1}]),
+    Opts = ?col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:apply([Label, Opts], fun select_/2).
 
-radio([])      -> radio([""]);
-radio([Label]) -> radio([Label, {array, [["option 1", "option 2"]]}]);
+radio([]) ->
+    radio([""]);
+radio([Label]) ->
+    radio([Label, {array, [["option 1", "option 2"]]}]);
 radio([V1, V2]) ->
-    [Label] = muin_collect:col([V1], [first_array, fetch, {cast,str}],
-                [return_errors, {all, fun muin_collect:is_string/1}]),
-    Opts = muin_collect:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
+    [Label] = ?col([V1], [first_array, fetch, {cast,str}],
+                   [return_errors, {all, fun muin_collect:is_string/1}]),
+    Opts = ?col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:apply([Label, Opts], fun radio_/2).
 
@@ -134,29 +142,31 @@ fixedval_([Label, Val, Show]) ->
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
--spec input_([string()], string(), trans()) -> #spec_val{}.
-input_(Label) -> input_(Label, "", common).
-%input_(Label, Default) -> input_(Label, Default, common).
-input_([Label], _Default, Trans) ->
-    Form = #form{id = {Trans, Label}, kind = input},
+-spec input_([]) -> #spec_val{}.
+input_([Label, Intro]) ->
+    Form = #form{id = {common, Label}, kind = input},
     Html = lists:flatten("<input type='input' class='hninput hn_prompt' " ++
                          "data-name='default' " ++
-                         "data-label='"++Label++"' " ++
-                         "value='Enter data...'/>"),
-    Preview = Label,
+                         "data-label='" ++ Label ++ "' " ++
+                         "value='" ++ Intro ++ "'/>"),
+    Preview = case Label of
+                  []    -> Intro;
+                  Label -> Label
+              end,
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 
--spec textarea_([string()], string(), trans()) -> #spec_val{}.
-textarea_(Label) -> textarea_(Label, "", common).
-%textarea_(Label, Default) -> textarea_(Label, Default, common).
-textarea_([Label], _Default, Trans) ->
-    Form = #form{id = {Trans, Label}, kind = textarea},
+-spec textarea_([]) -> #spec_val{}.
+textarea_([Label, Intro]) ->
+    Form = #form{id = {common, Label}, kind = textarea},
     Html = lists:flatten("<textarea class='hntext hn_prompt' "
                          ++ "data-name='default' "
-                         ++ "data-label='"++Label++
-                         "'>Enter data...</textarea>"),
-    Preview = Label,
+                         ++ "data-label='" ++ Label ++
+                         "'>" ++ Intro ++ "</textarea>"),
+    Preview = case Label of
+                  []    -> Intro;
+                  Label -> Label
+              end,
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
 

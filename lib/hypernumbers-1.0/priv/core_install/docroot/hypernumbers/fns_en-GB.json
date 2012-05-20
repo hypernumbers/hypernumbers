@@ -1583,6 +1583,11 @@
                 "name": "Label",
                 "desc": "Some text.",
                 "type": "finite"
+            },
+            {
+                "name": "Prompt",
+                "desc": "Some text",
+                "type": "optional"
             }
         ]
     },
@@ -1647,6 +1652,11 @@
                 "name": "Label",
                 "desc": "Some text.",
                 "type": "finite"
+            },
+            {
+                "name": "Prompt",
+                "desc": "Some text",
+                "type": "optional"
             }
         ]
     },
