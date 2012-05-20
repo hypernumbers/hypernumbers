@@ -243,7 +243,7 @@ line-height: 18px
 }
 .hn_factory_email
 {
-margin-right: 4px;
+width: 210px !important;
 margin-bottom: 0px;
 padding: 4px 4px 4px 4px;
 }
