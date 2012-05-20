@@ -498,8 +498,8 @@ include([CellRef | Title]) when ?is_cellref(CellRef) ->
                        path = Path,
                        tl = {C, R},
                        br = {C, R}},
-    include([RelRan | Title]);
-include([RelRan | Title]) when ?is_rangeref(RelRan) ->
+    include([RelRan, Title]);
+include([RelRan, Title]) when ?is_rangeref(RelRan) ->
     OldPath = RelRan#rangeref.path,
     OrigPath = get(path),
     NewPath = muin_util:walk_path(OrigPath, OldPath),
@@ -524,7 +524,7 @@ include([RelRan | Title]) when ?is_rangeref(RelRan) ->
                                  ++ hn_util:list_to_path(NewPath)
                                  ++ hn_util:obj_to_ref(Obj) ++ "</div>";
                          _ ->
-                             [Tt] = typechecks:throw_std_strs(Title),
+                             [Tt] = typechecks:throw_std_strs([Title]),
                              "<div class='hn-include'>Including: " ++ Tt
                                  ++ " from " ++ hn_util:list_to_path(NewPath)
                                  ++ hn_util:obj_to_ref(Obj) ++ "</div>"
