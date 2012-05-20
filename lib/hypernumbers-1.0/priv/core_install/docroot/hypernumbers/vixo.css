@@ -1,0 +1,238 @@
+.container {
+  margin: 0;
+  background-color: #fff;
+  line-height: 18px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 100%;
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  font-size: 13px;
+  color: #333333;
+}
+.btn-features
+{
+ margin: 0 0 0 70px;
+}
+.pillbar
+{
+  padding: 0px 0px 0px 30px;
+}
+.hero, .call_centre
+{
+  padding: 20px;
+}
+p, ol, ul {
+    margin: 1em;
+}
+ul
+{
+    padding: 0px;
+}
+.hn_vimeo
+{
+  height: 438px;
+  width: 794px;
+}
+.hn_vimeo iframe
+{
+  padding: 4px 21px;
+}
+h1, h2, h3, h4, h5, h6
+{
+    margin: 1em 1em 1em 13px;
+    font-weight: bold;
+}
+h2
+{
+    color: #006d5b;
+    font-size: 19.5px;
+}
+.bold
+{
+    font-weight: 600;
+    color: #ff6600;
+}
+nav {
+    display: block;
+}
+a {
+  color: #006d5b;
+  text-decoration: none;
+}
+a:hover {
+  color: #005580;
+  text-decoration: underline;
+}
+.hero
+{
+    width: 872px;
+}
+.call_centre
+{
+   width: 900px;
+}
+.callout
+{
+    width: 872px;
+    padding : 0px 20px;
+}
+/*.callout
+{
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    height: 40px;
+    background-color: #ff6600;
+}*/
+/* correct for negative margin*/
+.row
+{
+    overflow: auto;
+    width: 913px;
+    height: inherit;
+}
+.hero, .call_centre
+{
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    border-radius: 12px;
+    -webkit-box-shadow: 2px 2px 4px #aaa;
+    -moz-box-shadow: 2px 2px 4px #aaa;
+    box-shadow: 2px 2px 4px #aaa;
+    border: 1px solid #ddd;
+    height: 180px;
+    background-color: #fdfdfd;
+}
+.hero p, .call_centre p {
+  font-size: 18px;
+  font-weight: 200;
+  line-height: 27px;
+  color: inherit;
+}
+
+.row
+{
+  margin-left: -20px;
+  }
+.row
+{
+  padding: 0px 20px 0px 20px;
+  }
+.panel1, .panel2, .panel2a, .panel3
+{
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  border-radius: 12px;
+  float: left;
+  padding: inherit;
+  color: #666;
+  }
+.pop
+{
+  border: 1px solid #bbb;
+  background-color: #f6f9ff;
+  -webkit-box-shadow: 2px 2px 4px #aaa;
+  -moz-box-shadow: 2px 2px 4px #aaa;
+  box-shadow: 2px 2px 4px #aaa;
+  }
+.pop2
+{
+  border: 1px solid #ff6600;
+  background-color: #fefefe;
+  -webkit-box-shadow: 2px 2px 4px #aaa;
+  -moz-box-shadow: 2px 2px 4px #aaa;
+  box-shadow: 2px 2px 4px #aaa;
+  }
+.pop h2, .pop2 h2
+{
+  color: #ff6600;
+  }
+.pop p, .pop2 p
+{
+  font-weight: bold;
+  color: #444;
+  }
+.pop li, .pop2 li
+{
+  font-weight: bold;
+  }
+.panel1
+{
+  width: 257px;
+  }
+.panel2
+{
+  width: 554px;
+  }
+.panel2a
+{
+  width: 640px;
+  }
+.panel3
+{
+  width: 832px;
+  }
+.drop
+{
+  margin: 12px 10px 0px 0px;
+  border: 1px solid #ddd;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  width: auto;
+  float: left;
+  padding: 10px;
+  background-color: #fdfdfd;
+  }
+.man1-1
+{
+  padding-left: 15px;
+  background : url(http://files.hypernumbers.com/vixo/img/sprite2.png) no-repeat;
+  height: 130px;
+  width: 80px
+  }
+.man2-1
+{
+  padding-left: 15px;
+  background : url(http://files.hypernumbers.com/vixo/img/sprite2.png) no-repea-91px -31px;
+  height: 110px;
+  width: 105px
+  }
+.woman1-1
+{
+  padding-left: 10px;
+  background : url(http://files.hypernumbers.com/vixo/img/sprite2.png) no-repeat -219px -27px;
+  height: 110px;
+  width: 65px
+}
+.woman2-1
+{
+  padding-left: 10px;
+  background : url(http://files.hypernumbers.com/vixo/img/sprite2.png) no-repeat -288px -27px;
+  height: 110px;
+  width: 85px
+}
+.woman2-2
+{
+  padding-left: 10px;
+  background : url(http://files.hypernumbers.com/vixo/img/sprite2.png) no-repeat -385px -27px;
+  height: 110px;
+  width: 55px
+}
+.woman3-1
+{
+  padding-left: 10px;
+  background : url(http://files.hypernumbers.com/vixo/img/sprite2.png) no-repeat -456px -27px;
+  height: 110px;
+  width: 55px;
+}
+// styling for the factory
+.hn_site_admin_top
+{
+    color: #006d5b;
+    font-size: 19.5ps;
+    font-weight: bold;
+    margin: 1em 1em 1em 13px;
+}
