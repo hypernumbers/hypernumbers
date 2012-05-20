@@ -492,7 +492,7 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
 
 include([Ref]) ->
     include([Ref, none]);
-include([CellRef | Title]) when ?is_cellref(CellRef) ->
+include([CellRef, Title]) when ?is_cellref(CellRef) ->
     #cellref{col = C, row = R, path = Path} = CellRef,
     RelRan = #rangeref{type = finite,
                        path = Path,
