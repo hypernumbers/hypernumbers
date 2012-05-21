@@ -188,7 +188,8 @@ factory3(W, H, Title, Type, Desc, BtnTxt, Rsp, Goto, Rest) ->
         ++ "<p>" ++ Desc ++ "</p>"
         ++ Body
         ++ "<p class='hn_factory_txt'>Please enter your email address:</p>"
-        ++ "<input class='hn_factory_email' type='text' />"
+        ++ "<input class='hn_factory_email' type='text' "
+        ++ "data-input='" ++ Id ++ "' />"
         ++ "<div class='hn_site_admin_container'>"
         ++ "<input id='" ++ Id ++ "' class='button factory' "
         ++ "type='submit' data-type='" ++ Type ++ "' "
