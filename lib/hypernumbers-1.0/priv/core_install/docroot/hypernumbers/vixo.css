@@ -243,9 +243,10 @@ line-height: 18px
 }
 .hn_factory_email
 {
-width: 200px !important;
-margin-bottom: 0px;
-padding: 4px 4px 4px 4px;
+  width: 183px !important;
+  margin-left: 13px;
+  margin-bottom: 0px;
+  padding: 4px 4px 4px 4px;
 }
 /* additional style to make forms work */
 .hninput, .hntext
