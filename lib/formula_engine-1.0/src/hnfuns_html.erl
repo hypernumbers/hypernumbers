@@ -74,10 +74,12 @@
     Incs = #incs{js = JS, js_reload = Reload},
     #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
 
+% Chrome and Safari (basically Webkit) won't scroll properly to anchor tags
+% that don't have any content - so hoy in a non-breaking space
 anchor([Anchor]) ->
     [A2] = typechecks:std_strs([Anchor]),
     Preview = "Anchor " ++ Anchor,
-    HTML = "<a class='hn_anchor'name='" ++ A2 ++ "'></a>",
+    HTML = "<a class='hn_anchor' name='" ++ A2 ++ "'>&nbsp;</a>",
     #spec_val{val = HTML, preview = Preview};
 anchor([Anchor, Text]) ->
     [A2, Txt2] = typechecks:std_strs([Anchor, Text]),
