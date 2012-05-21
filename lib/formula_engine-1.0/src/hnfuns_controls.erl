@@ -343,7 +343,6 @@ is_valid(Input) ->
     case Commands of
         [] -> ?ERRVAL_VAL;
         _  ->
-            Origin = hn_util:list_to_path(muin:context_setting(path)),
             % first we create the list of commands records
             % this is the executable AST
             Fun1 = fun(Expr, {N, Acc}) ->
@@ -366,8 +365,7 @@ is_valid(Input) ->
             HTML = lists:flatten("<input id='" ++ Id ++ "' type='submit' "
                                  ++ "class='hn-webcontrol' value='"
                                  ++ Title ++ "' data-payload='" ++ Json ++ "' "
-                                 ++ "data-action='postcreatepages'"
-                                 ++ "data-origin='" ++ Origin ++ "' />"),
+                                 ++ "data-action='postcreatepages' />"),
             % we stash the record set as the form definition and when the POST
             % comes in from the button we will translate it back into a
             % record format and then compare the records to see if the

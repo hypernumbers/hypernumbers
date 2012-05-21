@@ -1152,11 +1152,14 @@ ipost(Ref=#refX{site = S, path = P} = Ref, _Qry,
     end;
 
 % run a web control
-ipost(Ref = #refX{obj = {page, _}}, _Qry,
+ipost(Ref = #refX{obj = {cell, _}}, _Qry,
       Env = #env{body = [{"postwebcontrols", Actions}],
                  uid = Uid}) ->
-    ok = status_srv:update_status(Uid, Ref, "created some pages"),
-    run_actions(Ref, Env, mochijson:decode(Actions), Uid);
+    Act2 = mochijson:decode(Actions),
+    {struct, Act3} = Act2,
+    Status = element(1, hd(Act3)),
+    ok = status_srv:update_status(Uid, Ref, Status),
+    run_actions(Ref, Env, Act2, Uid);
 
 % revert a cell to an old value
 ipost(Ref = #refX{obj = {cell, _}} = Ref, _Qry,
@@ -2010,7 +2013,7 @@ run_actions(#refX{site = S, path = P} = RefX, Env,
     % now check that the commands coming in match those stored
     case hn_security:validate_create_pages(Expected, Commands) of
         false ->
-            ?E("invalid form submission~n""on:       ~p~n"
+            ?E("invalid submission~n""on:       ~p~n"
                ++ "Expected: ~p~nGot:      ~p~n",
                [RefX, Expected, Commands]),
             respond(403, Env);
