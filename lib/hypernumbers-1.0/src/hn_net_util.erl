@@ -39,7 +39,7 @@ email(To, CC, From, Subject, Msg) ->
 
 email(Details, To, CC, From, Subject, Msg) ->
 
-    Tos = string:tokens([To], ";"),
+    Tos = string:tokens(To, ";"),
 
     Server = proplists:get_value(server, Details),
     User   = proplists:get_value(user, Details),
