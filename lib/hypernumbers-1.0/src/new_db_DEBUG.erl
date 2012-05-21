@@ -396,7 +396,7 @@ print_i2(Site, [H | T], Acc) ->
 
 print_form(XRefX, Acc) ->
     RefX = hn_util:xrefX_to_refX(XRefX),
-    Forms = new_db_wu:matching_forms(RefX, common),
+    Forms = new_db_wu:matching_formsD(RefX, common),
     NewAcc = [io_lib:format("....part of a form consisting of:", []) | Acc],
     print_f2(RefX#refX.site, Forms, NewAcc).
 
