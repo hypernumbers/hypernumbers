@@ -91,7 +91,7 @@ vimeo([Video, Tag]) ->
     JS = ["/webcomponents/hn.vimeo.js",
           "/webcomponents/froogaloop.js"],
     Reload = ["HN.Vimeo.reload();"],
-    CSS = ["http://files.vixo.com/vixo/css/vixo.css"],
+    CSS = ["/hypernumbers/vixo.css"],
     Incs = #incs{js = JS, js_reload = Reload, css = CSS},
     #spec_val{val = HTML, sp_incs = Incs, resize = Resize, preview = Preview}.
 
