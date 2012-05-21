@@ -250,5 +250,5 @@ padding: 4px 4px 4px 4px;
 /* additional style to make forms work */
 .hninput
 {
-  font-size: 10px;
+ padding: 2px 2px 2px 0px;
 }
