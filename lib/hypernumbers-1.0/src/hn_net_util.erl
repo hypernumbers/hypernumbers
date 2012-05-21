@@ -39,6 +39,8 @@ email(To, CC, From, Subject, Msg) ->
 
 email(Details, To, CC, From, Subject, Msg) ->
 
+    Tos = string:tokens([To], ";"),
+
     Server = proplists:get_value(server, Details),
     User   = proplists:get_value(user, Details),
     Pass   = proplists:get_value(password, Details),
@@ -51,7 +53,8 @@ email(Details, To, CC, From, Subject, Msg) ->
     send(Socket, binary_to_list(base64:encode(User))),
     send(Socket, binary_to_list(base64:encode(Pass))),
     send(Socket, "MAIL FROM:<"++parse_email_address(From)++">"),
-    send(Socket, "RCPT TO:<"++parse_email_address(To)++">"),
+    %% now an RCPT for each recipient
+    [send(Socket, "RCPT TO:<"++parse_email_address(X)++">") || X <- Tos],
     send(Socket, "DATA"),
     send_no_receive(Socket, "From: "++From),
     send_no_receive(Socket, "To: "++To),
