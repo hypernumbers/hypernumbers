@@ -59,10 +59,10 @@ post_provision(NE, Site, Uid, Email, Name, UserData) ->
     case {NE, IsValid} of
         {existing, true} ->
             Fun = fun() ->
-                          timer:apply_after(?DELAY, emailer, send,
-                                            [new_site_existing, Email, "",
-                                             From, Site,
-                                             [{sig, Sig}]])
+                          {ok, _Tr} = timer:apply_after(?DELAY, emailer, send,
+                                                        [new_site_existing, Email, "",
+                                                         From, Site,
+                                                         [{sig, Sig}]])
                   end,
             spawn(Fun);
         {_, _}           ->
@@ -71,10 +71,10 @@ post_provision(NE, Site, Uid, Email, Name, UserData) ->
             HT = passport:create_hypertag_url(Site, Path, Uid, Email,
                                               Data, "never"),
             Fun = fun() ->
-                          timer:apply_after(?DELAY, emailer, send,
-                                            [new_site_validate, Email,
-                                             "", From, Site,
-                                             [{sig, Sig}, {hypertag, HT}]])
+                          {ok, _Tr} = timer:apply_after(?DELAY, emailer, send,
+                                                        [new_site_validate, Email,
+                                                         "", From, Site,
+                                                         [{sig, Sig}, {hypertag, HT}]])
                   end,
             spawn(Fun)
     end.
