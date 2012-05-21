@@ -377,8 +377,8 @@ matching_formsD(#refX{site = Site, path = Path}, Trans)
     Tbl = trans(Site, form),
     MS = [{#form{id = {Path, Trans, '_'}, _ = '_'}, [], ['$_']}],
     mnesia:select(Tbl, MS);
-matching_formsD(Ref, _Other) ->
-    #xrefX{site = S, idx = Idx} = refX_to_xrefXD(Ref),
+matching_formsD(RefX, _Other) ->
+    #xrefX{site = S, idx = Idx} = refX_to_xrefXD(RefX),
     Tbl = trans(S, form),
     mnesia:read(Tbl, Idx, read).
 
