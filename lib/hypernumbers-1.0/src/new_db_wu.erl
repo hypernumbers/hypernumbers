@@ -372,9 +372,15 @@ get_last_col(#refX{site = S, path = P}) ->
     largest_content(Desc, S).
 
 -spec matching_formsD(#refX{}, common | string()) -> [#form{}].
-matching_formsD(#refX{site = Site, path = Path}, Trans) ->
+matching_formsD(#refX{site = Site, path = Path}, Trans)
+  when Trans == common->
+    Tbl = trans(Site, form),
     MS = [{#form{id = {Path, Trans, '_'}, _ = '_'}, [], ['$_']}],
-    mnesia:select(trans(Site, form), MS).
+    mnesia:select(Tbl, MS);
+matching_formsD(Ref, _Other) ->
+    #xrefX{site = S, idx = Idx} = refX_to_xrefXD(Ref),
+    Tbl = trans(S, form),
+    mnesia:read(Tbl, Idx, read).
 
 %% %% @doc copys cells from a reference to a reference
 -spec copy_cell(#refX{}, #refX{},
