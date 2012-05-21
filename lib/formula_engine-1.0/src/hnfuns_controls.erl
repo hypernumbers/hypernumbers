@@ -172,7 +172,6 @@ factory2(W, H, Title, Type, Desc, BtnTxt, Rsp2, Goto, Rest) ->
     end.
 
 factory3(W, H, Title, Type, Desc, BtnTxt, Rsp, Goto, Rest) ->
-    Ref = hn_util:obj_to_ref({cell, {?mx, ?my}}),
     {Body, Payload} = make_body(Rest, [], []),
     Id     = "id_" ++ muin_util:create_name(),
     Js     = ["/webcomponents/hn.factory.js"],
@@ -193,7 +192,6 @@ factory3(W, H, Title, Type, Desc, BtnTxt, Rsp, Goto, Rest) ->
         ++ "<div class='hn_site_admin_container'>"
         ++ "<input id='" ++ Id ++ "' class='button factory' "
         ++ "type='submit' data-type='" ++ Type ++ "' "
-        ++ "data-ref='" ++ Ref ++ "' "
         ++ "data-goto='" ++ Goto ++ "' "
         ++ "data-response='" ++ Rsp ++ "' "
         ++ "value='" ++ BtnTxt ++ "' />"
