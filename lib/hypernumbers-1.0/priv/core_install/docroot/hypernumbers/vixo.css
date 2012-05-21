@@ -248,7 +248,7 @@ margin-bottom: 0px;
 padding: 4px 4px 4px 4px;
 }
 /* additional style to make forms work */
-.hninput
+.hninput, hntext
 {
  padding: 2px 2px 2px 0px;
 }
