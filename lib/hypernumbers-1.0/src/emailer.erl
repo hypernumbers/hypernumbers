@@ -93,8 +93,7 @@ send1(new_site_validate, Email, CC, From, Name, Site, _URL, Args) ->
        "Once you have verified your e-mail you should ",
        "set your password ", SiteURL ++ "#settings\n\n"
        "If you have any problems just tell us "
-       "and we will do our best to help "
-       "http://hypernumbers.com/support/\n\n",
+       "and we will do our best to help.",
        Sig
       ]),
     ok = send_email(Email, CC, From, Subject, EmailBody);
@@ -113,7 +112,7 @@ send1(invite_existing, Email, CC, From, Name, Site, _URL, Args) ->
         ++ "----------------------------------------\n\n"
         ++ Msg ++ "\n\n"
         ++ "----------------------------------------\n\n"
-        ++ "You can use your existing hypernumbers account to login.\n\n"
+        ++ "You can use your existing vixo account to login.\n\n"
         ++ Sig,
     ok = send_email(Email, CC, From, Subject, EmailBody);
 
