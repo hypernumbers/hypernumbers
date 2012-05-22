@@ -2234,7 +2234,9 @@ provision_site(RootSite, PrevUid, SiteType, Email, Data, Env) ->
                {ok, server_dev}  -> "dev.hypernumbers.com";
                {ok, production}  -> "tiny.hn"
            end,
-    case factory:provision_site(Zone, Email, SiteType, PrevUid, Data) of
+    {From, Sig} = emailer:get_details(RootSite),
+    case factory:provision_site(Zone, Email, From, Sig, SiteType,
+                                PrevUid, Data) of
         {ok, new, Site, Node, Uid, Name, InitialView} ->
             log_signup(RootSite, Site, Node, Uid, Email),
             Opaque = [{param, InitialView}],

@@ -3,32 +3,23 @@
 -module(factory).
 
 %% API
--export([provision_site/3,
-         provision_site/4,
-         provision_site/5
-         % create_invite/3,
-         % create_invite/4
+-export([provision_site/7
         ]).
-
-provision_site(Zone, Email, SiteType) ->
-    SuggestedUid = passport:create_uid(),
-    provision_site(Zone, Email, SiteType, SuggestedUid, []).
-
-provision_site(Zone, Email, SiteType, SuggestedUid) ->
-    provision_site(Zone, Email, SiteType, SuggestedUid, []).
 
 %% Extract existing uid from anonymous users, otherwise, generate a
 %% fresh uid.
-provision_site(Zone, Email, SiteType, [$_|SuggestedUid], Data) ->
-    provision_site_(Zone, Email, SiteType, SuggestedUid, Data);
-provision_site(Zone, Email, SiteType, _, Data) ->
+provision_site(Zone, Email, From, Sig, SiteType, [$_|SuggestedUid], Data) ->
+    provision_site_(Zone, Email, From, Sig, SiteType, SuggestedUid, Data);
+provision_site(Zone, Email, From, Sig, SiteType, _, Data) ->
     SuggestedUid = passport:create_uid(),
-    provision_site_(Zone, Email, SiteType, SuggestedUid, Data).
+    provision_site_(Zone, Email, From, Sig, SiteType, SuggestedUid, Data).
 
--spec provision_site(string(), string(), atom(), auth_srv:uid(), list())
-                    -> {ok , new | existing, string(), atom(),
-                        auth_srv:uid(), string()} | {error, invalid_email}.
-provision_site_(Zone, Email, Type, SuggestedUid, Data) ->
+-spec provision_site(string(), string(), string(), string(), atom(),
+                     auth_srv:uid(), list()) -> {ok , new | existing, string(),
+                                                 atom(),
+                                                 auth_srv:uid(), string()}
+                                                    | {error, invalid_email}.
+provision_site_(Zone, Email, From, Sig, Type, SuggestedUid, Data) ->
     case hn_util:valid_email(Email) of
         false ->
             {error, invalid_email};
@@ -41,19 +32,18 @@ provision_site_(Zone, Email, Type, SuggestedUid, Data) ->
                                             [Site, Type, [{creator, Uid},
                                                           {email, Email},
                                                           {name, Name}]]),
-            post_provision(NE, Site, Uid, Email, Name, Data),
+            post_provision(NE, Site, Uid, Email, From, Sig, Name, Data),
             {ok, NE, Site, Node, Uid, Name, IView}
     end.
 
--spec post_provision(new | existing, string(), auth_srv:uid(),
+-spec post_provision(new | existing, string(), string(), string(), auth_srv:uid(),
                      string(), string(), list()) -> ok.
 %% User does not have any existing sites, log them into their new site
 %% directly.
-post_provision(NE, Site, Uid, Email, Name, UserData) ->
+post_provision(NE, Site, Uid, Email, From, Sig, Name, UserData) ->
     IsValid = passport:is_valid_uid(Uid),
     Recs = make_recs(UserData, Site, []),
     ok = new_db_api:write_attributes(Recs),
-    {From, Sig} = emailer:get_details(Site),
     case {NE, IsValid} of
         {existing, true} ->
             emailer:send(new_site_existing, Email, "", From, Site,
