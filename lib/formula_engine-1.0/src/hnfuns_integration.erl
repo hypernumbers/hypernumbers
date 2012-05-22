@@ -236,15 +236,23 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
     Q = muin_col_DEPR:collect_string(Quantity, ?default_str_rules),
     Resize = #resize{width = 2, height = 3},
     HTML = "<form action=\"https://checkout.google.com/api/checkout/v2/checkoutForm/Merchant/"
-        ++ M ++ "\" id=\"BB_BuyButtonForm\" method=\"post\" name=\"BB_BuyButtonForm\" target=\"_top\">"
+        ++ M ++ "\" id=\"BB_BuyButtonForm\" method=\"post\" "
+        ++ "name=\"BB_BuyButtonForm\" target=\"_top\">"
         ++ "<input name=\"item_name_1\" type=\"hidden\" value=\"" ++ IN ++ "\"/>"
-        ++ "<input name=\"item_description_1\" type=\"hidden\" value=\"" ++ ID ++ "\"/>"
-        ++ "<input name=\"item_quantity_1\" type=\"hidden\" value=\"" ++ Q ++ "\"/>"
-        ++ "<input name=\"item_price_1\" type=\"hidden\" value=\"" ++ P2  ++ "\"/>"
-        ++ "<input name=\"item_currency_1\" type=\"hidden\" value=\"" ++ C ++ "\"/>"
+        ++ "<input name=\"item_description_1\" type=\"hidden\" value=\""
+        ++ ID ++ "\"/>"
+        ++ "<input name=\"item_quantity_1\" type=\"hidden\" value=\""
+        ++ Q ++ "\"/>"
+        ++ "<input name=\"item_price_1\" type=\"hidden\" value=\""
+        ++ P2  ++ "\"/>"
+        ++ "<input name=\"item_currency_1\" type=\"hidden\" value=\""
+        ++ C ++ "\"/>"
         ++ "<input name=\"_charset_\" type=\"hidden\" value=\"utf-8\"/>"
-        ++ "<input alt=\"\" src=\"https://checkout.google.com/buttons/buy.gif?merchant_id=" ++ M ++ "&amp;w=117&amp;h=48&amp;style=" ++ Bg ++ "&amp;variant=text&amp;loc=en_US\" type=\"image\"/>"
-        ++"</form>",
+        ++ "<input class='hn_google_buynow' alt=\"\" "
+        ++ "src=\"https://checkout.google.com/buttons/buy.gif?merchant_id="
+        ++ M ++ "&amp;w=117&amp;h=48&amp;style=" ++ Bg
+        ++ "&amp;variant=text&amp;loc=en_US\" type=\"image\"/>"
+        ++ "</form>",
     #spec_val{val = HTML, resize = Resize}.
 
 %% Hypernumbers Merchant ID is 960226209420618
