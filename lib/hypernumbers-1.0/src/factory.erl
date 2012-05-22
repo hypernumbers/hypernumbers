@@ -2,8 +2,6 @@
 %%%
 -module(factory).
 
--define(DELAY, 300000). % 5 minutes
-
 %% API
 -export([provision_site/3,
          provision_site/4,
@@ -58,25 +56,15 @@ post_provision(NE, Site, Uid, Email, Name, UserData) ->
     {From, Sig} = emailer:get_details(Site),
     case {NE, IsValid} of
         {existing, true} ->
-            Fun = fun() ->
-                          {ok, _Tr} = timer:apply_after(?DELAY, emailer, send,
-                                                        [new_site_existing, Email, "",
-                                                         From, Site,
-                                                         [{sig, Sig}]])
-                  end,
-            spawn(Fun);
+            emailer:send(new_site_existing, Email, "", From, Site,
+                         [{sig, Sig}]);
         {_, _}           ->
             Path = ["_validate", Name],
             Data = [{emailed, true}],
             HT = passport:create_hypertag_url(Site, Path, Uid, Email,
                                               Data, "never"),
-            Fun = fun() ->
-                          {ok, _Tr} = timer:apply_after(?DELAY, emailer, send,
-                                                        [new_site_validate, Email,
-                                                         "", From, Site,
-                                                         [{sig, Sig}, {hypertag, HT}]])
-                  end,
-            spawn(Fun)
+            emailer:send(new_site_validate, Email, "", From, Site,
+                         [{sig, Sig}, {hypertag, HT}])
     end.
 
 make_recs([], _Site, Acc) ->
