@@ -315,9 +315,11 @@ transform("users.and.groups." ++ R, Args) ->
 % stop 'em getting swallowed by factory.WxH
 transform("factory." ++ R = Fun, Args) ->
     case R of
-        "info" -> {list_to_atom(Fun), Args};
-        _      -> {W, H} = get_dims(R),
-                  {list_to_atom("factory."), [W , H | Args]}
+        "info"      -> {list_to_atom(Fun), Args};
+        "if." ++ R2 -> {W, H} = get_dims(R2),
+                       {list_to_atom("factory.if."), [W , H | Args]};
+        _           -> {W, H} = get_dims(R),
+                       {list_to_atom("factory."), [W , H | Args]}
     end;
 transform("upload.file." ++ R, Args) ->
     {W, H} = get_dims(R),
