@@ -816,8 +816,8 @@ iget(Ref, _Type, Qry, Env) ->
 
 % this is the path that the twilio phone redirect is wired to
 ipost(#refX{path = ["_services", "phoneredirect" | []], obj = {page, "/"}}, _Qry,
-     Env = #env{accept = html}) ->
-    Redir = case applicaton:get_env(hypernumbers, environment) of
+      Env = #env{accept = html}) ->
+    Redir = case application:get_env(hypernumbers, environment) of
                 {ok, development} ->
                     true;
                 {ok, _Other} ->
