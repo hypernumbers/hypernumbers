@@ -602,6 +602,34 @@
         ]
     },
     {
+        "fn": "create.button.if",
+        "category": "Templates <- new!",
+        "desc": "If true, puts a button on a page which creates pages from templates.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/templates/create-button.if.html",
+        "args": [
+            {
+                "name": "Boolean",
+                "desc": "TRUE or FALSE",
+                "type": "finite"
+            },
+            {
+                "name": "Button Title",
+                "desc": "Some text.",
+                "type": "finite"
+            },
+            {
+                "name": "Expression",
+                "desc": "An that describes the page to create",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
         "fn": "crumb.trail",
         "category": "Navigation <- new!",
         "desc": "Displays a crumb trail for the current page.",
@@ -3002,6 +3030,34 @@
         ]
     },
     {
+        "fn": "map.rows.button.if",
+        "category": "Templates <- new!",
+        "desc": "If true puts a button on a page which uploads a spreadsheet and maps it to a series of vixo page specified in the spreadsheet.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/templates/map-rows-button.if.html",
+        "args": [
+            {
+                "name": "Boolean",
+                "desc": "TRUE or FALSE",
+                "type": "finite"
+            },
+            {
+                "name": "Button Title",
+                "desc": "Some text.",
+                "type": "finite"
+            },
+            {
+                "name": "Map",
+                "desc": "The name of the map to use.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
         "fn": "map.sheet.button",
         "category": "Templates <- new!",
         "desc": "Puts a button on a page which uploads a spreadsheet and maps it to a vixo page you specify.",
@@ -3012,6 +3068,39 @@
         "wizardready": true,
         "link": "http://documentation.vixo.com/contents/vixo-functions/templates/map-sheet-button.html",
         "args": [
+            {
+                "name": "Button Title",
+                "desc": "Some text.",
+                "type": "finite"
+            },
+            {
+                "name": "Page",
+                "desc": "The page to load the data to.",
+                "type": "finite"
+            },
+            {
+                "name": "Map",
+                "desc": "The name of the map to use.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "map.sheet.button.if",
+        "category": "Templates <- new!",
+        "desc": "If true puts a button on a page which uploads a spreadsheet and maps it to a vixo page you specify.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/templates/map-sheet-button-if.html",
+        "args": [
+            {
+                "name": "Boolean",
+                "desc": "TRUE or FALSE",
+                "type": "finite"
+            },
             {
                 "name": "Button Title",
                 "desc": "Some text.",

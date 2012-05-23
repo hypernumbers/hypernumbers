@@ -13,12 +13,18 @@
 -export([
          'upload.file.'/1,
          'factory.'/1,
+         'factory.if.'/1,
          'factory.info'/1,
          'create.button'/1,
+         'create.button.if'/1,
          'map.rows.button'/1,
+         'map.rows.button.if'/1,
          'map.sheet.button'/1,
+         'map.sheet.button.if'/1,
          'map.custom.button'/1,
-         'load.templates.button'/1
+         'map.custom.button.if'/1,
+         'load.templates.button'/1,
+         'load.templates.button.if'/1
         ]).
 
 -include("spriki.hrl").
@@ -98,23 +104,38 @@ get_restrictions(_N) -> ?ERR_VAL.
             #spec_val{val = lists:flatten(Msg), sp_site = true}
     end.
 
-'factory.'([W, H]) ->
-    'factory.'([W, H, "Create A New Vixo Site"]);
-'factory.'([W, H, Title]) ->
-    'factory.'([W, H, Title, "blank"]);
-'factory.'([W, H, Title, Type]) ->
+'factory.'([W, H | Rest]) -> factoryif([W, H, true | Rest]).
+% syntax heightlighter gets funky on these names
+'factory.if.'(List) -> factoryif(List).
+
+factoryif([W, H]) ->
+    factoryif([W, H, true, "Create A New Vixo Site"]);
+factoryif([W, H, Bool]) ->
+    factoryif([W, H, Bool, "Create A New Vixo Site"]);
+factoryif([W, H, Bool, Title]) ->
+    factoryif([W, H, Bool, Title, "blank"]);
+factoryif([W, H, Bool, Title, Type]) ->
     Text = "Create a site of type: '" ++ Type ++ "'",
-    'factory.'([W, H, Title, Type, Text	]);
-'factory.'([W, H, Title, Type, Text]) ->
-    'factory.'([W, H, Title, Type, Text, "Create Site >>"]);
-'factory.'([W, H, Title, Type, Desc, ButtonTxt]) ->
-    'factory.'([W, H, Title, Type, Desc, ButtonTxt,
-                "Thanks, you will be emailed details of your new site."]);
-'factory.'([W, H, Title, Type, Desc, ButtonTxt, ResponseMsg]) ->
-    'factory.'([W, H, Title, Type, Desc, ButtonTxt, ResponseMsg, ""]);
-'factory.'([W, H, Title, Type, Desc, ButtonTxt, Response, Goto | Rest]) ->
+    factoryif([W, H, Bool, Title, Type, Text	]);
+factoryif([W, H, Bool, Title, Type, Text]) ->
+    factoryif([W, H, Bool, Title, Type, Text, "Create Site >>"]);
+factoryif([W, H, Bool, Title, Type, Desc, ButtonTxt]) ->
+    factoryif([W, H, Bool, Title, Type, Desc, ButtonTxt,
+               "Thanks, you will be emailed details of your new site."]);
+factoryif([W, H, Bool, Title, Type, Desc, ButtonTxt, ResponseMsg]) ->
+    factoryif([W, H, Bool, Title, Type, Desc, ButtonTxt, ResponseMsg, ""]);
+factoryif([W, H, Bool, Title, Type, Desc, ButtonTxt, Response, Goto | Rest]) ->
     % first check if the site is able to be a factory
     [W2, H2] = typechecks:std_ints([W, H]),
+    io:format("Bool is ~p~n", [Bool]),
+    [Bool2] = typechecks:std_bools([Bool]),
+    case Bool2 of
+        false -> "";
+        true  -> factory1(W2, H2, Title, Type, Desc, ButtonTxt,
+                         Response, Goto, Rest)
+    end.
+
+factory1(W2, H2, Title, Type, Desc, ButtonTxt, Response, Goto, Rest) ->
     % check if the site is a factory site and which site types it
     % can create
     V = new_db_wu:read_kvD(?msite, factory),
@@ -125,40 +146,41 @@ get_restrictions(_N) -> ?ERR_VAL.
                                      obj = {page, "/"}},
                         hn_util:refX_to_url(RefX);
              [Other] -> Other
-           end,
+         end,
     % can't just error because this is a site special formula
     % so you huftae catch it and pass out an #VALUE! error
     % manually...
     Valid = try
                 {sitetype, hn_util:site_type_exists(Type2)}
-                catch
-                    error : _ -> error;
-                    exit  : _ -> error;
-                    throw : _ -> error
-                end,
+            catch
+                error : _ -> error;
+                exit  : _ -> error;
+                throw : _ -> error
+            end,
     case V of
         [] ->
             #spec_val{val = ?ERRVAL_NOTSETUP, sp_site = true};
         [{kvstore, factory, all}] ->
             case Valid of
                 {sitetype, _} ->
-                    factory2(W2, H2, Tt2, Type2, Desc2, BTxt2, Rsp2, G2, Rest);
+                    factory2(W2, H2, Tt2, Type2, Desc2, BTxt2,
+                             Rsp2, G2, Rest);
                 error ->
                     #spec_val{val = ?ERRVAL_VAL, sp_site = true}
             end;
         [{kvstore, factory, List}] when is_list(List) ->
-                case Valid of
-                    {sitetype, Type3} ->
-                        case lists:member(Type3, List) of
-                            true  ->
-                                factory2(W2, H2, Tt2, Type2, Desc2,
-                                         BTxt2, Rsp2, G2, Rest);
-                            false ->
-                                #spec_val{val = ?ERRVAL_VAL, sp_site = true}
-                        end;
-                    error ->
-                        #spec_val{val = ?ERRVAL_VAL, sp_site = true}
-                end
+            case Valid of
+                {sitetype, Type3} ->
+                    case lists:member(Type3, List) of
+                        true  ->
+                            factory2(W2, H2, Tt2, Type2, Desc2,
+                                     BTxt2, Rsp2, G2, Rest);
+                        false ->
+                            #spec_val{val = ?ERRVAL_VAL, sp_site = true}
+                    end;
+                error ->
+                    #spec_val{val = ?ERRVAL_VAL, sp_site = true}
+            end
     end.
 
 factory2(W, H, Title, Type, Desc, BtnTxt, Rsp2, Goto, Rest) ->
@@ -236,107 +258,157 @@ is_valid(Input) ->
         _                      -> ?ERR_VAL
     end.
 
-'load.templates.button'(List) ->
-    [Title, Template] = typechecks:std_strs(List),
-    Templates = hn_util:get_templates(get(site)),
-    Id = "id_" ++ muin_util:create_name(),
-    case lists:member(Template, Templates) of
-        false -> ?ERRVAL_VAL;
-        true  -> Js = ["/hypernumbers/ajaxfileupload.js",
-                       "/webcomponents/hn.loadtemplates.js"],
-                 Reload = ["HN.LoadTemplates.reload();"],
-                 Incs = #incs{js = Js, js_reload = Reload},
-                 Payload = {struct, [{"load_templates", Template}]},
-                 Form = #form{id = {'load-template-button', Title},
-                              kind = "load-template-button",
-                              attrs = Payload},
-                 HTML = "<input id='" ++ Id ++ "'type='submit' "
-                     ++ "class='hn-loadtemplate' value='"
-                     ++ Title ++ "' data-template='"
-                     ++ Template ++ "' />",
-                 Preview = Title,
-                 Resize = #resize{width = 2, height = 2},
-                 #spec_val{val = HTML, sp_webcontrol = Form,
-                           resize = Resize, preview = Preview,
-                           sp_incs = Incs}
+'load.templates.button'(List) -> 'load.templates.buttonif'([true | List]).
+% syntax heightlighter gets funky on these names
+'load.templates.button.if'(List) -> 'load.templates.buttonif'(List).
+
+'load.templates.buttonif'([Bool | List]) ->
+    [Bool2] = typechecks:std_bools([Bool]),
+    case Bool2 of
+        false ->
+            "";
+        true ->
+            [Title, Template] = typechecks:std_strs(List),
+            Templates = hn_util:get_templates(get(site)),
+            Id = "id_" ++ muin_util:create_name(),
+            case lists:member(Template, Templates) of
+                false -> ?ERRVAL_VAL;
+                true  -> Js = ["/hypernumbers/ajaxfileupload.js",
+                               "/webcomponents/hn.loadtemplates.js"],
+                         Reload = ["HN.LoadTemplates.reload();"],
+                         Incs = #incs{js = Js, js_reload = Reload},
+                         Payload = {struct, [{"load_templates", Template}]},
+                         Form = #form{id = {'load-template-button', Title},
+                                      kind = "load-template-button",
+                                      attrs = Payload},
+                         HTML = "<input id='" ++ Id ++ "'type='submit' "
+                             ++ "class='hn-loadtemplate' value='"
+                             ++ Title ++ "' data-template='"
+                             ++ Template ++ "' />",
+                         Preview = Title,
+                         Resize = #resize{width = 2, height = 2},
+                         #spec_val{val = HTML, sp_webcontrol = Form,
+                                   resize = Resize, preview = Preview,
+                                   sp_incs = Incs}
+            end
     end.
 
-'map.custom.button'(List) ->
-    [Title, Map] = typechecks:std_strs(List),
-    Maps = hn_util:get_maps(get(site)),
-    Id = "id_" ++ muin_util:create_name(),
-    case lists:member(Map, Maps) of
-        false -> ?ERRVAL_VAL;
-        true  -> Js = ["/hypernumbers/ajaxfileupload.js",
-                       "/webcomponents/hn.mapcustom.js"],
-                 Reload = ["HN.MapCustom.reload();"],
-                 Incs = #incs{js = Js, js_reload = Reload},
-                 Payload = {struct, [{"map", Map}]},
-                 Form = #form{id = {'map-custom-button', Title},
-                              kind = "map-custom-button",
-                              attrs = Payload},
-                 HTML = "<input id='" ++ Id ++ "' type='submit' "
-                     ++ "class='hn-mapcustom' value='"
-                     ++ Title ++ "' data-map-type='custom' data-map='"
-                     ++ Map ++ "' />",
-                 Preview = Title,
-                 Resize = #resize{width = 2, height = 2},
-                 #spec_val{val = HTML, sp_webcontrol = Form,
-                           resize = Resize, preview = Preview,
-                           sp_incs = Incs}
+
+'map.custom.button'(List) -> 'map.custom.buttonif'([true | List]).
+% syntax heightlighter gets funky on these names
+'map.custom.button.if'(List) -> 'map.custom.buttonif'(List).
+
+'map.custom.buttonif'([Bool | List]) ->
+    [Bool2] = typechecks:std_bools([Bool]),
+    case Bool2 of
+        false ->
+            "";
+        true ->
+            [Title, Map] = typechecks:std_strs(List),
+            Maps = hn_util:get_maps(get(site)),
+            Id = "id_" ++ muin_util:create_name(),
+            case lists:member(Map, Maps) of
+                false -> ?ERRVAL_VAL;
+                true  -> Js = ["/hypernumbers/ajaxfileupload.js",
+                               "/webcomponents/hn.mapcustom.js"],
+                         Reload = ["HN.MapCustom.reload();"],
+                         Incs = #incs{js = Js, js_reload = Reload},
+                         Payload = {struct, [{"map", Map}]},
+                         Form = #form{id = {'map-custom-button', Title},
+                                      kind = "map-custom-button",
+                                      attrs = Payload},
+                         HTML = "<input id='" ++ Id ++ "' type='submit' "
+                             ++ "class='hn-mapcustom' value='"
+                             ++ Title ++ "' data-map-type='custom' data-map='"
+                             ++ Map ++ "' />",
+                         Preview = Title,
+                         Resize = #resize{width = 2, height = 2},
+                         #spec_val{val = HTML, sp_webcontrol = Form,
+                                   resize = Resize, preview = Preview,
+                                   sp_incs = Incs}
+            end
     end.
 
-'map.sheet.button'(List) ->
-    [Title, Page, Map] = typechecks:std_strs(List),
-    Maps = hn_util:get_maps(get(site)),
-    Id = "id_" ++ muin_util:create_name(),
-    case lists:member(Map, Maps) of
-        false -> ?ERRVAL_VAL;
-        true  -> Js = ["/hypernumbers/ajaxfileupload.js",
-                       "/webcomponents/hn.mapsheet.js"],
-                 Reload = ["HN.MapSheet.reload();"],
-                 Incs = #incs{js = Js, js_reload = Reload},
-                 Payload = {struct, [{"map", Map}, {"page", Page}]},
-                 Form = #form{id = {'map-sheet-button', Title},
-                              kind = "map-sheet-button",
-                              attrs = Payload},
-                 HTML = "<input id='" ++ Id ++ "' type='submit' "
-                     ++ "class='hn-mapsheet' value='"
-                     ++ Title ++ "' data-map-type='sheet' data-map='"
-                     ++ Map ++ "' data-map-page='" ++ Page ++"' />",
-                 Preview = Title,
-                 Resize= #resize{width = 2, height = 2},
-                 #spec_val{val = HTML, sp_webcontrol = Form,
-                           resize = Resize, preview = Preview,
-                           sp_incs = Incs}
+'map.sheet.button'(List) -> 'map.sheet.buttonif'([true | List]).
+% syntax heightlighter gets funky on these names
+'map.sheet.button.if'(List) -> 'map.sheet.buttonif'(List).
+
+'map.sheet.buttonif'([Bool | List]) ->
+    [Bool2] = typechecks:std_bools([Bool]),
+    case Bool2 of
+        false ->
+            "";
+        true ->
+            [Title, Page, Map] = typechecks:std_strs(List),
+            Maps = hn_util:get_maps(get(site)),
+            Id = "id_" ++ muin_util:create_name(),
+            case lists:member(Map, Maps) of
+                false -> ?ERRVAL_VAL;
+                true  -> Js = ["/hypernumbers/ajaxfileupload.js",
+                               "/webcomponents/hn.mapsheet.js"],
+                         Reload = ["HN.MapSheet.reload();"],
+                         Incs = #incs{js = Js, js_reload = Reload},
+                         Payload = {struct, [{"map", Map}, {"page", Page}]},
+                         Form = #form{id = {'map-sheet-button', Title},
+                                      kind = "map-sheet-button",
+                                      attrs = Payload},
+                         HTML = "<input id='" ++ Id ++ "' type='submit' "
+                             ++ "class='hn-mapsheet' value='"
+                             ++ Title ++ "' data-map-type='sheet' data-map='"
+                             ++ Map ++ "' data-map-page='" ++ Page ++"' />",
+                         Preview = Title,
+                         Resize= #resize{width = 2, height = 2},
+                         #spec_val{val = HTML, sp_webcontrol = Form,
+                                   resize = Resize, preview = Preview,
+                                   sp_incs = Incs}
+            end
     end.
 
-'map.rows.button'(List) ->
-    [Title, Map] = typechecks:std_strs(List),
-    Maps = hn_util:get_maps(get(site)),
-    Id = "id_" ++ muin_util:create_name(),
-    case lists:member(Map, Maps) of
-        false -> ?ERRVAL_VAL;
-        true  -> Js = ["/hypernumbers/ajaxfileupload.js",
-                       "/webcomponents/hn.maprows.js"],
-                 Reload = ["HN.MapRows.reload();"],
-                 Incs = #incs{js = Js, js_reload = Reload},
-                 Payload = {struct, [{"map", Map}]},
-                 Form = #form{id = {'map-rows-button', Title},
-                              kind = "map-rows-button",
-                              attrs = Payload},
-                 HTML = "<input id='" ++ Id ++ "' type='submit' "
-                     ++ "class='hn-maprows' value='"
-                     ++ Title ++ "' data-map-type='row' data-map='"
-                     ++ Map ++ "' />",
-                 Preview = Title,
-                 Resize = #resize{width = 2, height = 2},
-                 #spec_val{val = HTML, sp_webcontrol = Form,
-                           resize = Resize, preview = Preview,
-                           sp_incs = Incs}
+'map.rows.button'(List) -> 'map.rows.buttonif'([true | List]).
+% syntax heightlighter gets funky on these names
+'map.rows.button.if'(List) -> 'map.rows.buttonif'(List).
+
+'map.rows.buttonif'([Bool | List]) ->
+        [Bool2] = typechecks:std_bools([Bool]),
+    case Bool2 of
+        false -> "";
+        true ->
+            [Title, Map] = typechecks:std_strs(List),
+            Maps = hn_util:get_maps(get(site)),
+            Id = "id_" ++ muin_util:create_name(),
+            case lists:member(Map, Maps) of
+                false -> ?ERRVAL_VAL;
+                true  -> Js = ["/hypernumbers/ajaxfileupload.js",
+                               "/webcomponents/hn.maprows.js"],
+                         Reload = ["HN.MapRows.reload();"],
+                         Incs = #incs{js = Js, js_reload = Reload},
+                         Payload = {struct, [{"map", Map}]},
+                         Form = #form{id = {'map-rows-button', Title},
+                                      kind = "map-rows-button",
+                                      attrs = Payload},
+                         HTML = "<input id='" ++ Id ++ "' type='submit' "
+                             ++ "class='hn-maprows' value='"
+                             ++ Title ++ "' data-map-type='row' data-map='"
+                             ++ Map ++ "' />",
+                         Preview = Title,
+                         Resize = #resize{width = 2, height = 2},
+                         #spec_val{val = HTML, sp_webcontrol = Form,
+                                   resize = Resize, preview = Preview,
+                                   sp_incs = Incs}
+            end
+    end.
+'create.button'(List) -> 'create.buttonif'([true | List]).
+% syntax heightlighter gets funky on these names
+'create.button.if'(List) -> 'create.buttonif'(List).
+
+'create.buttonif'([Bool | List])  ->
+    [Bool2] = typechecks:std_bools([Bool]),
+    case Bool2 of
+        false -> "";
+        true  -> create_b2(List)
     end.
 
-'create.button'(List) when is_list(List) ->
+create_b2(List) ->
     Id = "id_" ++ muin_util:create_name(),
     [Title | Commands] = typechecks:std_strs(List),
     case Commands of
