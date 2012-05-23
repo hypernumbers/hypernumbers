@@ -404,8 +404,8 @@ authorize_post(#refX{path = [X]}, _Qry, #env{accept = json})
 
 % allow phone redirects - we will check if the environment
 % variable is set later on
-authorize_post(#refX{path = ["_services", "phoneredirect"]}, _Qry,
-               #env{accept = json}) ->
+authorize_post(#refX{path = ["_services", "phoneredirect"], obj = {page, "/"}},
+                     _Qry, #env{accept = html}) ->
     allowed;
 
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
@@ -821,7 +821,7 @@ ipost(#refX{path = ["_services", "phoneredirect" | []], obj = {page, "/"}}, _Qry
                 {ok, development} ->
                     true;
                 {ok, _Other} ->
-                    case application:get_env(hypernumbers, redirect) of
+                    case application:get_env(hypernumbers, phoneredirect) of
                         {ok, false} -> false;
                         {ok, true}  -> true
                     end
