@@ -96,13 +96,13 @@ handle(MochiReq) ->
 
 -spec handle_(#refX{}, #env{}, #qry{}) -> ok.
 
-handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
+handle_(#refX{site="http://www."++Site}, E = #env{mochi=Mochi}, _Qry) ->
     Redir = "http://" ++ hn_util:strip80(Site) ++ Mochi:get(raw_path),
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-handle_(#refX{site = _S, path=["_sync" | Cmd]}, Env,
-        #qry{return=QReturn, stamp=QStamp})
+handle_(#refX{site = _S, path = ["_sync" | Cmd]}, Env,
+        #qry{return = QReturn, stamp = QStamp})
   when QReturn /= undefined ->
     %Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p"
     %                    ++ "QStamp of ~p",
@@ -165,7 +165,7 @@ authorize_r2(Env, Ref, Qry) ->
     Env2 = process_user(Ref, Env),
     #env{method = Method, body = Body} = Env,
     AuthRet = case {Method, Body} of
-                  {Req, _} when Req == 'GET'; Req == 'HEAD'  ->
+                  {Req, _} when Req == 'GET'; Req == 'HEAD' ->
                       authorize_get(Ref, Qry, Env2);
                   {'POST', multipart} ->
                       authorize_upload(Ref, Qry, Env2);
@@ -254,9 +254,9 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
 
 % deal with the reserved part of the namespace
 % shows sites and pages
-authorize_get(#refX{path = ["_" ++ X | _]}, _Qry, #env{accept = json})
-  when X == "site";
-       X == "pages" ->
+authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json})
+  when X == "_site";
+       X == "_pages" ->
     allowed;
 
 % we check later on if you have admin permissions
@@ -266,12 +266,13 @@ authorize_get(#refX{path = ["_statistics" | _]}, _Qry, #env{accept = html}) ->
 % enable the _sites page and also _replies and _contacts for phone and form
 % pages on the root page
 %
-% need to do it twice, once for no view set, and once for a sepcific view
-authorize_get(#refX{site = Site, path = ["_" ++ X | []] = Path},
+% need to do it twice, once for no view set, and once for a specific view
+authorize_get(#refX{site = Site, path = [X | []] = Path},
               #qry{_ = undefined}, #env{accept = html, uid = Uid})
-  when  X == "sites";
-        X == "replies";
-        X == "contacts" ->
+  when  X == "_sites";
+        X == "_replies";
+        X == "_contacts";
+        X == "_audit" ->
     auth_srv:check_get_view(Site, Path, Uid);
 
 authorize_get(#refX{path = ["_" ++ X | []]}, _Qry, #env{accept = Accept})
@@ -1050,33 +1051,6 @@ ipost(Ref=#refX{path=["_user"]}, _Qry,
 %% ok = hn_users:update(Site, Uid, "language", Lang),
 %% json(Env, "success");
 
-%% ipost of factory provisioning
-ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
-      #env{uid = PrevUid, body = [{"signup", Body}]} = Env) ->
-    {struct, List} = Body,
-    {"sitetype", SiteType} = lists:keyfind("sitetype", 1, List),
-    {"email", Email} = lists:keyfind("email", 1, List),
-    {"data", {struct, Data}} = lists:keyfind("data", 1, List),
-    SType2 = hn_util:site_type_exists(SiteType),
-    Email2 = string:to_lower(Email),
-    case hn_util:valid_email(Email) of
-        false ->
-            json(Env, {struct, [{"result", "error"},
-                               {"reason", "invalid_email"}]});
-        true ->
-            Transaction = factory,
-            [Expected] = new_db_api:matching_forms(Ref, Transaction),
-            case hn_security:validate_factory(Expected, SType2, Data) of
-                true ->
-                    spawn(hn_mochi, provision_site,
-                          [RootSite, PrevUid, SType2, Email2, Data, Env]),
-                    json(Env, "success");
-                false ->
-                    json(Env, {struct, [{"result", "error"},
-                                        {"reason", 401}]})
-            end
-    end;
-
 %% ipost for inline editable cells
 ipost(#refX{obj = {cell, _}} = Ref, _Qry,
       #env{body = [{"postinline", {struct, [{"formula", Val}]}}],
@@ -1151,10 +1125,40 @@ ipost(Ref=#refX{site = S, path = P} = Ref, _Qry,
             json(Env, "success")
     end;
 
+%% ipost of factory provisioning - special type of webcontrol
+ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
+      #env{uid = PrevUid,
+           body = [{"postwebcontrols", {struct, [{"signup", Act}]}}]} = Env) ->
+    {struct, List} = Act,
+    {"sitetype", SiteType} = lists:keyfind("sitetype", 1, List),
+    {"email", Email} = lists:keyfind("email", 1, List),
+    {"data", {struct, Data}} = lists:keyfind("data", 1, List),
+    SType2 = hn_util:site_type_exists(SiteType),
+    Email2 = string:to_lower(Email),
+    case hn_util:valid_email(Email) of
+        false ->
+            json(Env, {struct, [{"result", "error"},
+                               {"reason", "invalid_email"}]});
+        true ->
+            Transaction = factory,
+            [Expected] = new_db_api:matching_forms(Ref, Transaction),
+            case hn_security:validate_factory(Expected, SType2, Data) of
+                true ->
+                    spawn(hn_mochi, provision_site,
+                          [RootSite, PrevUid, SType2, Email2, Data, Env]),
+                    json(Env, "success");
+                false ->
+                    json(Env, {struct, [{"result", "error"},
+                                        {"reason", 401}]})
+            end
+    end;
+
 % run a web control
 ipost(Ref = #refX{obj = {cell, _}}, _Qry,
       Env = #env{body = [{"postwebcontrols", Actions}],
                  uid = Uid}) ->
+    % this is guff - the payload is coming in as a string and then
+    % being decoded again - should have been proper json coming in
     Act2 = mochijson:decode(Actions),
     {struct, Act3} = Act2,
     Status = element(1, hd(Act3)),
