@@ -1157,13 +1157,10 @@ ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
 ipost(Ref = #refX{obj = {cell, _}}, _Qry,
       Env = #env{body = [{"postwebcontrols", Actions}],
                  uid = Uid}) ->
-    % this is guff - the payload is coming in as a string and then
-    % being decoded again - should have been proper json coming in
-    Act2 = mochijson:decode(Actions),
-    {struct, Act3} = Act2,
-    Status = element(1, hd(Act3)),
+    {struct, Act} = Actions,
+    Status = element(1, hd(Act)),
     ok = status_srv:update_status(Uid, Ref, Status),
-    run_actions(Ref, Env, Act2, Uid);
+    run_actions(Ref, Env, Actions, Uid);
 
 % revert a cell to an old value
 ipost(Ref = #refX{obj = {cell, _}} = Ref, _Qry,
