@@ -1728,7 +1728,8 @@ process_environment(Mochi) ->
 
 -spec process_user(string(), #env{}) -> #env{} | no_return().
 % for twilio api calls we spoof the username
-process_user(#refX{path = ["_services", "phone"]}, E=#env{}) ->
+process_user(#refX{path = ["_services", SubPath]}, E=#env{})
+  when SubPath == "phone" orelse SubPath == "phoneredirect" ->
     Email = "api@twilio.com",
     {ok, _, Uid} = passport:get_or_create_user(Email),
     E#env{uid = Uid, email = Email};
