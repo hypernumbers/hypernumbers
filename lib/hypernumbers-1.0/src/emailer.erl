@@ -9,9 +9,12 @@
 
 -export([
          get_details/1,
+         get_default_details/0,
          send/6,
          send_email/5
         ]).
+
+get_default_details() -> {?MASTER_EMAIL, ?MASTER_SIG}.
 
 get_details(Site) ->
     V = new_db_api:read_kv(Site, site_email),

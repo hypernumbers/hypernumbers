@@ -305,7 +305,7 @@ handle_call({issue_pwd_reset, Email, Site}, _From, State) ->
                 Hash
         end,
     Hash = mnesia:activity(async_dirty, T),
-    {From, Sig} = emailer:get_details(Site),
+    {From, Sig} = emailer:get_default_details(),
     ok = emailer:send(reset, Email, "", From, Site, [{hash, Hash}, {sig, Sig}]),
     {reply, ok, State};
 
