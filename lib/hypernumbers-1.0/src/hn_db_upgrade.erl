@@ -9,6 +9,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         rejig_phones/1,
          add_site_table_2011_05_12/0,
          upgrade_phone_records_2012_05_08/0,
          change_hns_record_table/0,
@@ -78,6 +79,19 @@
          % upgrade_1743_B/0,
          % upgrade_1776/0
         ]).
+
+rejig_phones(Site) ->
+    AccSid = "AC7a076e30da6d49119b335d3a6de43844",
+    AuthTk = "9248c9a2a25f6914fad9c9fb5b30e69c",
+    AppSid = "APfc041b9fd029441fba86f114ad4ca09d",
+    AC = #twilio_account{account_sid     = AccSid,
+                         auth_token      = AuthTk,
+                         application_sid = AppSid,
+                         site_phone_no   = "+441315101897",
+                         type            = outbound},
+    new_db_api:write_kv(Site, ?twilio, AC).
+
+
 
 add_site_table_2011_05_12() ->
     Sites = hn_setup:get_sites(),
