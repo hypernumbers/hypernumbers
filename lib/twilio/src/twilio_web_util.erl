@@ -84,6 +84,11 @@ get_type(#twilio{direction = "inbound", call_status = "completed",
   when C =/= null andalso Cr =/= null andalso Fr =/= null andalso To =/= null
        andalso Dr =/= null ->
     "call completed";
+get_type(#twilio{direction = "inbound", call_status = "completed",
+                 called = null, caller = null, from = null, to = null,
+                 call_duration = Dr, inprogress = null, recording = null})
+  when  Dr =/= null ->
+    "call completed";
 get_type(Tw) -> io:format("Unknown Tw is ~p~n", [Tw]),
                 "unknown".
 
