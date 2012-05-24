@@ -142,7 +142,7 @@ redir(#env{} = Env) ->
     Body = twilio_web_util:process_body(Env#env.body),
     #twilio{custom_params = CP} = Body,
     {"site", Site} = proplists:lookup("site", CP),
-    Redir = Site ++ "/_services/phone/",
+    Redir = mochiweb_util:unquote(Site) ++ "/_services/phone/",
     {"Location", Redir}.
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
