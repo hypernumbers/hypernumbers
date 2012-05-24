@@ -55,9 +55,17 @@ init([]) ->
                 {ok, server_dev}  -> true;
                 {ok, production}  -> false
             end,
+
     {ok, Services} = application:get_env(hypernumbers, services),
 
-    ChildSpecs = [gen_child_spec(S) || {S,X} <- Services, (IsDev or X)],
+    P = case application:get_env(hypernumbers, phoneredirect) of
+            {ok, true}  -> [phoneredir_srv];
+            {ok, false} -> []
+        end,
+
+    S2 = lists:merge(Services, P),
+
+    ChildSpecs = [gen_child_spec(S) || {S,X} <- S2, (IsDev or X)],
 
     {ok, {SupFlags, ChildSpecs}}.
 
