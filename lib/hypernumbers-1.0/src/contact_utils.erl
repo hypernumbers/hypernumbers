@@ -26,7 +26,7 @@ get_phone_menu(S) ->
         [] -> [_Proto, "//" ++ Domain, Port] = string:tokens(S, ":"),
               Site = say_site(Domain, Port),
               [#say{text = Site ++ " is not configured for incoming calls",
-                   voice = "woman", language = "en_gb"}];
+                   voice = "woman", language = "en-gb"}];
         [{kvstore, site_phone_menu, {Idx, null}}] ->
             io:format("Idx is ~p~n", [Idx]),
             [Phone] = new_db_api:get_phone(S, Idx),

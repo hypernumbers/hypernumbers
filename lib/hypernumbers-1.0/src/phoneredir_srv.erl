@@ -1,12 +1,12 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2012, Hypernumbers Ltd
-%%% @doc       The gen server that support telephony services
+%%% @doc        manages phone redirects
 %%%
 %%% @end
-%%% Created :  9 Feb 2012 by gordon@hypernumbers.com
+%%% Created : 24 May 2012 by gordon@vixo.com
 %%%-------------------------------------------------------------------
--module(twilio_srv).
+-module(phoneredir_srv).
 
 -behaviour(gen_server).
 
@@ -17,13 +17,24 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
+% API
+-export([
+         add_redir/2,
+         get_redir/1,
+         last_call/1
+        ]).
+
 -define(SERVER, ?MODULE).
 
--record(state, {}).
+-record(state, {calls = dict:new()}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+add_redir(Sid, Redir) -> gen_server:call(?MODULE, {add_redir, Sid, Redir}).
+get_redir(Sid)        -> gen_server:call(?MODULE, {get_redir, Sid}).
+last_call(Sid)        -> gen_server:call(?MODULE, {last_call, Sid}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -33,12 +44,7 @@
 %% @end
 %%--------------------------------------------------------------------
 start_link() ->
-    case application:get_env(hypernumbers, startup_debug) of
-       {ok, true} -> io:format("...starting twilio_srv~n");
-       _Other     -> ok
-    end,
-    global:unregister_name(?MODULE),
-    gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -72,9 +78,18 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(_Request, _From, State) ->
-    Reply = ok,
-    {reply, Reply, State}.
+handle_call(Request, _From, State) ->
+    {NewR, NewS} = case Request of
+                       {add_redir, Sid, Redir} ->
+                           NewC = dict:store(Sid, Redir, State#state.calls),
+                           {ok, State#state{calls = NewC}};
+                       {get_redir, Sid} ->
+                           {dict:fetch(Sid, State#state.calls), State};
+                       {last_call, Sid} ->
+                           R = dict:fetch(Sid, State#state.calls),
+                           {R, dict:eracse(Sid, State#state.calls)}
+                   end,
+    {reply, NewR, NewS}.
 
 %%--------------------------------------------------------------------
 %% @private
