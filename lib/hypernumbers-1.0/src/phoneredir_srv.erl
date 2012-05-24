@@ -32,9 +32,12 @@
 %%% API
 %%%===================================================================
 
-add_redir(Sid, Redir) -> gen_server:call(?MODULE, {add_redir, Sid, Redir}).
-get_redir(Sid)        -> gen_server:call(?MODULE, {get_redir, Sid}).
-last_call(Sid)        -> gen_server:call(?MODULE, {last_call, Sid}).
+add_redir(Sid, Redir) ->
+    gen_server:call(?MODULE, {add_redir, Sid, Redir}).
+get_redir(Sid) ->
+    gen_server:call(?MODULE, {get_redir, Sid}).
+last_call(Sid) ->
+    gen_server:call(?MODULE, {last_call, Sid}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -44,6 +47,10 @@ last_call(Sid)        -> gen_server:call(?MODULE, {last_call, Sid}).
 %% @end
 %%--------------------------------------------------------------------
 start_link() ->
+        case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting phoneredir_srv~n");
+       _Other     -> ok
+    end,
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 %%%===================================================================
@@ -87,7 +94,7 @@ handle_call(Request, _From, State) ->
                            {dict:fetch(Sid, State#state.calls), State};
                        {last_call, Sid} ->
                            R = dict:fetch(Sid, State#state.calls),
-                           {R, dict:eracse(Sid, State#state.calls)}
+                           {R, dict:erase(Sid, State#state.calls)}
                    end,
     {reply, NewR, NewS}.
 

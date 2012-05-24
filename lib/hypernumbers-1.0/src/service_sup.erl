@@ -59,7 +59,7 @@ init([]) ->
     {ok, Services} = application:get_env(hypernumbers, services),
 
     P = case application:get_env(hypernumbers, phoneredirect) of
-            {ok, true}  -> [phoneredir_srv];
+            {ok, true}  -> [{phoneredir_srv, true}];
             {ok, false} -> []
         end,
 
