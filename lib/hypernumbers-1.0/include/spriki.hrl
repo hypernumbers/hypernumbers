@@ -251,7 +251,8 @@
         {
           idx,
           type,
-          from      = [] ,
+          call_sid  = [],
+          from      = [],
           to        = [],
           cc        = [],
           subject   = [],

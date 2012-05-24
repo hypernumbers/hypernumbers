@@ -13,8 +13,13 @@
 
 %% API
 -export([
-         start_link/2
+         start_link/3
         ]).
+
+% utilities for using state stuff
+-export([
+         get_log/1
+         ]).
 
 % export for tidying up
 -export([
@@ -29,8 +34,9 @@
 
 -include("twilio.hrl").
 -include("twilio_web.hrl").
+-include("spriki.hrl").
 
--record(state, {twiml_ext = null, initial_params = null, fsm = null,
+-record(state, {twiml_ext = null, initial_params = null, log = null, fsm = null,
                currentstate = "1", history = [], eventcallbacks = []}).
 
 %%%===================================================================
@@ -38,8 +44,7 @@
 %%%===================================================================
 delete_self(CallSID) ->
     ok = supervisor:terminate_child(phonecall_sup, CallSID),
-    ok = supervisor:delete_child(phonecall_sup, CallSID),
-    ok.
+    ok = supervisor:delete_child(phonecall_sup, CallSID).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -48,8 +53,8 @@ delete_self(CallSID) ->
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-start_link(Params, TwiML) ->
-    gen_server:start_link(?MODULE, [Params, TwiML], []).
+start_link(Type, Params, TwiML) ->
+    gen_server:start_link(?MODULE, [Type, Params, TwiML], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -66,17 +71,22 @@ start_link(Params, TwiML) ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([Params, TwiML_EXT]) ->
+init([Type, Params, TwiML_EXT]) ->
     FSM = case twiml:is_valid(TwiML_EXT) of
               false ->
+                  Resp = twiml:validate(TwiML_EXT),
+                  io:format("TwiML_EXT is ~p~n-~p~n", [TwiML_EXT, Resp]),
                   Tw = [#say{text = "sorry, this call has been setup "
                                   ++ "incorrectly"}],
                   orddict:from_list(twiml:compile(Tw));
-                   true ->
+              true ->
                   orddict:from_list(twiml:compile(TwiML_EXT))
           end,
+    io:format("About to make log~n"),
+    Log = make_log(Type, Params),
+    io:format("Log is ~p~n", [Log]),
     {ok, #state{twiml_ext = TwiML_EXT, initial_params = Params,
-               fsm = FSM, history = [{init, now(), Params}]}}.
+               log = Log, fsm = FSM, history = [{init, now(), Params}]}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -96,25 +106,21 @@ handle_call(Request, _From, State) ->
     {Reply, NewS}
         = case Request of
                {call_complete, Rec} ->
-                  % we do nothing, but you might want to squirrell away the
-                  % duration for bill purposes
+                  % we do nothing, but you might want to squirrel away the
+                  % duration for billing purposes
                   % apply the completion callback fns
-                  [Fun(Rec, State) || {Event, Fun}
-                                          <- State#state.eventcallbacks,
-                                      Event == completion],
+                  ok = run_callbacks(Rec, State, completion),
                   spawn(timer, apply_after, [1000, phonecall_srv,
                                              delete_self,
                                              [Rec#twilio.call_sid]]),
                   {ok, State};
-              {start_call, Rec} ->
-                  execute(State, {start_call, now(), Rec});
-              {recording_notification, Rec, _Path} ->
-                  io:format("Got details of a recording that has been made. "
-                            ++ "You should do something with it mebbies?~n"),
+              {start_call, _Type, Rec, Callbacks} ->
+                  {R, NS} = execute(State, {start_call, now(), Rec}),
+                  #state{eventcallbacks = ECB} = NS,
+                  {R, NS#state{eventcallbacks = lists:merge(ECB, Callbacks)}};
+              {recording_notification, Rec} ->
                   % apply the recording callback fns
-                  [Fun(Rec, State) || {Event, Fun}
-                                          <- State#state.eventcallbacks,
-                                      Event == recording],
+                  ok = run_callbacks(Rec, State, recording),
                   {ok, State};
               {gather_response, Rec} ->
                  respond(State, Rec);
@@ -362,3 +368,15 @@ diff(A, B) -> [A2 | A3]  = lists:reverse(state_to_num(A)),
 
 state_to_num(A) -> [list_to_integer(X) || X <- string:tokens(A, ".")].
 
+run_callbacks(Rec, State, Event) ->
+    Callbacks = State#state.eventcallbacks,
+    [Fun(Rec, State) || {Ev, Fun} <- Callbacks, Ev == Event],
+    ok.
+
+make_log(Type, #twilio{} = Rec) ->
+    From = Rec#twilio.from,
+    To = Rec#twilio.to,
+    #contact_log{type = Type, call_sid = integer_to_list(Rec#twilio.call_sid),
+                 from = From#twilio_from.number, to = To#twilio_to.number}.
+
+get_log(#state{} = State) -> State#state.log.

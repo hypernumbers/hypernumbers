@@ -16,9 +16,9 @@
 %% API
 -export([
          start_link/1,
-         init_call/3,
+         init_call/5,
          call_complete/2,
-         recording_notification/3,
+         recording_notification/2,
          gather_response/2,
          goto_state/3
          %call_in_progress/2
@@ -34,14 +34,13 @@
 %%%===================================================================
 %%% API functions
 %%%===================================================================
--spec init_call(list(), #twilio{}, list()) -> pid() | string().
-init_call(Site, Params, TwiML_EXT) ->
-    ChildSpec = gen_child_spec(Params, TwiML_EXT),
+-spec init_call(list(), list(), #twilio{}, list(), list()) -> pid() | string().
+init_call(Site, Type, Params, TwiML_EXT, Callbacks) ->
+    ChildSpec = gen_child_spec(Type, Params, TwiML_EXT),
     Id = hn_util:site_to_atom(Site, "_phonecall"),
     case supervisor:start_child({global, Id}, ChildSpec) of
         {ok, Pid} ->
-            io:format("call started...~n"),
-            gen_server:call(Pid, {start_call, Params});
+            gen_server:call(Pid, {start_call, Type, Params, Callbacks});
         Other ->
             {error, Other}
     end.
@@ -52,11 +51,11 @@ call_complete(Site, Params) ->
     Pid = get_pid(Site, Call),
     gen_server:call(Pid, {call_complete, Params}).
 
--spec recording_notification(string(), #twilio{}, list()) -> pid() | string().
-recording_notification(Site, Params, Path) ->
+-spec recording_notification(string(), #twilio{}) -> pid() | string().
+recording_notification(Site, Params) ->
     Call = Params#twilio.call_sid,
-    Pid = get_pid(Site,Call),
-    gen_server:call(Pid, {recording_notification, Params, Path}).
+    Pid = get_pid(Site, Call),
+    gen_server:call(Pid, {recording_notification, Params}).
 
 -spec gather_response(string(),#twilio{}) -> pid() | string().
 gather_response(Site, Params) ->
@@ -107,9 +106,9 @@ init([_Site]) -> {ok,{{one_for_one,1,30}, []}}.
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-gen_child_spec(S, TwiML_EXT) ->
-    #twilio{call_sid = CallSID} = S,
-    {CallSID, {phonecall_srv, start_link, [S, TwiML_EXT]},
+gen_child_spec(Type, Params, TwiML_EXT) ->
+    #twilio{call_sid = CallSID} = Params,
+    {CallSID, {phonecall_srv, start_link, [Type, Params, TwiML_EXT]},
      transient, brutal_kill, worker, [phonecall_srv]}.
 
 get_pid(Site, Call) ->
