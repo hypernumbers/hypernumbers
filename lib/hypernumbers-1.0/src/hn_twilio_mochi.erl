@@ -140,24 +140,30 @@ handle_email(Phone, Args) ->
 
 redir(#env{} = Env) ->
     Body = twilio_web_util:process_body(Env#env.body),
-    #twilio{custom_params = CP} = Body,
-    {"site", Site} = proplists:lookup("site", CP),
-    Redir = Site ++ "/_services/phone/",
+    #twilio{call_sid = Sid, custom_params = CP} = Body,
+    Type = twilio_web_util:get_type(Body),
+    Redir = case Type of
+                "start inbound" ->
+                    {"site", Site} = proplists:lookup("site", CP),
+                    Re = Site ++ "/_services/phone/",
+                    ok = phoneredir_srv:add_redir(Sid, Re),
+                    Re;
+                "call completed" ->
+                    phoneredire_srv:last_call(Sid);
+                _ ->
+                    phoneredir_srv:get_redir(Sid)
+            end,
     {"Location", Redir}.
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
     Body = twilio_web_util:process_body(Env#env.body),
+    Type = twilio_web_util:get_type(Body),
     twilio_ext:log_terms(Body, "twilio.params.log"),
-    handle_c2(Ref, Body).
+    handle_c2(Ref, Type, Body).
 
 % this function head is for an outbound call
 % twilio is calling back to get the details that the user has enabled
-handle_c2(#refX{site = S, path = P},
-          #twilio{called = null,
-                  caller = null,
-                  from = null,
-                  to = null,
-                  call_duration = null} = Body) ->
+handle_c2(#refX{site = S, path = P}, "start outbound" = Type, Body) ->
     io:format("starting outbound call~n"),
     AC = contact_utils:get_twilio_account(S),
     #twilio_account{application_sid = LocalAppSID} = AC,
@@ -181,32 +187,31 @@ handle_c2(#refX{site = S, path = P},
         ++ RecHyperTag ++ "' target='recording'>Recording</a>",
     Log2 = Log#contact_log{reference = Link, from = OrigEmail},
     case AppSID of
-        LocalAppSID -> log(S, Log2),
-                       phonecall_sup:init_call(S, Body, Phone#phone.twiml);
-        _Other      -> error
+        LocalAppSID ->
+            log(S, Log2),
+            phonecall_sup:init_call(S, Type, Body, Phone#phone.twiml, []);
+        _Other ->
+            error
     end;
 
 % handle inbound calls coming in from cold
-handle_c2(#refX{site = S}, #twilio{direction = "inbound",
-                                   call_status = "ringing"} = Recs) ->
+handle_c2(#refX{site = S}, "start inbound" = Type, Recs) ->
     io:format("phone ringing...~n"),
+    Callbacks = get_callbacks(S, Type),
     TwiML_ext = contact_utils:get_phone_menu(S),
-    phonecall_sup:init_call(S, Recs, TwiML_ext);
+    phonecall_sup:init_call(S, Type, Recs, TwiML_ext, Callbacks);
 
 % handle the recording message being sent prior to hangup
-handle_c2(_Ref, #twilio{call_status = "completed",
-                        recording = #twilio_recording{}} = Recs) ->
+handle_c2(#refX{site = S}, "recording notification", Recs) ->
+    io:format("being notified of recording...~n"),
     % twilio_web_util:pretty_print(Tw),
-    Path = "balderdash",
-    exit("fix me in c2 (3)"),
-    ok = phonecall_sup:recording_notification(Recs, Path),
+    ok = phonecall_sup:recording_notification(S, Recs),
     {ok, 200};
 
 % handle another (?) inprogress bit of a call
-handle_c2(Ref, #twilio{direction = "inbound",
-                       call_status = "in-progress"} = Recs) ->
+handle_c2(Ref, "in progress", Recs) ->
     io:format("Call back on ~p~n", [Ref#refX.path]),
-    twilio_web_util:pretty_print(Recs),
+    % twilio_web_util:pretty_print(Recs),
     Path = "dindy",
     exit("fix me up in handle_c2 (2)"),
     case Path of
@@ -219,9 +224,9 @@ handle_c2(Ref, #twilio{direction = "inbound",
     end;
 
 % handle call complete message when a call terminates
-handle_c2(#refX{site = S, path = Path},
-          #twilio{call_status = "completed", recording = null} = Recs) ->
-    twilio_web_util:pretty_print(Recs),
+handle_c2(#refX{site = S, path = Path}, "call completed", Recs) ->
+    io:format("call completed...~n"),
+    % twilio_web_util:pretty_print(Recs),
     case Path of
         [] ->
             ok = phonecall_sup:call_complete(S, Recs),
@@ -230,8 +235,9 @@ handle_c2(#refX{site = S, path = Path},
             % do nothing here
             {ok, 200}
     end;
-handle_c2(Ref, Recs) ->
-    io:format("in unhandled twilio callback for ~p...~n", [Ref#refX.path]),
+handle_c2(Ref, Type, Recs) ->
+    io:format("in unhandled twilio callback ~p for ~p...~n",
+              [Type, Ref#refX.path]),
     twilio_web_util:pretty_print(Recs),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response>"
         ++ "<Say>something has gone wrong, folks.</Say></Response>".
@@ -246,16 +252,45 @@ validate([{K, V} | T], Args) ->
         {K, _V2} -> false
     end.
 
+get_callbacks(Site, Type) ->
+    Now = now(),
+    YY = dh_date:format("Y", Now),
+    MM = dh_date:format("m", Now),
+    DD = dh_date:format("d", Now),
+    P = case Type of
+            "start inbound"  -> ["_audit", "calls", "inbound", YY, MM, DD];
+            "start outbound" -> ["_audit", "calls", "outbound", YY, MM, DD]
+        end,
+    RefX = #refX{site = Site, path = P, obj = {page, "/"}},
+    C = fun(_Rec, State) ->
+                io:format("Log on completion~n"),
+                Log = phonecall_srv:get_log(State),
+                Log2 = Log#contact_log{status = "completed"},
+                write_log(RefX, Log2)
+        end,
+    R = fun(Rec, State) ->
+                io:format("Log on recording~n"),
+                Log = phonecall_srv:get_log(State),
+                R = twilio_web_util:get_recording(Rec),
+                Log2 = Log#contact_log{status = "recording", reference = R},
+                write_log(RefX, Log2)
+        end,
+    [{completion, C}, {recording, R}].
+
 log(Site, #contact_log{} = Log) ->
     #contact_log{idx = Idx} = Log,
     XRefX = new_db_api:idx_to_xrefX(Site, Idx),
-    #xrefX{path = P} = XRefX,
-    P2 = lists:append(P, ["_contacts"]),
     RefX = hn_util:xrefX_to_refX(XRefX),
+    write_log(RefX, Log).
+
+write_log(#refX{path = P} = RefX, Log) ->
+    P2 = lists:append(P, ["_contacts"]),
     RefX2 = RefX#refX{type = gurl, path = P2, obj = {row, {1, 1}}},
     Array = [
              {struct, [{"label", "type"},
                        {"formula", Log#contact_log.type}]},
+             {struct, [{"label", "call_sid"},
+                       {"formula", Log#contact_log.call_sid}]},
              {struct, [{"label", "from"},
                        {"formula", Log#contact_log.from}]},
              {struct, [{"label", "reply_to"},
@@ -277,5 +312,7 @@ log(Site, #contact_log{} = Log) ->
 
 % debugging interface
 handle_c2_DEBUG(Body) ->
+    Type = twilio_web_util:get_type(Body),
+    io:format("Type is ~p~n", [Type]),
     Ref = #refX{site = "http://hypernumbers.dev:9000", path = []},
-    handle_c2(Ref, Body).
+    handle_c2(Ref, Type, Body).

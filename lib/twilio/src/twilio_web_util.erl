@@ -8,7 +8,9 @@
 -module(twilio_web_util).
 
 -export([
+         get_recording/1,
          process_body/1,
+         get_type/1,
          process_proplist/1,
          country_code_to_prefix/1,
          country_code_to_country/1,
@@ -53,6 +55,38 @@ prefix_to_country_code(Prefix) when is_integer(Prefix) ->
 prefix_to_country_code(Prefix) ->
     {_Country, CC, Prefix} = lists:keyfind(Prefix, 3, ?CCLOOKUP),
     CC.
+
+get_recording(#twilio{recording = R}) -> R#twilio_recording.recording_url.
+
+get_type(#twilio{called = null, caller = null, from = null,
+                 to = null, call_duration = null} = Tw) ->
+    io:format("Tw for start outbound not tightly specified~n-~p~n",
+              [Tw]),
+    "start outbound";
+get_type(#twilio{direction = "inbound", call_status = "ringing",
+                 called = C, caller = Cr, from = Fr, to = To,
+                 call_duration = null, inprogress = null, recording = null})
+  when C =/= null andalso Cr =/= null andalso Fr =/= null andalso To =/= null ->
+    "start inbound";
+get_type(#twilio{direction = "inbound", call_status = "in-progress"} = Tw) ->
+    io:format("Tw for start in-progress not tightly specified~n-~p~n",
+              [Tw]),
+    "in-progress";
+get_type(#twilio{direction = "inbound", call_status = "completed",
+                 called = C, caller = Cr, from = Fr, to = To,
+                 call_duration = null, inprogress = Ip, recording = Rc})
+  when C =/= null andalso Cr =/= null andalso Fr =/= null andalso To =/= null
+       andalso Ip =/= null andalso Rc =/= null ->
+    "recording notification";
+get_type(#twilio{direction = "inbound", call_status = "completed",
+                 called = C, caller = Cr, from = Fr, to = To,
+                 call_duration = Dr, inprogress = null, recording = null})
+  when C =/= null andalso Cr =/= null andalso Fr =/= null andalso To =/= null
+       andalso Dr =/= null ->
+    "call completed";
+get_type(Tw) -> io:format("Unknown Tw is ~p~n", [Tw]),
+                "unknown".
+
 
 process_body(Binary) when is_binary(Binary) ->
     List = binary_to_list(Binary),
