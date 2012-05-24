@@ -287,7 +287,10 @@ authorize_get(#refX{path = ["_" ++ X | []]}, _Qry, #env{accept = Accept})
 % this path is hardwired into the module hn_twilio_mochi.erl
 authorize_get(#refX{path = ["_services", "phone" | _], obj = {cell, _}},
               _Qry, #env{accept = html}) ->
-    io:format("Phone service now allows twilio in feature flag it~n"),
+    allowed;
+
+authorize_get(#refX{path = ["_services", "phoneredirect" | _], obj = {cell, _}},
+              _Qry, #env{accept = html}) ->
     allowed;
 
 authorize_get(#refX{site = "http://usability.hypernumbers.com:8080",
@@ -402,25 +405,12 @@ authorize_post(#refX{path = [X]}, _Qry, #env{accept = json})
        X == "_parse_expression" ->
     allowed;
 
-% allow phone redirects - we will check if the environment
-% variable is set later on
-authorize_post(#refX{path = ["_services", "phoneredirect"], obj = {page, "/"}},
-                     _Qry, #env{accept = html}) ->
-    allowed;
-
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
                #env{accept = json, uid = Uid} = Env) ->
     case hn_groups:is_member(Uid, Site, ["admin"]) of
         true  -> allowed;
         false -> authorize_admin(Site, Env#env.body, Uid)
     end;
-
-% allow incoming phone calls
-% feature flag out
-% this path is hardwired into the module hn_twilio_mochi.erl
-authorize_post(#refX{path = ["_services", "phone" | []], obj = {page, _}},
-              _Qry, #env{accept = html}) ->
-    allowed;
 
 % allow a post to a phone view for a cell - gonnae check it later
 authorize_post(#refX{obj = {cell, _}}, #qry{view = ?PHONE},
@@ -577,6 +567,33 @@ authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
            #qry{},
            #env{})
 -> any().
+
+% this is the path that the twilio phone redirect is wired to
+iget(#refX{path = ["_services", "phoneredirect" | []], obj = {page, "/"}},
+      page, _Qry, Env = #env{accept = html}) ->
+    Redir = case application:get_env(hypernumbers, environment) of
+                {ok, development} ->
+                    true;
+                {ok, _Other} ->
+                    case application:get_env(hypernumbers, phoneredirect) of
+                        {ok, false} -> false;
+                        {ok, true}  -> true
+                    end
+            end,
+    case Redir of
+        false -> respond(401, Env);
+        true  -> Redirect = hn_twilio_mochi:redir(Env),
+                 respond(302, Env#env{headers = [Redirect | Env#env.headers]})
+    end;
+
+% this path is hardwired into the module hn_twilio_mochi.erl
+iget(#refX{path = ["_services", "phone" | []], obj = {page, "/"}} = Ref,
+      page, _Qry, Env = #env{accept = html}) ->
+    case hn_twilio_mochi:handle_call(Ref, Env) of
+        error     -> '500'(Env);
+        {ok, 200} -> json(Env, "success");
+        TwiML     -> xml(Env, TwiML)
+    end;
 
 % if a filename has got to here, there is one of 2 reasons:
 % * the file don't exist - 404
@@ -813,33 +830,6 @@ iget(Ref, _Type, Qry, Env) ->
     '404'(Ref, Env).
 
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
-
-% this is the path that the twilio phone redirect is wired to
-ipost(#refX{path = ["_services", "phoneredirect" | []], obj = {page, "/"}},
-      _Qry, Env = #env{accept = html}) ->
-    Redir = case application:get_env(hypernumbers, environment) of
-                {ok, development} ->
-                    true;
-                {ok, _Other} ->
-                    case application:get_env(hypernumbers, phoneredirect) of
-                        {ok, false} -> false;
-                        {ok, true}  -> true
-                    end
-            end,
-    case Redir of
-        false -> respond(401, Env);
-        true  -> Redirect = hn_twilio_mochi:redir(Env),
-                 respond(302, Env#env{headers = [Redirect | Env#env.headers]})
-    end;
-
-% this path is hardwired into the module hn_twilio_mochi.erl
-ipost(#refX{path = ["_services", "phone" | []], obj = {page, "/"}} = Ref, _Qry,
-     Env = #env{accept = html}) ->
-    case hn_twilio_mochi:handle_call(Ref, Env) of
-        error     -> '500'(Env);
-        {ok, 200} -> json(Env, "success");
-        TwiML     -> xml(Env, TwiML)
-    end;
 
 % a post to the phone view - need to check there is a control
 ipost(#refX{obj = {cell, _}} = Ref, #qry{view = ?PHONE},
