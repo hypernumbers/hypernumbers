@@ -16,8 +16,7 @@
    {services,
     [
      {hns, true},
-     {passport, true},
-     {twilio_srv, true}
+     {passport, true}
     ]},
 
    % Should this sever be running the phone redirect?
