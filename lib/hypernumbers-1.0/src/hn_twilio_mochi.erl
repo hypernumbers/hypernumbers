@@ -153,8 +153,10 @@ redir(#env{} = Env) ->
                 _ ->
                     phoneredir_srv:get_redir(Sid)
             end,
-    io:format("redir is ~p~n", [Redir]),
-    {"Location", Redir}.
+    io:format("Redir is ~p~n", [Redir]),
+    NewRedir = full_redir(Redir, Env),
+    io:format("NewRedir is ~p~n", [NewRedir]),
+    {"Location", NewRedir}.
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
     Body = process_env(Env),
@@ -322,3 +324,9 @@ process_env(Env) ->
     #env{mochi = Mochi} = Env,
     Qs = Mochi:parse_qs(),
     twilio_web_util:process_query(Qs).
+
+full_redir(Redir, Env) ->
+    #env{mochi = Mochi} = Env,
+    Old = Mochi:get(raw_path),
+    [_, Path] = lists:split(Old, "?"),
+    Redir ++ "?" ++ Path.
