@@ -94,7 +94,8 @@ handle_call(Request, _From, State) ->
                            {dict:fetch(Sid, State#state.calls), State};
                        {last_call, Sid} ->
                            R = dict:fetch(Sid, State#state.calls),
-                           {R, dict:erase(Sid, State#state.calls)}
+                           NewC = dict:erase(Sid, State#state.calls),
+                           {R, State#state{calls = NewC}}
                    end,
     {reply, NewR, NewS}.
 
