@@ -25,9 +25,9 @@
         ]).
 
 % display the recordings in the brower
-%% -export([
-%%          view_recording/2
-%%         ]).
+-export([
+         view_recording/2
+        ]).
 
 % utilities
 -export([
@@ -75,20 +75,20 @@ get_phone(#refX{site = S},
                             P#phone.softphone_config,
                             P#phone.softphone_type])}.
 
-%% view_recording(#refX{site = S, path = P}, HyperTag) ->
-%%     HT = passport:open_hypertag(S, P, HyperTag),
-%%     {ok, _, _, Call_SID, _, _} = HT,
-%%     AC = contact_utils:get_twilio_account(S),
-%%     {ok, Details} = contact_utils:get_recording_details(AC, Call_SID),
-%%     {struct, D2} = mochijson:decode(Details),
-%%     case proplists:lookup("recordings", D2) of
-%%         {"recordings", {array, [{struct, D3}]}} ->
-%%             {"uri", URI} = proplists:lookup("uri", D3),
-%%             URI2 = re:replace(URI, ".json$", ".mp3", [global, {return, list}]), %"
-%%                               {redir, "https://api.twilio.com" ++ URI2};
-%%                               {"recordings", {array, []}} ->
-%%                                      no_recording
-%%                              end.
+view_recording(#refX{site = S, path = P}, HyperTag) ->
+    HT = passport:open_hypertag(S, P, HyperTag),
+    {ok, _, _, Call_SID, _, _} = HT,
+    AC = contact_utils:get_twilio_account(S),
+    {ok, Details} = contact_utils:get_recording_details(AC, Call_SID),
+    {struct, D2} = mochijson:decode(Details),
+    case proplists:lookup("recordings", D2) of
+        {"recordings", {array, [{struct, D3}]}} ->
+            {"uri", URI} = proplists:lookup("uri", D3),
+            URI2 = re:replace(URI, ".json$", ".mp3", [global, {return, list}]), %"
+                              {redir, "https://api.twilio.com" ++ URI2};
+                              {"recordings", {array, []}} ->
+                                     no_recording
+                             end.
 
 handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
     case Body of
@@ -292,8 +292,8 @@ write_log(#refX{path = P} = RefX, Log) ->
     Array = [
              {struct, [{"label", "type"},
                        {"formula", Log#contact_log.type}]},
-%              {struct, [{"label", "call_sid"},
-%                        {"formula", Log#contact_log.call_sid}]},
+             {struct, [{"label", "call_sid"},
+                       {"formula", Log#contact_log.call_sid}]},
              {struct, [{"label", "from"},
                        {"formula", Log#contact_log.from}]},
              {struct, [{"label", "reply_to"},
@@ -328,5 +328,5 @@ process_env(Env) ->
 full_redir(Redir, Env) ->
     #env{mochi = Mochi} = Env,
     Old = Mochi:get(raw_path),
-    [_, Path] = lists:split(Old, "?"),
+    [_, Path] = string:tokens(Old, "?"),
     Redir ++ "?" ++ Path.
