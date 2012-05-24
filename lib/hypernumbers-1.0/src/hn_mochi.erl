@@ -66,6 +66,8 @@ handle(MochiReq) ->
         put(now, util2:get_timestamp()),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
+        io:format("Ref is ~p~nEnv is ~p~nQry is ~p~n",
+                  [Ref, Env, Qry]),
         handle_(Ref, Env, Qry)
     catch
         ok          -> ok;
@@ -285,11 +287,11 @@ authorize_get(#refX{path = ["_" ++ X | []]}, _Qry, #env{accept = Accept})
 
 % Feature Flag them out
 % this path is hardwired into the module hn_twilio_mochi.erl
-authorize_get(#refX{path = ["_services", "phone" | _], obj = {cell, _}},
+authorize_get(#refX{path = ["_services", "phone" | _], obj = {page, _}},
               _Qry, #env{accept = html}) ->
     allowed;
 
-authorize_get(#refX{path = ["_services", "phoneredirect" | _], obj = {cell, _}},
+authorize_get(#refX{path = ["_services", "phoneredirect" | _], obj = {page, _}},
               _Qry, #env{accept = html}) ->
     allowed;
 
