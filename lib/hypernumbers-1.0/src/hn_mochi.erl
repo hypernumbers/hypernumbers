@@ -66,8 +66,6 @@ handle(MochiReq) ->
         put(now, util2:get_timestamp()),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
-        io:format("Ref is ~p~nEnv is ~p~nQry is ~p~n",
-                  [Ref, Env, Qry]),
         handle_(Ref, Env, Qry)
     catch
         ok          -> ok;
