@@ -21,6 +21,7 @@
          'linegraph.'/1,
          'dategraph.'/1,
          'equigraph.'/1,
+         'sequence.equigraph.'/1,
          'piechart.'/1,
          % deprecated fns
          linegraph/1,
@@ -256,6 +257,16 @@ spark1(Size, Data, Colours) ->
                     MinY, MaxY, Colours, Rest, [{?tickmarks, ?BOTHAXES}]),
     #spec_val{val = HTML, resize = Resize}.
 
+'sequence.equigraph.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    Ret = chunk_seq(List),
+    {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
+    Resize = #resize{width = Width, height = Height},
+    HTML = eq_hist1(equi, make_size(Width, Height), DataX, DataY,
+                    MinY, MaxY, Colours, Rest, [{?tickmarks, ?BOTHAXES}]),
+    #spec_val{val = HTML, resize = Resize}.
+
 'dategraph.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
@@ -347,6 +358,23 @@ chunk_histogram([Type, X, Lines| List]) ->
           end,
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Type3, Cols, Rest}.
+
+chunk_seq([Lines | List]) ->
+    [Lines2] = typechecks:throw_std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
+    {X, NewList} = aggregate_seq(Lines, List, [], []),
+    DataX = cast_strings(X),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, 1, NewList, ?MARGIN),
+    DataY2 = "t:" ++ conv_data_rev(DataY),
+    {DataX, DataY2, MinY, MaxY, Cols, Rest}.
+
+% basically make a single sequence from the various different ones
+% that is why we append the Rest back onto the columns we have made
+aggregate_seq(0, Rest, AccX, AccY) ->
+    {{range, lists:append(lists:reverse(AccX))},
+     [{range, lists:append(lists:reverse(AccY))} | Rest]};
+aggregate_seq(N, [{range, X}, {range, Y} | T], AccX, AccY) ->
+    aggregate_seq(N - 1, T, [X | AccX], [Y | AccY]).
 
 chunk_equigraph([X, Lines | List]) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
