@@ -143,16 +143,17 @@ redir(#env{} = Env) ->
     #twilio{call_sid = Sid, custom_params = CP} = Body,
     Type = twilio_web_util:get_type(Body),
     Redir = case Type of
-                "start inbound" ->
+                "start outbound" ->
                     {"site", Site} = proplists:lookup("site", CP),
                     Re = mochiweb_util:unquote(Site) ++ "/_services/phone/",
                     ok = phoneredir_srv:add_redir(Sid, Re),
                     Re;
                 "call completed" ->
-                    phoneredire_srv:last_call(Sid);
+                    phoneredir_srv:last_call(Sid);
                 _ ->
                     phoneredir_srv:get_redir(Sid)
             end,
+    io:format("redir is ~p~n", [Redir]),
     {"Location", Redir}.
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
