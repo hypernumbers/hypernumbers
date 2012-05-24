@@ -139,9 +139,7 @@ handle_email(Phone, Args) ->
     end.
 
 redir(#env{} = Env) ->
-    #env{mochi = Mochi} = Env,
-    Qs = Mochi:parse_qs(),
-    Body = twilio_web_util:process_query(Qs),
+    Body = process_env(Env),
     #twilio{call_sid = Sid, custom_params = CP} = Body,
     Type = twilio_web_util:get_type(Body),
     Redir = case Type of
@@ -159,7 +157,7 @@ redir(#env{} = Env) ->
     {"Location", Redir}.
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
-    Body = twilio_web_util:process_body(Env#env.body),
+    Body = process_env(Env),
     Type = twilio_web_util:get_type(Body),
     twilio_ext:log_terms(Body, "twilio.params.log"),
     handle_c2(Ref, Type, Body).
@@ -319,3 +317,8 @@ handle_c2_DEBUG(Body) ->
     io:format("Type is ~p~n", [Type]),
     Ref = #refX{site = "http://hypernumbers.dev:9000", path = []},
     handle_c2(Ref, Type, Body).
+
+process_env(Env) ->
+    #env{mochi = Mochi} = Env,
+    Qs = Mochi:parse_qs(),
+    twilio_web_util:process_query(Qs).
