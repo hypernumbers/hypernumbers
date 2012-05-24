@@ -113,24 +113,42 @@ layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     %hn_util:log_terms({"next cell in row", L, Type, C, R, PX, PY, H, CWs},
     %            "render_log.txt"),
     Value = pget("value", L, ""),
+    Ghost = pget("ghost", L, ""),
     Input = case Type of
                 wikipage  -> pget("input", L);
                 webpage   -> "none"
             end,
     Css = read_css(pget("style", L), Rec#rec.palette),
     {W,CWs2} = col_width(C,CWs),
-    case pget("merge", L) of
-        undefined ->
-            Acc2 = [draw(Value, Css, Input, C, R, PX, PY, W, H) | Acc],
-            layout2(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
-        {struct, [{"right", Right}, {"down", Down}]} ->
-            {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
-            MH = height_below(R+1, R+Down, RHs, H),
-            Rec2 = Rec#rec{maxmerge_height =
-                               erlang:max(Rec#rec.maxmerge_height, MH + PY)},
-            Acc2 = [draw(Value, Css, Input, C, R, PX, PY, MW, MH) | Acc],
-            T2 = expunge(T, {C,C + Right, R, R + Down}),
-            layout2(T2, Type, C + Right + 1, R, PX + MW, PY, H, CWs3, RHs, Rec2, Acc2)
+    Ghostable = case Input of
+                    "inline"                 -> false;
+                    "inlinerich"             -> false;
+                    {"select", _}            -> false;
+                    {"dynamic_select", _, _} -> false;
+                    _                      -> true
+                end,
+    case {Type, Ghost, Ghostable} of
+        {webpage, true, _} ->
+            layout2(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
+        {wikipage, true, true} ->
+            layout2(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
+        _ ->
+            case pget("merge", L) of
+                undefined ->
+                    NewAcc = draw(Value, Css, Input, C, R, PX, PY, W, H),
+                    Acc2 = [NewAcc | Acc],
+                    layout2(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
+                {struct, [{"right", Right}, {"down", Down}]} ->
+                    {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
+                    MH = height_below(R+1, R+Down, RHs, H),
+                    R2 = Rec#rec{maxmerge_height =
+                                 erlang:max(Rec#rec.maxmerge_height, MH + PY)},
+                    NewAcc = draw(Value, Css, Input, C, R, PX, PY, MW, MH),
+                    Acc2 = [NewAcc | Acc],
+                    T2 = expunge(T, {C,C + Right, R, R + Down}),
+                    layout2(T2, Type, C + Right + 1, R, PX + MW, PY, H, CWs3,
+                            RHs, R2, Acc2)
+            end
     end;
 
 %% No cell for this column, but still haven't changed rows.

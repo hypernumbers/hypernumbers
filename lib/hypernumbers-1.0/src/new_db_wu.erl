@@ -12,6 +12,7 @@
 -include("spriki.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
+-include("errvals.hrl").
 
 -include_lib("stdlib/include/ms_transform.hrl").
 
@@ -606,8 +607,14 @@ write_attrs(XRefX, NewAttrs) -> write_attrs(XRefX, NewAttrs, nil).
 -spec write_attrs(#xrefX{}, [{string(), term()}], auth_srv:auth_spec()) -> ?dict.
 write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
   when is_record(XRefX, xrefX) ->
+
     Op = fun(Attrs) ->
+
+                 % look at what sort of attributes are being written
                  Is_Formula  = lists:keymember("formula", 1, NewAs),
+                 Is_Dynamic  = is_dynamic_select(NewAs),
+
+                 % now look at what the old attributes are
                  Has_Form    = orddict:is_key("__hasform", Attrs),
                  Has_Incs    = orddict:is_key("__hasincs", Attrs),
                  Has_Timer   = orddict:is_key("__hastimer", Attrs),
@@ -615,7 +622,7 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
                  Is_In_IncFn = orddict:is_key("__in_includeFn", Attrs),
                  Has_Uniq    = orddict:is_key("__unique", Attrs),
                  Has_Site    = orddict:is_key("__site", Attrs),
-                 Is_Dynamic  = is_dynamic_select(Attrs),
+
                  Attrs2 =
                      case Is_Formula of
                          true ->
@@ -672,7 +679,7 @@ write_attrs(#xrefX{site = S} = XRefX, NewAs, AReq)
                                  false ->
                                      Attrs
                              end
-                             end,
+                     end,
                  case Is_In_IncFn of
                      true  -> mark_children_dirtyD(XRefX, AReq);
                      false -> ok
@@ -1393,15 +1400,31 @@ get_cell_for_muin(#refX{} = RefX, Type, ValType)
                              [{XRefX, A}] -> A;
                              []           -> orddict:new()
             end,
-    Value = case orddict:find(ValType, Attrs) of
-                {ok, {datetime, _, [N]}} ->
-                    muin_date:from_gregorian_seconds(N);
-                {ok, V} ->
-                    V;
-                _ ->
-                    blank
+    % you can't use the values of a form in a formula
+    CantInc = has_cantinc(Attrs),
+    Value = case CantInc of
+                true ->
+                    ?ERRVAL_CANTINC;
+                false ->
+                    case orddict:find(ValType, Attrs) of
+                        {ok, {datetime, _, [N]}} ->
+                            muin_date:from_gregorian_seconds(N);
+                        {ok, V} ->
+                            V;
+                        _ ->
+                            blank
+                    end
             end,
     {Value, [], [{local, Type, XRefX}]}.
+
+has_cantinc(Attrs) ->
+    case orddict:find("__hasform", Attrs) of
+        {ok, t} -> true;
+        _       -> case orddict:find("__hasincs", Attrs) of
+                       {ok, t} -> true;
+                       _       -> false
+                   end
+    end.
 
 read_relations(#xrefX{site = S, idx = Idx}, Lock) ->
     read_relationsD(S, Idx, Lock).
@@ -2618,7 +2641,8 @@ content_attrs() ->
      "__area",
      "__default-align",
      "__lastcalced",
-     "__unique"
+     "__unique",
+     "ghost"
     ].
 
 copy_attributes(_SD, TD, []) -> TD;

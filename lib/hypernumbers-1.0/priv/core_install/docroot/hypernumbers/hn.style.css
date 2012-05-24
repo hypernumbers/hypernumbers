@@ -344,7 +344,12 @@ label {
   background: url(/hypernumbers/sprite.png) -64px -8px;
   }
 
-.inlineform, .inlinerichform {
+.hn_ghost
+{
+  background: url(/hypernumbers/sprite.png) -84px -9px;
+  }
+
+.inlineform, .inlinerichform, .hn_ghost{
     z-index:    9999;
     position:   absolute;
     left:       0px;

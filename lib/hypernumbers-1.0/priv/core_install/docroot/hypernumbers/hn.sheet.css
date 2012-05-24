@@ -975,6 +975,7 @@ a.toolbar-item {
 #inlinerichtextinput { background-position: -230px -41px; }
 #inlinedropdown { background-position: -228px -103px; }
 #hn_userdeffns { background-position: -228px -82px; }
+#ghost { background-position: -205px -41px; }
 
 /* used in the tour */
 .inlineinput {
