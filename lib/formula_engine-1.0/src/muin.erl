@@ -280,6 +280,9 @@ transform("linegraph." ++ R, Args) ->
 transform("dategraph." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("dategraph."), [W , H | Args]};
+transform("sequence.equigraph." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("sequence.equigraph."), [W , H | Args]};
 transform("equigraph." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("equigraph."), [W , H | Args]};
