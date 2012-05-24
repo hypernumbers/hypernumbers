@@ -91,8 +91,6 @@ rejig_phones(Site) ->
                          type            = outbound},
     new_db_api:write_kv(Site, ?twilio, AC).
 
-
-
 add_site_table_2011_05_12() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
