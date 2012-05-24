@@ -153,9 +153,7 @@ redir(#env{} = Env) ->
                 _ ->
                     phoneredir_srv:get_redir(Sid)
             end,
-    io:format("Redir is ~p~n", [Redir]),
     NewRedir = full_redir(Redir, Env),
-    io:format("NewRedir is ~p~n", [NewRedir]),
     {"Location", NewRedir}.
 
 handle_call(#refX{} = Ref, #env{} = Env) ->
@@ -316,7 +314,6 @@ write_log(#refX{path = P} = RefX, Log) ->
 % debugging interface
 handle_c2_DEBUG(Body) ->
     Type = twilio_web_util:get_type(Body),
-    io:format("Type is ~p~n", [Type]),
     Ref = #refX{site = "http://hypernumbers.dev:9000", path = []},
     handle_c2(Ref, Type, Body).
 
