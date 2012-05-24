@@ -139,7 +139,9 @@ handle_email(Phone, Args) ->
     end.
 
 redir(#env{} = Env) ->
-    Body = twilio_web_util:process_body(Env#env.body),
+    #env{mochi = Mochi} = Env,
+    Qs = Mochi:parse_qs(),
+    Body = twilio_web_util:process_query(Qs),
     #twilio{call_sid = Sid, custom_params = CP} = Body,
     Type = twilio_web_util:get_type(Body),
     Redir = case Type of

@@ -9,6 +9,7 @@
 
 -export([
          get_recording/1,
+         process_query/1,
          process_body/1,
          get_type/1,
          process_proplist/1,
@@ -92,6 +93,8 @@ get_type(#twilio{direction = "inbound", call_status = "completed",
 get_type(Tw) -> io:format("Unknown Tw is ~p~n", [Tw]),
                 "unknown".
 
+process_query(Query) ->
+    make_record(Query).
 
 process_body(Binary) when is_binary(Binary) ->
     List = binary_to_list(Binary),
