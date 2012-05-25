@@ -235,7 +235,8 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
     P2 = integer_to_list(P),
     Q = muin_col_DEPR:collect_string(Quantity, ?default_str_rules),
     Resize = #resize{width = 2, height = 3},
-    HTML = "<form action=\"https://checkout.google.com/api/checkout/v2/checkoutForm/Merchant/"
+    HTML = "<form class='hn_googlebuy' data-item='" ++ IN ++ "' "
+        ++ "action=\"https://checkout.google.com/api/checkout/v2/checkoutForm/Merchant/"
         ++ M ++ "\" id=\"BB_BuyButtonForm\" method=\"post\" "
         ++ "name=\"BB_BuyButtonForm\" target=\"_top\">"
         ++ "<input name=\"item_name_1\" type=\"hidden\" value=\"" ++ IN ++ "\"/>"
@@ -253,7 +254,10 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
         ++ M ++ "&amp;w=117&amp;h=48&amp;style=" ++ Bg
         ++ "&amp;variant=text&amp;loc=en_US\" type=\"image\"/>"
         ++ "</form>",
-    #spec_val{val = HTML, resize = Resize}.
+    JS = ["/webcomponents/hn.google.js"],
+    Reload = ["HN.Google.reload();"],
+    Incs = #incs{js = JS, js_reload = Reload},
+    #spec_val{val = HTML, sp_incs = Incs, resize = Resize}.
 
 %% Hypernumbers Merchant ID is 960226209420618
 %% 'google.buynowlist'([Merchant, Currency, Type, Bg | Rest]) ->
