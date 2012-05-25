@@ -373,8 +373,11 @@ chunk_seq([Lines | List]) ->
 aggregate_seq(0, Rest, AccX, AccY) ->
     {{range, lists:append(lists:reverse(AccX))},
      [{range, lists:append(lists:reverse(AccY))} | Rest]};
-aggregate_seq(N, [{range, X}, {range, Y} | T], AccX, AccY) ->
-    aggregate_seq(N - 1, T, [X | AccX], [Y | AccY]).
+aggregate_seq(N, [X, Y | T], AccX, AccY) ->
+    [X1, Y1] = cast_prefetch([X, Y]),
+    {range, X2} = X1,
+    {range, Y2} = Y1,
+    aggregate_seq(N - 1, T, [X2 | AccX], [Y2 | AccY]).
 
 chunk_equigraph([X, Lines | List]) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
