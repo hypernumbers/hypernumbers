@@ -429,12 +429,14 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
     end.
 
 % WIKI's can take both 'postform' and 'postinline'
+% 'mark's always get through
 authorize_p2(Site, Path, Env) ->
     case ?check_pt_vw(Site, Path, Env#env.uid, ?WIKI) of
         not_found ->
             not_found;
         {view, ?WIKI} ->
             case Env#env.body of
+                [{"mark",   _}]         -> allowed;
                 [{"postform",   _}]      -> allowed;
                 [{"postinline", _}]      -> allowed;
                 [{"postrichinline", _}]  -> allowed;
@@ -446,11 +448,13 @@ authorize_p2(Site, Path, Env) ->
     end.
 
 % WEBPAGE's can only do 'postform'
+% 'mark's always get through
 authorize_p3(Site, Path, Env) ->
     case ?check_pt_vw(Site, Path, Env#env.uid, ?WEBPAGE) of
         not_found        -> not_found;
         {view, ?WEBPAGE} ->
             case Env#env.body of
+                [{"mark",   _}]          -> allowed;
                 [{"postform",   _}]      -> allowed;
                 [{"postwebcontrols", _}] -> allowed;
                 _                        -> denied
@@ -889,8 +893,7 @@ ipost(#refX{site=S, path=["_login"]}, Qry, E) ->
 
 %% the purpose of this message is to mark the mochilog so we don't
 %% need to do nothing with anything...
-ipost(_Ref, #qry{mark = []},
-      Env=#env{body = [{"set",{struct, [{"mark", _Msg}]}}]}) ->
+ipost(_Ref, _Qry, Env=#env{body = [{"mark", _Msg}]}) ->
     json(Env, "success");
 
 %% the purpose of this message is to log javascript errors into mochilog
