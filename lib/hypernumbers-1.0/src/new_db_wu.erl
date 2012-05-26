@@ -176,7 +176,7 @@ do_items_existD([#local_obj{idx = Idx, obj = {cell, _}} | T], Site) ->
         [Items]  -> case Items of
                         [{"__in_includeFn", _}] ->
                             do_items_existD(T, Site);
-                         _ ->
+                        _ ->
                             true
                     end
     end;
@@ -298,7 +298,7 @@ get_logsD(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
 
 load_dirty_sinceD(Since, QTbl) ->
     M = ets:fun2ms(fun(#dirty_queue{id = T, dirty = D})
-                         when Since < T -> {T, D}
+                      when Since < T -> {T, D}
                    end),
     mnesia:select(QTbl, M, write).
 
@@ -372,9 +372,9 @@ get_last_col(#refX{site = S, path = P}) ->
                                        <- read_objs(SelX, inside)]),
     largest_content(Desc, S).
 
--spec matching_formsD(#refX{}, common | string()) -> [#form{}].
+-spec matching_formsD(#refX{}, atom()) -> [#form{}].
 matching_formsD(#refX{site = Site, path = Path}, Trans)
-  when Trans == common->
+  when Trans == common ->
     Tbl = trans(Site, form),
     MS = [{#form{id = {Path, Trans, '_'}, _ = '_'}, [], ['$_']}],
     mnesia:select(Tbl, MS);
@@ -590,7 +590,7 @@ refX_to_xrefXD(#refX{site = S, path = P, obj = O}) ->
 %% @doc refX_to_xrefX_create refX_to_xrefX_create gets the index of an object
 %% AND CREATES IT IF IT DOESN'T EXIST
 refX_to_xrefX_createD(#refX{site = S, type = Ty, path = P, obj = O} = RefX)
-when Ty == url orelse Ty == gurl ->
+  when Ty == url orelse Ty == gurl ->
     case refX_to_xrefXD(RefX) of
         false -> Idx = util2:get_timestamp(),
                  RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
@@ -785,7 +785,7 @@ process_dyn(#xrefX{obj = {cell, {X, Y}}} = XRefX, {Path, Ref}, Select) ->
             case get(circref) of
                 true  ->
                     {{"input", {"dynamic_select", Select, ["#CIRCREF!"]}},
-                      [], []};
+                     [], []};
                 false ->
                     {{"input", {"dynamic_select", Select, Vals4}},
                      FiniteRefs, InfiniteRefs}
@@ -939,7 +939,7 @@ set_dyn_relationsD(#xrefX{idx = CellIdx, site = Site}, DynParents,
 
 -spec set_relationsD(#xrefX{}, [#xrefX{}], [#xrefX{}], boolean()) -> ok.
 set_relationsD(#xrefX{idx = CellIdx, site = Site}, FiniteParents,
-              InfParents, IsIncl) ->
+               InfParents, IsIncl) ->
     Tbl = trans(Site, relation),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R;
@@ -1213,7 +1213,7 @@ update_timerD(#xrefX{idx = Idx, site = S}, Spec) ->
     mnesia:write(Tbl, #timer{idx = Idx, spec = Spec}, write).
 
 update_incsD(XRefX, Incs) when is_record(XRefX, xrefX)
-                            andalso is_record(Incs, incs) ->
+                               andalso is_record(Incs, incs) ->
     #xrefX{idx = Idx, site = S, path = P} = XRefX,
     #incs{js = Js, js_reload = Js_reload, css = CSS} = Incs,
     Tbl = trans(S, include),
@@ -1252,9 +1252,9 @@ get_incs([], Js, Js_R, CSS) -> #incs{js = hslists:uniq(Js),
                                      css = hslists:uniq(CSS)};
 get_incs([H | T], Js, Js_R, CSS) ->
     {NewJ, NewJs_R, NewC} = case read_incsD(H) of
-        []   -> {Js, Js_R, CSS};
-        Incs -> process_incs(Incs, [], [], [])
-    end,
+                                []   -> {Js, Js_R, CSS};
+                                Incs -> process_incs(Incs, [], [], [])
+                            end,
     get_incs(T, NewJ, NewJs_R, NewC).
 
 read_incsD(#xrefX{site = S, path = P}) ->
@@ -1367,7 +1367,7 @@ log_write(#xrefX{idx = Idx, site = S, path = P, obj = O}, Old,
     Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = "",
                    type = cell, path = hn_util:list_to_path(P),
                    obj = O, log = #sublog{msg = L2, oldformula = OldF,
-                                         newformula = NewF}},
+                                          newformula = NewF}},
     write_logD(S, Log).
 
 write_logD(Site, Log) ->
@@ -1397,8 +1397,8 @@ get_cell_for_muin(#refX{} = RefX, Type, ValType)
   when ValType == "value" orelse ValType == "__rawvalue" ->
     XRefX = refX_to_xrefX_createD(RefX),
     Attrs = case read_ref(XRefX, inside, write) of
-                             [{XRefX, A}] -> A;
-                             []           -> orddict:new()
+                [{XRefX, A}] -> A;
+                []           -> orddict:new()
             end,
     % you can't use the values of a form in a formula
     CantInc = has_cantinc(Attrs),
@@ -1695,8 +1695,8 @@ expunge_refsD(S, Refs) ->
 -spec mark_dirty_for_inclD([#xrefX{}], auth_srv:auth_spec()) -> ok.
 mark_dirty_for_inclD([], _) -> ok;
 mark_dirty_for_inclD(Refs = [#xrefX{site = Site}|_], AReq) ->
-    %% TODO check out this stuff
-    %% not sure all the has include stuff is needed...
+%% TODO check out this stuff
+%% not sure all the has include stuff is needed...
     Idxs = lists:flatten([C#xrefX.idx || R <- Refs, C <- expand_ref(R)]),
     Dirties = [Idx || Idx <- Idxs, has_includeD(Site, Idx)],
     case Dirties of
@@ -1731,7 +1731,7 @@ log_move(#refX{site = S, path = P, obj = {Type, _} = O}, Action, Disp, Uid)
     ok.
 
 shift_rows_and_columnsD(#refX{site = S, path = P, obj = {column, {X1, X2}}},
-                       Type, horizontal, _Ar) ->
+                        Type, horizontal, _Ar) ->
     Table = trans(S, local_obj),
     Objs = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Offset = get_offset(Type, X1, X2),
@@ -1739,7 +1739,7 @@ shift_rows_and_columnsD(#refX{site = S, path = P, obj = {column, {X1, X2}}},
     [mnesia:write(Table, Rec, write) || Rec <- Objs2],
     ok;
 shift_rows_and_columnsD(#refX{site = S, path = P, obj = {row, {Y1, Y2}}},
-                       Type, vertical, _Ar) ->
+                        Type, vertical, _Ar) ->
     Table = trans(S, local_obj),
     Objs = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Offset = get_offset(Type, Y1, Y2),
@@ -1815,29 +1815,29 @@ shift_cellsD(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
     end.
 
 rewrite_dyn_select({ChildRef, DynSel}, {{From, {XOff, YOff}, Uid}, Acc}) ->
-  case DynSel of
-      {"dynamic_select", DynFormula, _} ->
-          {St, "="++DF2} = offset_fm_w_rng(ChildRef, "="++DynFormula, From,
-                                     {XOff, YOff}),
-          Op = fun(Attrs) ->
-                       % don't worry about calculating the values for the
-                       % dynamic select as we are going to make the cell
-                       % recalc itself anyhoo
-                       DynSel2 = {"dynamic_select", DF2, []},
-                       {St, orddict:store("input", DynSel2, Attrs)}
-               end,
-          apply_to_attrsD(ChildRef, Op, rewrite, Uid,
-                          ?TRANSFORMATIVE),
-          % you need to switch the ref to an idx because later on
-          % you are going to move the cells and you need to know
-                                   % the ref of the shifted cell
-          case St of
-              clean -> {{From, {XOff, YOff}, Uid}, Acc};
-              dirty -> {{From, {XOff, YOff}, Uid}, [ChildRef | Acc]}
-          end;
-      _ ->
-          {{From, {XOff, YOff}, Uid}, Acc}
-  end.
+    case DynSel of
+        {"dynamic_select", DynFormula, _} ->
+            {St, "="++DF2} = offset_fm_w_rng(ChildRef, "="++DynFormula, From,
+                                             {XOff, YOff}),
+            Op = fun(Attrs) ->
+                         % don't worry about calculating the values for the
+                         % dynamic select as we are going to make the cell
+                         % recalc itself anyhoo
+                         DynSel2 = {"dynamic_select", DF2, []},
+                         {St, orddict:store("input", DynSel2, Attrs)}
+                 end,
+            apply_to_attrsD(ChildRef, Op, rewrite, Uid,
+                            ?TRANSFORMATIVE),
+            % you need to switch the ref to an idx because later on
+            % you are going to move the cells and you need to know
+            % the ref of the shifted cell
+            case St of
+                clean -> {{From, {XOff, YOff}, Uid}, Acc};
+                dirty -> {{From, {XOff, YOff}, Uid}, [ChildRef | Acc]}
+            end;
+        _ ->
+            {{From, {XOff, YOff}, Uid}, Acc}
+    end.
 
 rewrite_formulae({ChildRef, F1}, {{From, {XOff, YOff}, Uid}, Acc}) ->
     {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
@@ -1891,7 +1891,7 @@ get_childrenD(#xrefX{site = Site, obj = {cell, _}} = XRefX) ->
 get_childrenD(#xrefX{obj = {Type, _}} = Ref)
   when (Type ==  row) orelse (Type ==  column) orelse
        (Type ==  range) orelse (Type ==  page) ->
-        lists:flatten(expand_ref(Ref)).
+    lists:flatten(expand_ref(Ref)).
 
 -spec deref_formula(string(), #xrefX{}, atom(), auth_srv:uid()) ->
     {clean | dirty, #refX{}}.
@@ -2357,7 +2357,7 @@ delete_relationD(#xrefX{site = Site} = Cell) ->
             OldInfPs = [#xrefX{} = idx_to_xrefXD(Site, X)
                         || X <- R#relation.infparents],
             OldDynInfPs = [#xrefX{} = idx_to_xrefXD(Site, X)
-                        || X <- R#relation.dyn_infparents],
+                           || X <- R#relation.dyn_infparents],
             OldPs = lists:merge(OldInfPs, OldDynInfPs),
             ok = handle_infsD(Cell#xrefX.idx, Site, [], OldPs),
             [del_childD(P, Cell#xrefX.idx, Tbl) ||
