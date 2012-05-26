@@ -376,7 +376,15 @@ run_callbacks(Rec, State, Event) ->
 make_log(Type, #twilio{} = Rec) ->
     From = Rec#twilio.from,
     To = Rec#twilio.to,
-    #contact_log{type = Type, call_sid = integer_to_list(Rec#twilio.call_sid),
-                 from = From#twilio_from.number, to = To#twilio_to.number}.
+    F1 = case From of
+             null -> "no from yet";
+             _    -> From#twilio_from.number
+         end,
+    T1 = case To of
+             null -> "no to yet";
+             _    -> To#twilio_to.number
+         end,
+    #contact_log{type = Type, call_sid = Rec#twilio.call_sid,
+                 from = F1, to = T1}.
 
 get_log(#state{} = State) -> State#state.log.
