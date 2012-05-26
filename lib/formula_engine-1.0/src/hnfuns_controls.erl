@@ -308,24 +308,26 @@ is_valid(Input) ->
             Maps = hn_util:get_maps(get(site)),
             Id = "id_" ++ muin_util:create_name(),
             case lists:member(Map, Maps) of
-                false -> ?ERRVAL_VAL;
-                true  -> Js = ["/hypernumbers/ajaxfileupload.js",
-                               "/webcomponents/hn.mapcustom.js"],
-                         Reload = ["HN.MapCustom.reload();"],
-                         Incs = #incs{js = Js, js_reload = Reload},
-                         Payload = {struct, [{"map", Map}]},
-                         Form = #form{id = {'map-custom-button', Title},
-                                      kind = "map-custom-button",
-                                      attrs = Payload},
-                         HTML = "<input id='" ++ Id ++ "' type='submit' "
-                             ++ "class='hn-mapcustom' value='"
-                             ++ Title ++ "' data-map-type='custom' data-map='"
-                             ++ Map ++ "' />",
-                         Preview = Title,
-                         Resize = #resize{width = 2, height = 2},
-                         #spec_val{val = HTML, sp_webcontrol = Form,
-                                   resize = Resize, preview = Preview,
-                                   sp_incs = Incs}
+                false ->
+                    ?ERRVAL_VAL;
+                true  ->
+                    Js = ["/hypernumbers/ajaxfileupload.js",
+                          "/webcomponents/hn.mapcustom.js"],
+                    Reload = ["HN.MapCustom.reload();"],
+                    Incs = #incs{js = Js, js_reload = Reload},
+                    Payload = {struct, [{"map", Map}]},
+                    Form = #form{id = {'map-custom-button', Title},
+                                 kind = "map-custom-button",
+                                 attrs = Payload},
+                    HTML = "<input id='" ++ Id ++ "' type='submit' "
+                        ++ "class='hn-mapcustom' value='"
+                        ++ Title ++ "' data-map-type='custom' data-map='"
+                        ++ Map ++ "' />",
+                    Preview = Title,
+                    Resize = #resize{width = 2, height = 2},
+                    #spec_val{val = HTML, sp_webcontrol = Form,
+                              resize = Resize, preview = Preview,
+                              sp_incs = Incs}
             end
     end.
 
