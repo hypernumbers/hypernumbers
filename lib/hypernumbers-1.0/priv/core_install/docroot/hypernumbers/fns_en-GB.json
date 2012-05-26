@@ -95,6 +95,24 @@
         ]
     },
     {
+        "fn": "array1d",
+        "category": "Special",
+        "desc": "Stiches a series of references and elements into a 1D array",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/special/array1d.html",
+        "args": [
+            {
+                "name": "Element",
+                "desc": "A general element",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
         "fn": "asin",
         "category": "Maths And Trigonometry",
         "desc": "Returns the inverse trigonometric sine of a number (in radians).",
@@ -904,6 +922,26 @@
                 "name": "Factor",
                 "desc": "Deprecaation factor",
                 "type": "optional"
+            }
+        ]
+    },
+    {
+        "fn": "debug.array",
+        "category": "Special",
+        "desc": "Helps debug functions that return arrays",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": "range",
+        "resize_rows_default": 4,
+        "resize_cols_default": 2,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/special/debug-array.html",
+        "args": [
+            {
+                "name": "Array",
+                "desc": "An array or an expression that returns one.",
+                "type": "finite"
             }
         ]
     },
@@ -4728,6 +4766,8 @@
         "includable": true,
         "inexcel": false,
         "resize": "range",
+        "resize_rows_default": 10,
+        "resize_cols_default": 8,
         "wizardready": true,
         "link": "http://documentation.vixo.com/contents/vixo-functions/layout-and-display/table.html",
         "args": [
@@ -5098,7 +5138,9 @@
         "experimental": false,
         "includable": true,
         "inexcel": false,
-        "resize": true,
+        "resize": "range",
+        "resize_rows_default": 8,
+        "resize_cols_default": 4,
         "wizardready": true,
         "link": "http://documentation.vixo.com/contents/vixo-functions/site-administration/users-and-groups.html",
         "args": [
@@ -5477,6 +5519,8 @@
         "includable": true,
         "inexcel": false,
         "resize": "range",
+        "resize_rows_default": 10,
+        "resize_cols_default": 8,
         "wizardready": true,
         "link": "http://documentation.vixo.com/contents/vixo-functions/database/ztable.html",
         "args": [

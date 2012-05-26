@@ -298,6 +298,9 @@ transform("table." ++ R, Args) ->
 transform("ztable." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("ztable."), [W , H | Args]};
+transform("debug.array." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("debug.array."), [W , H | Args]};
 % stop 'em getting swallowed by phone.menu.WxH
 transform("phone.menu." ++ R = Fun, Args) ->
     case R of
