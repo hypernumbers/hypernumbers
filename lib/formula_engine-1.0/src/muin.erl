@@ -307,7 +307,7 @@ transform("phone.menu." ++ R = Fun, Args) ->
         Fn when Fn == "say"
         orelse Fn == "play"
         orelse Fn == "record"
-        orelse Fn == "number"
+        orelse Fn == "phoneno" % twilio #number{}
         orelse Fn == "dial"
         orelse Fn == "sms"
         orelse Fn == "redirect"

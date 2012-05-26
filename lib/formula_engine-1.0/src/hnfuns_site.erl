@@ -15,6 +15,7 @@
 -include("defaults.hrl").
 
 -define(check_paid, contact_utils:check_if_paid).
+-define(RecordingLen, 2).
 
 % WARNING!
 % when adding more fns of the type phone.menu.xxx you need to stop
@@ -24,7 +25,10 @@
          'configure.email'/1,
          'phone.menu.'/1,
          'phone.menu.say'/1,
-         'phone.menu.play'/1
+         'phone.menu.play'/1,
+         'phone.menu.input'/1,
+         'phone.menu.record'/1,
+         'phone.menu.phoneno'/1
          ]).
 
 'users.and.groups.'([W, H]) ->
@@ -77,6 +81,55 @@
                 ++ hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O)
     end.
 
+'phone.menu.phoneno'([Number]) ->
+    'phone.menu.phoneno'([Number, ""]);
+'phone.menu.phoneno'([Number, Prefix]) ->
+    {Prefix2, PhNo2} = typechecks:std_phone_no(Prefix, Number),
+    Twiml = [#number{number = "+" ++ Prefix ++ PhNo2}],
+    % this Twiml isn't valid on its loneo!
+    Preview = "PHONE NUMBER: (+" ++ Prefix2 ++ ") " ++ PhNo2,
+    Resize = #resize{width = 2, height = 2},
+    #spec_val{val = "", preview = Preview, resize = Resize,
+              sp_phone = #phone{twiml = Twiml}}.
+
+'phone.menu.record'([]) ->
+    'phone.menu.record'(["Please leave a message after the tone"]);
+'phone.menu.record'([Text]) ->
+    'phone.menu.record'([Text, true]);
+'phone.menu.record'([Text, PlayBeep]) ->
+    'phone.menu.record'([Text, PlayBeep, ?RecordingLen]);
+'phone.menu.record'([Text, PlayBeep, RecordingLen]) ->
+    'phone.menu.record'([Text, PlayBeep, RecordingLen, false]);
+'phone.menu.record'([Text, PlayBeep, RecordingLen, Transcribe]) ->
+    'phone.menu.record'([Text, PlayBeep, RecordingLen, Transcribe, 0]);
+'phone.menu.record'([Text, PlayBeep, RecordingLen, Transcribe, Voice]) ->
+    'phone.menu.record'([Text, PlayBeep, RecordingLen, Transcribe, Voice, 0]);
+'phone.menu.record'([Text, PlayBeep, RecordingLen, Transcribe, Voice, Lang]) ->
+    [Text2] = typechecks:std_strs([Text]),
+    Title = get_title(Text2),
+    [PlayBeep2] = typechecks:std_bools([PlayBeep]),
+    [RLen2] = typechecks:std_ints([RecordingLen]),
+    [Trans2] = typechecks:std_bools([Transcribe]),
+    [Voice2, Lang2] = typechecks:std_ints([Voice, Lang]),
+    V3 = get_voice(Voice2),
+    L3 = get_lang(Lang2),
+    SAY = #say{text = Text2, voice = V3, language = L3},
+    REC = #record{playBeep = PlayBeep2, transcribe = Trans2, maxLength = RLen2},
+    Twiml = [SAY, REC],
+    case twiml:is_valid(Twiml) of
+        false ->
+            ?ERRVAL_VAL;
+        true  ->
+            Preview = "RECORD: (" ++ Title ++ ")",
+            Resize = #resize{width = 2, height = 2},
+            #spec_val{val = "", preview = Preview, resize = Resize,
+                      sp_phone = #phone{twiml = Twiml}}
+    end.
+
+'phone.menu.input'([List]) ->
+    io:format("List is ~p~n", [List]),
+    ok.
+
 'phone.menu.play'([Url]) ->
     'phone.menu.play'([Url, 1]);
 'phone.menu.play'([Url, Loop]) ->
@@ -89,29 +142,25 @@
               sp_phone = #phone{twiml = [SAY]}}.
 
 'phone.menu.say'([Text]) ->
-    phsay(Text, "woman", "en-gb", 1);
+    'phone.menu.say'([Text, 0]);
 'phone.menu.say'([Text, Voice]) ->
-    phsay(Text, Voice, "en_gb", 1);
+    'phone.menu.say'([Text, Voice, 0]);
 'phone.menu.say'([Text, Voice, Language]) ->
-    phsay(Text, Voice, Language, 1);
+    'phone.menu.say'([Text, Voice, Language, 1]);
 'phone.menu.say'([Text, Voice, Language, Loop]) ->
     phsay(Text, Voice, Language, Loop).
 
 phsay(Text, Voice, Language, Loop) ->
-    [Text2, V2, L2] = typechecks:std_strs([Text, Voice, Language]),
-    [Lp2] = typechecks:std_pos_ints([Loop]),
+    [Text2] = typechecks:std_strs([Text]),
+    [V2, L2, Lp2] = typechecks:std_pos_ints([Voice, Language, Loop]),
     Len = length(Text2),
     ok = typechecks:in_range(Len, 1, 4000),
-    ok = typechecks:is_member(string:to_lower(V2), ?SAYVoices),
-    ok = typechecks:is_member(string:to_lower(L2), ?SAYLanguages),
-    Title = if
-                Len >  30 -> {Tit, _} = lists:split(30, Text2),
-                             Tit;
-                Len =< 30 -> Text2
-            end,
+    V3 = get_voice(V2),
+    L3 = get_lang(L2),
+    Title = get_title(Text2),
     Preview = "SAY: " ++ Title,
     Resize = #resize{width = 2, height = 2},
-    SAY = #say{text = Text2, voice = V2, language = L2, loop = Lp2},
+    SAY = #say{text = Text2, voice = V3, language = L3, loop = Lp2},
     #spec_val{val = "", preview = Preview, resize = Resize,
               sp_phone = #phone{twiml = [SAY]}}.
 
@@ -253,3 +302,21 @@ send_invite(From, Idx) ->
               emailer:send_email(From, CC, ?MASTER_EMAIL, Subject, EmailBody)
    end.
 
+get_voice(0) -> "woman";
+get_voice(1) -> "man";
+get_voice(_) -> ?ERR_VAL.
+
+get_lang(0) -> "en-gb";
+get_lang(1) -> "en";
+get_lang(2) -> "es";
+get_lang(3) -> "fr";
+get_lang(4) -> "de";
+get_lang(_) -> ?ERR_VAL.
+
+get_title(Text) when is_list(Text) ->
+    Len = length(Text),
+    if
+        Len >  40 -> {Tit, _} = lists:split(40, Text),
+                     Tit;
+        Len =< 40 -> Text
+    end.

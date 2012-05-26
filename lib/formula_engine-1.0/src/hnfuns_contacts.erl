@@ -128,59 +128,59 @@ check(To, Su, Cn, CC, Reply) ->
     end.
 
 'auto.robocall'([Cond, PhNo, Msg, Prefix]) ->
-    Pr2 = normalise(Prefix),
-    ?check_paid(fun 'auto.robocall2'/2, [Cond, PhNo, Msg, Pr2], outbound);
+    ?check_paid(fun 'auto.robocall2'/2, [Cond, PhNo, Msg, Prefix], outbound);
 'auto.robocall'([Cond, PhNo, Msg]) ->
     ?check_paid(fun 'auto.robocall2'/2, [Cond, PhNo, Msg, ""], outbound).
 
 'manual.sms.out'([PhNo, Msg, Prefix]) ->
-    Pr2 = normalise(Prefix),
-    ?check_paid(fun 'manual.sms.out2'/2, [PhNo, Msg, Pr2], outbound);
+    ?check_paid(fun 'manual.sms.out2'/2, [PhNo, Msg, Prefix], outbound);
 'manual.sms.out'([PhNo, Msg]) ->
     ?check_paid(fun 'manual.sms.out2'/2, [PhNo, Msg, ""], outbound).
 
 'manual.sms.out2'([PhNo, Msg, Prefix], _AC) ->
     [PhNo2] = typechecks:std_strs([PhNo]),
     Msg2 = rightsize(Msg, ?SMSLength),
-    PhNo3 = compress(PhNo2),
+    {Prefix2, PhNo3} = typechecks:std_phone_no(Prefix, PhNo2),
     Log = #contact_log{idx = get(idx), type = "manual sms",
-                       to = "+" ++ Prefix ++ PhNo3, contents = Msg2},
+                       to = "+" ++ Prefix2 ++ PhNo3, contents = Msg2},
     TwiML = "",
-    Capability = [{manual_sms, "+" ++ Prefix ++ PhNo3, Msg2}],
+    Capability = [{manual_sms, "+" ++ Prefix2 ++ PhNo3, Msg2}],
     Type ={"softphone_type", "manual sms"},
-    Config = [{"button_txt", "(+" ++ Prefix ++ ") " ++ PhNo3},
+    Config = [{"button_txt", "(+" ++ Prefix2 ++ ") " ++ PhNo3},
               {"headline_txt", "Send SMS"}],
     Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
                    softphone_type = Type, softphone_config = Config},
     Headline = "Send SMS",
-    ButtonTxt = "(+" ++ Prefix ++ ") " ++ PhNo3,
+    ButtonTxt = "(+" ++ Prefix2 ++ ") " ++ PhNo3,
     phone(Phone, "Manual SMS: ",  Headline, ButtonTxt).
 
 'auto.sms.out'([Cond, PhNo, Msg, Prefix]) ->
-    Pr2 = normalise(Prefix),
-    ?check_paid(fun 'auto.sms.out2'/2, [Cond, PhNo, Msg, Pr2], outbound);
+    ?check_paid(fun 'auto.sms.out2'/2, [Cond, PhNo, Msg, Prefix], outbound);
 'auto.sms.out'([Cond, PhNo, Msg]) ->
     ?check_paid(fun 'auto.sms.out2'/2, [Cond, PhNo, Msg, ""], outbound).
 
 'auto.robocall2'([Cond, PhNo, Msg, Prefix], AC) ->
     [Cond] = typechecks:std_bools([Cond]),
     [PhNo2] = typechecks:std_strs([PhNo]),
-    PhNo3 = compress(PhNo2),
+    {Prefix2, PhNo3} = typechecks:std_phone_no(Prefix, PhNo2),
     [Msg2] = typechecks:std_strs([Msg]),
     case Cond of
         true ->
-            case contact_utils:robocall(AC, "+" ++ Prefix ++ PhNo2, Msg2) of
-                {ok, ok} -> "Robocal: " ++ Msg2 ++ " made to phone " ++ PhNo3;
+            case contact_utils:robocall(AC, "+" ++ Prefix2 ++ PhNo2, Msg2) of
+                {ok, ok} -> "Robocal: " ++ Msg2 ++ " made to phone (+"
+                                ++ Prefix ++ ") " ++ PhNo3;
                 _        -> ?ERRVAL_ERR
             end;
         false ->
-            "Robocall: " ++ Msg2 ++ " to be sent to phone " ++ PhNo3
+            "Robocall: " ++ Msg2 ++ " to be sent to phone (+" ++ Prefix2
+                ++ ") " ++ PhNo3
     end.
 
 'auto.sms.out2'([Cond, PhNo, Msg, Prefix], AC) ->
     [Cond] = typechecks:std_bools([Cond]),
     [PhNo2] = typechecks:std_strs([PhNo]),
-    PhNo3 = "+" ++ Prefix ++ compress(PhNo2),
+    {Prefix2, PhNo3} = typechecks:std_phone_no(Prefix, PhNo2),
+    PhNo3 = "+" ++ Prefix2 ++ PhNo2,
     Msg2 = rightsize(Msg, ?SMSLength),
     Log = #contact_log{idx = get(idx), type = "automatic sms",
                        to = PhNo3, contents = Msg2},
@@ -198,11 +198,12 @@ check(To, Su, Cn, CC, Reply) ->
                     ?ERRVAL_ERR
             end;
         false ->
-            "SMS: " ++ Msg2 ++ " to be sent to phone " ++ PhNo3
+            "SMS: " ++ Msg2 ++ " to be sent to phone (+" ++ Prefix ++ ")"
+                ++ PhNo3
     end.
 
 'phone.out'([PhNo, Prefix]) ->
-    'phone.out2'(PhNo, normalise(Prefix));
+    'phone.out2'(PhNo, Prefix);
 'phone.out'([PhNo]) ->
     'phone.out2'(PhNo, "").
 
@@ -214,22 +215,21 @@ check(To, Su, Cn, CC, Reply) ->
         AC ->
             #twilio_account{application_sid = AppSID,
                             site_phone_no = Site_Phone} = AC,
-            [PhNo2] = typechecks:std_strs([PhNo]),
-            PhNo3 = compress(PhNo2),
+            {Prefix2, PhNo2} = typechecks:std_phone_no(Prefix, PhNo),
             Log = #contact_log{idx = get(idx), type = "outbound call",
-                               to = "+" ++ Prefix ++ PhNo3},
+                               to = "+" ++ Prefix2 ++ PhNo2},
             TwiML = [
                      #dial{callerId = Site_Phone, record = true,
-                           body = [#number{number = "+" ++ Prefix ++ PhNo3}]}
+                           body = [#number{number = "+" ++ Prefix2 ++ PhNo2}]}
                     ],
             Capability = [{client_outgoing, AppSID, []}],
             Type = {"softphone_type", "outbound call"},
-            Config = [{"button_txt", "(+" ++ Prefix ++ ") " ++ PhNo3},
+            Config = [{"button_txt", "(+" ++ Prefix2 ++ ") " ++ PhNo2},
                       {"headline_txt", "Make Phone Call"}],
             Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
                            softphone_type = Type, softphone_config = Config},
             Headline = "Make Phone Call",
-            ButtonTxt = "(+" ++ Prefix ++ ") " ++ PhNo3,
+            ButtonTxt = "(+" ++ Prefix2 ++ ") " ++ PhNo2,
             phone(Phone, "Phone Out: ", Headline, ButtonTxt)
     end.
 
@@ -258,24 +258,6 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
     Resize = #resize{width = 2, height = 4},
     #spec_val{val = HTML, preview = PreV, resize = Resize,
               sp_phone = Payload}.
-
-compress(List) ->
-    L2 = re:replace(List, " ", "", [{return, list}, global]),
-    L3 = re:replace(L2, "-", "", [{return, list}, global]),
-    case L3 of
-        "00"++Rest1 -> Rest1;
-        "0"++Rest2  -> Rest2;
-        Other       -> Other
-    end.
-
-normalise("+"++Prefix)  -> Prefix;
-normalise("00"++Prefix) -> Prefix;
-normalise(Prefix) ->
-    P2 = case tconv:to_num(Prefix) of
-             {error, nan} -> twilio_web_util:country_code_to_prefix(Prefix);
-             Num          -> Num
-         end,
-    integer_to_list(P2).
 
 rightsize(Msg, Size) ->
     [Msg2] = typechecks:std_strs([Msg]),

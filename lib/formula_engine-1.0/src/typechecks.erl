@@ -9,7 +9,6 @@
 
 -export([
          % throws on error
-         throw_rgbcolours/1,
          throw_std_bools/1,
          throw_std_strs/1,
          throw_std_ints/1,
@@ -17,14 +16,21 @@
          throw_flat_strs/1,
          throw_html_box_contents/1,
          % returns errors to fn
-         rgbcolours/1,
          std_bools/1,
          std_strs/1,
          std_ints/1,
          std_pos_ints/1,
          std_nums/1,
-         flat_strs/1,
-         html_box_contents/1
+         flat_strs/1
+        ]).
+
+% schmancies!
+-export([
+         html_box_contents/1,
+         throw_std_phone_no/2,
+         std_phone_no/2,
+         throw_rgbcolours/1,
+         rgbcolours/1
         ]).
 
 -export([
@@ -34,6 +40,7 @@
 
 -include("typechecks.hrl").
 
+throw_std_phone_no(X, Y)    -> errthrow(std_phone_no(X, Y)).
 throw_rgbcolours(X)         -> errthrow(rgbcolours(X)).
 throw_std_bools(X)          -> errthrow(std_bools(X)).
 throw_std_strs(X)           -> errthrow(std_strs(X)).
@@ -49,6 +56,20 @@ th([H | _T], _Acc) when ?is_errval(H) -> throw(H);
 th([H | T], Acc)                      -> th(T, [H | Acc]);
 % might not be a list returned if its an error...
 th(X, []) when ?is_errval(X)          -> throw(X).
+
+std_phone_no("", "++" ++ Number) ->
+    N2 = compress(Number),
+    {"", N2};
+std_phone_no("", "+" ++ Number) ->
+    N2 = compress(Number),
+    {"", N2};
+std_phone_no("", Number) ->
+    N2 = compress(Number),
+    {"", N2};
+std_phone_no(Prefix, Number) ->
+    P2 = normalise(Prefix),
+    N2 = compress(Number),
+    {P2, N2}.
 
 rgbcolours([$#| Rest]) ->
     case length(Rest) of
@@ -117,3 +138,35 @@ is_member(Val, List) ->
         false -> ?ERR_VAL
     end.
 
+compress(List) ->
+    L2 = re:replace(List, " |-|(|)", "", [{return, list}, global]),
+    Num2 = case L2 of
+        "00" ++ Rest1 -> Rest1;
+        "0" ++ Rest2  -> Rest2;
+        Other         -> Other
+    end,
+    case is_str_integer(Num2) of
+        true  -> Num2;
+        false -> ?ERR_VAL
+    end.
+
+is_str_integer(Num) ->
+    case tconv:to_num(Num) of
+        {error, nan} ->
+            false;
+        Num2 ->
+            Num3 = integer_to_list(tconv:to_i(Num2)),
+            case Num3 of
+                Num -> true;
+                _   -> false
+            end
+    end.
+
+normalise("+"++Prefix)  -> Prefix;
+normalise("00"++Prefix) -> Prefix;
+normalise(Prefix) ->
+    P2 = case tconv:to_num(Prefix) of
+             {error, nan} -> twilio_web_util:country_code_to_prefix(Prefix);
+             Num          -> Num
+         end,
+    integer_to_list(P2).
