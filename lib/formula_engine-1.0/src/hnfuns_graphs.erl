@@ -21,7 +21,6 @@
          'linegraph.'/1,
          'dategraph.'/1,
          'equigraph.'/1,
-         'sequence.equigraph.'/1,
          'piechart.'/1,
          % deprecated fns
          linegraph/1,
@@ -257,16 +256,6 @@ spark1(Size, Data, Colours) ->
                     MinY, MaxY, Colours, Rest, [{?tickmarks, ?BOTHAXES}]),
     #spec_val{val = HTML, resize = Resize}.
 
-'sequence.equigraph.'([W, H | List]) ->
-    [Width] = typechecks:throw_std_ints([W]),
-    [Height] = typechecks:throw_std_ints([H]),
-    Ret = chunk_seq(List),
-    {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
-    Resize = #resize{width = Width, height = Height},
-    HTML = eq_hist1(equi, make_size(Width, Height), DataX, DataY,
-                    MinY, MaxY, Colours, Rest, [{?tickmarks, ?BOTHAXES}]),
-    #spec_val{val = HTML, resize = Resize}.
-
 'dategraph.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
@@ -358,26 +347,6 @@ chunk_histogram([Type, X, Lines| List]) ->
           end,
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Type3, Cols, Rest}.
-
-chunk_seq([Lines | List]) ->
-    [Lines2] = typechecks:throw_std_ints([Lines]),
-    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
-    {X, NewList} = aggregate_seq(Lines, List, [], []),
-    DataX = cast_strings(X),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, 1, NewList, ?MARGIN),
-    DataY2 = "t:" ++ conv_data_rev(DataY),
-    {DataX, DataY2, MinY, MaxY, Cols, Rest}.
-
-% basically make a single sequence from the various different ones
-% that is why we append the Rest back onto the columns we have made
-aggregate_seq(0, Rest, AccX, AccY) ->
-    {{range, lists:append(lists:reverse(AccX))},
-     [{range, lists:append(lists:reverse(AccY))} | Rest]};
-aggregate_seq(N, [X, Y | T], AccX, AccY) ->
-    [X1, Y1] = cast_prefetch([X, Y]),
-    {range, X2} = X1,
-    {range, Y2} = Y1,
-    aggregate_seq(N - 1, T, [X2 | AccX], [Y2 | AccY]).
 
 chunk_equigraph([X, Lines | List]) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
@@ -982,7 +951,7 @@ normalize_xy([[H1, H2] | T], MinX, MaxX, MinY, MaxY, Acc) ->
     NewH2 = lists:reverse(normalize_sp(H2, MinY, MaxY)),
     normalize_xy(T, MinX, MaxX, MinY, MaxY, [[NewH1, NewH2] | Acc]).
 
-proc_dxy1({range, X} = R) ->
+proc_dxy1({Type, X} = R) when Type == range orelse Type == array->
     if
         length(X) ==  2 -> extract(R, ?ROW);
         length(X) =/= 2 -> extract(R, ?COLUMN)
@@ -1201,9 +1170,9 @@ get_scale({scale, auto}, Data) ->
 get_scale(Scale, _Data) ->
     Scale.
 
-extract({range, Data}, ?ROW)    ->
+extract({Type, Data}, ?ROW) when Type == range orelse Type == array ->
     tartup(Data);
-extract({range, Data}, ?COLUMN) ->
+extract({Type, Data}, ?COLUMN) when Type == range orelse Type == array ->
     tartup(hslists:transpose(Data)).
 
 tartup(Data) ->
