@@ -127,7 +127,6 @@ factoryif([W, H, Bool, Title, Type, Desc, ButtonTxt, ResponseMsg]) ->
 factoryif([W, H, Bool, Title, Type, Desc, ButtonTxt, Response, Goto | Rest]) ->
     % first check if the site is able to be a factory
     [W2, H2] = typechecks:std_ints([W, H]),
-    io:format("Bool is ~p~n", [Bool]),
     [Bool2] = typechecks:std_bools([Bool]),
     case Bool2 of
         false -> "";
