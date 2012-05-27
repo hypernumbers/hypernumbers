@@ -312,6 +312,8 @@ transform("phone.menu." ++ R = Fun, Args) ->
         orelse Fn == "dial"
         orelse Fn == "sms"
         orelse Fn == "redirect"
+        orelse Fn == "record"
+        orelse Fn == "transcribe"
         orelse Fn == "pause" -> {list_to_atom(Fun), Args};
         _                    -> {W, H} = get_dims(R),
                                 {list_to_atom("phone.menu."), [W , H | Args]}

@@ -8,6 +8,8 @@
 -module(contact_utils).
 
 -export([
+         rightsize/2,
+         get_site_phone_no/1,
          get_phone_menu/1,
          check_if_paid/3,
          get_recording_details/2,
@@ -99,4 +101,20 @@ get_twilio_account(Site) ->
     case new_db_api:read_kv(Site, ?twilio) of
         []                        -> ?ERRVAL_PAYONLY;
         [{kvstore, ?twilio, Rec}] -> Rec
+    end.
+
+get_site_phone_no(Site) ->
+    case get_twilio_account(Site) of
+        ?ERRVAL_PAYONLY -> ?ERRVAL_PAYONLY;
+        Rec             -> io:format("Rec is ~p~n", [Rec]),
+                           Rec#twilio_account.site_phone_no
+    end.
+
+rightsize(Msg, Size) ->
+    [Msg2] = typechecks:std_strs([Msg]),
+    Length = length(Msg2),
+    if
+        Length > Size  -> {Msg3, _} = lists:split(Size, Msg2),
+                          Msg3;
+        Length =< Size -> Msg2
     end.

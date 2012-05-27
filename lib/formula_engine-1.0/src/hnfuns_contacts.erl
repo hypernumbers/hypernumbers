@@ -55,7 +55,7 @@
         true  -> ok;
         false -> ?ERR_VAL
     end,
-    Msg3 = rightsize(Msg2, ?SAYLength),
+    Msg3 = contact_utils:rightsize(Msg2, ?SAYLength),
     Say = #say{voice = Voice, language = L3, text = Msg3},
     io:format("Say is ~p~n", [Say]),
     "banjo".
@@ -139,7 +139,7 @@ check(To, Su, Cn, CC, Reply) ->
 
 'manual.sms.out2'([PhNo, Msg, Prefix], _AC) ->
     [PhNo2] = typechecks:std_strs([PhNo]),
-    Msg2 = rightsize(Msg, ?SMSLength),
+    Msg2 = contact_utils:rightsize(Msg, ?SMSLength),
     {Prefix2, PhNo3} = typechecks:std_phone_no(Prefix, PhNo2),
     Log = #contact_log{idx = get(idx), type = "manual sms",
                        to = "+" ++ Prefix2 ++ PhNo3, contents = Msg2},
@@ -181,7 +181,7 @@ check(To, Su, Cn, CC, Reply) ->
     [PhNo2] = typechecks:std_strs([PhNo]),
     {Prefix2, PhNo3} = typechecks:std_phone_no(Prefix, PhNo2),
     PhNo3 = "+" ++ Prefix2 ++ PhNo2,
-    Msg2 = rightsize(Msg, ?SMSLength),
+    Msg2 = contact_utils:rightsize(Msg, ?SMSLength),
     Log = #contact_log{idx = get(idx), type = "automatic sms",
                        to = PhNo3, contents = Msg2},
     S = get(site),
@@ -241,7 +241,7 @@ check(To, Su, Cn, CC, Reply) ->
     #twilio_account{application_sid = AppSID} = AC,
     Log = #contact_log{idx = get(idx), type = "inbound call", to = "Name2"},
     TwiML = [],
-    Capability = [{client_incoming, AppSID, Name2}],
+    Capability = [{client_incoming, AppSID, []}, {clientName, Name2}],
     Type = {"softphone_type", "inbound call"},
     ButtonTxt = "User:" ++ Name,
     Config = [{"button_txt", ButtonTxt},
@@ -271,15 +271,6 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
     Resize = #resize{width = 2, height = 4},
     #spec_val{val = HTML, preview = PreV, resize = Resize,
               sp_phone = Payload}.
-
-rightsize(Msg, Size) ->
-    [Msg2] = typechecks:std_strs([Msg]),
-    Length = length(Msg2),
-    if
-        Length > Size  -> {Msg3, _} = lists:split(Size, Msg2),
-                          Msg3;
-        Length =< Size -> Msg2
-    end.
 
 is_valid_email([])       -> true;
 is_valid_email(["" | T]) -> is_valid_email(T);

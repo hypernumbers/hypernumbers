@@ -28,9 +28,12 @@
          'phone.menu.play'/1,
          'phone.menu.input'/1,
          'phone.menu.record'/1,
+         'phone.menu.transcribe'/1,
          'phone.menu.phoneno'/1,
          'phone.menu.extension'/1,
-         'phone.menu.dial'/1
+         'phone.menu.dial'/1,
+         'phone.menu.sms'/1
+%         'phone.menu.conference'/1
          ]).
 
 'users.and.groups.'([W, H]) ->
@@ -83,6 +86,25 @@
                 ++ hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O)
     end.
 
+'phone.menu.sms'([Text, Number]) ->
+    'phone.menu.sms'([Text, Number, ""]);
+'phone.menu.sms'([Text, Number, Prefix]) ->
+    {Prefix2, PhNo2} = typechecks:std_phone_no(Prefix, Number),
+    io:format("Prefix2 is ~p PhNo2 is ~p~n", [Prefix2, PhNo2]),
+    [Text2] = typechecks:std_strs([Text]),
+    Text3 = contact_utils:rightsize(Text2, ?SMSLength),
+    io:format("Text3 is ~p~n", [Text3]),
+    From = contact_utils:get_site_phone_no(?msite),
+    io:format("From is ~p~n", [From]),
+    Twiml = [#sms{from = From, to = "+" ++ Prefix2 ++ PhNo2, text = Text3}],
+    Resize = #resize{width = 2, height = 2},
+    Preview = "Send SMS to (+" ++ Prefix2 ++ ") " ++ PhNo2 ++ " "
+        ++ contact_utils:rightsize(Text3, 10),
+    io:format("Preview is ~p~n", [Preview]),
+    #spec_val{val = "", preview = Preview, resize = Resize,
+              sp_phone = #phone{twiml = Twiml}}.
+
+
 'phone.menu.dial'(List) ->
     Dial = collect(List),
     Twiml = [#dial{body = Dial}],
@@ -116,6 +138,19 @@
     #spec_val{val = "", preview = Preview, resize = Resize,
               sp_phone = #phone{twiml = Twiml}}.
 
+'phone.menu.transcribe'([]) ->
+    'phone.menu.transcribe'(["Please leave a message after the tone"]);
+'phone.menu.transcribe'([Text]) ->
+    'phone.menu.transcribe'([Text, true]);
+'phone.menu.transcribe'([Text, PlayBeep]) ->
+    'phone.menu.transcribe'([Text, PlayBeep, ?RecordingLen]);
+'phone.menu.transcribe'([Text, PlayBeep, RecordingLen]) ->
+    'phone.menu.transcribe'([Text, PlayBeep, RecordingLen, 0]);
+'phone.menu.transcribe'([Text, PlayBeep, RecordingLen, Voice]) ->
+    'phone.menu.transcribe'([Text, PlayBeep, RecordingLen, Voice, 0]);
+'phone.menu.transcribe'([Text, PlayBeep, RecordingLen, Voice, Lang]) ->
+    'phone.menu.record'([Text, PlayBeep, RecordingLen, true, Voice, Lang]).
+
 'phone.menu.record'([]) ->
     'phone.menu.record'(["Please leave a message after the tone"]);
 'phone.menu.record'([Text]) ->
@@ -130,7 +165,7 @@
     'phone.menu.record'([Text, PlayBeep, RecordingLen, Transcribe, Voice, 0]);
 'phone.menu.record'([Text, PlayBeep, RecordingLen, Transcribe, Voice, Lang]) ->
     [Text2] = typechecks:std_strs([Text]),
-    Title = get_title(Text2),
+    Title = contact_utils:rightsize(Text2, 40),
     [PlayBeep2] = typechecks:std_bools([PlayBeep]),
     [RLen2] = typechecks:std_ints([RecordingLen]),
     [Trans2] = typechecks:std_bools([Transcribe]),
@@ -181,7 +216,7 @@ phsay(Text, Voice, Language, Loop) ->
     ok = typechecks:in_range(Len, 1, 4000),
     V3 = get_voice(V2),
     L3 = get_lang(L2),
-    Title = get_title(Text2),
+    Title = contact_utils:rightsize(Text2, 40),
     Preview = "SAY: " ++ Title,
     Resize = #resize{width = 2, height = 2},
     SAY = #say{text = Text2, voice = V3, language = L3, loop = Lp2},
@@ -336,11 +371,3 @@ get_lang(2) -> "es";
 get_lang(3) -> "fr";
 get_lang(4) -> "de";
 get_lang(_) -> ?ERR_VAL.
-
-get_title(Text) when is_list(Text) ->
-    Len = length(Text),
-    if
-        Len >  40 -> {Tit, _} = lists:split(40, Text),
-                     Tit;
-        Len =< 40 -> Text
-    end.
