@@ -52,26 +52,21 @@ get_phone(#refX{site = _S},
                             P#phone.softphone_config,
                             P#phone.softphone_type])};
 get_phone(#refX{site = S},
-          #phone{capability = [{client_outgoing, _, _}] = C} = P,
-          Uid) ->
-    AC = contact_utils:get_twilio_account(S),
-    #twilio_account{account_sid = AccSID, auth_token = AuthToken} = AC,
-    Token = twilio_capabilities:generate(AccSID, AuthToken, C,
-                                         [{expires_after, 7200}]),
-    {ok, Email} = passport:uid_to_email(Uid),
-    Age = 7200, % in seconds
-    % uses the path as an encryption key - when this hypertag is returned
-    % by twilio, twilio needs to get the originating URL from the data
-    % so we sign the hypertag with the URL that the request will come in on
-    IncomingPath = ["_services", "phone"],
-    % now add the current user into the phone log
-    {ok, Email} = passport:uid_to_email(Uid),
-    #phone{idx = Idx} = P,
-    P2 = [Idx, Email],
-    HyperTag = passport:create_hypertag(S, IncomingPath, Uid, Email, P2, Age),
-    {struct, lists:flatten([{"phonetoken", binary_to_list(Token)},
-                            {hypertag, HyperTag},
-                            {site, S},
+          #phone{capability = [{client_outgoing, _, _}] = C} = P, Uid) ->
+    HyperTag = get_hypertag(S, P, Uid),
+    Token = get_phonetoken(S, C),
+    {struct, lists:flatten([{"phonetoken", Token},
+                            {"hypertag", HyperTag},
+                            {"site", S},
+                            P#phone.softphone_config,
+                            P#phone.softphone_type])};
+get_phone(#refX{site = S},
+          #phone{capability = [{client_incoming, _, Ext}, _] = C} = P, Uid) ->
+    HyperTag = get_hypertag(S, P, Uid),
+    Token = get_phonetoken(S, C),
+    {struct, lists:flatten([{"phonetoken", Token},
+                            {"hypertag", HyperTag},
+                            {"ext", Ext},
                             P#phone.softphone_config,
                             P#phone.softphone_type])}.
 
@@ -327,3 +322,25 @@ full_redir(Redir, Env) ->
     Old = Mochi:get(raw_path),
     [_, Path] = string:tokens(Old, "?"),
     Redir ++ "?" ++ Path.
+
+get_phonetoken(Site, Capability) ->
+    io:format("Capability is ~p~n", [Capability]),
+    AC = contact_utils:get_twilio_account(Site),
+    #twilio_account{account_sid = AccSID, auth_token = AuthToken} = AC,
+    Tok = twilio_capabilities:generate(AccSID, AuthToken, Capability,
+                                 [{expires_after, 7200}]),
+    binary_to_list(Tok).
+
+get_hypertag(Site, Phone, Uid) ->
+    {ok, Email} = passport:uid_to_email(Uid),
+    Age = 7200, % in seconds
+    % uses the path as an encryption key - when this hypertag is returned
+    % by twilio, twilio needs to get the originating URL from the data
+    % so we sign the hypertag with the URL that the request will come in on
+    IncomingPath = ["_services", "phone"],
+    % now add the current user into the phone log
+    {ok, Email} = passport:uid_to_email(Uid),
+    #phone{idx = Idx} = Phone,
+    P2 = [Idx, Email],
+    passport:create_hypertag(Site, IncomingPath, Uid, Email, P2, Age).
+
