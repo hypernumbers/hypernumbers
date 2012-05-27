@@ -307,7 +307,8 @@ transform("phone.menu." ++ R = Fun, Args) ->
         Fn when Fn == "say"
         orelse Fn == "play"
         orelse Fn == "record"
-        orelse Fn == "phoneno" % twilio #number{}
+        orelse Fn == "phoneno"   % twilio #number{}
+        orelse Fn == "extension" % twilio #client{}
         orelse Fn == "dial"
         orelse Fn == "sms"
         orelse Fn == "redirect"
@@ -461,7 +462,7 @@ funcall(Fname, Args0) ->
              odd, int, degrees, radians, proper, index, var, steyx,
              small, skew, large, sumproduct, daverage, dcount, isref,
              irr, even,
-             include, 'tim.tabs.', 'table.', 'phone.menu.'],
+             include, 'tim.tabs.', 'table.', 'phone.menu.', 'phone.menu.dial'],
 
     Args = case lists:member(Fname, Funs) of
                true  -> Args0;

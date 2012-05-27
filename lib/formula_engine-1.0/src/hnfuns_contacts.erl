@@ -233,10 +233,23 @@ check(To, Su, Cn, CC, Reply) ->
             phone(Phone, "Phone Out: ", Headline, ButtonTxt)
     end.
 
-'phone.in'([]) -> ?check_paid(fun 'phone.in2'/1, [], inbound).
+'phone.in'([]) -> 'phone.in'(["Default"]);
+'phone.in'([Name]) -> ?check_paid(fun 'phone.in2'/2, [Name], inbound).
 
-'phone.in2'([]) ->
-    phone(#phone{}, "Phone In: ", "yerk", "berk").
+'phone.in2'([Name], AC) ->
+    [Name2] = typechecks:std_strs([Name]),
+    #twilio_account{application_sid = AppSID} = AC,
+    Log = #contact_log{idx = get(idx), type = "inbound call", to = "Name2"},
+    TwiML = [],
+    Capability = [{client_incoming, AppSID, Name2}],
+    Type = {"softphone_type", "inbound call"},
+    ButtonTxt = "User:" ++ Name,
+    Config = [{"button_txt", ButtonTxt},
+              {"headline_txt", "Receive Phone Call"}],
+    Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
+                   softphone_type = Type, softphone_config = Config},
+    Headline = "Inbound Phone: " ++ Name2,
+    phone(Phone, "Phone In: ", Headline, ButtonTxt).
 
 phone(Payload, Preview, Headline, ButtonTxt) ->
     Site = get(site),

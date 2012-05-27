@@ -28,7 +28,9 @@
          'phone.menu.play'/1,
          'phone.menu.input'/1,
          'phone.menu.record'/1,
-         'phone.menu.phoneno'/1
+         'phone.menu.phoneno'/1,
+         'phone.menu.extension'/1,
+         'phone.menu.dial'/1
          ]).
 
 'users.and.groups.'([W, H]) ->
@@ -59,7 +61,7 @@
     case OrigIdx of
         I when I == Idx orelse I == null orelse I == deleted ->
             [W2, H2] = typechecks:throw_std_ints([W, H]),
-            TwiML = gather(List),
+            TwiML = collect(List),
             Val = case twiml:is_valid(TwiML) of
                       false -> ?ERR_VAL;
                       true  -> twiml:compile(TwiML, html)
@@ -80,6 +82,28 @@
             "Error: Phone Menu already set in "
                 ++ hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O)
     end.
+
+'phone.menu.dial'(List) ->
+    Dial = collect(List),
+    Twiml = [#dial{body = Dial}],
+    case twiml:is_valid(Twiml) of
+        false -> ?ERRVAL_VAL;
+        true  -> Preview = "Dial",
+                 Resize = #resize{width = 2, height = 2},
+                 #spec_val{val = "", preview = Preview, resize = Resize,
+                           sp_phone = #phone{twiml = Twiml}}
+    end.
+
+'phone.menu.extension'([]) ->
+    'phone.menu.extension'(["Default"]);
+'phone.menu.extension'([Name]) ->
+    [Name2] = typechecks:std_strs([Name]),
+    Twiml = [#client{client = Name2}],
+    % this Twiml isn't valid on its loneo!
+    Preview = "EXTENSION: " ++ Name2,
+    Resize = #resize{width = 2, height = 2},
+    #spec_val{val = "", preview = Preview, resize = Resize,
+              sp_phone = #phone{twiml = Twiml}}.
 
 'phone.menu.phoneno'([Number]) ->
     'phone.menu.phoneno'([Number, ""]);
@@ -218,10 +242,10 @@ phsay(Text, Voice, Language, Loop) ->
                 ++ hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O)
     end.
 
-gather(List) -> gath(List, []).
+collect(List) -> col(List, []).
 
-gath([], Acc) -> lists:flatten(lists:reverse(Acc));
-gath([#cellref{col = {_, C}, row = {_, R}, path = Path} = H | T], Acc) ->
+col([], Acc) -> lists:flatten(lists:reverse(Acc));
+col([#cellref{col = {_, C}, row = {_, R}, path = Path} = H | T], Acc) ->
     Site = ?msite,
     OrigPath = ?mpath,
     Ref = hn_util:obj_to_ref({cell, {?mx + C, ?my + R}}),
@@ -237,8 +261,8 @@ gath([#cellref{col = {_, C}, row = {_, R}, path = Path} = H | T], Acc) ->
     % need to set up the recalc links properly
     % this is the easiest/best way to do it
     _Val = muin:fetch(H, "value"),
-    gath(T, NewAcc);
-gath([#rangeref{tl = {{_, X1}, {_, Y1}},
+    col(T, NewAcc);
+col([#rangeref{tl = {{_, X1}, {_, Y1}},
                 br = {{_, X2}, {_, Y2}},
                 path = Path} = H | T], Acc) ->
     Site = ?msite,
@@ -258,9 +282,9 @@ gath([#rangeref{tl = {{_, X1}, {_, Y1}},
     % need to set up the recalc links properly
     % this is the easiest/best way to do it
     _Val = muin:fetch(H, "value"),
-    gath(T, NewAcc);
+    col(T, NewAcc);
 % its an unevaluated function so eval it
-gath([H | T], Acc) ->
+col([H | T], Acc) ->
     Val = muin:external_eval_formula(H),
     NewAcc = case Val of
                  #spec_val{} ->
@@ -273,7 +297,7 @@ gath([H | T], Acc) ->
                      end;
                  _           -> Acc
              end,
-    gath(T, NewAcc).
+    col(T, NewAcc).
 
 send_invite(From, Idx) ->
    case get(auth_req) of
