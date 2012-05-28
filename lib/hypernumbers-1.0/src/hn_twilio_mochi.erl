@@ -61,7 +61,7 @@ get_phone(#refX{site = S},
                             P#phone.softphone_config,
                             P#phone.softphone_type])};
 get_phone(#refX{site = S},
-          #phone{capability = [{client_incoming, _, Ext}, _] = C} = P, Uid) ->
+          #phone{capability = [{client_incoming, Ext}] = C} = P, Uid) ->
     HyperTag = get_hypertag(S, P, Uid),
     Token = get_phonetoken(S, C),
     {struct, lists:flatten([{"phonetoken", Token},
@@ -324,7 +324,6 @@ full_redir(Redir, Env) ->
     Redir ++ "?" ++ Path.
 
 get_phonetoken(Site, Capability) ->
-    io:format("Capability is ~p~n", [Capability]),
     AC = contact_utils:get_twilio_account(Site),
     #twilio_account{account_sid = AccSID, auth_token = AuthToken} = AC,
     Tok = twilio_capabilities:generate(AccSID, AuthToken, Capability,
