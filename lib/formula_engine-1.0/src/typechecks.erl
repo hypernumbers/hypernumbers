@@ -57,6 +57,8 @@ th([H | T], Acc)                      -> th(T, [H | Acc]);
 % might not be a list returned if its an error...
 th(X, []) when ?is_errval(X)          -> throw(X).
 
+std_phone_no(Prefix, blank) ->
+    std_phone_no(Prefix, "");
 std_phone_no("", "++" ++ Number) ->
     N2 = compress(Number),
     {"", N2};
@@ -145,9 +147,12 @@ compress(List) ->
         "0" ++ Rest2  -> Rest2;
         Other         -> Other
     end,
-    case is_str_integer(Num2) of
-        true  -> Num2;
-        false -> ?ERR_VAL
+    case Num2 of
+        "" -> Num2;
+        _  -> case is_str_integer(Num2) of
+                  true  -> Num2;
+                  false -> ?ERR_VAL
+              end
     end.
 
 is_str_integer(Num) ->

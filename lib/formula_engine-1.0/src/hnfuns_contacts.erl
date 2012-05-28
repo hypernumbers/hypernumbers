@@ -202,6 +202,7 @@ check(To, Su, Cn, CC, Reply) ->
                 ++ PhNo3
     end.
 
+% TODO make it handle errors better
 'phone.out'([PhNo, Prefix]) ->
     'phone.out2'(PhNo, Prefix);
 'phone.out'([PhNo]) ->
