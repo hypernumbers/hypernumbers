@@ -351,15 +351,19 @@ transform("tim.menu." ++ R, Args) ->
     {list_to_atom("tim.menu."), [R | Args]};
 transform("html.menu." ++ R, Args) ->
     {list_to_atom("html.menu."), [R | Args]};
-transform("menu.buttons." ++ R, Args) ->
-    {list_to_atom("menu.buttons."), [R | Args]};
-transform("menu.mini.buttons." ++ R, Args) ->
-    {list_to_atom("menu.mini.buttons."), [R | Args]};
-transform("menu.small.buttons." ++ R, Args) ->
-    {list_to_atom("menu.small.buttons."), [R | Args]};
-transform("menu.large.buttons." ++ R, Args) ->
-    {list_to_atom("menu.large.buttons."), [R | Args]};
-% thse clauses needs to be captured to stop the next one capturing it!
+transform("buttonbar." ++ R, Args) ->
+    {list_to_atom("buttonbar."), [R | Args]};
+transform("mini.buttonbar." ++ R, Args) ->
+    {list_to_atom("mini.buttonbar."), [R | Args]};
+transform("small.buttonbar." ++ R, Args) ->
+    {list_to_atom("small.buttonbar."), [R | Args]};
+transform("large.buttonbar." ++ R, Args) ->
+    {list_to_atom("large.buttonbar."), [R | Args]};
+transform("make.goto.buttonbar." ++ R, Args) ->
+    {list_to_atom("make.goto.buttonbar."), [R | Args]};
+transform("breadcrumbs." ++ R, Args) ->
+    {list_to_atom("breadcrumbs."), [R | Args]};
+% these clauses needs to be captured to stop the next one capturing it!
 transform("html.submenu", Args) ->
     {list_to_atom("html.submenu"), Args};
 transform("html.zsubmenu", Args) ->

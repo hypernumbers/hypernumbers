@@ -1,0 +1,23 @@
+/*.crumb + span
+{
+  background-color: #fff !important;
+}
+
+.dropdown-menu > li
+{
+  padding: 3px 15px;
+  }
+
+.crumb
+{
+  padding         : 3px 0px !important;
+  color           : #0088cc !important;
+  text-decoration : none !important;
+  display         : inline !important;
+  }
+
+.crumb:hover
+{
+  color: #005588 !important;
+  text-decoration: underline;
+  }*/
