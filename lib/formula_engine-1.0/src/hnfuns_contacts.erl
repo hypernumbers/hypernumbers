@@ -241,7 +241,7 @@ check(To, Su, Cn, CC, Reply) ->
     #twilio_account{application_sid = AppSID} = AC,
     Log = #contact_log{idx = get(idx), type = "inbound call", to = "Name2"},
     TwiML = [],
-    Capability = [{client_incoming, AppSID, []}, {clientName, Name2}],
+    Capability = [{client_incoming, Name}],
     Type = {"softphone_type", "inbound call"},
     ButtonTxt = "User:" ++ Name,
     Config = [{"button_txt", ButtonTxt},
