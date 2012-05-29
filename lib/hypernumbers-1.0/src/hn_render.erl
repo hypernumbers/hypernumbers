@@ -349,8 +349,6 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
          <link rel='stylesheet' href='/webcomponents/webcomponents.css' />
          <link rel='stylesheet' href='/webcomponents/webbasic.css' />
-         <link rel='stylesheet' href='/bootstrap/css/helper.css' />
-         <link rel='stylesheet' href='/bootstrap/css/bootstrap.css' />
          <link rel='stylesheet' href='/tblsorter/style.css' />
          <link rel='stylesheet' href='/cleditor/jquery.cleditor.css' />
 
@@ -412,9 +410,7 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
   <script src='/hypernumbers/hn.sitedata.js'></script>
   <script src='/hypernumbers/hn.callbacks.js'></script>"
      ++ Addons#render.js ++ "" ++ Addons#render.js_reload ++
-"  <script src='/bootstrap/js/bootstrap.js'></script>
-   <script src='/bootstrap/js/helper.js'></script>
-   <script src='/cleditor/jquery.cleditor.js'></script>
+"  <script src='/cleditor/jquery.cleditor.js'></script>
    <script src='/hypernumbers/hn.renderpage.js'></script>
   </body>
   </html>"].
