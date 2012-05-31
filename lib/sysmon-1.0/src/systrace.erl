@@ -17,7 +17,8 @@
          profile_site/2
         ]).
 
--define(OneMinute, 60000). % in microseconds
+-define(OneMinute, 60). % in microseconds
+%-define(OneMinute, 60000). % in microseconds
 -define(D, 68).
 
 -record(ts, {
@@ -30,14 +31,17 @@
 profile_site(Site, N) when is_integer(N) andalso N > 0 ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
-    File = "systrace." ++ Site ++ Stamp ++ ".log",
+    "http://" ++ Site2 = Site,
+    File = "systrace." ++ Site2 ++ Stamp ++ ".log",
     Logs = prof(N, Site),
     hn_util:log_terms(Logs, Dir ++ File).
 
 prof(N, Site) -> prof2(1, N, Site, []).
 
 prof2(N, N, _Site, Acc) -> lists:reverse(Acc);
-prof2(N, M, Site, Acc)  -> NewAcc = profile_site(Site),
+prof2(N, M, Site, Acc)  -> io:format("Profiling ~p (sample ~p of ~p)~n",
+                                     [Site, N, M]),
+                           NewAcc = profile_site(Site),
                            prof2(N + 1, M, Site, [NewAcc | Acc]).
 
 profile_siteP(Site) -> print(profile_site(Site)).
