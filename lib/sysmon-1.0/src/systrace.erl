@@ -37,7 +37,9 @@ profile_db_wu() ->
                          end,
                    lists:foldl(Fun2, [], Fns)
           end,
-    profile(PIDs, TraceFlags, Fun1).
+    Prof = profile(PIDs, TraceFlags, Fun1),
+    print(Prof),
+    ok.
 
 profile_dbsrv(Site) ->
     Id = hn_util:site_to_atom(Site, "_dbsrv"),
@@ -46,7 +48,9 @@ profile_dbsrv(Site) ->
     Fun = fun(X) ->
                   X:module_info(functions)
           end,
-    profile([{PID, dbsrv}], TraceFlags, Fun).
+    Prof = profile([{PID, dbsrv}], TraceFlags, Fun),
+    print(Prof),
+    ok.
 
 profile(PIDs, TraceFlags, SelFun) ->
     % first set up the tracing
@@ -82,3 +86,35 @@ profile(PIDs, TraceFlags, SelFun) ->
     % return the timings
     Timings.
 
+print([]) ->
+    ok;
+print([[]]) ->
+    io:format("No activity~n");
+print([H | T]) ->
+    Fun = fun(#timings{time = Tm}, Acc) ->
+                  Acc + Tm
+          end,
+    Total = lists:foldl(Fun, 0, H),
+    io:format("Total is ~p~n", [Total]),
+    p2(H, Total),
+    print(T).
+
+p2([], _Total) -> ok;
+p2([H | T], Total) ->
+    #timings{function = {Mod, Fn, Arity}, calls = C, time = Tm} = H,
+    case {Total, C} of
+        {Zero, C} when (Zero == 0 orelse Zero == 0.0)
+        andalso (C == 0 orelse C == 0.0) ->
+            io:format("~p,~p,~p,~p,~p,-,-~n",
+                      [Mod, Fn, Arity, C, T]);
+        {Zero, _} when Zero == 0 orelse Zero == 0.0 ->
+            io:format("~p,~p,~p,~p,~p,-,~p~n",
+                      [Mod, Fn, Arity, C, T, Tm/C]);
+        {_, C} when C == 0 orelse C == 0.0 ->
+            io:format("~p,~p,~p,~p,~p,~p%,-~n",
+                      [Mod, Fn, Arity, C, Tm, (Tm/Total)*100]);
+        _Other ->
+            io:format("~p,~p,~p,~p,~p,~p%,~p~n",
+                      [Mod, Fn, Arity, C, Tm, (Tm/Total)*100, Tm/C])
+    end,
+    p2(T, Total).
