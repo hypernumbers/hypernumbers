@@ -323,7 +323,7 @@ get_registered("http://"++Site) ->
     LocalNames = registered(),
     G2 = get_r(GlobalNames, Site2, []),
     L2 = get_r(LocalNames, Site2, []),
-    lists:merge(G2, L2).
+    {Site, lists:merge(G2, L2)}.
 
 get_r([], _Site, Acc) ->
     Acc;
@@ -339,7 +339,8 @@ get_r([H | T], Site, Acc) ->
                                          "_dbsrv" -> whereis(Atom);
                                          _        -> global:whereis_name(Atom)
                                      end,
-                               [{Name, Pid} | Acc];
+                               "_" ++ Reg2 = Reg,
+                               [{Reg2, Pid} | Acc];
                 _           -> Acc
             end;
         Length2 =< Length1 -> Acc
