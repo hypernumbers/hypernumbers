@@ -10,14 +10,12 @@
 -export([
          profile_dbsrvP/1,
          profile_db_wuP/0,
-         profile_siteP/1,
          profile_dbsrv/1,
          profile_db_wu/0,
-         profile_site/1,
+         log_profile_site/2,
          profile_site/2
         ]).
 
-%-define(OneMinute, 60). % in microseconds
 -define(OneMinute, 60000). % in microseconds
 -define(D, 68).
 
@@ -28,7 +26,7 @@
           time = ""
          }).
 
-profile_site(Site, N) when is_integer(N) andalso N > 0 ->
+log_profile_site(Site, N) when is_integer(N) andalso N > 0 ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
     "http://" ++ Site2 = Site,
@@ -42,22 +40,23 @@ prof2(N, N, _Site, _File) ->
 prof2(N, M, Site, File) ->
     io:format("Profiling ~p (sample ~p of ~p)~n",
               [Site, N, M]),
-    Logs = profile_site(Site),
-    hn_util:log_terms(Logs, File),
-    garbage_collect(),
+    profile_site(Site, File),
     prof2(N + 1, M, Site, File).
 
-profile_siteP(Site) -> print(profile_site(Site)).
-
-profile_site(Site) ->
+profile_site(Site, FileName) ->
     {_SiteName, RegProcesses} = syslib:get_registered(Site),
     RP2 = rectify(RegProcesses),
     TraceFlags = [all],
-    Fun = fun(_PID, X) ->
+    Fun1 = fun(_PID, X) ->
                   Fns = X:module_info(functions),
                   zip(Fns, X, [])
           end,
-    profile(RP2, TraceFlags, Fun).
+    Fun2 = fun(X) ->
+                   Logs = profile(X, TraceFlags, Fun1),
+                   hn_util:log_terms(Logs, FileName),
+                   garbage_collect()
+           end,
+    [Fun2([X]) || X <- RP2].
 
 profile_db_wuP() -> print(profile_db_wu()).
 
