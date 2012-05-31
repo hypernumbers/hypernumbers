@@ -9,7 +9,8 @@
 
 -export([
          profile_dbsrv/1,
-         profile_db_wu/0
+         profile_db_wu/0,
+         profile_site/1
         ]).
 
 -define(OneMinute, 60000). % in microseconds
@@ -21,6 +22,18 @@
           calls = "",
           time = ""
          }).
+
+profile_site(Site) ->
+    {_SiteName, RegProcesses} = syslib:get_registered(Site),
+    RP2 = rectify(RegProcesses),
+    TraceFlags = [all],
+    Fun = fun(X) ->
+                  X:module_info(functions)
+          end,
+    Prof = profile(RP2, TraceFlags, Fun),
+    print(Prof),
+    ok.
+
 
 profile_db_wu() ->
     PIDs = [{all, new_db_wu}],
@@ -78,7 +91,7 @@ profile(PIDs, TraceFlags, SelFun) ->
                                                    time = Total}
                                   end
                           end,
-                   lists:flatten([Fun3(X) || X <- Fns])
+                   {Mod, lists:flatten([Fun3(X) || X <- Fns])}
            end,
     Timings = [Fun2(X) || X <- PIDs],
     % now tidy up
@@ -88,14 +101,15 @@ profile(PIDs, TraceFlags, SelFun) ->
 
 print([]) ->
     ok;
-print([[]]) ->
-    io:format("No activity~n");
-print([H | T]) ->
+print([{Mod, []} | T]) ->
+    io:format("No activity for ~p~n", [Mod]),
+    print(T);
+print([{Mod, H} | T]) ->
     Fun = fun(#timings{time = Tm}, Acc) ->
                   Acc + Tm
           end,
     Total = lists:foldl(Fun, 0, H),
-    io:format("Total is ~p~n", [Total]),
+    io:format("Total is ~p for ~p~n", [Total, Mod]),
     p2(H, Total),
     print(T).
 
@@ -106,10 +120,10 @@ p2([H | T], Total) ->
         {Zero, C} when (Zero == 0 orelse Zero == 0.0)
         andalso (C == 0 orelse C == 0.0) ->
             io:format("~p,~p,~p,~p,~p,-,-~n",
-                      [Mod, Fn, Arity, C, T]);
+                      [Mod, Fn, Arity, C, Tm]);
         {Zero, _} when Zero == 0 orelse Zero == 0.0 ->
             io:format("~p,~p,~p,~p,~p,-,~p~n",
-                      [Mod, Fn, Arity, C, T, Tm/C]);
+                      [Mod, Fn, Arity, C, Tm, Tm/C]);
         {_, C} when C == 0 orelse C == 0.0 ->
             io:format("~p,~p,~p,~p,~p,~p%,-~n",
                       [Mod, Fn, Arity, C, Tm, (Tm/Total)*100]);
@@ -118,3 +132,20 @@ p2([H | T], Total) ->
                       [Mod, Fn, Arity, C, Tm, (Tm/Total)*100, Tm/C])
     end,
     p2(T, Total).
+
+rectify(List) -> r2(List, []).
+
+r2([], Acc)          -> Acc;
+r2([{N, P}| T], Acc) -> r2(T, [{P, rect(N)} | Acc]).
+
+rect("dbsrv")     -> dbsrv;
+rect("dbsrv_sup") -> dbsrv;
+rect("auth")      -> auth_srv;
+rect("tick")      -> tick_srv;
+rect("status")    -> status_srv;
+rect("pages")     -> page_srv;
+rect("remoting")  -> remoting_reg;
+rect("sup")       -> sitemaster_sup;
+rect("phonecall") -> phonecall_sup;
+rect("calc_sup")  -> calc_sup;
+rect("zinf")      -> zinf_srv.
