@@ -33,16 +33,19 @@ profile_site(Site, N) when is_integer(N) andalso N > 0 ->
     Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
     "http://" ++ Site2 = Site,
     File = "systrace." ++ Site2 ++ Stamp ++ ".log",
-    Logs = prof(N, Site),
-    hn_util:log_terms(Logs, Dir ++ File).
+    prof(N, Site, Dir ++ File).
 
-prof(N, Site) -> prof2(1, N, Site, []).
+prof(N, Site, File) -> prof2(1, N, Site, File).
 
-prof2(N, N, _Site, Acc) -> lists:reverse(Acc);
-prof2(N, M, Site, Acc)  -> io:format("Profiling ~p (sample ~p of ~p)~n",
-                                     [Site, N, M]),
-                           NewAcc = profile_site(Site),
-                           prof2(N + 1, M, Site, [NewAcc | Acc]).
+prof2(N, N, _Site, _File) ->
+    ok;
+prof2(N, M, Site, File) ->
+    io:format("Profiling ~p (sample ~p of ~p)~n",
+              [Site, N, M]),
+    Logs = profile_site(Site),
+    hn_util:log_terms(Logs, File),
+    garbage_collect(),
+    prof2(N + 1, M, Site, File).
 
 profile_siteP(Site) -> print(profile_site(Site)).
 
