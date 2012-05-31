@@ -17,8 +17,8 @@
          profile_site/2
         ]).
 
--define(OneMinute, 60). % in microseconds
-%-define(OneMinute, 60000). % in microseconds
+%-define(OneMinute, 60). % in microseconds
+-define(OneMinute, 60000). % in microseconds
 -define(D, 68).
 
 -record(ts, {
