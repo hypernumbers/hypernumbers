@@ -24,6 +24,7 @@
          process_dump/0,
          top5/0,
          top/0,
+         get_registered/1,
          show_registered/0,
          show_registered/1,
          log/2,
@@ -315,6 +316,35 @@ showq([H | T], Verbose, Acc) ->
                      io_lib:format("Queue ~p has ~p records~n", [H, N])
              end,
     showq(T, Verbose, [NewAcc | Acc]).
+
+get_registered("http://"++Site) ->
+    Site2 = [case X of $: -> $&; X -> X end || X <- Site],
+    GlobalNames = global:registered_names(),
+    LocalNames = registered(),
+    G2 = get_r(GlobalNames, Site2, []),
+    L2 = get_r(LocalNames, Site2, []),
+    lists:merge(G2, L2).
+
+get_r([], _Site, Acc) ->
+    Acc;
+get_r([H | T], Site, Acc) ->
+    Name = atom_to_list(H),
+    Length1 = length(Site),
+    Length2 = length(Name),
+    NewAcc = if
+        Length2 > Length1 ->
+            case lists:split(Length1, Name) of
+                {Site, Reg} -> Atom = list_to_existing_atom(Name),
+                               Pid = case Reg of
+                                         "_dbsrv" -> whereis(Atom);
+                                         _        -> global:whereis_name(Atom)
+                                     end,
+                               [{Name, Pid} | Acc];
+                _           -> Acc
+            end;
+        Length2 =< Length1 -> Acc
+    end,
+    get_r(T, Site, NewAcc).
 
 show_registered() ->
     Globals = [{global:whereis_name(X), global, X} ||
