@@ -184,7 +184,6 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
      XFCellBorders1:32/little-unsigned-integer,
      XFCellBorders2:32/little-unsigned-integer,
      XFCellBorders3:16/little-unsigned-integer>> = Bin,
-
     XFType =  case (XFTypeAndParent band ?rc_XF_XF_TYPE_MASK) of
                   4 -> style; % yup, its a mask match so it is a power of 2
                   0 -> cell
@@ -255,7 +254,7 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
                        cell  -> {use_this, use_parent}
                    end,
 
-    % Ignore identation
+    % Ignore indentation
 
     % bit shift XFlags 2 to the right
     XFFlags2 = trunc(XFFlags/4),
@@ -397,7 +396,7 @@ parse_rec(?SUPBOOK, Bin, _Name, Tbl) ->
 
 parse_rec(?BLANK2, Bin, Name, _Tbl) ->
     <<Row:16/little-unsigned-integer, Col:16/little-unsigned-integer,
-     XF:16/little-unsigned-integer>> = Bin,
+     XF:16/little-unsigned-integer, _Rest/binary>> = Bin,
     {write, tmp_blanks, [mref(Name, Row, Col), {xf_index, XF}]};
 
 parse_rec(?NUMBER2, Bin, Name, _Tbl) ->

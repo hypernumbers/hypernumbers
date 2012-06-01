@@ -161,7 +161,7 @@ fix_up_cells(Tables) ->
     Fun = fun(X, _Acc)->
 
                   {Id, [XF, {tokens, Tok},
-                           {tokenarrays, TokArr}]} = X,
+                        {tokenarrays, TokArr}]} = X,
 
                   case excel_rev_comp:reverse_compile(Id, Tok, TokArr,
                                                       Tables) of
@@ -187,7 +187,7 @@ fix_up_externalrefs(Tables)->
         _ -> [Index] = ets:foldl(Fun, [], ExternalRefs),
              SheetNames = lists:reverse(get_sheetnames(Tables)),
              ?write(Tables, tmp_externalbook, [Index, {this_file,expanded},
-                                          SheetNames])
+                                               SheetNames])
     end.
 
 %% This function merges the escaped contents of the ets table 'tmp_sheetnames' into
@@ -292,218 +292,224 @@ set_formats(CellRef, XFIndex, Tables) ->
     {value, {tmp_xf, XFId}}           = ?k(tmp_xf,      1, Tables),
     {value, {tmp_formats, FormatsId}} = ?k(tmp_formats, 1, Tables),
     {value, {tmp_colours, ColoursId}} = ?k(tmp_colours, 1, Tables),
-    % filefilters:dump(Tables),
-    [{_XF, XFList}] = ets:lookup(XFId, {index, XFIndex}),
 
-    % Formats in Excel are stored in a heirarchical arrangement
-    % We need to know the parent (or style) record for this record
+    % sometimes there is a hooky format index so skip it
+    case ets:lookup(XFId, {index, XFIndex}) of
+        [] ->
+            % TODO write out a proper warning here
+            {ok, ok};
+        [{_XF, XFList}] ->
 
-    {value, {type, Type}} = ?k(type, 1, XFList),
-    % It appears that sometimes a cell format can reference a style
-    % record directly!
-    % By definition in this case the cell format has no parent
+            % Formats in Excel are stored in a heirarchical arrangement
+            % We need to know the parent (or style) record for this record
 
-    PXFList =
-        case Type of
-            cell  ->
-                % Look up the parent XF record
-                {value, {parent_index, XFParentIndex}} =
-                    ?k(parent_index, 1, XFList),
-                [{_PXF, PXFList2}] = ets:lookup(XFId, {index, XFParentIndex}),
-                % the parent should be a style - check that it is so
-                {value, {type, PType}} = ?k(type, 1, PXFList2),
-                case PType of
-                    cell  -> exit("I don't think this should ever read a "++
-                                  "cell XF record");
-                    style -> ok
+            {value, {type, Type}} = ?k(type, 1, XFList),
+            % It appears that sometimes a cell format can reference a style
+            % record directly!
+            % By definition in this case the cell format has no parent
+
+            PXFList =
+                case Type of
+                    cell  ->
+                        % Look up the parent XF record
+                        {value, {parent_index, XFParentIndex}} =
+                            ?k(parent_index, 1, XFList),
+                        [{_PXF, PXFList2}] = ets:lookup(XFId, {index, XFParentIndex}),
+                        % the parent should be a style - check that it is so
+                        {value, {type, PType}} = ?k(type, 1, PXFList2),
+                        case PType of
+                            cell  -> exit("I don't think this should ever read a "++
+                                          "cell XF record");
+                            style -> ok
+                        end,
+                        PXFList2;
+                    style -> io:format("I don't think this should ever read "++
+                                       "a style XF record~n"),
+                             % Just return the XFList
+                             % ie kid on that the format is its own parent
+                             XFList
                 end,
-                PXFList2;
-            style -> io:format("I don't think this should ever read "++
-                               "a style XF record~n"),
-                     % Just return the XFList
-                     % ie kid on that the format is its own parent
-                     XFList
-        end,
 
-    %
-    % What attributes apply are determined by the XF attributes
-    % so get them first
-    %
-    {value, {attributes, AttrList}}  = ?k(attributes, 1, XFList),
-    {value, {attributes, PAttrList}} = ?k(attributes, 1, PXFList),
+            %
+            % What attributes apply are determined by the XF attributes
+            % so get them first
+            %
+            {value, {attributes, AttrList}}  = ?k(attributes, 1, XFList),
+            {value, {attributes, PAttrList}} = ?k(attributes, 1, PXFList),
 
-    % get the state of play in CSS
-    {value, {css, CSSList}}  = ?k(css, 1, XFList),
-    {value, {css, PCSSList}} = ?k(css, 1, PXFList),
+            % get the state of play in CSS
+            {value, {css, CSSList}}  = ?k(css, 1, XFList),
+            {value, {css, PCSSList}} = ?k(css, 1, PXFList),
 
-    % Attribute 1 NUMBER
-    % get the appropriate FORMAT_INDEX
-    {value, {number, NumAttr}}  = ?k(number, 1, AttrList),
-    {value, {number, PNumAttr}} = ?k(number, 1, PAttrList),
+            % Attribute 1 NUMBER
+            % get the appropriate FORMAT_INDEX
+            {value, {number, NumAttr}}  = ?k(number, 1, AttrList),
+            {value, {number, PNumAttr}} = ?k(number, 1, PAttrList),
 
-    {value, {format_index, FormatIdx}} =
-        case {NumAttr, PNumAttr} of
-            {use_this, _}        -> ?k(format_index, 1, XFList);
-            {use_parent, valid}  -> ?k(format_index, 1, PXFList);
-            {valid, valid}       -> ?k(format_index, 1, PXFList); % parent is child
-            {use_parent, ignore} -> ?k(format_index, 1, XFList)
-        end,
-    Return = ets:lookup(FormatsId, {format_index, FormatIdx}),
-    [{_Idx, [_Type, _Category, Format]}] = Return,
+            {value, {format_index, FormatIdx}} =
+                case {NumAttr, PNumAttr} of
+                    {use_this, _}        -> ?k(format_index, 1, XFList);
+                    {use_parent, valid}  -> ?k(format_index, 1, PXFList);
+                    {valid, valid}       -> ?k(format_index, 1, PXFList); % parent is child
+                    {use_parent, ignore} -> ?k(format_index, 1, XFList)
+                end,
+            Return = ets:lookup(FormatsId, {format_index, FormatIdx}),
+            [{_Idx, [_Type, _Category, Format]}] = Return,
 
-    % Attribute 2 FONT
-    % get the appropriate FONT index
-    {value, {font, FontAttr}}  = ?k(font, 1, AttrList),
-    {value, {font, PFontAttr}} = ?k(font, 1, PAttrList),
+            % Attribute 2 FONT
+            % get the appropriate FONT index
+            {value, {font, FontAttr}}  = ?k(font, 1, AttrList),
+            {value, {font, PFontAttr}} = ?k(font, 1, PAttrList),
 
-    {value, {font_index, FontIdx}} =
-        case {FontAttr, PFontAttr} of
-            {use_this, _}        -> ?k(font_index, 1, XFList);
-            {use_parent, valid}  -> ?k(font_index, 1, PXFList);
-            % parent is child
-            {valid, valid}       -> ?k(font_index, 1, PXFList);
-            {use_parent, ignore} -> ?k(font_index, 1, XFList);
-            {ignore, ignore}     -> ?k(font_index, 1, XFList)
-        end,
-    % now look up the font
-    FontCSS = get_fonts(FontIdx, Tables),
-    % Attribute 3 TEXT
-    % get the following CSS elements
-    % * 'vertical-align'
-    % * 'text-align'
-    {value, {text, TextAttr}}  = ?k(text, 1, AttrList),
-    {value, {text, PTextAttr}} = ?k(text, 1, PAttrList),
-    TextCSS =
-        case {TextAttr, PTextAttr} of
-            {use_this, _}        -> get_css(CSSList, ["vertical-align",
-                                                      "text-align"]);
-            {use_parent, valid}  -> get_css(PCSSList,["vertical-align",
-                                                      "text-align"]);
-            {valid, valid}       -> get_css(PCSSList,["vertical-align",
-                                                      "text-align"]); % parent is child
-            {use_parent, ignore} -> get_css(CSSList, ["vertical-align",
-                                                      "text-align"]);
-            {ignore, ignore}     -> get_css(CSSList, ["vertical-align",
-                                                      "text-align"])
-        end,
+            {value, {font_index, FontIdx}} =
+                case {FontAttr, PFontAttr} of
+                    {use_this, _}        -> ?k(font_index, 1, XFList);
+                    {use_parent, valid}  -> ?k(font_index, 1, PXFList);
+                    % parent is child
+                    {valid, valid}       -> ?k(font_index, 1, PXFList);
+                    {use_parent, ignore} -> ?k(font_index, 1, XFList);
+                    {ignore, ignore}     -> ?k(font_index, 1, XFList)
+                end,
+            % now look up the font
+            FontCSS = get_fonts(FontIdx, Tables),
+            % Attribute 3 TEXT
+            % get the following CSS elements
+            % * 'vertical-align'
+            % * 'text-align'
+            {value, {text, TextAttr}}  = ?k(text, 1, AttrList),
+            {value, {text, PTextAttr}} = ?k(text, 1, PAttrList),
+            TextCSS =
+                case {TextAttr, PTextAttr} of
+                    {use_this, _}        -> get_css(CSSList, ["vertical-align",
+                                                              "text-align"]);
+                    {use_parent, valid}  -> get_css(PCSSList,["vertical-align",
+                                                              "text-align"]);
+                    {valid, valid}       -> get_css(PCSSList,["vertical-align",
+                                                              "text-align"]); % parent is child
+                    {use_parent, ignore} -> get_css(CSSList, ["vertical-align",
+                                                              "text-align"]);
+                    {ignore, ignore}     -> get_css(CSSList, ["vertical-align",
+                                                              "text-align"])
+                end,
 
-    % Attribute 4 BORDER
-    % get the following CSS elements
-    % * "border-left"
-    % * "border-right"
-    % * "border-top"
-    % * "border-bottom"
-    %
-    % and then looks up the colour indices to generate the following:
-    % * "border-colour"
-    %
-    % First get the attributes
-    {value, {border, BorderAttr}}  = ?k(border, 1, AttrList),
-    {value, {border, PBorderAttr}} = ?k(border, 1, PAttrList),
+            % Attribute 4 BORDER
+            % get the following CSS elements
+            % * "border-left"
+            % * "border-right"
+            % * "border-top"
+            % * "border-bottom"
+            %
+            % and then looks up the colour indices to generate the following:
+            % * "border-colour"
+            %
+            % First get the attributes
+            {value, {border, BorderAttr}}  = ?k(border, 1, AttrList),
+            {value, {border, PBorderAttr}} = ?k(border, 1, PAttrList),
 
-    % Now get the colour indices
-    {value, {border_colour, ColoursList}}  = ?k(border_colour, 1, XFList),
-    {value, {border_colour, PColoursList}} = ?k(border_colour, 1, PXFList),
+            % Now get the colour indices
+            {value, {border_colour, ColoursList}}  = ?k(border_colour, 1, XFList),
+            {value, {border_colour, PColoursList}} = ?k(border_colour, 1, PXFList),
 
-    BorderCSS =
-        case {BorderAttr, PBorderAttr} of
-            {use_this, _}        ->
-                S = get_css(CSSList, ["border-left-width", "border-right-width",
-                                      "border-top-width",  "border-bottom-width",
-                                      "border-left-style", "border-right-style",
-                                      "border-top-style",  "border-bottom-style"]),
-                C = get_colours(ColoursList,Tables),
-                lists:merge([S, C]);
-            {use_parent, valid}  ->
-                S = get_css(PCSSList, ["border-left-width", "border-right-width",
-                                       "border-top-width",  "border-bottom-width",
-                                       "border-left-style", "border-right-style",
-                                       "border-top-style",  "border-bottom-style"]),
-                C = get_colours(PColoursList,Tables),
-                lists:merge([S, C]);
-            {valid, valid}       -> % parent is child
-                S = get_css(PCSSList, ["border-left-width", "border-right-width",
-                                       "border-top-width",  "border-bottom-width",
-                                       "border-left-style", "border-right-style",
-                                       "border-top-style",  "border-bottom-style"]),
-                C = get_colours(PColoursList,Tables),
-                lists:merge([S, C]);
-            {use_parent, ignore} ->
-                S = get_css(CSSList, ["border-left-width", "border-right-width",
-                                      "border-top-width",  "border-bottom-width",
-                                      "border-left-style", "border-right-style",
-                                      "border-top-style",  "border-bottom-style"]),
-                C = get_colours(ColoursList,Tables),
-                lists:merge([S, C]);
-            {ignore, ignore} ->
-                S = get_css(CSSList, ["border-left-width", "border-right-width",
-                                      "border-top-width",  "border-bottom-width",
-                                      "border-left-style", "border-right-style",
-                                      "border-top-style",  "border-bottom-style"]),
-                C = get_colours(ColoursList,Tables),
-                lists:merge([S, C])
-        end,
+            BorderCSS =
+                case {BorderAttr, PBorderAttr} of
+                    {use_this, _}        ->
+                        S = get_css(CSSList, ["border-left-width", "border-right-width",
+                                              "border-top-width",  "border-bottom-width",
+                                              "border-left-style", "border-right-style",
+                                              "border-top-style",  "border-bottom-style"]),
+                        C = get_colours(ColoursList,Tables),
+                        lists:merge([S, C]);
+                    {use_parent, valid}  ->
+                        S = get_css(PCSSList, ["border-left-width", "border-right-width",
+                                               "border-top-width",  "border-bottom-width",
+                                               "border-left-style", "border-right-style",
+                                               "border-top-style",  "border-bottom-style"]),
+                        C = get_colours(PColoursList,Tables),
+                        lists:merge([S, C]);
+                    {valid, valid}       -> % parent is child
+                        S = get_css(PCSSList, ["border-left-width", "border-right-width",
+                                               "border-top-width",  "border-bottom-width",
+                                               "border-left-style", "border-right-style",
+                                               "border-top-style",  "border-bottom-style"]),
+                        C = get_colours(PColoursList,Tables),
+                        lists:merge([S, C]);
+                    {use_parent, ignore} ->
+                        S = get_css(CSSList, ["border-left-width", "border-right-width",
+                                              "border-top-width",  "border-bottom-width",
+                                              "border-left-style", "border-right-style",
+                                              "border-top-style",  "border-bottom-style"]),
+                        C = get_colours(ColoursList,Tables),
+                        lists:merge([S, C]);
+                    {ignore, ignore} ->
+                        S = get_css(CSSList, ["border-left-width", "border-right-width",
+                                              "border-top-width",  "border-bottom-width",
+                                              "border-left-style", "border-right-style",
+                                              "border-top-style",  "border-bottom-style"]),
+                        C = get_colours(ColoursList,Tables),
+                        lists:merge([S, C])
+                end,
 
-    % Attribute 5 BACKGROUND
-    % uses the PatternBackgroundColourIndex to generate the background CSS
-    {value, {background, BackgroundAttr}}  = ?k(background, 1, AttrList),
-    {value, {background, PBackgroundAttr}} = ?k(background, 1, PAttrList),
+            % Attribute 5 BACKGROUND
+            % uses the PatternBackgroundColourIndex to generate the background CSS
+            {value, {background, BackgroundAttr}}  = ?k(background, 1, AttrList),
+            {value, {background, PBackgroundAttr}} = ?k(background, 1, PAttrList),
 
-    % Now get the colour indices
-    {value, {bg_colour, [{background, BGColour}]}}  = ?k(bg_colour, 1, XFList),
-    {value, {bg_colour, [{background, PBGColour}]}} = ?k(bg_colour, 1, PXFList),
+            % Now get the colour indices
+            {value, {bg_colour, [{background, BGColour}]}}  = ?k(bg_colour, 1, XFList),
+            {value, {bg_colour, [{background, PBGColour}]}} = ?k(bg_colour, 1, PXFList),
 
-    BackgroundCSS =
-        case {BackgroundAttr, PBackgroundAttr} of
-            {use_this, _}        ->
-                C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
-                [{_, [{colour,Col}]}] = C2,
-                {"background-color", Col};
-            {use_parent, valid}  ->
-                C2 = ets:lookup(ColoursId,{colour_index, PBGColour}),
-                [{_, [{colour,Col}]}] = C2,
-                {"background-color", Col};
-            {valid, valid}       -> % parent is child
-                C2 = ets:lookup(ColoursId,{colour_index, PBGColour}),
-                [{_, [{colour,Col}]}] = C2,
-                {"background-color", Col};
-            {use_parent, ignore} ->
-                C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
-                [{_, [{colour,Col}]}] = C2,
-                {"background-color", Col};
-            {ignore, ignore} ->
-                C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
-                [{_, [{colour,Col}]}] = C2,
-                {"background-color", Col}
-        end,
+            BackgroundCSS =
+                case {BackgroundAttr, PBackgroundAttr} of
+                    {use_this, _}        ->
+                        C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
+                        [{_, [{colour,Col}]}] = C2,
+                        {"background-color", Col};
+                    {use_parent, valid}  ->
+                        C2 = ets:lookup(ColoursId,{colour_index, PBGColour}),
+                        [{_, [{colour,Col}]}] = C2,
+                        {"background-color", Col};
+                    {valid, valid}       -> % parent is child
+                        C2 = ets:lookup(ColoursId,{colour_index, PBGColour}),
+                        [{_, [{colour,Col}]}] = C2,
+                        {"background-color", Col};
+                    {use_parent, ignore} ->
+                        C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
+                        [{_, [{colour,Col}]}] = C2,
+                        {"background-color", Col};
+                    {ignore, ignore} ->
+                        C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
+                        [{_, [{colour,Col}]}] = C2,
+                        {"background-color", Col}
+                end,
 
-    % Attribute 6 PROTECTION
-    % at the moment we don't use protection
+            % Attribute 6 PROTECTION
+            % at the moment we don't use protection
 
-    % Write all the formatting info out
-    case Format of
-        [] -> ok;
-        _  -> ?write(Tables, formats, [CellRef, Format])
-    end,
-    List1 = case BackgroundCSS of
+            % Write all the formatting info out
+            case Format of
                 [] -> ok;
-                _  -> [BackgroundCSS]
+                _  -> ?write(Tables, formats, [CellRef, Format])
             end,
-    List2 = case FontCSS of
-                [] -> List1;
-                _  -> lists:append([List1, FontCSS])
-    end,
-    List3 = case TextCSS of
-                [] -> List2;
-                _  -> lists:append([List2, TextCSS])
-    end,
-    List4 = case BorderCSS of
-                [] -> ok;
-                _  -> lists:append([List3, BorderCSS])
-    end,
+            List1 = case BackgroundCSS of
+                        [] -> ok;
+                        _  -> [BackgroundCSS]
+                    end,
+            List2 = case FontCSS of
+                        [] -> List1;
+                        _  -> lists:append([List1, FontCSS])
+                    end,
+            List3 = case TextCSS of
+                        [] -> List2;
+                        _  -> lists:append([List2, TextCSS])
+                    end,
+            List4 = case BorderCSS of
+                        [] -> ok;
+                        _  -> lists:append([List3, BorderCSS])
+                    end,
 
-    ?write(Tables, css, [CellRef, List4]),
-    {ok, ok}.
+            ?write(Tables, css, [CellRef, List4]),
+            {ok, ok}
+    end.
 
 %% Excel has a number of built in number formats
 %% These are described in Section 5.49 of excelfileformatV1-41.pdf
