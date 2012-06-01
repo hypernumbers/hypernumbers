@@ -16,7 +16,7 @@
          profile_site/2
         ]).
 
--define(OneMinute, 60000). % in microseconds
+-define(SampleTime, 6000). % in microseconds
 -define(D, 68).
 
 -record(ts, {
@@ -100,7 +100,7 @@ profile(PIDs, TraceFlags, TraceeFun) ->
     % now sample
     Fun2 = fun({PID, Mod}) ->
                    Tracees = TraceeFun(PID, Mod),
-                   timer:sleep(?OneMinute),
+                   timer:sleep(?SampleTime),
                    Fun3 = fun(Term) ->
                                   Trace = erlang:trace_info(Term, call_time),
                                   case Trace of
