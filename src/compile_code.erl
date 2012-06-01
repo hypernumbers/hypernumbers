@@ -34,7 +34,8 @@
          "/lib/mochiweb/",
          "/lib/sitemods/",
          "/lib/starling/",
-         "/lib/twilio/"
+         "/lib/twilio/",
+         "/lib/load_testing/"
         ]).
 
 %% location of the jslint.js file relative to root
@@ -124,6 +125,7 @@ build_standard() ->
 
     % First set up the include file
     Inc_list = [{i, Dir ++ "lib/gettext/include"},
+                {i, Dir ++ "lib/load_testing/include"},
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
                 {i, Dir ++ "lib/sysmon-1.0/include"},
@@ -145,7 +147,6 @@ build_standard() ->
 
 add_libs_to_path() ->
     Dir = get_root(),
-
     % Add ebins for everything in /lib/ (eugh)
     [ code:add_pathz(X ++ "/ebin")
       || X <- filelib:wildcard(Dir++"/lib/*") ],
@@ -269,7 +270,7 @@ make_rel_file(App, Version, Deps) ->
 get_rel_file() ->
     Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, public_key,
             gettext, sgte, read_excel, sysmon, starling, formula_engine,
-            erlsha2, twilio, mochiweb, hypernumbers],
+            erlsha2, twilio, mochiweb, hypernumbers, load_testing],
     Rel  = make_rel_file("hypernumbers", "1.0", Apps),
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
     ok   = systools:make_script("hypernumbers",
