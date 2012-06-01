@@ -1079,9 +1079,10 @@ init_front_end_notify() ->
     ok.
 
 -spec read_activity(#refX{}, fun(), list()) -> any().
-read_activity(#refX{site = Site}, Op, Report) ->
+read_activity(#refX{site = _Site}, Op, Report) ->
     Activity = fun() -> mnesia_mon:log_act(transaction, Op, Report) end,
-    dbsrv:read_only_activity(Site, Activity).
+    Activity().
+    %dbsrv:read_only_activity(Site, Activity).
 
 % expose for debugging only
 write_activity_DEBUG(RefX, Op, FrontEnd, Report) ->
