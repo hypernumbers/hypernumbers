@@ -233,11 +233,17 @@ build_workplan(Site, Dirty, Graph) ->
     Report = mnesia_mon:get_stamp("build_workplan"),
     Trans = fun() ->
                     mnesia_mon:report(Report),
-                    update_recalc_graph(Dirty, Site, Graph),
-                    [digraph:add_edge(Graph, P, D)
-                     || D <- Dirty,
-                        P <- check_interference(D, Site, Graph)],
-                    ok
+                    % if the cell is a new cell then recalc if it is
+                    % a circular dependency, otherwise don't
+                    case update_recalc_graph(Dirty, Site, Graph) of
+                        ok ->
+                            ok;
+                        _  ->
+                            [digraph:add_edge(Graph, P, D)
+                             || D <- Dirty,
+                                P <- check_interference(D, Site, Graph)],
+                            ok
+                    end
             end,
     ok = mnesia_mon:log_act(transaction, Trans, Report),
     case digraph_utils:topsort(Graph) of
