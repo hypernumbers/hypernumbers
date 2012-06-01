@@ -16,4 +16,6 @@ load() ->
     % now load up zload pages into blank
     Dir = "/home/gordon/hypernumbers/lib/hypernumbers-1.0/priv/"
         ++ "site_types/z_load",
-    ok = hn_setup:import_json_DEBUG("http://zload.hypernumbers.dev:9000", Dir).
+    io:format("setting up site~n"),
+    ok = hn_setup:import_json_DEBUG("http://zload.hypernumbers.dev:9000", Dir),
+    io:format("finished...~n").

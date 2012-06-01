@@ -16,6 +16,10 @@
          tables/0
         ]).
 
+-export([
+         import_json_DEBUG/2
+        ]).
+
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 -include("keyvalues.hrl").
@@ -274,6 +278,9 @@ batch_import(Site) ->
     [ ok = hn_import:csv_file(Site ++ create_path_from_name(X, ".csv.replace"), X) || X <- OverFiles],
     [ ok = hn_import:csv_append(Site ++ create_path_from_name(X, ".csv.append"), X) || X <- AppendFiles],
     ok.
+
+import_json_DEBUG(Site, Dir) ->
+    import_json(Site, Dir).
 
 %% Import a set of json files into the live spreadsheet
 import_json(Site, Dir) ->

@@ -35,7 +35,7 @@
          test_pret/0,
          test_pret_SPAWN/0,
          percept/0,
-         test/0,
+         test_xx/0,
          test_SPAWN/0
         ]).
 
@@ -88,7 +88,7 @@ percept() ->
 
 test_pret() -> spawn(load_testing, test_pret_SPAWN, []).
 
-test() -> spawn(load_testing, test_SPAWN, []).
+test_xx() -> spawn(load_testing, test_SPAWN, []).
 
 test_pret_SPAWN() ->
     Stamp = dh_date:format("Y_M_d_H_i_s"),
@@ -99,7 +99,7 @@ test_pret_SPAWN() ->
                              ]},
                        {cprof,
                         [
-                         load_pret
+                         % load_pret
                         ]}
                       ]).
 
@@ -500,17 +500,17 @@ load_pret(Stamp) ->
         "load.hypernumbers.dev&9000/",
     Lable = Stamp ++ ".pret_loads.csv",
     Files = [
-             % "processed_10_11_2011_13305034822493.csv",
-             % "processed_11_11_2011_13305855022505.csv",
-             % "processed_12_11_2011_13305855022505.csv",
-             % "processed_13_11_2011_13302248222517.csv",
-             % "processed_13_11_2011_13304119122529.csv",
-             % "processed_14_11_2011_13302248222517.csv",
-             % "processed_15_11_2011_13303082622543.csv",
-             % "processed_16_11_2011_13305855022505.csv",
-             % "processed_17_11_2011_13305855022505.csv",
-             % "processed_18_11_2011_13303082622543.csv",
-             % "processed_19_11_2011_13303082622543.csv",
+             "processed_10_11_2011_13305034822493.csv",
+             "processed_11_11_2011_13305855022505.csv",
+             "processed_12_11_2011_13305855022505.csv",
+             "processed_13_11_2011_13302248222517.csv",
+             "processed_13_11_2011_13304119122529.csv",
+             "processed_14_11_2011_13302248222517.csv",
+             "processed_15_11_2011_13303082622543.csv",
+             "processed_16_11_2011_13305855022505.csv",
+             "processed_17_11_2011_13305855022505.csv",
+             "processed_18_11_2011_13303082622543.csv",
+             "processed_19_11_2011_13303082622543.csv",
              "processed_20_11_2011_13303082622543.csv",
              "pret_final_loadline.csv"
              %"testing.csv"
@@ -521,27 +521,27 @@ load_pret(Stamp) ->
 load_pret2(_Lable, _Dir, [],_Map) ->
     ok;
 load_pret2(Lable, Dir, [H | T], Map) ->
-    % StartTime = get_time(),
-    % TraceFile = case H of
-    %                "pret_final_loadline" ++ _Rest1 ->
-    %                    dbsrv:start_fprof("http://load.hypernumbers.dev:9000");
-    %                _ ->
-    %                    ok
-    %            end,
+    StartTime = get_time(),
+    TraceFile = case H of
+                    "pret_final_loadline" ++ _Rest1 ->
+                        dbsrv:start_fprof("http://load.hypernumbers.dev:9000");
+                    _ ->
+                        ok
+                end,
     Ret = hn_import:etl_to_custom(Dir ++ "/uploads/" ++ H, ?site,
                                   Dir ++ "/etl/" ++ Map ++ ".map"),
     io:format("~p has loaded on ~p~n", [H, Ret]),
-    % case H of
-    %    "pret_final_loadline" ++ _Rest2 ->
-    %        Ret2 = dbsrv:stop_fprof("http://load.hypernumbers.dev:9000",
-    %                               TraceFile),
-    %        io:format("dbsrv stopped with ~p~n", [Ret2]);
-    %     _ ->
-    %         ok
-    % end,
-    % EndTime = get_time(),
-    % Msg = io_lib:format("~p,~p", [length(T) + 1, EndTime - StartTime]),
-    % ok = log(Msg, Lable),
+    case H of
+        "pret_final_loadline" ++ _Rest2 ->
+            Ret2 = dbsrv:stop_fprof("http://load.hypernumbers.dev:9000",
+                                    TraceFile),
+            io:format("dbsrv stopped with ~p~n", [Ret2]);
+        _ ->
+            ok
+    end,
+    EndTime = get_time(),
+    Msg = io_lib:format("~p,~p", [length(T) + 1, EndTime - StartTime]),
+    ok = log(Msg, Lable),
     load_pret2(Lable, Dir, T, Map).
 
 close(TraceFile) ->
