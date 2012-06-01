@@ -69,7 +69,7 @@ profile_db_wu() ->
                                  Hd = hd(lists:reverse(atom_to_list(X1))),
                                  case Hd of
                                      % ascii matching!
-                                     ?D -> [{X1, Arity} | Acc];
+                                     ?D -> [{X, X1, Arity} | Acc];
                                      _  -> Acc
                                  end
                          end,
@@ -110,12 +110,8 @@ profile(PIDs, TraceFlags, TraceeFun) ->
                                           case pid_time(Time, PID) of
                                               no_match ->
                                                   [];
-                                              {P, C, S, Ms} ->
-                                                  Total = (S * 1000 + Ms)/1000,
-                                                  #ts{pid = P,
-                                                      tracee = Term,
-                                                      calls = C,
-                                                      time = Total}
+                                              Times ->
+                                                  format(Times, Term, [])
                                           end
                                   end
                           end,
@@ -126,6 +122,14 @@ profile(PIDs, TraceFlags, TraceeFun) ->
     [erlang:trace(PID, false, [all]) || {PID, _M} <- PIDs],
     % return the timings
     Timings.
+
+format([], _Term, Acc) ->
+    lists:reverse(Acc);
+format([H | T], Term, Acc) ->
+    {P, C, S, Ms} = H,
+    Total = (S * 1000 + Ms)/1000,
+    NewAcc = #ts{pid = P, tracee = Term, calls = C, time = Total},
+    format(T, Term, [NewAcc | Acc]).
 
 print([]) ->
     ok;
@@ -199,7 +203,8 @@ rect("calc_sup")  -> calc_sup;
 rect("zinf")      -> zinf_srv.
 
 pid_time([], _PID)                       -> no_match;
-pid_time([{PID, _, _, _} = H | _T], PID) -> H;
+pid_time([{PID, _, _, _} = H | _T], PID) -> [H];
+pid_time(List, all)                      -> List;
 pid_time([_H | T], PID)                  -> pid_time(T, PID).
 
 zip([], _A, Acc)          -> lists:reverse(Acc);
