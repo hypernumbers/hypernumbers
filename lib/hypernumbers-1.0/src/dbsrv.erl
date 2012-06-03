@@ -9,7 +9,7 @@
          start_link/1,
          read_only_activity/2,
          write_activity/2,
-         dbsrv/5
+         dbsrv/4
         ]).
 
 %% Testing API - used to limit the feed of data in
@@ -31,8 +31,7 @@
 -include("spriki.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 
--record(state, {table :: atom(),
-                pid :: pid()}).
+-record(state, {pid :: pid()}).
 
 -define(HEAP_SIZE, 400000).
 
@@ -114,12 +113,11 @@ stop_fprof(Site, TraceFile) ->
 %% Module:init/1 has returned.
 %%--------------------------------------------------------------------
 init([Site]) ->
-    QTbl = new_db_wu:trans(Site, dirty_queue),
-    Pid = spawn_opt(fun() -> dbsrv_init(Site, QTbl) end,
+    Pid = spawn_opt(fun() -> dbsrv_init(Site) end,
                     [{fullsweep_after, 0}]),
     true = link(Pid),
     register(hn_util:site_to_atom(Site, "_dbsrv"), Pid),
-    {ok, Pid, #state{table = QTbl, pid = Pid}}.
+    {ok, Pid, #state{pid = Pid}}.
 
 %%--------------------------------------------------------------------
 %% Func: terminate(Reason, State) -> void()
@@ -127,25 +125,26 @@ init([Site]) ->
 %% about to terminate. It should be the opposite of Module:init/1 and stop
 %% the subsystem and do any necessary cleaning up.The return value is ignored.
 %%--------------------------------------------------------------------
-terminate(_Reason, #state{table = _T}) ->
+terminate(_Reason, #state{}) ->
     ok.
 
 %%====================================================================
 %% Internal functions
 %%====================================================================
 
--spec dbsrv_init(string(), atom()) -> no_return().
-dbsrv_init(Site, QTbl) ->
-    {Since, Dirty} = new_db_api:load_dirty_since(0, QTbl),
+-spec dbsrv_init(string()) -> no_return().
+dbsrv_init(Site) ->
+    ok = new_db_api:rollback_dirty_cacheD(Site),
+    {Since, Dirty} = new_db_api:load_dirty_since(Site, 0),
     Graph = new_graph(),
     WorkPlan = build_workplan(Site, Dirty, Graph),
-    dbsrv(Site, QTbl, Since, WorkPlan, Graph).
+    dbsrv(Site, Since, WorkPlan, Graph).
 
--spec dbsrv(string(), atom(), term(), [cellidx()], digraph())
+-spec dbsrv(string(), term(), [cellidx()], digraph())
 -> no_return().
-dbsrv(Site, QTbl, Since, WorkPlan, Graph0) ->
-    Graph = cleanup(WorkPlan, Since, QTbl, Graph0),
-    {Since2, WorkPlan2} = check_messages(Site, Since, QTbl, WorkPlan, Graph),
+dbsrv(Site, Since, WorkPlan, Graph0) ->
+    Graph = cleanup(WorkPlan, Site, Graph0),
+    {Since2, WorkPlan2} = check_messages(Site, Since, WorkPlan, Graph),
     WorkPlan3 = case WorkPlan2 of
                     [Cell | Rest] ->
                         execute_plan([Cell], Site, Graph),
@@ -153,19 +152,19 @@ dbsrv(Site, QTbl, Since, WorkPlan, Graph0) ->
                     _ ->
                         WorkPlan2
                 end,
-    ?MODULE:dbsrv(Site, QTbl, Since2, WorkPlan3, Graph).
+    ?MODULE:dbsrv(Site, Since2, WorkPlan3, Graph).
 
--spec cleanup([cellidx()], term(), atom(), digraph()) -> digraph().
-cleanup([], Since, QTbl, Graph) ->
-    ok = clear_dirty_queue(Since, QTbl),
+-spec cleanup([cellidx()], string(), digraph()) -> digraph().
+cleanup([], Site, Graph) ->
+    ok = new_db_api:clear_dirty_cacheD(Site),
     digraph:delete(Graph),
     new_graph();
-cleanup(_, _, _, Graph) -> Graph.
+cleanup(_, _, Graph) -> Graph.
 
 %% Checks if new work is waiting to be processed.
--spec check_messages(string(), term(), atom(), [cellidx()], digraph())
+-spec check_messages(string(), term(), [cellidx()], digraph())
 -> {term(), [cellidx()]}.
-check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
+check_messages(Site, Since, WorkPlan, Graph) ->
     % check the state of memory usage and maybe run a garbage collect
     {heap_size, HSZ} = process_info(self(), heap_size),
     true = if
@@ -180,11 +179,11 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
         {From, read_only_activity, Activity} ->
             Reply = Activity(),
             From ! {dbsrv_reply, Reply},
-            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+            check_messages(Site, Since, WorkPlan, Graph);
 
         {write_activity, From, Activity} ->
             Activity(),
-            case new_db_api:load_dirty_since(Since, QTbl) of
+            case new_db_api:load_dirty_since(Site, Since) of
                 {Since2, []} ->
                     From ! {response, ok},
                     {Since2, WorkPlan};
@@ -196,11 +195,11 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 
         {From, is_busy} ->
             From ! {dbsrv_reply, WorkPlan /= []},
-            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+            check_messages(Site, Since, WorkPlan, Graph);
 
         {From, dump_q_len} ->
             From ! {dbsrv_reply, length(WorkPlan)},
-            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+            check_messages(Site, Since, WorkPlan, Graph);
 
         {From, start_fprof} ->
             Stamp = "." ++ dh_date:format("Y_M_d_H_i_s"),
@@ -209,7 +208,7 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
             fprof:trace(start, TraceFile),
             io:format("TraceFile is ~p~n", [TraceFile]),
             From ! {dbsrv_reply, TraceFile},
-            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+            check_messages(Site, Since, WorkPlan, Graph);
 
         {From, {stop_fprof, TraceFile}} ->
             fprof:trace(stop),
@@ -220,10 +219,10 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
             fprof:analyse([{dest, Root ++ ".analysis"}]),
             io:format("analysis over...~n"),
             From ! {dbsrv_reply, fprof_done},
-            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+            check_messages(Site, Since, WorkPlan, Graph);
 
         _Other ->
-            check_messages(Site, Since, QTbl, WorkPlan, Graph)
+            check_messages(Site, Since, WorkPlan, Graph)
     after Wait ->
             {Since, WorkPlan}
     end.
@@ -316,19 +315,6 @@ execute_plan([C | T], Site, Graph) ->
             digraph:del_vertex(Graph, C),
             execute_plan(T, Site, Graph)
     end.
-
-%% Clears out process work from the dirty_queue table.
--spec clear_dirty_queue(term(), atom()) -> ok.
-clear_dirty_queue(Since, QTbl) ->
-    Report = mnesia_mon:get_stamp("clear_dirty_queue"),
-    M = ets:fun2ms(fun(#dirty_queue{id = T}) when T =< Since -> T end),
-    F = fun() ->
-                mnesia_mon:report(Report),
-                Keys = mnesia:select(QTbl, M, write),
-                [mnesia:delete(QTbl, K, write) || K <- Keys],
-                ok
-        end,
-    mnesia_mon:log_act(transaction, F, Report).
 
 -spec new_graph() -> digraph().
 new_graph() -> digraph:new([private]).

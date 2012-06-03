@@ -243,28 +243,34 @@ create_site_tables(Site, Type)->
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
 
--define(TBL(N, T, I, S), {N, record_info(fields, N), T, I, S}).
+-define(dc, disc_copies).
+-define(doc, disc_only_copies).
+-define(ri(A, B), record_info(A, B)).
+
 tables() ->
+    % setup local obj indices
+    LOxs = [obj, path, revidx],
     [
-     ?TBL(api,            set, [],                disc_copies),
-     ?TBL(kvstore,        set, [],                disc_only_copies),
-     ?TBL(dirty_for_zinf, set, [],                disc_copies),
-     ?TBL(dirty_zinf,     set, [],                disc_copies),
-     ?TBL(dirty_queue,    set, [],                disc_copies),
-     ?TBL(item,           set, [],                disc_copies),
-     ?TBL(local_obj,      set, [obj,path,revidx], disc_copies),
-     ?TBL(del_local,      set, [],                disc_copies),
-     ?TBL(relation,       set, [],                disc_copies),
-     ?TBL(group,          set, [],                disc_copies),
-     ?TBL(style,          set, [idx],             disc_copies),
-     ?TBL(form,           set, [id],              disc_copies),
-     ?TBL(phone,          set, [],                disc_copies),
-     ?TBL(logging,        bag, [path],            disc_only_copies),
-     ?TBL(include,        set, [path],            disc_copies),
-     ?TBL(timer,          set, [],                disc_copies),
-     ?TBL(site,           set, [],                disc_copies),
-     ?TBL(siteonly,       set, [],                disc_copies),
-     ?TBL(user_fns,       set, [],                disc_copies)
+     {api,               ?ri(fields, api),               set, [],     ?dc},
+     {kvstore,           ?ri(fields, kvstore),           set, [],     ?doc},
+     {dirty_for_zinf,    ?ri(fields, dirty_for_zinf),    set, [],     ?dc},
+     {dirty_zinf,        ?ri(fields, dirty_zinf),        set, [],     ?dc},
+     {dirty_queue,       ?ri(fields, dirty_queue),       set, [],     ?dc},
+     {dirty_queue_cache, ?ri(fields, dirty_queue_cache), set, [],     ?dc},
+     {item,              ?ri(fields, item),              set, [],     ?dc},
+     {local_obj,         ?ri(fields, local_obj),         set, LOxs,   ?dc},
+     {del_local,         ?ri(fields, del_local),         set, [],     ?dc},
+     {relation,          ?ri(fields, relation),          set, [],     ?dc},
+     {group,             ?ri(fields, group),             set, [],     ?dc},
+     {style,             ?ri(fields, style),             set, [idx],  ?dc},
+     {form,              ?ri(fields, form),              set, [id],   ?dc},
+     {phone,             ?ri(fields, phone),             set, [],     ?dc},
+     {logging,           ?ri(fields, logging),           bag, [path], ?doc},
+     {include,           ?ri(fields, include),           set, [path], ?dc},
+     {timer,             ?ri(fields, timer),             set, [],     ?dc},
+     {site,              ?ri(fields, site),              set, [],     ?dc},
+     {siteonly,          ?ri(fields, siteonly),          set, [],     ?dc},
+     {user_fns,          ?ri(fields, user_fns),          set, [],     ?dc}
     ].
 
 %% Import files on a batch basis

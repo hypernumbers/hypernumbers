@@ -124,6 +124,14 @@
           auth_req
          }).
 
+-record(dirty_queue_cache,
+        {
+          id = now(),
+          dirty = [],
+          auth_req
+         }).
+
+
 % this record is for the table that gets all written cells and
 % so that the zinf tree can determine if they are 'proper dirty' for dbsrv
 -record(dirty_for_zinf,

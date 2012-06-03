@@ -13,6 +13,8 @@
 -include("syslib.hrl").
 
 -export([
+         rollback_dirty_cacheD/1,
+         clear_dirty_cacheD/1,
          revert/3,
          clear_factory/1,
          make_factory/1,
@@ -98,6 +100,28 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+rollback_dirty_cacheD(Site) ->
+    Tbl = new_db_wu:trans(Site, dirty_queue),
+    TblC = new_db_wu:trans(Site, dirty_queue_cache),
+    Fun1 = fun(#dirty_queue_cache{id = I, dirty = D, auth_req = A}) ->
+                   #dirty_queue{id = I, dirty = D, auth_req = A}
+           end,
+    Fun2 = fun() ->
+                   Recs = mnesia:match_object(TblC, #dirty_queue_cache{_='_'},
+                                              write),
+                   [ok = mnesia:write(Tbl, Fun1(X), write) || X <- Recs]
+           end,
+    mnesia:activity(transaction, Fun2),
+    % can't be called within the transaction - but doens't matter
+    {atomic, ok} = mnesia:clear_table(TblC),
+    ok.
+
+
+clear_dirty_cacheD(Site) ->
+    Tbl = new_db_wu:trans(Site, dirty_queue_cache),
+    {atomic, ok} = mnesia:clear_table(Tbl),
+    ok.
+
 revert(#refX{} = RefX, Revision, UID) ->
     Report = mnesia_mon:get_stamp("revert"),
     Fun = fun() ->
@@ -208,11 +232,11 @@ get_logs(RefX) when is_record(RefX, refX) ->
 
 %% Loads new dirty information into the recalc graph.
 -spec load_dirty_since(term(), atom()) -> {term(), [cellidx()]}.
-load_dirty_since(Since, QTbl) ->
+load_dirty_since(Site, Since) ->
     Report = mnesia_mon:get_stamp("load_dirty_since"),
     F = fun() ->
                 mnesia_mon:report(Report),
-                new_db_wu:load_dirty_sinceD(Since, QTbl)
+                new_db_wu:load_dirty_sinceD(Site, Since)
         end,
     case mnesia_mon:log_act(transaction, F, Report) of
         []  -> {Since, []};

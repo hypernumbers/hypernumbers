@@ -296,11 +296,20 @@ get_logsD(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
     Logs3 = get_page_logs(Logs2),
     lists:merge(Logs1, Logs3).
 
-load_dirty_sinceD(Since, QTbl) ->
+load_dirty_sinceD(Site, Since) ->
+    Tbl = new_db_wu:trans(Site, dirty_queue),
+    TblC = new_db_wu:trans(Site, dirty_queue_cache),
     M = ets:fun2ms(fun(#dirty_queue{id = T, dirty = D})
                       when Since < T -> {T, D}
                    end),
-    mnesia:select(QTbl, M, write).
+    Recs = mnesia:select(Tbl, M, write),
+    Fun = fun({T, D}) ->
+                  DQ = #dirty_queue_cache{id = T, dirty = D, auth_req = nil},
+                  mnesia:write(TblC, DQ, write),
+                  mnesia:delete(Tbl, T, write)
+          end,
+    [Fun(X) || X <- Recs],
+    Recs.
 
 delete_apiD(Site, PublicKey) ->
     Tbl = trans(Site, api),
