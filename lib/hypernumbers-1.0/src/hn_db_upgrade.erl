@@ -86,7 +86,7 @@ add_dirty_queue_cache_2012_06_03() ->
     Fun1 = fun(Site) ->
                    io:format("fixing dirty_queue_cache for ~p~n", [Site]),
                    OTbl = new_db_wu:trans(Site, dirty_q_cache),
-                   ok = mnesia:delete_table(OTbl),
+                   mnesia:delete_table(OTbl),
                    NTbl = new_db_wu:trans(Site, dirty_queue_cache),
                    Fields = record_info(fields, dirty_queue_cache),
                    make_table(Site, NTbl, Fields, disc_copies)
