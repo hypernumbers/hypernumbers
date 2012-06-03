@@ -20,38 +20,38 @@ start(_Type, Args) ->
     ok = basic_start(),
     case Args of
         []      -> normal_start();
-        [debug] -> io:format("Hypernumbers Debug: the hypernumbers "
+        [debug] -> io:format("Vixo Debug: the hypernumbers "
                              ++ "application has not been started~n"),
                    {ok, self()}
     end.
 
 basic_start() ->
-    io:format("Hypernumbers Startup~n********************~n~n"),
+    io:format("Vixo Startup~n********************~n~n"),
     case application:get_env(hypernumbers, startup_debug) of
        {ok, true} -> io:format("...showing debug startup messages~n");
        _Other     -> ok
     end,
     ok = ensure_dirs(),
-    io:format("Hypernumbers Startup: directories inited...~n"),
+    io:format("Vixo Startup: directories inited...~n"),
     ok = init_tables(),
-    io:format("Hypernumbers Debug Started: all good!~n"),
+    io:format("Vixo Debug Started: all good!~n"),
     ok.
 
 normal_start() ->
-    io:format("Hypernumbers Startup: tables initiated...~n"),
+    io:format("Vixo Startup: tables initiated...~n"),
     ok = load_muin_modules(),
-    io:format("Hypernumbers Startup: muin modules loaded...~n"),
+    io:format("Vixo Startup: muin modules loaded...~n"),
     {ok, Pid} = hypernumbers_sup:start_link(),
-    io:format("Hypernumbers Startup: hypernumbers supervisors started...~n"),
+    io:format("Vixo Startup: hypernumbers supervisors started...~n"),
     ok = case application:get_env(hypernumbers, environment) of
              {ok,development} -> dev_tasks();
              {ok,server_dev}  -> server_dev_tasks();
              {ok,production}  -> production_tasks()
          end,
-    io:format("Hypernumbers Startup: environment variables read...~n"),
+    io:format("Vixo Startup: environment variables read...~n"),
     ok = mochilog:start(),
-    io:format("Hypernumbers Startup: mochilog started...~n"),
-    io:format("Hypernumbers Startup: all good!, over and out~n"),
+    io:format("Vixo Startup: mochilog started...~n"),
+    io:format("Vixo Startup: all good!, over and out~n"),
     {ok, Pid}.
 
 %% @spec stop(State) -> ok
@@ -137,7 +137,7 @@ local_hypernumbers() ->
             ok = upgrade_twilio(),
             ok = new_db_api:make_factory("http://hypernumbers.dev:9000");
         {error, site_exists} ->
-            io:format("Hypernumbers Local: Site ~p exists~n", [Site]),
+            io:format("Vixo Local: Site ~p exists~n", [Site]),
             ok
     end.
 
@@ -155,7 +155,7 @@ local_srv_hypernumbers() ->
             passport:set_password(Uid2, "i!am!secure"),
             ok = hn_db_admin:disc_only(Site);
         {error, site_exists} ->
-            io:format("Hypernumbers Server Dev: Site ~p exists~n", [Site]),
+            io:format("Vixo Server Dev: Site ~p exists~n", [Site]),
             ok
     end.
 
