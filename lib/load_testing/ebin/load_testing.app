@@ -1,0 +1,12 @@
+{application,load_testing,
+             [{description,[]},
+              {vsn,"0.1"},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {env,[]},
+              {modules,[
+                        load_testing,
+                        load_util,
+                        zload
+                       ]}
+              ]}.
