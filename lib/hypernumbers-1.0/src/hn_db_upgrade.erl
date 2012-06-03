@@ -9,7 +9,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
-         add_dirty_queue_cache/0,
+         add_dirty_queue_cache_2012_06_03/0,
          rejig_phones/1,
          add_site_table_2011_05_12/0,
          upgrade_phone_records_2012_05_08/0,
@@ -81,9 +81,10 @@
          % upgrade_1776/0
         ]).
 
-add_dirty_queue_cache() ->
+add_dirty_queue_cache_2012_06_03() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
+                   io:format("adding dirty_queue_cache for p~n", [Site]),
                    Tbl = new_db_wu:trans(Site, dirty_q_cache),
                    Fields = record_info(fields, dirty_queue),
                    make_table(Site, Tbl, Fields, disc_copies)
