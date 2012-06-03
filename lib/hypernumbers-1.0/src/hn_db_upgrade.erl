@@ -98,9 +98,8 @@ remove_duff_dirty_q_caches_2012_06_03() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
                    io:format("unduffing dirty_queue_cache for ~p~n", [Site]),
-                   OTbl = new_db_wu:trans(Site, new_db_wu:trans(Site,
-                                                                dirty_q_cache)),
-                   mnesia:delete_table(OTbl)
+                   OTbl = new_db_wu:trans(Site, new_db_wu:trans(Site, dirty_queue_cache)),
+                   ok = mnesia:delete_table(OTbl)
            end,
     lists:foreach(Fun1, Sites),
     ok.
