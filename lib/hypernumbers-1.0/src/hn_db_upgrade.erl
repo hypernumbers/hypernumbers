@@ -9,6 +9,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_dirty_queue_cache/0,
          rejig_phones/1,
          add_site_table_2011_05_12/0,
          upgrade_phone_records_2012_05_08/0,
@@ -79,6 +80,16 @@
          % upgrade_1743_B/0,
          % upgrade_1776/0
         ]).
+
+add_dirty_queue_cache() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tbl = new_db_wu:trans(Site, dirty_q_cache),
+                   Fields = record_info(fields, dirty_queue),
+                   make_table(Site, Tbl, Fields, disc_copies)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 rejig_phones(Site) ->
     AccSid = "AC7a076e30da6d49119b335d3a6de43844",
