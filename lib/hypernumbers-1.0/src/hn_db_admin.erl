@@ -58,7 +58,7 @@ copy(FromSite, ToSite, Table) ->
     io:format("Copying ~p from ~p to ~p~n", [Table, FromSite, ToSite]),
     FromTable = new_db_wu:trans(FromSite, Table),
     ToTable = new_db_wu:trans(ToSite, Table),
-    {atomic, ok} = mnesia:clear_table(ToTable),
+    ok = mnesia:clear_table(ToTable),
     Fun1 = fun() ->
                    Fun2 = fun(X, Acc) ->
                                   ok = mnesia:write(ToTable, X, write),
@@ -118,14 +118,14 @@ all_sites_disc_and_mem() ->
 disc_and_mem("http://" ++ SiteAndPort) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
     Cacheable = [X || {X, _, _, _, _, C} <- hn_setup:tables(), C == cache],
-    [{atomic, ok} = chg_copy_type(Site, Port, X, disc_copies)
+    [ok = chg_copy_type(Site, Port, X, disc_copies)
      || X <- Cacheable],
     ok.
 
 -spec disc_and_mem(list(), list()) -> ok.
 disc_and_mem("http://" ++ SiteAndPort, Table) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
-    {atomic, ok} = chg_copy_type(Site, Port, Table, disc_copies),
+    ok = chg_copy_type(Site, Port, Table, disc_copies),
     ok.
 
 -spec all_sites_disc_only() -> ok.
@@ -138,35 +138,40 @@ all_sites_disc_only() ->
 disc_only("http://" ++ SiteAndPort) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
     Cacheable = [X || {X, _, _, _, _, C} <- hn_setup:tables(), C == cache],
-    [{atomic, ok} = chg_copy_type(Site, Port, X, disc_only_copies)
+    [ok = chg_copy_type(Site, Port, X, disc_only_copies)
      || X <- Cacheable],
     ok.
 
 -spec disc_only(list(), list()) -> ok.
 disc_only("http://" ++ SiteAndPort, Table) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
-    {atomic, ok} = chg_copy_type(Site, Port, Table, disc_only_copies),
+    ok = chg_copy_type(Site, Port, Table, disc_only_copies),
     ok.
 
 %% -spec mem_only(list()) -> ok.
 %% mem_only("http://" ++ SiteAndPort) ->
 %%     [Site, Port] = string:tokens(SiteAndPort, ":"),
 %%     Cacheable = [X || {X, _, _, _, _, C} <- hn_setup:tables(), C == cache],
-%%     [{atomic, ok} = chg_copy_type(Site, Port, X, ram_copies)
+%%     [ok = chg_copy_type(Site, Port, X, ram_copies)
 %%      || X <- Cacheable],
 %%     ok.
 
 %% -spec mem_only(list(), list()) -> ok.
 %% mem_only("http://" ++ SiteAndPort, Table) ->
 %%     [Site, Port] = string:tokens(SiteAndPort, ":"),
-%%     {atomic, ok} = chg_copy_type(Site, Port, Table, ram_copies),
+%%     ok = chg_copy_type(Site, Port, Table, ram_copies),
 %%     ok.
 
 chg_copy_type(Site, Port, Table, Mode) ->
     ActualTable = list_to_existing_atom(Site ++ "&"
                                         ++ Port ++ "&"
                                         ++ atom_to_list(Table)),
-    mnesia:change_table_copy_type(ActualTable, node(), Mode).
+    case mnesia:change_table_copy_type(ActualTable, node(), Mode) of
+        {atomic, ok}                         -> ok;
+        {aborted, {already_exists, _, _, _}} -> ok;
+        {aborted, Reason}                    -> {error, Reason}
+    end.
+
 
 
 
