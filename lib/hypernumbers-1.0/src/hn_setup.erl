@@ -46,7 +46,7 @@ copy_site(From, To) ->
     end.
 
 copy_tables(From, To) ->
-    Tables = [X || {X, _, _, _, _} <- tables()],
+    Tables = [X || {X, _, _, _, _, _} <- tables()],
     ok = copy_t2(Tables, From, To).
 
 copy_t2([], _, _) -> ok;
@@ -105,7 +105,7 @@ delete_site(Site) ->
                          fun mnesia:delete/3,
                          [core_site, Site, write]),
     [ {atomic, ok} = mnesia:delete_table(new_db_wu:trans(Site, Table))
-      || {Table, _F, _T, _I, _S} <- tables()],
+      || {Table, _F, _T, _I, _S, _C} <- tables()],
     [_Proto, [$/, $/ | Domain], _URL] = string:tokens(Site, ":"),
     [TLD, Dom | Subs] = lists:reverse(string:tokens(Domain, ".")),
     ZoneL = Dom ++ "." ++ TLD,
@@ -236,41 +236,37 @@ create_site_tables(Site, Type)->
     %% to disc_copies for now
     [ok = hn_db_admin:create_table(new_db_wu:trans(Site, N),
                                    N, F, S, T, true, I)
-     || {N, F, T, I, S} <- tables()],
+     || {N, F, T, I, S, _} <- tables()],
     Trans = fun() ->
                     mnesia:write(#core_site{site = Site, type = Type})
             end,
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
 
--define(dc, disc_copies).
--define(doc, disc_only_copies).
--define(ri(A, B), record_info(A, B)).
-
+-define(TBL(N, T, I, S, C), {N, record_info(fields, N), T, I, S, C}).
 tables() ->
     % setup local obj indices
-    LOxs = [obj, path, revidx],
     [
-     {api,               ?ri(fields, api),               set, [],     ?dc},
-     {kvstore,           ?ri(fields, kvstore),           set, [],     ?doc},
-     {dirty_for_zinf,    ?ri(fields, dirty_for_zinf),    set, [],     ?dc},
-     {dirty_zinf,        ?ri(fields, dirty_zinf),        set, [],     ?dc},
-     {dirty_queue,       ?ri(fields, dirty_queue),       set, [],     ?dc},
-     {dirty_queue_cache, ?ri(fields, dirty_queue_cache), set, [],     ?dc},
-     {item,              ?ri(fields, item),              set, [],     ?dc},
-     {local_obj,         ?ri(fields, local_obj),         set, LOxs,   ?dc},
-     {del_local,         ?ri(fields, del_local),         set, [],     ?dc},
-     {relation,          ?ri(fields, relation),          set, [],     ?dc},
-     {group,             ?ri(fields, group),             set, [],     ?dc},
-     {style,             ?ri(fields, style),             set, [idx],  ?dc},
-     {form,              ?ri(fields, form),              set, [id],   ?dc},
-     {phone,             ?ri(fields, phone),             set, [],     ?dc},
-     {logging,           ?ri(fields, logging),           bag, [path], ?doc},
-     {include,           ?ri(fields, include),           set, [path], ?dc},
-     {timer,             ?ri(fields, timer),             set, [],     ?dc},
-     {site,              ?ri(fields, site),              set, [],     ?dc},
-     {siteonly,          ?ri(fields, siteonly),          set, [],     ?dc},
-     {user_fns,          ?ri(fields, user_fns),          set, [],     ?dc}
+     ?TBL(api,               set, [],                  disc_copies,      cache),
+     ?TBL(kvstore,           set, [],                  disc_only_copies, nocache),
+     ?TBL(dirty_for_zinf,    set, [],                  disc_copies,      cache),
+     ?TBL(dirty_zinf,        set, [],                  disc_copies,      cache),
+     ?TBL(dirty_queue,       set, [],                  disc_copies,      cache),
+     ?TBL(dirty_queue_cache, set, [],                  disc_copies,      cache),
+     ?TBL(item,              set, [],                  disc_copies,      cache),
+     ?TBL(local_obj,         set, [obj, path, revidx], disc_copies,      cache),
+     ?TBL(del_local,         set, [],                  disc_copies,      cache),
+     ?TBL(relation,          set, [],                  disc_copies,      cache),
+     ?TBL(group,             set, [],                  disc_copies,      cache),
+     ?TBL(style,             set, [idx],               disc_copies,      cache),
+     ?TBL(form,              set, [id],                disc_copies,      cache),
+     ?TBL(phone,             set, [],                  disc_copies,      cache),
+     ?TBL(logging,           bag, [path],              disc_only_copies, nocache),
+     ?TBL(include,           set, [path],              disc_copies,      cache),
+     ?TBL(timer,             set, [],                  disc_copies,      cache),
+     ?TBL(site,              set, [],                  disc_copies,      cache),
+     ?TBL(siteonly,          set, [],                  disc_copies,      cache),
+     ?TBL(user_fns,          set, [],                  disc_copies,      cache)
     ].
 
 %% Import files on a batch basis

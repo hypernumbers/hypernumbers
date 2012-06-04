@@ -9,34 +9,16 @@
 
 -include("spriki.hrl").
 
--define(CACHEABLE_TABLES, [
-                           "api",
-                           "dirty_for_zinf",
-                           "dirty_queue",
-                           "dirty_zinf",
-                           "form",
-                           "group",
-                           "include",
-                           "item",
-                           "local_obj",
-                           "del_local",
-                           "phone",
-                           "relation",
-                           "site",
-                           "siteonly",
-                           "style",
-                           "timer",
-                           "user_fns"
-                          ]).
-
 -export([
          force_recalc/0,
          force_recalc/1,
          create_table/7,
-         mem_only/1,
-         mem_only/2,
+         % mem_only/1,
+         % mem_only/2,
+         all_sites_disc_only/0,
          disc_only/1,
          disc_only/2,
+         all_sites_disc_and_mem/0,
          disc_and_mem/1,
          disc_and_mem/2,
          backup/3,
@@ -69,7 +51,7 @@ force_recalc(Site) ->
 -spec copy_site(string(), string()) -> ok.
 copy_site(FromSite, ToSite) ->
     Tables = hn_setup:tables(),
-    [copy(FromSite, ToSite, X) || {X, _, _, _, _} <- Tables],
+    [copy(FromSite, ToSite, X) || {X, _, _, _, _, _} <- Tables],
     ok.
 
 copy(FromSite, ToSite, Table) ->
@@ -126,11 +108,18 @@ create_table(TblName, Rec, Fields, Storage, Type, Local, Indicies) ->
         {aborted, Reason}              -> throw(Reason)
     end.
 
+-spec all_sites_disc_and_mem() -> ok.
+all_sites_disc_and_mem() ->
+    Sites = hn_setup:get_sites(),
+    [disc_and_mem(X) || X <- Sites],
+    ok.
+
 -spec disc_and_mem(list()) -> ok.
 disc_and_mem("http://" ++ SiteAndPort) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
+    Cacheable = [X || {X, _, _, _, _, C} <- hn_setup:tables(), C == cache],
     [{atomic, ok} = chg_copy_type(Site, Port, X, disc_copies)
-     || X <- ?CACHEABLE_TABLES],
+     || X <- Cacheable],
     ok.
 
 -spec disc_and_mem(list(), list()) -> ok.
@@ -139,11 +128,18 @@ disc_and_mem("http://" ++ SiteAndPort, Table) ->
     {atomic, ok} = chg_copy_type(Site, Port, Table, disc_copies),
     ok.
 
+-spec all_sites_disc_only() -> ok.
+all_sites_disc_only() ->
+    Sites = hn_setup:get_sites(),
+    [disc_only(X) || X <- Sites],
+    ok.
+
 -spec disc_only(list()) -> ok.
 disc_only("http://" ++ SiteAndPort) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
+    Cacheable = [X || {X, _, _, _, _, C} <- hn_setup:tables(), C == cache],
     [{atomic, ok} = chg_copy_type(Site, Port, X, disc_only_copies)
-     || X <- ?CACHEABLE_TABLES],
+     || X <- Cacheable],
     ok.
 
 -spec disc_only(list(), list()) -> ok.
@@ -152,23 +148,24 @@ disc_only("http://" ++ SiteAndPort, Table) ->
     {atomic, ok} = chg_copy_type(Site, Port, Table, disc_only_copies),
     ok.
 
--spec mem_only(list()) -> ok.
-mem_only("http://" ++ SiteAndPort) ->
-    [Site, Port] = string:tokens(SiteAndPort, ":"),
-    [{atomic, ok} = chg_copy_type(Site, Port, X, ram_copies)
-     || X <- ?CACHEABLE_TABLES],
-    ok.
+%% -spec mem_only(list()) -> ok.
+%% mem_only("http://" ++ SiteAndPort) ->
+%%     [Site, Port] = string:tokens(SiteAndPort, ":"),
+%%     Cacheable = [X || {X, _, _, _, _, C} <- hn_setup:tables(), C == cache],
+%%     [{atomic, ok} = chg_copy_type(Site, Port, X, ram_copies)
+%%      || X <- Cacheable],
+%%     ok.
 
--spec mem_only(list(), list()) -> ok.
-mem_only("http://" ++ SiteAndPort, Table) ->
-    [Site, Port] = string:tokens(SiteAndPort, ":"),
-    {atomic, ok} = chg_copy_type(Site, Port, Table, ram_copies),
-    ok.
+%% -spec mem_only(list(), list()) -> ok.
+%% mem_only("http://" ++ SiteAndPort, Table) ->
+%%     [Site, Port] = string:tokens(SiteAndPort, ":"),
+%%     {atomic, ok} = chg_copy_type(Site, Port, Table, ram_copies),
+%%     ok.
 
 chg_copy_type(Site, Port, Table, Mode) ->
     ActualTable = list_to_existing_atom(Site ++ "&"
                                         ++ Port ++ "&"
-                                        ++ Table),
+                                        ++ atom_to_list(Table)),
     mnesia:change_table_copy_type(ActualTable, node(), Mode).
 
 
