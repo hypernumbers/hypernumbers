@@ -35,9 +35,18 @@ start_link(Site) ->
 %% to find out about restart strategy, maximum restart frequency and child
 %% specifications.
 %%--------------------------------------------------------------------
+% need the dbsrv (started by calc_sup) to be up before the status_srv.
 init([Site]) ->
    {ok, { {one_for_one,1,10},
-           [ {remoting_reg,
+           [
+            {calc_sup,
+              {calc_sup, start_link, [Site]},
+              permanent,
+              infinity,
+              supervisor,
+              [calc_sup]},
+
+            {remoting_reg,
               {remoting_reg, start_link, [Site]},
               permanent,
               2000,
@@ -65,26 +74,19 @@ init([Site]) ->
               worker,
               [tick_srv]},
 
-             {status_srv,
-              {status_srv, start_link, [Site]},
-              permanent,
-              2000,
-              worker,
-              [status_srv]},
-
-             {calc_sup,
-              {calc_sup, start_link, [Site]},
-              permanent,
-              infinity,
-              supervisor,
-              [calc_sup]},
-
              {phonecall_sup,
               {phonecall_sup, start_link, [Site]},
               permanent,
               infinity,
               supervisor,
-              [phonecall_sup]}
+              [phonecall_sup]},
+
+             {status_srv,
+              {status_srv, start_link, [Site]},
+              permanent,
+              2000,
+              worker,
+              [status_srv]}
 
             ]
           }}.

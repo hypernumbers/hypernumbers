@@ -1,7 +1,11 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers Ltd
-%%% @doc
+%%% @doc       the status server keeps a log of what people are up to
+%%%            so 'gordon edited /some/page/ 5 minutes ago
+%%%
+%%%            It also loads the site in and out of memory based
+%%%            if the site_cache_mode environment variable is set
 %%%
 %%% @end
 %%% Created :  7 May 2009 by <gordon@hypernumbers.com>
@@ -11,15 +15,37 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/1, get_status/1, update_status/3]).
+-export([
+         start_link/1,
+         get_status/1,
+         update_status/3,
+         tick/1
+        ]).
 
 %% gen_server callbacks
--export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-         terminate/2, code_change/3]).
+-export([
+         init/1,
+         handle_call/3,
+         handle_cast/2,
+         handle_info/2,
+         terminate/2,
+         code_change/3
+        ]).
 
 -define(diff, calendar:time_difference).
 
 -include("spriki.hrl").
+
+-define(IDLE_TIME, 600000). % 10 mins in microseconds
+
+-record(state,
+        {
+          site,
+          status = [],
+          site_cache_mode,
+          in_mem,
+          time_last_updated
+         }).
 
 -record(status_site,
         {
@@ -27,22 +53,26 @@
           time_purged = calendar:now_to_universal_time(now()),
           list
          }).
+
 -record(status_user,
         {
           name,
           details
          }).
+
 -record(status_details,
         {
           path,
           change,
           timestamp = calendar:now_to_universal_time(now())
          }).
-%-record(jstree, {data, attr, state, children}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
+tick(Site) ->
+    Id = hn_util:site_to_atom(Site, "_status"),
+    gen_server:cast({global, Id}, tick).
 
 get_status(Site) ->
     Id = hn_util:site_to_atom(Site, "_status"),
@@ -71,7 +101,7 @@ start_link(Site) ->
        _Other     -> ok
     end,
     Id = hn_util:site_to_atom(Site, "_status"),
-    gen_server:start_link({global, Id}, ?MODULE, [], []).
+    gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -88,8 +118,17 @@ start_link(Site) ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([]) ->
-    {ok, []}.
+init([Site]) ->
+    {ok, CacheMode} = application:get_env(hypernumbers, site_cache_mode),
+    InMem = case CacheMode of
+                true  -> Ret = disc_only(Site),
+                         % start ticking
+                         ok = make_tick(?IDLE_TIME, Site),
+                         Ret;
+                false -> true
+    end,
+    {ok, #state{site = Site, site_cache_mode = CacheMode, in_mem = InMem,
+                time_last_updated = util2:get_timestamp()}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -105,17 +144,18 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({get_status, Site}, _From, {Old, New}) ->
-    {NewState, Struct} = case lists:keysearch(Site, 2, Old) of
-                             false      -> {Old, []};
+handle_call({get_status, Site}, _From, State) ->
+    #state{status = Status} = State,
+    {NewState, Struct} = case lists:keysearch(Site, 2, Status) of
+                             false      -> {State, []};
                              {value, R} -> #status_site{list = L} = R,
                                            {N, St} = transform_status(L),
                                            R2 = R#status_site{list = N},
-                                           L2 = lists:keyreplace(Site, 2, Old, R2),
-                                           {L2, St}
+                                           L2 = lists:keyreplace(Site, 2, Status, R2),
+                                           {State#state{status= L2}, St}
                          end,
     Reply = {struct, Struct},
-    {reply, Reply, {NewState, New}};
+    {reply, Reply, NewState};
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -130,16 +170,46 @@ handle_call(_Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_cast({update, U, S, P, Ch}, []) ->
-    State = {[make_first_record(U, S, P, Ch)], []},
-    {noreply, State};
-handle_cast({update, U, S, P, Ch}, {Old, New}) ->
-    NewState = case lists:keysearch(S, 2, Old) of
-                   false      -> [make_first_record(U, S, P, Ch) | Old];
-                   {value, L} -> NewSite = add_to_site(L, U, S, P, Ch, Old),
-                                 lists:keyreplace(S, 2, Old, NewSite)
+handle_cast({update, U, S, P, Ch}, #state{status = []} = State) ->
+    Status = [make_first_record(U, S, P, Ch)],
+    NewState = handle_caching(State),
+    {noreply, NewState#state{status = Status}};
+handle_cast({update, U, S, P, Ch}, State) ->
+    #state{status = Status} = State,
+    NewStatus = case lists:keysearch(S, 2, Status) of
+                    false      -> [make_first_record(U, S, P, Ch) | Status];
+                    {value, L} -> NewSite = add_to_site(L, U, S, P, Ch, State),
+                                  lists:keyreplace(S, 2, Status, NewSite)
                end,
-    {noreply, {NewState, New}};
+    NewState = handle_caching(State),
+    {noreply, NewState#state{status = NewStatus}};
+handle_cast(tick, State) ->
+    #state{site = Site, in_mem = InMem, time_last_updated = Then} = State,
+
+    Now = util2:get_timestamp(),
+    % Idle time is microseconds so adjust timestamps down
+    Diff = trunc((Now - Then)/1000),
+
+    % if it is in memory check if an IDLE_TIME has elapased since last updated
+    % * if an idle time has elapsed then (mebbies) write the site to disk
+    %   - if the dbsrv is recalcing it wont write down
+    % * if an IDLE TIME hasn't elapse then tick for an IDLE_TIME
+    %   from the time of the last update
+    % * if its on disk already do nothing
+    {NewMem, Tick} = case InMem of
+                         true ->
+                             if
+                                 Diff >= ?IDLE_TIME ->
+                                     {disc_only(Site), ?IDLE_TIME};
+                                 Diff < ?IDLE_TIME ->
+                                     {true, ?IDLE_TIME - Diff}
+                             end;
+                         false ->
+                             {InMem, ?IDLE_TIME}
+                     end,
+    %tick again
+    ok = make_tick(Tick, Site),
+    {noreply, State#state{in_mem = NewMem}};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
@@ -265,5 +335,27 @@ get_msg(Ts) ->
         {0, {0, M, _}} -> integer_to_list(M) ++ " minutes ago";
         {0, {H, _, _}} -> integer_to_list(H) ++ " hours ago";
         {D, {_, _, _}} -> integer_to_list(D) ++ " days ago"
+    end.
+
+handle_caching(#state{site_cache_mode = false} = State) ->
+    State;
+handle_caching(#state{site_cache_mode = true, in_mem = true} = State) ->
+    State;
+handle_caching(#state{site_cache_mode = true, in_mem = false} = State) ->
+    io:format("loading into memory~n"),
+    ok = hn_db_admin:disc_and_mem(State#state.site),
+    State#state{in_mem = true, time_last_updated = util2:get_timestamp()}.
+
+make_tick(Delay, Site) ->
+    {ok, _TRef} = timer:apply_after(Delay, erlang, spawn,
+                                    [status_srv, tick, [Site]]),
+    ok.
+
+disc_only(Site) ->
+    case dbsrv:is_busy(Site) of
+        true  -> hn_db_admin:disc_and_mem(Site),
+                 true;
+        false -> hn_db_admin:disc_only(Site),
+                 false
     end.
 
