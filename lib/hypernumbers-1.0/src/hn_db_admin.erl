@@ -71,12 +71,15 @@ copy(FromSite, ToSite, Table) ->
 
 -spec restore(list(), list()) -> ok.
 restore(Dir, Name) ->
-    {atomic, _Tables} = mnesia:restore(Dir ++ Name,
-                                     [{default_op, recreate_tables}]),
+    {atomic, _T} = mnesia:restore(Dir ++ Name, [{default_op, clear_tables}]),
     ok.
 
 -spec backup(list(), list(), list()) -> ok.
 backup(Tables, Dir, Name) ->
+
+    % make the directory exist
+    _Return = filelib:ensure_dir(Dir ++ Name),
+
     ChP = {name, Name},
     ChPDef = {min, Tables},
 
