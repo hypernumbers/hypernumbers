@@ -62,6 +62,7 @@
 -define(tickmarks,  "chxt").
 -define(speedolab,  "chl").
 -define(barwidths,  "chbh").
+-define(zeroline,   "chp").
 
 % definition of standard stuff
 -define(SPEEDOPARAMS, {array, [[0, 33, 66, 100]]}).
@@ -206,15 +207,15 @@ spark1(Size, Data, Colours) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_sparkbar(List),
-    {DataY, NoBars, NoGroups, Orientation, MinY, MaxY, Type, Colours, Rest} = Ret,
+    {DataY, NoBars, NoGroups, Orientation, MinY, MaxY, Type, Cols, Rest} = Ret,
     BarSize = case Orientation of
                   vertical ->
                       make_barsize(Width, Orientation, NoBars, NoGroups);
                   horizontal ->
                       make_barsize(Height, Orientation, NoBars, NoGroups)
               end,
-     Img = sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
-                      Colours, BarSize, Rest, []),
+    Img = sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
+                     Cols, BarSize, Rest, []),
     Img2 = "<div class='hn_sparkS'>" ++ Img ++ "</div>",
     Resize = #resize{width = Width, height = Height},
     #spec_val{val = Img2, resize = Resize}.
@@ -223,27 +224,38 @@ spark1(Size, Data, Colours) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_sparkhist(List),
-    {DataY, NoBars, NoGroups, Orientation, MinY, MaxY, Type, Colours, Rest} = Ret,
+    {DataY, NoBars, NoGroups, Orientation, MinY, MaxY, Type, Cols, Rest} = Ret,
     BarSize = case Orientation of
                   vertical ->
                       make_barsize(Width, Orientation, NoBars, NoGroups);
                   horizontal ->
                       make_barsize(Height, Orientation, NoBars, NoGroups)
               end,
+    Opts = make_zeroline(MinY, MaxY),
     Img = sparkhist1(Type, make_sparksize(Width, Height), DataY, MinY, MaxY,
-                     Colours, BarSize, Rest, []),
+                     Cols, BarSize, Rest, Opts),
     Img2 = "<div class='hn_spark'>" ++ Img ++ "</div>",
     Resize = #resize{width = Width, height = Height},
     #spec_val{val = Img2, resize = Resize}.
+
+make_zeroline(MinY, MaxY) ->
+    if
+        MinY < 0 ->
+            Z = - MinY /(MaxY - MinY),
+            [{?zeroline, float_to_list(Z)}];
+        MinY >= 0 ->
+            []
+    end.
 
 'histogram.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_histogram(List),
     {DataX, DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
+    Opts = make_zeroline(MinY, MaxY),
     Resize = #resize{width = Width, height = Height},
     HTML = eq_hist1(Type, make_size(Width, Height), DataX, DataY, MinY, MaxY,
-                    Colours, Rest, []),
+                    Colours, Rest, Opts),
     #spec_val{val = HTML, resize = Resize}.
 
 'equigraph.'([W, H | List]) ->
@@ -1285,7 +1297,9 @@ make_width(N) -> integer_to_list(N * 80 - 14).
 get_series_length(List) ->
     case hd(List) of
         {range, [L2]} -> length(L2);
-        {range, L3}   -> length(L3)
+        {range, L3}   -> length(L3);
+        {array, [L4]} -> length(L4);
+        {array, L5}   -> length(L5)
     end.
 
 make_barsize(Size, Orientation, NoBars, NoGroups) ->
