@@ -342,7 +342,6 @@ handle_caching(#state{site_cache_mode = false} = State) ->
 handle_caching(#state{site_cache_mode = true, in_mem = true} = State) ->
     State;
 handle_caching(#state{site_cache_mode = true, in_mem = false} = State) ->
-    io:format("loading into memory~n"),
     ok = hn_db_admin:disc_and_mem(State#state.site),
     State#state{in_mem = true, time_last_updated = util2:get_timestamp()}.
 
