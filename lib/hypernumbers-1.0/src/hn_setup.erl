@@ -1,6 +1,7 @@
 -module(hn_setup).
 
 -export([
+         overwrite_site/2,
          copy_site/2,
          site/3,
          site/4,
@@ -26,24 +27,39 @@
 
 %% copies a site from one domain to another
 -spec copy_site(string(), string()) ->
-    ok | {error, from_site_exists} | {error, to_site_doesnt_exist}.
+    ok | {error, from_site_doesnt_exists} | {error, to_site_exists}.
 copy_site(From, To) ->
     case hn_setup:site_exists(To) of
         true ->
             {error, to_site_exists};
         false ->
-            case hn_setup:site_exists(From) of
-                false ->
-                    {error, from_site_doesnt_exist};
-                true ->
-                    site(To, blank, []),
-                    ok = sitemaster_sup:delete_site(From),
-                    ok = sitemaster_sup:delete_site(To),
-                    copy_tables(From, To),
-                    ok = sitemaster_sup:add_site(From),
-                    ok = sitemaster_sup:add_site(To)
-            end
+            overwrite_site(From, To)
     end.
+
+-spec overwrite_site(string(), string()) ->
+    ok | {error, from_site_doesnt_exist}.
+overwrite_site(From, To) ->
+    case hn_setup:site_exists(From) of
+        false ->
+            {error, from_site_doesnt_exist};
+        true ->
+            site(To, blank, []),
+            ok = sitemaster_sup:delete_site(From),
+            ok = sitemaster_sup:delete_site(To),
+            ok = copy_tables(From, To),
+            ok = copy_collateral(From, To),
+            ok = sitemaster_sup:add_site(From),
+            ok = sitemaster_sup:add_site(To)
+    end.
+
+copy_collateral(From, To) ->
+    Root = code:lib_dir(hypernumbers),
+    F2 = Root ++ "/../../var/sites/" ++ hn_util:site_to_fs(From),
+    T2 = Root ++ "/../../var/sites/" ++ hn_util:site_to_fs(To),
+    io:format("F2 is ~p T2 is ~p~n", [F2, T2]),
+    % clear the to directory - it will have gumph in it from the site setup
+    ok = hn_util:delete_directory(T2),
+    ok = hn_util:recursive_copy(F2, T2).
 
 copy_tables(From, To) ->
     Tables = [X || {X, _, _, _, _, _} <- tables()],
