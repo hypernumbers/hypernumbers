@@ -191,16 +191,27 @@ wrap(X)  -> [X].
     #spec_val{val = HTML, preview = Preview, resize = Resize, sp_incs = Incs}.
 
 'twitter.tweet'([Message]) ->
+    URL = "http://" ++ hnfuns_web:site([]) ++ hnfuns_web:page([]),
+    tweet2(Message, URL, "");
+'twitter.tweet'([Message, URL]) ->
+    tweet2(Message, URL, "");
+'twitter.tweet'([Message, URL, Via]) ->
+    Via2 = muin_col_DEPR:collect_string(Via, ?default_str_rules),
+    Opts = "data-via='" ++ Via2 ++ "'",
+    tweet2(Message, URL, Opts).
+
+tweet2(Message, URL, Opts) ->
     Msg = muin_col_DEPR:collect_string(Message, ?default_str_rules),
     JS = ["/webcomponents/hn.twitter.js"],
     Reload = ["HN.Twitter.reload();"],
     Incs = #incs{js = JS, js_reload = Reload},
-    URL = "http://" ++ hnfuns_web:site([]) ++ hnfuns_web:page([]),
     HTML = "<a href='https://twitter.com/share' "
-        ++ "class='twitter-share-button' data-url='" ++ URL ++ "' "
-        ++ "data-text='" ++ Msg ++ "' data-via='gordonguthrie' "
-        ++ "data-dnt='true'>Tweet</a>",
-    #spec_val{val = HTML, sp_incs = Incs}.
+        ++ "class='twitter-share-button' data-url='" ++ URL  ++ "' "
+        ++ "data-text='" ++ Msg ++ "'"
+        ++ "data-dnt='true' "
+        ++ Opts ++ ">Tweet</a>",
+    Resize = #resize{width = 2, height = 1},
+    #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
 
 %% Hypernumbers Channel Name is hypernumbers
 %% 'youtube.channel'([ChannelName]) ->
