@@ -332,7 +332,7 @@ struct_f2([{X, {struct, Attrs}} | T], Y, Ref, Styles, Acc) ->
     Obj = {cell, {tconv:to_i(X), tconv:to_i(Y)}},
     NewRef = Ref#refX{obj = Obj},
     Attrs2 = copy_attrs(Attrs, [], Styles, ["merge", "formula", "style",
-                                            "format", "input"]),
+                                            "format", "input", "ghost"]),
     struct_f2(T, Y, Ref, Styles, [{NewRef, Attrs2} | Acc]).
 
 new_write_cells(Cells, Uid) ->
