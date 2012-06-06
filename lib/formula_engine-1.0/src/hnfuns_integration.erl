@@ -191,14 +191,16 @@ wrap(X)  -> [X].
     #spec_val{val = HTML, preview = Preview, resize = Resize, sp_incs = Incs}.
 
 'twitter.tweet'([Message]) ->
-    tweet2(Message, "Tweet This");
-'twitter.tweet'([Message, Link]) ->
-    tweet2(Message, Link).
-
-tweet2(Message, Link) ->
     Msg = muin_col_DEPR:collect_string(Message, ?default_str_rules),
-    Link = muin_col_DEPR:collect_string(Link, ?default_str_rules),
-    "<a href=\"http://twitter.com/home?status=" ++ Msg ++ "\">" ++ Link ++ "</a>".
+    JS = ["/webcomponents/hn.twitter.js"],
+    Reload = ["HN.Twitter.reload();"],
+    Incs = #incs{js = JS, js_reload = Reload},
+    URL = "http://" ++ hnfuns_web:site([]) ++ hnfuns_web:page([]),
+    HTML = "<a href='https://twitter.com/share' "
+        ++ "class='twitter-share-button' data-url='" ++ URL ++ "' "
+        ++ "data-text='" ++ Msg ++ "' data-via='gordonguthrie' "
+        ++ "data-dnt='true'>Tweet</a>",
+    #spec_val{val = HTML, sp_incs = Incs}.
 
 %% Hypernumbers Channel Name is hypernumbers
 %% 'youtube.channel'([ChannelName]) ->
