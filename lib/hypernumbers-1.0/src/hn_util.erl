@@ -345,7 +345,6 @@ esc_regex([$&   | Rest], Acc) ->
 esc_regex([Else | Rest], Acc) ->
     esc_regex(Rest, [Else | Acc]).
 
-
 %% Recursively copy directories
 -spec recursive_copy(list(), list()) -> ok.
 recursive_copy(From, To) ->
