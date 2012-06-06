@@ -1601,12 +1601,13 @@ page_attributes(Ref, Env) ->
     page_a2(Ref, Env, full).
 
 page_a2(#refX{site = S, path = P} = Ref, Env, Type) ->
-    #env{uid=UID} = Env,
+    #env{uid = UID} = Env,
     Content = new_db_api:read_intersect_ref(Ref),
     Content2 = case Type of
-                   full -> Content;
+                   full   -> Content;
                    export -> clean_up_dyn_sel(Content, [])
                end,
+
     Init    = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree    = dh_tree:create(Init),
     Styles  = extract_styles(S),
