@@ -45,7 +45,8 @@ print_elems([H | T], Acc) -> NewAcc = io_lib:format("~p", [H]),
                              print_elems(T, [NewAcc | Acc]).
 
 array1d(Args) -> Array = array(Args, []),
-                 Arr2 = muin_collect:col(Array, [blank_as_str]),
+                 Arr2 = muin_collect:col(Array, [fetch, {flatten, range},
+                                                 blank_as_str]),
                  {array, [Arr2]}.
 
 array([], Acc)                  -> lists:reverse(Acc);
