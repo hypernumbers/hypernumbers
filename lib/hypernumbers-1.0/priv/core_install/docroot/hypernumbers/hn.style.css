@@ -344,12 +344,29 @@ label {
   background: url(/hypernumbers/sprite.png) -64px -8px;
   }
 
-.hn_ghost
+.hn_ghost {
+  background: url(/hypernumbers/sprite.png) -138px -1px;
+ }
+
+.hn_ghost_inline {
+  background: url(/hypernumbers/sprite.png) -105px -1px;
+ }
+
+.hn_ghost_rich {
+  background: url(/hypernumbers/sprite.png) -122px -1px;
+ }
+
+.hn_ghost, .hn_ghost_inline, .hn_ghost_rich
 {
-  background: url(/hypernumbers/sprite.png) -84px -9px;
+  z-index:    9999;
+  position:   absolute;
+  left:       0px;
+  top:        0px;
+  height:     16px;
+  width:      15px;
   }
 
-.inlineform, .inlinerichform, .hn_ghost{
+.inlineform, .inlinerichform {
     z-index:    9999;
     position:   absolute;
     left:       0px;
