@@ -1,4 +1,4 @@
-%% -*- erlang -*-
+rdon%% -*- erlang -*-
 [{hypernumbers,
   [
    {nodename, hndev},
@@ -39,7 +39,7 @@
    {startup_debug, false},
 
    % Determines if the server is to running in site-cache mode
-   {site_cache_mode, true}
+   {site_cache_mode, false}
   ]},
 
 %% Mnesia Config
