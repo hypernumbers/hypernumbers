@@ -13,8 +13,6 @@
          force_recalc/0,
          force_recalc/1,
          create_table/7,
-         % mem_only/1,
-         % mem_only/2,
          all_sites_disc_only/0,
          disc_only/1,
          disc_only/2,
@@ -22,8 +20,7 @@
          disc_and_mem/1,
          disc_and_mem/2,
          backup/3,
-         restore/2,
-         copy_site/2
+         restore/2
         ]).
 
 force_recalc() ->
@@ -46,27 +43,6 @@ force_recalc(Site) ->
                    mnesia:foldl(Fun1, [], Tbl)
            end,
     mnesia:activity(transaction, Fun2),
-    ok.
-
--spec copy_site(string(), string()) -> ok.
-copy_site(FromSite, ToSite) ->
-    Tables = hn_setup:tables(),
-    [copy(FromSite, ToSite, X) || {X, _, _, _, _, _} <- Tables],
-    ok.
-
-copy(FromSite, ToSite, Table) ->
-    io:format("Copying ~p from ~p to ~p~n", [Table, FromSite, ToSite]),
-    FromTable = new_db_wu:trans(FromSite, Table),
-    ToTable = new_db_wu:trans(ToSite, Table),
-    ok = mnesia:clear_table(ToTable),
-    Fun1 = fun() ->
-                   Fun2 = fun(X, Acc) ->
-                                  ok = mnesia:write(ToTable, X, write),
-                                  Acc
-                          end,
-                   mnesia:foldl(Fun2, [], FromTable)
-           end,
-    [] = mnesia:activity(transaction, Fun1),
     ok.
 
 -spec restore(list(), list()) -> ok.
@@ -150,20 +126,6 @@ disc_only("http://" ++ SiteAndPort, Table) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
     ok = chg_copy_type(Site, Port, Table, disc_only_copies),
     ok.
-
-%% -spec mem_only(list()) -> ok.
-%% mem_only("http://" ++ SiteAndPort) ->
-%%     [Site, Port] = string:tokens(SiteAndPort, ":"),
-%%     Cacheable = [X || {X, _, _, _, _, C} <- hn_setup:tables(), C == cache],
-%%     [ok = chg_copy_type(Site, Port, X, ram_copies)
-%%      || X <- Cacheable],
-%%     ok.
-
-%% -spec mem_only(list(), list()) -> ok.
-%% mem_only("http://" ++ SiteAndPort, Table) ->
-%%     [Site, Port] = string:tokens(SiteAndPort, ":"),
-%%     ok = chg_copy_type(Site, Port, Table, ram_copies),
-%%     ok.
 
 chg_copy_type(Site, Port, Table, Mode) ->
     ActualTable = list_to_existing_atom(Site ++ "&"
