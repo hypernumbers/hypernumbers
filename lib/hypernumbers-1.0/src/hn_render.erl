@@ -129,9 +129,9 @@ layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
                 end,
     case {Type, Ghost, Ghostable} of
         {webpage, true, _} ->
-            layout2(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
+            layout2(T, Type, C, R, PX, PY, H, CWs2, RHs, Rec, Acc);
         {wikipage, true, true} ->
-            layout2(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
+            layout2(T, Type, C, R, PX, PY, H, CWs2, RHs, Rec, Acc);
         _ ->
             case pget("merge", L) of
                 undefined ->
