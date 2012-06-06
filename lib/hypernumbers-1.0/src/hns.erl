@@ -348,7 +348,7 @@ handle_call({lookup_node, ZoneL, Name}, _From, S) ->
 handle_call(resource_diagnostics, _From, S=#state{routing=R}) ->
     Runs = 50000,
     Results = repeat_select(Runs, R, dict:new()),
-    Format = "Name: ~-50s Wgt: ~5b Expect: ~5.3f Actual: ~5.3f~n",
+    Format = "Name: ~-80s Wgt: ~5b Expect: ~5.3f Actual: ~5.3f~n",
     F = fun(#resource{address=Address, weight=Weight}, Acc) ->
                 Expected = Weight / R#routing.upper_limit,
                 Actual = case dict:find(Address, Results) of
