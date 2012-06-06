@@ -2247,7 +2247,7 @@ provision_site(RootSite, PrevUid, SiteType, Email, Data, Env) ->
     Zone = case application:get_env(hypernumbers, environment) of
                {ok, development} -> "hypernumbers.dev";
                {ok, server_dev}  -> "dev.hypernumbers.com";
-               {ok, production}  -> "tryvixo.com"
+               {ok, production}  -> "tiny.hn"
            end,
     {From, Sig} = emailer:get_details(RootSite),
     case factory:provision_site(Zone, Email, From, Sig, SiteType,
