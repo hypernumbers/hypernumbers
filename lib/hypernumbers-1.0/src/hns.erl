@@ -27,7 +27,6 @@
 
 -define(API_KEY,
         "C7ozR9fh4apHmfEwkWS7FrItSHDqGq9J3UTxm9JQrEEHnka3qA7wSHJYJM1kHVfs").
--define(DEV_ZONE_ID, -1).
 
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
@@ -536,33 +535,45 @@ record_exists(Key) ->
     end.
 
 -spec zone_id_LINODE(string()) -> integer().
-zone_id_LINODE(?DEV_ZONE) -> ?DEV_ZONE_ID;
 zone_id_LINODE(Zone) ->
-    Struct = linode_api([{"api_action", "domain.list"}]),
-    {array, Domains} = get_data(Struct),
-    seek_zone_id(Domains, Zone).
+    case application:get_env(hypernumbers, environment) of
+        {ok, production} ->
+            Struct = linode_api([{"api_action", "domain.list"}]),
+            {array, Domains} = get_data(Struct),
+            seek_zone_id(Domains, Zone);
+        _ ->
+            crypto:rand_uniform(0, 1000)
+    end.
 
--spec create_dns_LINODE(string(), string(), integer()) -> integer().
-create_dns_LINODE(_Name, _Address, ?DEV_ZONE_ID) ->
-    crypto:rand_uniform(0, 1000);
 create_dns_LINODE(Name, Address, ZoneId) ->
-    ZoneIdStr = integer_to_list(ZoneId),
-    Struct = linode_api([{"api_action", "domain.resource.create"},
-                        {"DomainID", ZoneIdStr},
-                        {"Type", "A"},
-                        {"Name", Name},
-                        {"Target", Address}]),
-    {struct,[{"ResourceID",ResourceID}]} = get_data(Struct),
-    ResourceID.
+    % behave differently depending on if you are in dev or prod
+    case application:get_env(hypernumbers, environment) of
+        {ok, production} ->
+            ZoneIdStr = integer_to_list(ZoneId),
+            Struct = linode_api([{"api_action", "domain.resource.create"},
+                                 {"DomainID", ZoneIdStr},
+                                 {"Type", "A"},
+                                 {"Name", Name},
+                                 {"Target", Address}]),
+            {struct,[{"ResourceID",ResourceID}]} = get_data(Struct),
+            ResourceID;
+        _ ->
+            crypto:rand_uniform(0, 1000)
+    end.
 
 -spec delete_dns_LINODE(integer(), integer()) -> any().
-delete_dns_LINODE(?DEV_ZONE_ID, _Reason) -> ok;
 delete_dns_LINODE(ZoneId, ResourceId) ->
-    ZoneIdStr = integer_to_list(ZoneId),
-    ResourceIdStr = integer_to_list(ResourceId),
-    linode_api([{"api_action", "domain.resource.delete"},
-                {"DomainID", ZoneIdStr},
-                {"ResourceID", ResourceIdStr}]).
+    % behave differently depending on if you are in dev or prod
+    case application:get_env(hypernumbers, environment) of
+        {ok, production} ->
+            ZoneIdStr = integer_to_list(ZoneId),
+            ResourceIdStr = integer_to_list(ResourceId),
+            linode_api([{"api_action", "domain.resource.delete"},
+                        {"DomainID", ZoneIdStr},
+                        {"ResourceID", ResourceIdStr}]);
+        _ ->
+            ok
+    end.
 
 get_data({struct,Attrs}) ->
     proplists:get_value("DATA", Attrs).
