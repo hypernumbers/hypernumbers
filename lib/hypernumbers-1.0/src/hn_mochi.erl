@@ -1403,15 +1403,36 @@ ipost(Ref, Qry, Env) ->
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -spec log_signup(string(), string(), atom(), auth_srv:uid(), string()) -> ok.
-log_signup(Site, NewSite, Node, Uid, Email) ->
-    Row = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
-            || {Ref, Val} <- [{"A:A", Email},
-                              {"B:B", "<a href='"++NewSite++
-                               "'>"++NewSite++"</a>"},
-                              {"C:C", Uid},
-                              {"D:D", dh_date:format("Y/m/d G:i:s")},
-                              {"E:E", atom_to_list(Node)} ] ],
-    new_db_api:append_row(Row, nil, nil).
+log_signup(NewSite, SiteType, Node, Uid, Email) ->
+    LogS = case application:get_env(hypernumbers, environment) of
+               {ok, development} -> "http://hypernumbers.dev:9000";
+               {ok, server_dev}  -> "http://dev.hypernumbers.com:8080";
+               {ok, production}  -> "http://crm.vixo.com"
+           end,
+    LogP = make_log_path(Email),
+    Paths = [LogP ++ "_sites/", "/_sites/"],
+    Fun = fun(X) ->
+                  Row = [{hn_util:url_to_refX(LogS ++ X ++ Ref), Val}
+                         || {Ref, Val} <- [
+                                           {"A:A", Email},
+                                           {"B:B", "<a href='"++NewSite++
+                                            "'>"++NewSite++"</a>"},
+                                           {"C:C", Uid},
+                                           {"D:D", dh_date:format("Y/m/d G:i:s")},
+                                           {"E:E", atom_to_list(Node)}
+                                          ]],
+                  new_db_api:append_row(Row, nil, nil)
+          end,
+    [Fun(X) || X <- Paths],
+    ST2 = atom_to_list(SiteType),
+    Body = Email ++ " commissioned a " ++ ST2 ++ " site. Yip!",
+    emailer:send_email("gordon@vixo.com;stephen@vixo.com", "", "robot@vixo.com",
+                       "New " ++ ST2 ++ " ite commissioned", Body).
+
+make_log_path(Email) ->
+    Email2 = re:replace(Email, "\\.", "-", [{return, list}, global]),
+    [U, Domain] = string:tokens(Email2, "@"),
+    "/users/" ++ Domain ++ "/" ++ U ++ "/".
 
 get_site(Env) ->
     Host = get_host(Env),
@@ -2231,14 +2252,14 @@ provision_site(RootSite, PrevUid, SiteType, Email, Data, Env) ->
     case factory:provision_site(Zone, Email, From, Sig, SiteType,
                                 PrevUid, Data) of
         {ok, new, Site, Node, Uid, Name, InitialView} ->
-            log_signup(RootSite, Site, Node, Uid, Email),
+            log_signup(Site, SiteType, Node, Uid, Email),
             Opaque = [{param, InitialView}],
             Expiry = "never",
             Url = passport:create_hypertag_url(Site, ["_mynewsite", Name],
                                               Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
         {ok, existing, Site, Node, Uid, _Name, InitialView} ->
-            log_signup(RootSite, Site, Node, Uid, Email),
+            log_signup(Site, SiteType, Node, Uid, Email),
             json(Env, {struct, [{"result", "success"},
                                 {"url", Site ++ InitialView}]});
         {error, invalid_email} ->
