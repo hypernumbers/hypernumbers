@@ -23,14 +23,17 @@
          export_as_sitetype/3,
          write_backup/1,
          write_backup/2,
-         restore_backup/1,
-         restore_backup/2
+         restore_local_backup/1,
+         restore_local_backup/2
          ]).
 
 -define(join, filename:join).
+-define(ext, ".mnesia.backup").
+-define(services, "service_tables.").
+-define(site, "site_tables.").
 
--spec restore_backup(list()) -> ok.
-restore_backup(Dir) ->
+-spec restore_local_backup(list()) -> ok.
+restore_local_backup(Dir) ->
     [Name | Rid ] = lists:reverse(string:tokens(Dir, "/")),
     Dir2 = "/" ++ string:join(lists:reverse(Rid), "/") ++ "/",
     io:format("Starting Restore of ~p~n-from ~p~n-at ~p ~p~n",
@@ -53,25 +56,25 @@ restore_backup(Dir) ->
                   [hn_util:site_from_fs(Site) | Acc]
           end,
     Sites = lists:foldl(Fun, [], Dirs2),
-    [restore_backup(Dir, X) || X <- Sites],
+    [restore_local_backup(Dir, X) || X <- Sites],
     io:format("Finishing restore of ~p~n-from ~p~n-at-~p ~p~n",
               [Name, Dir2, date(), time()]),
     ok.
 
--spec restore_backup(list(), list()) -> ok.
-restore_backup(Dir, Site) ->
+-spec restore_local_backup(list(), list()) -> ok.
+restore_local_backup(Dir, Site) ->
     [Name | _Rid ] = lists:reverse(string:tokens(Dir, "/")),
     case hn_setup:site_exists(Site) of
         false -> hn_setup:site(Site, blank, []);
         true  -> ok
     end,
     RestFile = Dir ++ "/" ++ hn_util:site_to_fs(Site) ++ "/",
-    ok = hn_db_admin:restore(RestFile, Name),
+    ok = hn_db_admin:restore(RestFile, ?site ++ Name ++ ?ext),
     io:format("Database restored for ~p~n", [Site]),
     restore_site(Dir ++ "/" ++ hn_util:site_to_fs(Site) ++ "/", Site).
 
 restore_services(Services, Name) ->
-    hn_db_admin:restore(Services, Name).
+    hn_db_admin:restore(Services, ?services ++ Name ++ ?ext).
 
 restore_site(Src, Site) ->
     import_(Src, Site),
@@ -99,7 +102,7 @@ write_backup(Name, Site) ->
     ok = hn_db_admin:disc_only(Site),
 
     % now write the mnesia backup
-    ok = hn_db_admin:backup(Tables, Dir, Name),
+    ok = hn_db_admin:backup(Tables, Dir, ?site ++ Name ++ ?ext),
 
     % now restore it to memory (mebbies)
     {ok, Cache} = application:get_env(hypernumbers, site_cache_mode),
@@ -148,7 +151,7 @@ backup_services(Dir, Name) ->
     Tables = mnesia:system_info(tables),
     ServiceTables = [X || X <- Tables,
                           lists:member(X, PossibleTables) == true],
-    ok = hn_db_admin:backup(ServiceTables, Dir, Name),
+    ok = hn_db_admin:backup(ServiceTables, Dir, ?services ++ Name ++ ?ext),
     io:format("Services backed up~n"),
     ok.
 
