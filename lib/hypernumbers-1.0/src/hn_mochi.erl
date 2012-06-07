@@ -1427,7 +1427,7 @@ log_signup(NewSite, SiteType, Node, Uid, Email) ->
     ST2 = atom_to_list(SiteType),
     Body = Email ++ " commissioned a " ++ ST2 ++ " site. Yip!",
     emailer:send_email("gordon@vixo.com;stephen@vixo.com", "", "robot@vixo.com",
-                       "New " ++ ST2 ++ " ite commissioned", Body).
+                       "New " ++ ST2 ++ " site commissioned", Body).
 
 make_log_path(Email) ->
     Email2 = re:replace(Email, "\\.", "-", [{return, list}, global]),
