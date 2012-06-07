@@ -1407,7 +1407,7 @@ log_signup(NewSite, SiteType, Node, Uid, Email) ->
     LogS = case application:get_env(hypernumbers, environment) of
                {ok, development} -> "http://hypernumbers.dev:9000";
                {ok, server_dev}  -> "http://dev.hypernumbers.com:8080";
-               {ok, production}  -> "http://crm.vixo.com"
+               {ok, production}  -> "http://crm.vixo.com:80"
            end,
     LogP = make_log_path(Email),
     Paths = [LogP ++ "_sites/", "/_sites/"],
