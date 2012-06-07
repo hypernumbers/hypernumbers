@@ -44,10 +44,13 @@ print_elems([], Acc)      -> lists:flatten(string:join(lists:reverse(Acc), ","))
 print_elems([H | T], Acc) -> NewAcc = io_lib:format("~p", [H]),
                              print_elems(T, [NewAcc | Acc]).
 
-array1d(Args) -> Array = array(Args, []),
-                 Arr2 = muin_collect:col(Array, [fetch, {flatten, range},
-                                                 blank_as_str]),
-                 {array, [Arr2]}.
+array1d(Args) ->
+    Array = array(Args, []),
+    Arr2 = muin_collect:col(Array, [fetch, flatten]),
+    % yeah, oh, why don't we just merge the two collections, no?
+    % bad idea....
+    Arr3 = muin_collect:col(Arr2, [blank_as_str]),
+    {array, [Arr3]}.
 
 array([], Acc)                  -> lists:reverse(Acc);
 array([{array, List} | T], Acc) -> array(T, flatten2d(List, Acc));

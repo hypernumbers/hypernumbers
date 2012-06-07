@@ -176,7 +176,7 @@ rl(flatten, {array, X}) ->
 rl(flatten, {list, X}) ->
     {list, X};
 
-rl({flatten, range}, {range,X}) ->
+rl({flatten, range}, {range, X}) ->
     {list, flat(X, [])};
 
 rl(num_as_bool, X) when is_number(X) andalso X==0; X==0.0 ->
@@ -319,8 +319,8 @@ rl(strip_spec, #spec_val{val = X}) -> X;
 rl(_Rule, Value) ->
     Value.
 
-flat([], Acc)          -> Acc;
-flat([Head|Tail], Acc) -> flat(Tail, Acc ++ Head).
+flat([], Acc)            -> Acc;
+flat([Head | Tail], Acc) -> flat(Tail, Acc ++ Head).
 
 %% Passes are a list of rules to perform on arguments once casting
 %% and such has happened
