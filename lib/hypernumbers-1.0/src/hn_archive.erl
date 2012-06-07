@@ -33,7 +33,8 @@
 restore_backup(Dir) ->
     [Name | Rid ] = lists:reverse(string:tokens(Dir, "/")),
     Dir2 = "/" ++ string:join(lists:reverse(Rid), "/") ++ "/",
-    io:format("Starting Restore of ~p~n-from ~p~n-at ~p~n", [Name, Dir2, now()]),
+    io:format("Starting Restore of ~p~n-from ~p~n-at ~p ~p~n",
+              [Name, Dir2, date(), time()]),
     % now get a list of all the sites in the backup
     Files = filelib:wildcard(Dir2 ++ Name ++ "/*"),
     Dirs = [X || X <- Files, filelib:is_dir(X) == true],
@@ -53,7 +54,8 @@ restore_backup(Dir) ->
           end,
     Sites = lists:foldl(Fun, [], Dirs2),
     [restore_backup(Dir, X) || X <- Sites],
-    io:format("Finishing restore of ~p~n-from ~p~n-at-~p~n", [Name, Dir2, now()]),
+    io:format("Finishing restore of ~p~n-from ~p~n-at-~p ~p~n",
+              [Name, Dir2, date(), time()]),
     ok.
 
 -spec restore_backup(list(), list()) -> ok.
@@ -86,7 +88,8 @@ write_backup(Name) ->
 
 write_backup(Name, Site) ->
     % setup the backup
-    io:format("Starting backup of ~p~n-to ~p~n-at ~p~n", [Site, Name, now()]),
+    io:format("Starting backup of ~p~n-to ~p~n-at ~p ~p~n",
+              [Site, Name, date(), time()]),
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/backups/"
         ++ Name ++ "/" ++ hn_util:site_to_fs(Site) ++ "/",
     Tables = [new_db_wu:trans(Site, X) ||
@@ -114,7 +117,8 @@ write_backup(Name, Site) ->
 
     % now backup the site
     ok = backup_site(Dir, Site),
-    io:format("Finishing backup of ~p~n-to ~p~n-at ~p~n", [Site, Name, now()]),
+    io:format("Finishing backup of ~p~n-to ~p~n-at ~p ~p~n",
+              [Site, Name, date(), time()]),
     ok.
 
 backup_site(Dest, Site) ->
