@@ -47,7 +47,8 @@ force_recalc(Site) ->
 
 -spec restore(list(), list()) -> ok.
 restore(Dir, Name) ->
-    {atomic, _T} = mnesia:restore(Dir ++ Name, [{default_op, clear_tables}]),
+    {atomic, _T} = mnesia:install_fallback(Dir ++ Name,
+                                           [{default_op, clear_tables}]),
     ok.
 
 -spec backup(list(), list(), list()) -> ok.
