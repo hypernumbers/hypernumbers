@@ -428,7 +428,7 @@ copy_cell(From, To, Incr, all, Uid) ->
             end,
     copy_c2(From, To, Incr, Uid, Attrs).
 
-copy_c2(#xrefX{obj = {cell, {FX, FY}}},
+copy_c2(#xrefX{obj = {cell, {FX, FY}}} = From,
         #xrefX{obj = {cell, {TX, TY}}} = To, Incr, Uid, Attrs) ->
     Formula = case orddict:find("formula", Attrs) of
                   {ok, V} -> superparser:process(V);
@@ -465,7 +465,7 @@ copy_c2(#xrefX{obj = {cell, {FX, FY}}},
             _ ->
                 ""
         end,
-    Attrs2 = copy_attributes(Attrs, orddict:new(), ["merge", "style"]),
+    Attrs2 = copy_attributes(Attrs, orddict:new(), ["merge", "style", "input"]),
     Attrs3 = orddict:store("formula", Formula2, Attrs2),
     write_attrs(To, Attrs3, Uid),
     ok.
@@ -477,9 +477,9 @@ clear_cells(RefX, Uid) -> clear_cells(RefX, contents, Uid).
 
 -spec clear_cells(#refX{}, all | style | contents | tuple(), auth_srv:uid()) -> ok.
 clear_cells(Ref, contents, Uid) ->
-    do_clear_cells(Ref, [input | content_attrs()], clear, Uid);
+    do_clear_cells(Ref, content_attrs(), clear, Uid);
 clear_cells(Ref, all, Uid) ->
-    do_clear_cells(Ref, ["style", "merge", "input" | content_attrs()], clear, Uid);
+    do_clear_cells(Ref, ["style", "merge" | content_attrs()], clear, Uid);
 clear_cells(Ref, style, Uid) ->
     do_clear_cells(Ref, ["style", "merge"], ignore, Uid);
 clear_cells(Ref, {attributes, DelAttrs}, Uid) ->
@@ -2641,6 +2641,7 @@ content_attrs() ->
      "value",
      "preview",
      "overwrite-color",
+     "input",
      "__hasincs",
      "__hasform",
      "__rawvalue",
