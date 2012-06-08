@@ -107,7 +107,7 @@
 
 'phone.menu.dial'(List) ->
     Dial = collect(List),
-    Twiml = [#dial{body = Dial}],
+    Twiml = [#dial{body = Dial, record = true}],
     case twiml:is_valid(Twiml) of
         false -> ?ERRVAL_VAL;
         true  -> Preview = "Dial",
