@@ -222,12 +222,12 @@ link_(Src, Text, _N, _O) ->
 
 img_(Src, Alt, Style, W, H) ->
     lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt
-                  ++ "' style ='" ++ Style ++ "' width='" ++ W ++ "' "
+                  ++ "' style='" ++ Style ++ "' width='" ++ W ++ "' "
                   ++ " height='" ++ H ++ "' />").
 
 img_(Src, Alt, Style) ->
     lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt
-                  ++ "' style ='" ++ Style ++ "' />").
+                  ++ "' style='" ++ Style ++ "' />").
 
 img_(Src, Alt) ->
     lists:flatten("<img src='" ++ Src ++ "' alt='" ++ Alt ++ "'/>").
@@ -353,14 +353,10 @@ is_valid(X) ->
     end.
 
 img_style(0)  -> "";
-img_style(1)  -> "-moz-box-shadow: 2px 2px 4px #AAA;"
-                     ++ "-webkit-box-shadow: 2px 2px 4px #AAA;";
-img_style(2)  -> "-moz-box-shadow: 3px 3px 6px #AAA;"
-                     ++ "-webkit-box-shadow: 3px 3px 6px #AAA;";
-img_style(3)  -> "-moz-box-shadow: 4px 4px 8px #AAA;"
-                     ++ "-webkit-box-shadow: 4px 4px 8px #AAA;";
+img_style(1)  -> "box-shadow: 2px 2px 4px #AAA; border-radius: 6px";
+img_style(2)  -> "box-shadow: 3px 3px 6px #AAA; border-radius: 10px";
+img_style(3)  -> "box-shadow: 4px 4px 8px #AAA; border-radius: 12px";
 img_style(_N) ->  ?ERR_VAL.
-
 
 %'twitter.search'([])          -> 'twitter.search'(["hello"]);
 %'twitter.search'([Term])      -> 'twitter.search'([Term, "title"]);
