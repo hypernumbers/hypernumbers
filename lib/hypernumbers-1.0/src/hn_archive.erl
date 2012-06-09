@@ -1,4 +1,4 @@
-%%%-------------------------------------------------------------------
+%%%------------------------------------------------------------------
 %%% @author     Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers Ltd
 %%% @doc       code to manage backup and restore etc as well
@@ -21,138 +21,244 @@
          import/2,
          export_as_sitetype/2,
          export_as_sitetype/3,
-         write_backup/1,
-         write_backup/2,
-         restore_local_backup/1,
-         restore_local_backup/2
+         write_backup/0,
+         restore_external_backup/2,
+         restore_local_backup/1
          ]).
 
 -define(join, filename:join).
 -define(ext, ".mnesia.backup").
--define(services, "service_tables.").
--define(site, "site_tables.").
+-define(site, "site").
+-define(site_dirs, ["logs", "mochilog", "runerl_log"]).
+
+-spec restore_external_backup(list(), atom()) -> ok.
+restore_external_backup(Name, FromNode) ->
+    ERoot = external_backup_dir(Name),
+    IRoot = backup_dir(Name),
+    ToNode = node(),
+    {Sites, _DB} = unpack(ERoot),
+    io:format("~n***********Conversion Starts****************************~n"),
+    io:format("Converting backup ~p~n- from ~p~n-   to ~p~n- at   ~p ~p~n",
+              [Name, FromNode, ToNode, date(), time()]),
+
+    Source = ERoot ++ "db/" ++ Name ++ ?ext,
+    Target = IRoot ++ "db/" ++ Name ++ ?ext,
+    filelib:ensure_dir(Target),
+    {ok, switched} = hn_db_convert:change_node_name(FromNode, ToNode,
+                                                    Source, Target),
+    io:format("Backup ~p converted from ~p to ~p~n",
+              [Name, FromNode, ToNode]),
+    io:format("Backup copied from var/external_backups/ to var/backups/~n"),
+
+    % now copy over the collateral
+    [ok = copy_external_collateral(Name, X) || X <- Sites],
+
+    % finally copy over the server stuff
+    ok = copy_external_server(Name),
+
+    % and then simply restore the new local backup
+    io:format("***********Conversion Ends*******************************~n"),
+    restore_local_backup(Name).
+
+copy_external_server(Name) ->
+    Src = external_backup_dir(Name),
+    Dest = backup_dir(Name),
+    % restore the site dirs (mostly logs)
+    [ok = hn_util:recursive_copy(Src ++ X, Dest ++ X) || X <- ?site_dirs],
+
+    % now restore the sys.config
+    {ok, _} = file:copy(Src ++ "sys.config." ++ Name,
+                        Dest ++ "sys.config." ++ Name),
+    io:format("Server for ~p copied over~n", [Name]),
+    ok.
+
+copy_external_collateral(Name, Site) ->
+    ERoot = external_backup_dir(Name),
+    IRoot = backup_dir(Name),
+    Site2 = hn_util:site_to_fs(Site),
+    % copy collateral across
+    hn_util:recursive_copy(ERoot ++ Site2 ++ "/",
+                           IRoot ++ Site2 ++ "/"),
+    io:format("Collateral for ~p copied over from external backup ~p~n",
+              [Site, Name]),
+  ok.
 
 -spec restore_local_backup(list()) -> ok.
-restore_local_backup(Dir) ->
+restore_local_backup(Name) ->
+    {Sites, DB} = unpack(backup_dir(Name)),
+    io:format("~n***********Restoration Starts***************************~n"),
+    io:format("Starting restore of ~p~n- at ~p ~p~n", [Name, date(), time()]),
+
+    % stop everything
+    application:stop(hypernumbers),
+    application:stop(mnesia),
+
+    % now restore the database
+    hn_db_admin:restore(DB, Name ++ ?ext),
+    io:format("Database restored from ~p~n", [Name]),
+
+    % now restore the collateral
+    [restore_collateral(Name, X) || X <- Sites],
+    io:format("Finishing restore of ~p~n- at ~p ~p~n", [Name, date(), time()]),
+
+    % finally restore server stuff
+    ok = restore_server(Name),
+    io:format("Server restored from ~p~n", [Name]),
+
+    % restart everything
+    application:start(mnesia),
+    application:start(hypernumbers),
+    io:format("***********Restoration Ends*****************************~n"),
+    ok.
+
+-spec restore_collateral(list(), list()) -> ok.
+restore_collateral(Name, Site) ->
+    io:format("Restoring ~p from ~p~n- at ~p ~p~n",
+              [Site, Name, date(), time()]),
+    Dir = backup_dir(Name),
+    Src = Dir ++ hn_util:site_to_fs(Site) ++ "/",
+
+    Dest = existing_site_dir(Site),
+
+    % first delete the old version
+    hn_util:delete_directory(Dest),
+    filelib:ensure_dir(Dest ++ "junk.txt"),
+
+    % then copy the new versions
+    copy_(Src, Site),
+    io:format("~p restored...~n", [Site]),
+    ok.
+
+unpack(Dir) ->
     [Name | Rid ] = lists:reverse(string:tokens(Dir, "/")),
     Dir2 = "/" ++ string:join(lists:reverse(Rid), "/") ++ "/",
-    io:format("Starting Restore of ~p~n-from ~p~n-at ~p ~p~n",
-              [Name, Dir2, date(), time()]),
     % now get a list of all the sites in the backup
     Files = filelib:wildcard(Dir2 ++ Name ++ "/*"),
     Dirs = [X || X <- Files, filelib:is_dir(X) == true],
 
-    % got to handle services differently (if they exist)
-    Services = Dir2 ++ Name ++ "/" ++ "services",
-    Dirs2 = case lists:member(Services, Dirs) of
-                true  -> restore_services(Services ++ "/", Name),
-                         lists:delete(Services, Dirs);
-                false -> Dirs
-            end,
+    % get the db
+    DB = Dir2 ++ Name ++ "/" ++ "db",
+    SiteDirs = [Dir2 ++ Name ++ "/" ++ X || X <- ?site_dirs],
+    Fun1 = fun(X, Acc) ->
+                  lists:delete(X, Acc)
+          end,
+    Dirs2 = lists:foldl(Fun1, Dirs, [DB | SiteDirs]),
 
     % get the sites from the dirs
-    Fun = fun(X, Acc) ->
+    Fun2 = fun(X, Acc) ->
                   [Site | _Rest] = lists:reverse(string:tokens(X, "/")),
                   [hn_util:site_from_fs(Site) | Acc]
           end,
-    Sites = lists:foldl(Fun, [], Dirs2),
-    [restore_local_backup(Dir, X) || X <- Sites],
-    io:format("Finishing restore of ~p~n-from ~p~n-at-~p ~p~n",
-              [Name, Dir2, date(), time()]),
-    ok.
-
--spec restore_local_backup(list(), list()) -> ok.
-restore_local_backup(Dir, Site) ->
-    [Name | _Rid ] = lists:reverse(string:tokens(Dir, "/")),
-    case hn_setup:site_exists(Site) of
-        false -> hn_setup:site(Site, blank, []);
-        true  -> ok
-    end,
-    RestFile = Dir ++ "/" ++ hn_util:site_to_fs(Site) ++ "/",
-    ok = hn_db_admin:restore(RestFile, ?site ++ Name ++ ?ext),
-    io:format("Database restored for ~p~n", [Site]),
-    restore_site(Dir ++ "/" ++ hn_util:site_to_fs(Site) ++ "/", Site).
-
-restore_services(Services, Name) ->
-    hn_db_admin:restore(Services, ?services ++ Name ++ ?ext).
-
-restore_site(Src, Site) ->
-    import_(Src, Site),
-    io:format("~p restored...~n", [Site]),
-    ok.
+    Sites = lists:foldl(Fun2, [], Dirs2),
+    {Sites, DB ++ "/"}.
 
 % writes a backup
--spec write_backup(list()) -> ok.
-write_backup(Name) ->
+-spec write_backup() -> ok.
+write_backup() ->
+    io:format("~n***********Backup Starts********************************~n"),
+    Node = hn_util:node_to_fs(node()),
+    Name = Node ++ "." ++ dh_date:format("Y_m_d_H_i_s"),
     Sites = hn_setup:get_sites(),
-    [ok = write_backup(Name, X) || X <- Sites],
-    Dir = code:lib_dir(hypernumbers) ++ "/../../var/backups/" ++ Name ++ "/",
-    backup_services(Dir ++ "/services/", Name).
 
-write_backup(Name, Site) ->
-    % setup the backup
-    io:format("Starting backup of ~p~n-to ~p~n-at ~p ~p~n",
-              [Site, Name, date(), time()]),
-    Dir = code:lib_dir(hypernumbers) ++ "/../../var/backups/"
-        ++ Name ++ "/" ++ hn_util:site_to_fs(Site) ++ "/",
-    Tables = [new_db_wu:trans(Site, X) ||
-                 {X, _, _, _, _, _} <- hn_setup:tables()],
+    io:format("Backing up ~p to ~p~n", [node(), Name]),
 
-    % drop the db to disc only first
-    ok = hn_db_admin:disc_only(Site),
+    % backup the sites collateral
+    [ok = backup_collateral(Name, X) || X <- Sites],
 
-    % now write the mnesia backup
-    ok = hn_db_admin:backup(Tables, Dir, ?site ++ Name ++ ?ext),
+    % now backup other server stuff
+    ok = backup_server(Name),
 
-    % now restore it to memory (mebbies)
+    Dir = backup_dir(Name),
+
+    % before starting on the db take it out of memory
+    [ok = hn_db_admin:disc_only(X) || X <- Sites],
+
+    backup_db(Dir ++ "/db/", Name),
+
+    % now restore the database to memory (mebbies)
     {ok, Cache} = application:get_env(hypernumbers, site_cache_mode),
+    site_to_memory(Sites, Cache),
+    io:format("~n***********Backup Ends**********************************~n"),
+    Name.
+
+restore_server(Name) ->
+    Src = backup_dir(Name),
+    Dest = existing_server_root(),
+
+    % delete the existing server stuff
+    [ok = hn_util:delete_directory(Dest ++ X) || X <- ?site_dirs],
+    % now make the directories again, lol!
+    [filelib:ensure_dir(Dest ++ X) || X <- ?site_dirs],
+
+    % restore the site dirs (mostly logs)
+    [ok = hn_util:recursive_copy(Src ++ X, Dest ++ X) || X <- ?site_dirs],
+
+    % now restore the sys.config
+    {ok, _} = file:copy(Src ++ "sys.config." ++ Name,
+                        Dest ++ "sys.config." ++ Name),
+    io:format("NOTE: sys.config restored as sys.config." ++ Name ++ "~n"
+              ++ "      Needs manual rename and restart (if appropriate)~n"),
+    ok.
+
+backup_server(Name) ->
+    Src = existing_server_root(),
+    Dest = backup_dir(Name),
+
+    % back up the site dirs (mostly logs)
+    [ok = hn_util:recursive_copy(Src ++ X, Dest ++ X) || X <- ?site_dirs],
+
+    % now backup the sys.config
+    {ok, _} = file:copy(Src ++ "sys.config", Dest ++ "sys.config." ++ Name),
+    io:format("Server backed up to ~p~n", [Name]),
+    ok.
+
+site_to_memory([], _Cache) ->
+    ok;
+site_to_memory([Site | T], Cache) ->
     case {Cache, dbsrv:is_busy(Site)} of
         {true, true} ->
             % if it should be cached but if its busy reload into memory
             ok = hn_db_admin:disc_and_mem(Site);
         {true, false} ->
-                % don't reload
-                ok;
-         {false, _} ->
+            % don't reload
+            ok;
+        {false, _} ->
             % if it shouldn't be cached reload into memory
             ok = hn_db_admin:disc_and_mem(Site)
     end,
+    site_to_memory(T, Cache).
+
+backup_collateral(Name, Site) ->
+    % setup the backup
+    io:format("Starting backup of ~p~n- to ~p~n- at ~p ~p~n",
+              [Site, Name, date(), time()]),
+    Dir = backup_dir(Name) ++ hn_util:site_to_fs(Site) ++ "/",
+
+    % make sure the dir exists
+    filelib:ensure_dir(Dir ++ "/junk.txt"),
 
     % now backup the site
-    ok = backup_site(Dir, Site),
-    io:format("Finishing backup of ~p~n-to ~p~n-at ~p ~p~n",
+    io:format("about to backup views~n"),
+    ok = dump_folder(Site, Dir, "views"),
+    io:format("about to backup docroot~n"),
+    ok = dump_folder(Site, Dir, "docroot"),
+    io:format("about to backup docroot~n"),
+    ok = dump_folder(Site, Dir, "docroot"),
+    io:format("about to backup templates~n"),
+    ok = dump_folder(Site, Dir, "templates"),
+    io:format("about to backup etl files~n"),
+    ok = dump_folder(Site, Dir, "etl"),
+    io:format("backup of the collateral of ~p completed~n", [Site]),
+
+    % finish up
+    io:format("Finishing backup of ~p~n- to ~p~n- at ~p ~p~n",
               [Site, Name, date(), time()]),
     ok.
 
-backup_site(Dest, Site) ->
-    io:format("about to backup groups~n"),
-    ok = dump_groups(Site, Dest),
-    io:format("about to backup perms~n"),
-    ok = dump_perms(Site, Dest),
-    io:format("about to backup views~n"),
-    ok = dump_folder(Site, Dest, "views"),
-    io:format("about to backup docroot~n"),
-    ok = dump_folder(Site, Dest, "docroot"),
-    io:format("about to backup templates~n"),
-    ok = dump_folder(Site, Dest, "templates"),
-    io:format("about to backup etl files~n"),
-    ok = dump_folder(Site, Dest, "etl"),
-    io:format("backup of ~p completed~n", [Site]),
-    ok.
-
-backup_services(Dir, Name) ->
-    PossibleTables = [
-                      core_site,
-                      'service_hns_record',
-                      'service_hns_resource',
-                      'service_hns_zone',
-                      'service_passport_user'
-                     ],
+backup_db(Dir, Name) ->
     Tables = mnesia:system_info(tables),
-    ServiceTables = [X || X <- Tables,
-                          lists:member(X, PossibleTables) == true],
-    ok = hn_db_admin:backup(ServiceTables, Dir, ?services ++ Name ++ ?ext),
-    io:format("Services backed up~n"),
+    ok = hn_db_admin:backup(Tables, Dir, Name ++ ?ext),
+    io:format("Database backed up to ~p~n", [Name]),
     ok.
 
 %% Exports a site as a sitemod that can be loaded by a factory
@@ -177,8 +283,8 @@ export_as_sitetype(Site, NewType, Group) when is_list(Group) ->
 
     %% Delete backup-centric artifacts.
     io:format("about to clean up and delete views, docroots and etf folders~n"),
-    [ hn_util:delete_directory( ?join([SiteTypes, NewType, ?join(Dir)]) )
-      || Dir <- [["etf"], ["views"], ["docroot"]] ],
+    [hn_util:delete_directory(?join([SiteTypes, NewType, ?join(Dir)]))
+      || Dir <- [["etf"], ["views"], ["docroot"]]],
     ok.
 
 post_process_groups(File, Group) ->
@@ -289,27 +395,35 @@ import_services(ServSrc) ->
 import_site(Src, Site) ->
     SiteSrc = ?join([Src, hn_util:site_to_fs(Site)]),
     hn_setup:site(Site, blank, [], [corefiles, sitefiles]),
+    io:format("Importing ~p~n", [Site]),
+    copy_(SiteSrc, Site),
     import_(SiteSrc, Site).
 
+copy_(SiteSrc, Site) ->
+    ok = copy_etf(Site, SiteSrc),
+    io:format("etf copied...~n"),
+    ok = copy2(Site, SiteSrc, "views"),
+    io:format("views copied...~n"),
+    ok = copy2(Site, SiteSrc, "docroot"),
+    io:format("docroot copied...~n"),
+    ok = copy2(Site, SiteSrc, "templates"),
+    io:format("templates copied...~n"),
+    ok = copy2(Site, SiteSrc, "etl"),
+    io:format("maps copied...~n").
+
 import_(SiteSrc, Site) ->
-    ok = load_etf(Site, SiteSrc),
-    io:format("etf loaded for ~p~n", [Site]),
     ok = load_groups(Site, SiteSrc),
-    io:format("groups loaded for ~p~n", [Site]),
-    ok = load_views(Site, SiteSrc),
-    io:format("views loaded for ~p~n", [Site]),
-    ok = load_templates(Site, SiteSrc),
-    io:format("templates loaded for ~p~n", [Site]),
-    ok = load_maps(Site, SiteSrc),
-    io:format("maps loaded for ~p~n", [Site]),
-    ok = load_perms(Site, SiteSrc).
+    io:format("groups loaded...~n"),
+    ok = load_perms(Site, SiteSrc),
+    io:format("perms loaded...~n"),
+    ok.
 
 load_users(Src) ->
     {ok, UserTs} = file:consult(?join(Src, "users.export")),
     ok = passport:load_script(UserTs).
 
 -define(create, hn_setup:create_path_from_name).
-load_etf(Site, SiteSrc) ->
+copy_etf(Site, SiteSrc) ->
     Files = filelib:wildcard(?join([SiteSrc, "etf"])++"/*.json"),
     [ok = hn_import:json_file(Site ++ ?create(Json, ".json"))
       || Json <- Files, hn_setup:is_path(Json) ],
@@ -319,22 +433,32 @@ load_groups(Site, SiteSrc) ->
     {ok, GroupTs} = file:consult(?join(SiteSrc, "groups.export")),
     ok = hn_groups:load_script(Site, GroupTs).
 
-load_views(Site, SiteSrc) ->
-    load_(Site, SiteSrc, "views").
-
-load_templates(Site, SiteSrc) ->
-    load_(Site, SiteSrc, "templates").
-
-load_maps(Site, SiteSrc) ->
-    load_(Site, SiteSrc, "etl").
-
-load_(Site, SiteSrc, Type) ->
+copy2(Site, SiteSrc, Type) ->
     SiteFs = hn_util:site_to_fs(Site),
     Source = ?join([SiteSrc, Type]),
     Dest   = ?join(["var", "sites", SiteFs, Type]),
+    % sometimes the source and dest files don't exist
+    filelib:ensure_dir(Source ++ "/junk.file"),
+    filelib:ensure_dir(Dest ++ "/junk.file"),
     hn_util:recursive_copy(Source, Dest).
 
 load_perms(Site, SiteSrc) ->
     {ok, Perms} = file:consult(?join(SiteSrc, "permissions.export")),
     auth_srv:load_script(Site, Perms).
+
+external_backup_dir(Name) ->
+    Root = code:lib_dir(hypernumbers),
+    Root ++ "/../../var/external_backups/" ++ Name ++ "/".
+
+backup_dir(Name) ->
+    Root = code:lib_dir(hypernumbers),
+    Root ++ "/../../var/backups/" ++ Name ++ "/".
+
+existing_site_dir(Site) ->
+    Root = code:lib_dir(hypernumbers),
+    Root ++ "/../../var/sites/" ++  hn_util:site_to_fs(Site) ++ "/".
+
+existing_server_root() ->
+    Root = code:lib_dir(hypernumbers),
+    Root ++ "/../../var/".
 

@@ -42,6 +42,7 @@
          site_to_atom/2,
          site_to_fs/1,
          site_from_fs/1,
+         node_to_fs/1,
 
          % HyperNumbers Utils
          delete_directory/1,
@@ -314,6 +315,10 @@ valid_email(Email) ->
         nomatch    -> false;
         {match, _} -> true
     end.
+
+node_to_fs(Node) ->
+    [Name, Machine] = string:tokens(atom_to_list(Node), "@"),
+    Name ++ "-" ++ Machine.
 
 %% used to turn sites into atoms for process names, etc
 -spec site_to_atom(list(), list()) -> atom().
