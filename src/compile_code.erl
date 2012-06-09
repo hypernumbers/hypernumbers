@@ -159,6 +159,7 @@ make_release_boot_scripts() ->
 build_release() ->
     get_rel_file(),
     get_debug_rel_file(),
+    get_no_mnesia_debug_rel_file(),
     get_ssl_rel_file().
 
 get_root() ->
@@ -275,6 +276,12 @@ get_rel_file() ->
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
     ok   = systools:make_script("hypernumbers",
                                 [local,{path,["../lib/*/ebin","."]}]).
+
+get_no_mnesia_debug_rel_file() ->
+    Rel = make_rel_file("NO_MNESIA", "1.0", [kernel, stdlib, inets, ssl,
+                                             crypto, public_key]),
+    ok  = file:write_file("no_mnesia.rel", fmt("~p.", [Rel])),
+    ok  = systools:make_script("no_mnesia", [local]).
 
 get_debug_rel_file() ->
     Rel = make_rel_file("DEBUG", "1.0", [kernel, stdlib, inets, ssl,
