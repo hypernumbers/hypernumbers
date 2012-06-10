@@ -22,8 +22,11 @@
          export_as_sitetype/2,
          export_as_sitetype/3,
          write_backup/0,
+         convert_external_backup/2,
          restore_external_backup/2,
-         restore_local_backup/1
+         restore_local_backup/1,
+         restore_site/2,
+         restore_site/3
          ]).
 
 -define(join, filename:join).
@@ -33,6 +36,10 @@
 
 -spec restore_external_backup(list(), atom()) -> ok.
 restore_external_backup(Name, FromNode) ->
+    ok = convert_external_backup(Name, FromNode),
+    ok = restore_local_backup(Name).
+
+convert_external_backup(Name, FromNode) ->
     ERoot = external_backup_dir(Name),
     IRoot = backup_dir(Name),
     ToNode = node(),
@@ -58,7 +65,7 @@ restore_external_backup(Name, FromNode) ->
 
     % and then simply restore the new local backup
     io:format("***********Conversion Ends*******************************~n"),
-    restore_local_backup(Name).
+    ok.
 
 copy_external_server(Name) ->
     Src = external_backup_dir(Name),
@@ -82,6 +89,30 @@ copy_external_collateral(Name, Site) ->
     io:format("Collateral for ~p copied over from external backup ~p~n",
               [Site, Name]),
   ok.
+
+restore_site(Name, Site) ->
+    restore_site(Name, Site, Site).
+
+restore_site(Name, ToSite, FromSite) ->
+    {Sites, DB} = unpack(backup_dir(Name)),
+    io:format("Sites is ~p~n", [Sites]),
+    io:format("~n***********Restoration Starts***************************~n"),
+    io:format("Starting restore of ~p as ~p~n- from ~p~n- at ~p ~p~n",
+              [FromSite, ToSite, Name, date(), time()]),
+    case hn_setup:site_exists(ToSite) of
+        false -> hn_setup:site(ToSite, blank, []);
+        true  -> ok
+    end,
+    case lists:member(FromSite, Sites) of
+        false ->
+            {error, from_site_not_in_backup};
+        true  ->
+            Backup = DB ++ Name ++ ?ext,
+            {ok, restored} = hn_db_convert:restore_site(Backup, FromSite, ToSite),
+            io:format("Restoration finished~n- at ~p ~p~n", [date(), time()]),
+            io:format("~n***********Restoration Ends*****************************~n"),
+            ok
+    end.
 
 -spec restore_local_backup(list()) -> ok.
 restore_local_backup(Name) ->
