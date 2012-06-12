@@ -435,7 +435,7 @@ authorize_p2(Site, Path, Env) ->
             not_found;
         {view, ?WIKI} ->
             case Env#env.body of
-                [{"mark",   _}]         -> allowed;
+                [{"mark",   _}]          -> allowed;
                 [{"postform",   _}]      -> allowed;
                 [{"postinline", _}]      -> allowed;
                 [{"postrichinline", _}]  -> allowed;
@@ -2015,7 +2015,25 @@ reset_password(Email, Password, Hash) ->
             end
     end.
 
-
+run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, _Uid)
+  when Act == "add_user" orelse Act == "remove_user" ->
+    [Expected] = new_db_api:matching_forms(RefX, 'users-and-groups'),
+    case Expected of
+        {form, _, {_, 'users-and-groups', _}, _, _, _} ->
+            io:format("~p ~p~n", [Act, L]),
+            {"user", Email} = lists:keyfind("user", 1, L),
+            {"group", Group} = lists:keyfind("group", 1, L),
+            {ok, U} = passport:email_to_uid(Email),
+            case Act of
+                "add_user" ->
+                    new_db_api:add_userD(S, U, Group);
+                "remove_user" ->
+                    new_db_api:rem_userD(S, U, Group)
+            end,
+            json(Env, "success");
+        _ ->
+            respond(404, Env)
+    end;
 run_actions(#refX{site = S, path = P} = RefX, Env,
             {struct, [{_, {array, Json}}]}, Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->

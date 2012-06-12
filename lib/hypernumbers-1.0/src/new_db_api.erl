@@ -13,6 +13,15 @@
 -include("syslib.hrl").
 
 -export([
+         any_adminD/1,
+         set_usersD/3,
+         rem_userD/3,
+         add_userD/3,
+         delete_groupD/2,
+         create_groupD/2,
+         is_memberD/3,
+         get_all_groups/1,
+         get_groups/1,
          rollback_dirty_cacheD/1,
          clear_dirty_cacheD/1,
          revert/3,
@@ -100,6 +109,143 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+any_adminD(Site) ->
+    Report = mnesia_mon:get_stamp("delete groupD"),
+    Tbl = new_db_wu:trans(Site, group),
+    Fun = fun() ->
+                  case mnesia:read(Tbl, "admin", read) of
+                    [#group{members = M}] ->
+                          case gb_sets:is_empty(M) of
+                              false -> gb_sets:smallest(M);
+                              true  -> no_admin
+                          end;
+                      _ ->
+                        no_group
+                end
+        end,
+    % use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet", Report).
+
+set_usersD(Site, Users, GroupN) ->
+    Report = mnesia_mon:get_stamp("delete groupD"),
+    Tbl = new_db_wu:trans(Site, group),
+    Fun = fun() ->
+                case mnesia:read(Tbl, GroupN, write) of
+                    [G] ->
+                        Members = gb_sets:from_list(Users),
+                        G2 = G#group{members=Members},
+                        mnesia:write(Tbl, G2, write),
+                        new_db_wu:mark_site_dirtyD(Site);
+                    _ ->
+                        no_group
+                end
+        end,
+    % use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet", Report).
+
+rem_userD(Site, Uid, GroupN) ->
+    Report = mnesia_mon:get_stamp("delete groupD"),
+    Tbl = new_db_wu:trans(Site, group),
+    Fun = fun() ->
+                case mnesia:read(Tbl, GroupN, write) of
+                    [G] ->
+                        Members = gb_sets:delete_any(Uid, G#group.members),
+                        G2 = G#group{members=Members},
+                        mnesia:write(Tbl, G2, write),
+                        new_db_wu:mark_site_dirtyD(Site);
+                    _ ->
+                        no_group
+                end
+        end,
+    % use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet", Report).
+
+add_userD(Site, Uid, GroupN) ->
+    Report = mnesia_mon:get_stamp("delete groupD"),
+    Tbl = new_db_wu:trans(Site, group),
+    Fun = fun() ->
+                case mnesia:read(Tbl, GroupN, write) of
+                    [G] ->
+                        io:format("in add_user for ~p in ~p~n",
+                                  [G, self()]),
+                        Members = gb_sets:add(Uid, G#group.members),
+                        G2 = G#group{members=Members},
+                        io:format("About to write record~n"),
+                        ok = mnesia:write(Tbl, G2, write),
+                        io:format("about to mark record dirty~n"),
+                        new_db_wu:mark_site_dirtyD(Site);
+                    _ ->
+                        no_group
+                end
+        end,
+    % use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet", Report).
+
+delete_groupD(Site, GroupN) ->
+    Report = mnesia_mon:get_stamp("delete groupD"),
+    Tbl = new_db_wu:trans(Site, group),
+    Fun = fun() ->
+                  mnesia:delete(Tbl, GroupN, write),
+                  new_db_wu:mark_site_dirtyD(Site)
+          end,
+    % use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet", Report).
+
+create_groupD(Site, GroupN) ->
+    Report = mnesia_mon:get_stamp("create groupD"),
+    Tbl = new_db_wu:trans(Site, group),
+    Fun = fun() ->
+                  case mnesia:read(Tbl, GroupN, write) of
+                      [] ->
+                          io:format("Create new group ~p on ~p~n",
+                                  [GroupN, self()]),
+                          Group = #group{name = GroupN},
+                          mnesia:write(Tbl, Group, write),
+                          new_db_wu:mark_site_dirtyD(Site);
+                      _ ->
+                          ok
+                end
+          end,
+    % use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet", Report).
+
+is_memberD(Site, Uid, Groups) ->
+    Tbl = new_db_wu:trans(Site, group),
+    Fun = fun() ->
+                  is_member1(Groups, Tbl, Uid)
+          end,
+    mnesia:activity(transaction, Fun).
+
+is_member1([], _Tbl, _Uid) -> false;
+is_member1([GroupN|Rest], Tbl, Uid) ->
+    case mnesia:read(Tbl, GroupN) of
+        [G] ->
+            case gb_sets:is_member(Uid, G#group.members) of
+                true  -> true;
+                false -> is_member1(Rest, Tbl, Uid)
+            end;
+        _ ->
+            is_member1(Rest, Tbl, Uid)
+    end.
+
+get_all_groups(Site) ->
+    Fun = fun() ->
+                  new_db_wu:all_groupsD(Site)
+          end,
+    mnesia:activity(transaction, Fun).
+
+get_groups(Site) ->
+    Fun = fun() ->
+                  new_db_wu:groupsD(Site)
+          end,
+    mnesia:activity(transaction, Fun).
+
 rollback_dirty_cacheD(Site) ->
     Tbl = new_db_wu:trans(Site, dirty_queue),
     TblC = new_db_wu:trans(Site, dirty_queue_cache),
@@ -161,8 +307,11 @@ make_factory2(Site, Terms) ->
 mark_site_dirty(Site) ->
     Report = mnesia_mon:get_stamp("mark_site_dirty"),
     Fun = fun() ->
-                   mnesia_mon:report(Report),
-                   new_db_wu:mark_site_dirtyD(Site)
+                  io:format("writing site dirty~n"),
+                  mnesia_mon:report(Report),
+                  Ret = new_db_wu:mark_site_dirtyD(Site),
+                  io:format("Ret is ~p in mark_site_dirty~n", [Ret]),
+                  Ret
            end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},

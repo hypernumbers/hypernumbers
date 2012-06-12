@@ -38,131 +38,32 @@ make_admin(Site, Email) when is_list(Site) andalso is_list(Email) ->
     end.
 
 -spec get_groups(string()) -> [string()].
-get_groups(Site) ->
-    Tbl = new_db_wu:trans(Site, group),
-    Fun1 = fun(#group{name = Name, members = Members}, Acc) ->
-                   Mem2 = gb_sets:to_list(Members),
-                   Mem3 = [X || {ok, X} <- [passport:uid_to_email(XX) || XX <- Mem2]],
-                   NewAcc = {Name, Mem3},
-                   [NewAcc | Acc]
-           end,
-    Fun2 = fun() ->
-                  mnesia:foldl(Fun1, [], Tbl)
-          end,
-    mnesia:activity(transaction, Fun2).
+get_groups(Site) -> new_db_api:get_groups(Site).
 
 -spec get_all_groups(string()) -> [string()].
-get_all_groups(Site) ->
-    Tbl = new_db_wu:trans(Site, group),
-    Fun = fun() ->
-                  mnesia:all_keys(Tbl)
-          end,
-    mnesia:activity(transaction, Fun).
+get_all_groups(Site) -> new_db_api:get_all_groups(Site).
 
 -spec is_member(auth_srv:uid(), string(), [string()])
                -> boolean().
-is_member(Uid, Site, Groups) ->
-    Tbl = new_db_wu:trans(Site, group),
-    is_member1(Groups, Tbl, Uid).
-is_member1([], _Tbl, _Uid) -> false;
-is_member1([GroupN|Rest], Tbl, Uid) ->
-    case mnesia:dirty_read(Tbl, GroupN) of
-        [G] ->
-            case gb_sets:is_member(Uid, G#group.members) of
-                true  -> true;
-                false -> is_member1(Rest, Tbl, Uid)
-            end;
-        _ ->
-            is_member1(Rest, Tbl, Uid)
-    end.
+is_member(Uid, Site, Groups) -> new_db_api:is_memberD(Site, Uid, Groups).
 
 -spec create_group(string(), string()) -> ok.
-create_group(Site, GroupN) ->
-    Tbl = new_db_wu:trans(Site, group),
-    F = fun() ->
-                case mnesia:read(Tbl, GroupN, read) of
-                    [] ->
-                        Group = #group{name = GroupN},
-                        mnesia:write(Tbl, Group, write),
-                        new_db_api:mark_site_dirty(Site);
-                    _ ->
-                        ok
-                end
-        end,
-    mnesia:activity(transaction, F).
+create_group(Site, GroupN) -> new_db_api:create_groupD(Site, GroupN).
 
 -spec delete_group(string(), string()) -> ok.
-delete_group(Site, GroupN) ->
-    Tbl = new_db_wu:trans(Site, group),
-    Fun = fun() ->
-                  mnesia:delete(Tbl, GroupN, write),
-                  new_db_api:mark_site_dirty(Site)
-          end,
-    mnesia:activity(transaction, Fun).
+delete_group(Site, GroupN) -> new_db_api:delete_groupD(Site, GroupN).
 
 -spec add_user(string(), string(), auth_srv:uid()) -> ok | no_group.
-add_user(Site, GroupN, Uid) ->
-    Tbl = new_db_wu:trans(Site, group),
-    F = fun() ->
-                case mnesia:read(Tbl, GroupN, write) of
-                    [G] ->
-                        Members = gb_sets:add(Uid, G#group.members),
-                        G2 = G#group{members=Members},
-                        mnesia:write(Tbl, G2, write),
-                        new_db_api:mark_site_dirty(Site);
-                    _ ->
-                        no_group
-                end
-        end,
-    mnesia:activity(transaction, F).
+add_user(Site, GroupN, Uid) -> new_db_api:add_userD(Site, Uid, GroupN).
 
 -spec rem_user(string(), string(), auth_srv:uid()) -> ok | no_group.
-rem_user(Site, GroupN, Uid) ->
-    Tbl = new_db_wu:trans(Site, group),
-    F = fun() ->
-                case mnesia:read(Tbl, GroupN, write) of
-                    [G] ->
-                        Members = gb_sets:delete_any(Uid, G#group.members),
-                        G2 = G#group{members=Members},
-                        mnesia:write(Tbl, G2, write),
-                        new_db_api:mark_site_dirty(Site);
-                    _ ->
-                        no_group
-                end
-        end,
-    mnesia:activity(transaction, F).
+rem_user(Site, GroupN, Uid) -> new_db_api:rem_userD(Site, Uid, GroupN).
 
 -spec set_users(string(), string(), [auth_srv:uid()]) -> ok | no_group.
-set_users(Site, GroupN, Users) ->
-    Tbl = new_db_wu:trans(Site, group),
-    F = fun() ->
-                case mnesia:read(Tbl, GroupN, write) of
-                    [G] ->
-                        Members = gb_sets:from_list(Users),
-                        G2 = G#group{members=Members},
-                        mnesia:write(Tbl, G2, write),
-                        new_db_api:mark_users_and_groups_dirty(Site);
-                    _ ->
-                        no_group
-                end
-        end,
-    mnesia:activity(transaction, F).
+set_users(Site, GroupN, Users) -> new_db_api:set_usersD(Site, Users, GroupN).
 
 -spec any_admin(string()) -> no_admin | string().
-any_admin(Site) ->
-    Tbl = new_db_wu:trans(Site, group),
-    F = fun() ->
-                case mnesia:read(Tbl, "admin", read) of
-                    [#group{members = M}] ->
-                        case gb_sets:is_empty(M) of
-                            false -> gb_sets:smallest(M);
-                            true  -> no_admin
-                        end;
-                    _ ->
-                        no_group
-                end
-        end,
-    mnesia:activity(transaction, F).
+any_admin(Site) -> new_db_api:any_adminD(Site).
 
 -spec list_users_DEBUG(string()) -> string().
 list_users_DEBUG(Site) ->

@@ -25,6 +25,8 @@
 -define(NONTRANSFORMATIVE, false).
 
 -export([
+         all_groupsD/1,
+         groupsD/1,
          revertD/3,
          delete_siteonlyD/2,
          read_siteonlyD/2,
@@ -102,6 +104,20 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+all_groupsD(Site) ->  Tbl = new_db_wu:trans(Site, group),
+                      mnesia:all_keys(Tbl).
+
+groupsD(Site) ->
+    Tbl = new_db_wu:trans(Site, group),
+    Fun1 = fun(#group{name = Name, members = Members}, Acc) ->
+                   Mem2 = gb_sets:to_list(Members),
+                   Mem3 = [X || {ok, X} <- [passport:uid_to_email(XX)
+                                            || XX <- Mem2]],
+                   NewAcc = {Name, Mem3},
+                   [NewAcc | Acc]
+               end,
+    mnesia:foldl(Fun1, [], Tbl).
+
 revertD(#refX{site = S, path = P, obj = {cell, _} = O} = RefX, Rev, UID) ->
     P2 = hn_util:list_to_path(P),
     Table = trans(S, logging),
@@ -428,7 +444,7 @@ copy_cell(From, To, Incr, all, Uid) ->
             end,
     copy_c2(From, To, Incr, Uid, Attrs).
 
-copy_c2(#xrefX{obj = {cell, {FX, FY}}} = From,
+copy_c2(#xrefX{obj = {cell, {FX, FY}}},
         #xrefX{obj = {cell, {TX, TY}}} = To, Incr, Uid, Attrs) ->
     Formula = case orddict:find("formula", Attrs) of
                   {ok, V} -> superparser:process(V);

@@ -33,22 +33,49 @@
          'phone.menu.extension'/1,
          'phone.menu.dial'/1,
          'phone.menu.sms'/1
-%         'phone.menu.conference'/1
-         ]).
+         % 'phone.menu.conference'/1
+        ]).
 
+% Options
+% * 0 is read-only arranged by groups
+% * 1 is read-only arranged by users
+% * 2 is add and delete users from existing groups
+% * 3 is add and delete users from groups and create and delete groups
 'users.and.groups.'([W, H]) ->
-    [W2, H2] = typechecks:throw_std_ints([W, H]),
-    Site = get(site),
-    Groups = lists:sort(hn_groups:get_groups(Site)),
-    HTML = "<div class='hn_site_admin'>"
-        ++ "<div class='hn_site_admin_top'>Groups And Users</div>"
+    'users.and.groups.'([W, H, 0]);
+'users.and.groups.'([W, H, Type]) ->
+    [W2, H2, Type2] = typechecks:throw_std_ints([W, H, Type]),
+    ok = typechecks:in_range(Type2, 0, 2),
+    u_and_g(W2, H2, Type2).
+
+u_and_g(W, H, Type) ->
+    {Gs, Hd} = get_options(Type),
+    HTML = "<div class='hn_user_admin'>"
+        ++ "<div class='hn_site_admin_top'>Users And Groups</div>"
+        ++ "<div class='hn_overflow2'>"
         ++"<table>"
-        ++ "<tr><td><em>Group</em></td><td><em>Users</em></td></td>"
-        ++ ["<tr><td>" ++ G ++ "</td><td>" ++ string:join(M, "<br />")
-            ++ "</td></tr>" || {G, M} <- Groups]
-        ++ "</table></div>",
-    Resize = #resize{width = W2, height = H2},
-    #spec_val{val = lists:flatten(HTML), resize = Resize, sp_site = true}.
+        ++ "<tr>"
+        ++ Hd
+        ++ get_row(Gs, Type)
+        ++ "</table>"
+        ++ "</div>"
+        ++ "</div>",
+    Resize = #resize{width = W, height = H},
+    Preview = get_preview(Type),
+    case Type of
+        N when N == 0 orelse N == 1 ->
+            #spec_val{val = lists:flatten(HTML), resize = Resize,
+                      preview = Preview, sp_site = true};
+        N when N == 2 ->
+            JS = ["/webcomponents/hn.usersandgroups.js"],
+            Reload = ["HN.UsersAndGroups.reload();"],
+            Incs = #incs{js= JS, js_reload = Reload},
+            Control = #form{id = {'users-and-groups', "Edit"},
+                            kind = "users-and-groups"},
+            #spec_val{val = lists:flatten(HTML), resize = Resize,
+                      sp_webcontrol = Control, preview = Preview,
+                      sp_incs = Incs, sp_site = true}
+    end.
 
 'phone.menu.'([W, H | List]) ->
     ?check_paid(fun 'phone.menu2'/2, [W, H, List], inbound).
@@ -103,7 +130,6 @@
     io:format("Preview is ~p~n", [Preview]),
     #spec_val{val = "", preview = Preview, resize = Resize,
               sp_phone = #phone{twiml = Twiml}}.
-
 
 'phone.menu.dial'(List) ->
     Dial = collect(List),
@@ -371,3 +397,64 @@ get_lang(2) -> "es";
 get_lang(3) -> "fr";
 get_lang(4) -> "de";
 get_lang(_) -> ?ERR_VAL.
+
+invert([], Acc) -> lists:sort(Acc);
+invert([{Group, Users} | T], Acc) ->
+    NewAcc = inv2(Users, Group, Acc),
+    invert(T, NewAcc).
+
+inv2([], _Group, Acc) -> Acc;
+inv2([User | T], Group, Acc) ->
+    NewAcc = case lists:keyfind(User, 1, Acc) of
+                 false ->
+                     [{User, [Group]} | Acc];
+                  {User, List} ->
+                     lists:keyreplace(User, 1, Acc, {User, [Group | List]})
+             end,
+    inv2(T, Group, NewAcc).
+
+get_row(Groups, N) when N == 0 orelse N == 1 ->
+    ["<tr class='hn_user_table'><td>" ++ G ++ "</td><td>"
+     ++ string:join(M, "<br />") ++ "</td></tr>" || {G, M} <- Groups];
+get_row(Groups, 2) ->
+    All = lists:sort(new_db_wu:all_groupsD(get(site))),
+    get_r2(Groups, All, []).
+
+get_r2([], _All, Acc) ->
+    lists:reverse(Acc);
+get_r2([{M, G} | T], All, Acc) ->
+    NewAcc = "<tr class='hn_user_table'><td>" ++ M ++ "</td>"
+        ++ get_r2a(All, M, G, []),
+    get_r2(T, All, [NewAcc | Acc]).
+
+get_r2a([], _M, _G, Acc) ->
+    "<td>" ++ string:join(lists:reverse(Acc), "<br />") ++ "</td></tr>";
+get_r2a([H | T], M, G, Acc) ->
+    Start = "<label>""<input type='checkbox' class='hn_user_rem' data-group='"
+        ++ H ++ "' " ++ " data-user='" ++ M ++ "'",
+    Middle = case lists:member(H, G) of
+                 true  -> " checked='checked'";
+                 false -> ""
+             end,
+    End = case H of
+              "admin" -> "><em>" ++ H ++ "</em></label>";
+              _       -> ">" ++ H ++ "</label>"
+                  end,
+    get_r2a(T, M, G, [Start ++ Middle ++ End | Acc]).
+
+get_preview(0) -> "Read-Only Users And Groups: ordered by group";
+get_preview(1) -> "Read-Only Users And Groups: ordered by user";
+get_preview(2) -> "Editable Users And Groups".
+
+get_options(Type) ->
+    Site = get(site),
+    case Type of
+        _N when _N == 0 ->
+            {lists:sort(new_db_wu:groupsD(Site)),
+             "<td><em>Group</em></td>"
+             ++ "<td><em>Users</em></td></td>"};
+        _N when _N == 1 orelse _N == 2 ->
+            {invert(hn_groups:get_groups(Site), []),
+             "<td><em>Users</em></td>"
+             ++ "<td><em>Groups</em></td></td>"}
+    end.

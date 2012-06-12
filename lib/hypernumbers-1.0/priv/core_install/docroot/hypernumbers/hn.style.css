@@ -328,6 +328,11 @@ label {
     margin-left: 5px;
 }
 
+.hn_overflow2
+{
+  overflow: auto;
+  }
+
 .hn_overflow {
                min-height: 100%;
                overflow: auto;
@@ -769,7 +774,22 @@ label {
   overflow: auto;
   }
 
-.hn_site_admin
+.hn_user_table
+{
+  padding-bottom: 1.5em;
+  }
+
+.hn_site_admin input
+{
+  font-size: 90%;
+ }
+
+.hn_users_admin
+{
+  height: 100px;
+  }
+
+.hn_site_admin, .hn_user_admin
 {
   -moz-border-radius: 4px 4px 4px 4px;
   -webkit-border-radius: 4px 4px 4px 4px;
@@ -798,7 +818,7 @@ label {
   line-height: 16px;
   }
 
-.hn_site_admin em
+.hn_site_admin em, .hn_user_admin em
 {
   font-weight: bold;
   color:       #ff6000;
