@@ -31,12 +31,17 @@ restore_site(Backup, FromSite, ToSite) ->
             (X, Acc) ->
                 Tab = element(1, X),
                 case lists:keyfind(Tab, 1, Tables2) of
-                    false          -> ok;
-                    {Tab, NewTab}  -> NewX = setelement(1, X, NewTab),
-                                      Fun = fun() ->
-                                                    mnesia:write(NewX)
-                                            end,
-                                      mnesia:transaction(Fun)
+                    false ->
+                        ok;
+                    {Tab, NewTab} ->
+                        % we don't write records with the table name
+                        % in the first field - we use a generic record name
+                        Rec = get_rec(NewTab),
+                        NewX = setelement(1, X, Rec),
+                        Fun = fun() ->
+                                      ok = mnesia:write(NewTab, NewX, write)
+                              end,
+                        mnesia:transaction(Fun)
                 end,
                 {[], Acc}
         end,
@@ -99,3 +104,7 @@ make_tables([], _From, _To, Acc) ->
 make_tables([H | T], From, To, Acc) ->
     NewAcc = {new_db_wu:trans(From, H), new_db_wu:trans(To, H)},
     make_tables(T, From, To, [NewAcc | Acc]).
+
+get_rec(Table) -> T2 = atom_to_list(Table),
+                  [_Site, _Port, T3] = string:tokens(T2, "&"),
+                  list_to_existing_atom(T3).

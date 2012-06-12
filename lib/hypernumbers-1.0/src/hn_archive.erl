@@ -107,8 +107,12 @@ restore_site(Name, ToSite, FromSite) ->
         false ->
             {error, from_site_not_in_backup};
         true  ->
-            Backup = DB ++ Name ++ ?ext,
-            {ok, restored} = hn_db_convert:restore_site(Backup, FromSite, ToSite),
+            % now close down the supervision tree
+            sitemaster_sup:delete_site(ToSite),
+            Bk = DB ++ Name ++ ?ext,
+            {ok, restored} = hn_db_convert:restore_site(Bk, FromSite, ToSite),
+            % restart the supervision tree so it loads from the new data
+            sitemaster_sup:add_site(ToSite),
             io:format("Restoration finished~n- at ~p ~p~n", [date(), time()]),
             io:format("~n***********Restoration Ends*****************************~n"),
             ok
