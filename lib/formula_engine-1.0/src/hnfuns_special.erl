@@ -14,7 +14,7 @@
          timestamp/1,
          tick/1,
          snapshot/1
-         ]).
+        ]).
 
 -include("spriki.hrl").
 -include("errvals.hrl").
