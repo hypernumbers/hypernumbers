@@ -291,7 +291,7 @@ backup_collateral(Name, Site) ->
 
 backup_db(Dir, Name) ->
     Tables = mnesia:system_info(tables),
-    ok = hn_db_admin:backup(Tables, Dir, Name ++ ?ext),
+    ok = hn_db_admin:backup(Dir, Name ++ ?ext),
     io:format("Database backed up to ~p~n", [Name]),
     ok.
 
