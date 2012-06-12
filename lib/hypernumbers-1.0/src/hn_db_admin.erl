@@ -19,7 +19,7 @@
          all_sites_disc_and_mem/0,
          disc_and_mem/1,
          disc_and_mem/2,
-         backup/3,
+         backup/2,
          restore/2
         ]).
 
@@ -49,23 +49,14 @@ force_recalc(Site) ->
 restore(Dir, Name) ->
     ok = mnesia:install_fallback(Dir ++ Name, []).
 
--spec backup(list(), list(), list()) -> ok.
-backup(Tables, Dir, Name) ->
+-spec backup(list(), list()) -> ok.
+backup(Dir, Name) ->
 
     % make the directory exist
     _Return = filelib:ensure_dir(Dir ++ Name),
 
-    ChP = {name, Name},
-    ChPDef = {min, Tables},
-
-    % start by checkpointing
-    {ok, ChPName, _} = mnesia:activate_checkpoint([ChP, ChPDef]),
-
     % do the backup
-    ok = mnesia:backup_checkpoint(Name, filename:join(Dir, Name), []),
-
-    % delete the checkpoint
-    ok = mnesia:deactivate_checkpoint(ChPName).
+    ok = mnesia:backup(filename:join(Dir, Name)).
 
 -spec create_table(atom(), atom(),
                    any(),
