@@ -95,7 +95,6 @@ restore_site(Name, Site) ->
 
 restore_site(Name, ToSite, FromSite) ->
     {Sites, DB} = unpack(backup_dir(Name)),
-    io:format("Sites is ~p~n", [Sites]),
     io:format("~n***********Restoration Starts***************************~n"),
     io:format("Starting restore of ~p as ~p~n- from ~p~n- at ~p ~p~n",
               [FromSite, ToSite, Name, date(), time()]),
