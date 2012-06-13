@@ -432,9 +432,11 @@ get_r2a([], _M, _G, Acc) ->
 get_r2a([H | T], M, G, Acc) ->
     Start = "<label>""<input type='checkbox' class='hn_user_rem' data-group='"
         ++ H ++ "' " ++ " data-user='" ++ M ++ "'",
-    Middle = case lists:member(H, G) of
-                 true  -> " checked='checked'";
-                 false -> ""
+    Middle = case {lists:member(H, G), H} of
+                 {true,  "admin"} -> " checked='checked' disabled='disabled'";
+                 {false, "admin"} -> " disabled='disabled'";
+                 {true, _}        -> " checked='checked'";
+                 {false, _}       -> ""
              end,
     End = case H of
               "admin" -> "><em>" ++ H ++ "</em></label>";

@@ -2020,17 +2020,21 @@ run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, _Uid)
     [Expected] = new_db_api:matching_forms(RefX, 'users-and-groups'),
     case Expected of
         {form, _, {_, 'users-and-groups', _}, _, _, _} ->
-            io:format("~p ~p~n", [Act, L]),
             {"user", Email} = lists:keyfind("user", 1, L),
             {"group", Group} = lists:keyfind("group", 1, L),
-            {ok, U} = passport:email_to_uid(Email),
-            case Act of
-                "add_user" ->
-                    new_db_api:add_userD(S, U, Group);
-                "remove_user" ->
-                    new_db_api:rem_userD(S, U, Group)
-            end,
-            json(Env, "success");
+            case Group of
+                "admin" ->
+                    respond(404, Env);
+                _ ->
+                    {ok, U} = passport:email_to_uid(Email),
+                    case Act of
+                        "add_user" ->
+                            new_db_api:add_userD(S, U, Group);
+                        "remove_user" ->
+                            new_db_api:rem_userD(S, U, Group)
+                    end,
+                    json(Env, "success")
+            end;
         _ ->
             respond(404, Env)
     end;
