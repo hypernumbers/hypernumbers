@@ -109,6 +109,9 @@ restore_site(Name, ToSite, FromSite) ->
             % now close down the supervision tree
             sitemaster_sup:delete_site(ToSite),
             Bk = DB ++ Name ++ ?ext,
+            % now restore the collateral
+            [restore_collateral(Name, X) || X <- Sites],
+
             {ok, restored} = hn_db_convert:restore_site(Bk, FromSite, ToSite),
             % restart the supervision tree so it loads from the new data
             sitemaster_sup:add_site(ToSite),
@@ -147,20 +150,23 @@ restore_local_backup(Name) ->
 
 -spec restore_collateral(list(), list()) -> ok.
 restore_collateral(Name, Site) ->
-    io:format("Restoring ~p from ~p~n- at ~p ~p~n",
-              [Site, Name, date(), time()]),
-    Dir = backup_dir(Name),
-    Src = Dir ++ hn_util:site_to_fs(Site) ++ "/",
+    restore_collateral(Name, Site, Site).
 
-    Dest = existing_site_dir(Site),
+restore_collateral(Name, FromSite, ToSite) ->
+    io:format("Restoring ~p~n- as ~p~n- from ~p~n- at ~p ~p~n",
+              [FromSite, ToSite, Name, date(), time()]),
+    Dir = backup_dir(Name),
+    Src = Dir ++ hn_util:site_to_fs(FromSite) ++ "/",
+
+    Dest = existing_site_dir(ToSite),
 
     % first delete the old version
     hn_util:delete_directory(Dest),
     filelib:ensure_dir(Dest ++ "junk.txt"),
 
     % then copy the new versions
-    copy_(Src, Site),
-    io:format("~p restored...~n", [Site]),
+    copy_(Src, ToSite),
+    io:format("~p restored...~n", [ToSite]),
     ok.
 
 unpack(Dir) ->
