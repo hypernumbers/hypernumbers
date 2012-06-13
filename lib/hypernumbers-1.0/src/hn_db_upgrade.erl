@@ -9,6 +9,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         remove_dirty_q_caches_2012_06_13/0,
          remove_duff_dirty_q_caches_2012_06_03/0,
          add_dirty_queue_cache_2012_06_03/0,
          rejig_phones/1,
@@ -81,6 +82,15 @@
          % upgrade_1743_B/0,
          % upgrade_1776/0
         ]).
+
+remove_dirty_q_caches_2012_06_13() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   OTbl = new_db_wu:trans(Site, dirty_q_cache),
+                   mnesia:delete_table(OTbl)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 add_dirty_queue_cache_2012_06_03() ->
     Sites = hn_setup:get_sites(),
