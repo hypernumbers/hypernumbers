@@ -21,6 +21,7 @@
 % when adding more fns of the type phone.menu.xxx you need to stop
 % muin swallowing them by looking for phone.menu.WxH
 -export([
+         'invite.users'/1,
          'users.and.groups.'/1,
          'configure.email'/1,
          'phone.menu.'/1,
@@ -36,11 +37,52 @@
          % 'phone.menu.conference'/1
         ]).
 
+'invite.users'([]) ->
+    Id     = "id_" ++ muin_util:create_name(),
+    HTML = "<div class='hn_invite_admin' id='" ++ Id ++ "'>"
+        ++ "<div class='hn_site_admin_top'>Invite Users</div>"
+        ++ "<p>Choose some groups for your new user. An invitation e-mail will "
+        ++ "be sent out.</p>"
+        ++ "<input class='hn_emailforgroup' name='emailforgroup' type='text' "
+        ++ "value='workmate@example.com' />"
+        ++ "<div class='floatleft'>"
+        ++ "<div class='hn_advuserstable'><select class='hn_sel_groups' "
+        ++ "name='groups' "
+        ++ "multiple='multiple'>"
+        ++ lists:flatten(["<option>" ++ X ++ "</option>"
+                          || X <- lists:sort(new_db_wu:all_groupsD(get(site))),
+                             X /= "admin"])
+        ++ "</select></div>"
+        ++ "</div>"
+        ++ "<div class='floatleft'>"
+        ++ "<textarea class='hn_newusermsg'>Dear workmake, "
+        ++ "please take a look at this page...</textarea>"
+        ++ "</div>"
+        ++ "<div class='clear'>"
+        ++ "<div>What page do you want the user "
+        ++ "to be sent to?</div>"
+        ++ "<input class='hn_invite_path' value='"
+        ++ hn_util:list_to_path(get(path)) ++ "' />"
+        ++ "<div>"
+        ++ "<input class='hn_addnewuserbutton button' "
+        ++ "value='Create User' type='submit' data-id='" ++ Id ++ "'>"
+        ++ "<p class='hn_newuserfeedback'>&nbsp;</p>"
+        ++ "</div>"
+        ++ "</div>",
+    JS = ["/webcomponents/hn.usersandgroups.js"],
+    Reload = ["HN.UsersAndGroups.reload_invite_user();"],
+    Incs = #incs{js= JS, js_reload = Reload},
+    Resize = #resize{width = 4, height = 13},
+    Preview = "Invite Users",
+    Control = #form{id = {'invite-user', "Edit"},
+                    kind = "invite-user"},
+    #spec_val{val = HTML, resize = Resize, sp_webcontrol = Control,
+              sp_incs = Incs, preview = Preview, sp_site = true}.
+
 % Options
 % * 0 is read-only arranged by groups
 % * 1 is read-only arranged by users
 % * 2 is add and delete users from existing groups
-% * 3 is add and delete users from groups and create and delete groups
 'users.and.groups.'([W, H]) ->
     'users.and.groups.'([W, H, 0]);
 'users.and.groups.'([W, H, Type]) ->
@@ -53,7 +95,7 @@ u_and_g(W, H, Type) ->
     HTML = "<div class='hn_user_admin'>"
         ++ "<div class='hn_site_admin_top'>Users And Groups</div>"
         ++ "<div class='hn_overflow2'>"
-        ++"<table>"
+        ++ "<table>"
         ++ "<tr>"
         ++ Hd
         ++ get_row(Gs, Type)
@@ -68,7 +110,7 @@ u_and_g(W, H, Type) ->
                       preview = Preview, sp_site = true};
         N when N == 2 ->
             JS = ["/webcomponents/hn.usersandgroups.js"],
-            Reload = ["HN.UsersAndGroups.reload();"],
+            Reload = ["HN.UsersAndGroups.reload_u_and_g();"],
             Incs = #incs{js= JS, js_reload = Reload},
             Control = #form{id = {'users-and-groups', "Edit"},
                             kind = "users-and-groups"},

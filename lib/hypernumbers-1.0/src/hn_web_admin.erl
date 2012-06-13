@@ -166,20 +166,25 @@ add_user2(User, Site, Args, Type) ->
     {From, Sig} = emailer:get_details(Site),
     NPath = string:tokens(P, "/"),
     case hn_util:valid_email(E) of
-        false -> Dets =[{person, E},
-                        {details, "become a member of the groups "++
-                         format_list(G)},
-                        {reason, " the email address is invalid"},
-                        {sig, Sig}],
-                 emailer:send(invalid_invite, I, "", From, Site, Dets);
+        false ->
+            Dets =[{person, E},
+                   {details, "become a member of the groups "++
+                    format_list(G)},
+                   {reason, " the email address is invalid"},
+                   {sig, Sig}],
+            emailer:send(invalid_invite, I, "", From, Site, Dets);
         true ->
             {ok, NE, UID} = passport:get_or_create_user(E),
             % now add the users to the groups
             ok = add_user_to_groups(Site, UID, G),
             % only add a view if it is an invite
-            if (Type == invite) -> V = kfind("view", Args),
-                                   ok = auth_srv:add_view(Site, NPath, G, V);
-               (Type == add )   -> ok % do nothing
+            if (Type == invite) ->
+                    case kfind("view", Args) of
+                        none -> ok;
+                        V    -> ok = auth_srv:add_view(Site, NPath, G, V)
+                    end;
+               (Type == add ) ->
+                    ok % do nothing
             end,
             case {NE, passport:is_valid_uid(UID)} of
                 {existing, true} ->

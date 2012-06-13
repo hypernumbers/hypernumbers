@@ -2014,13 +2014,43 @@ reset_password(Email, Password, Hash) ->
                      ++ Msg}
             end
     end.
-
+run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, UID)
+  when Act == "invite_user" ->
+    [Expected] = new_db_api:matching_forms(RefX, 'users-and-groups'),
+    case Expected of
+        {form, _, {_, 'invite-user', _}, _, _, _} ->
+            {"groups", {array, Groups}} = lists:keyfind("groups", 1, L),
+            {"user", Email}    = lists:keyfind("user", 1, L),
+            {"msg" , Msg}      = lists:keyfind("msg", 1, L),
+            {"path", GotoPath} = lists:keyfind("path", 1, L),
+            case lists:member("admin", Groups) of
+                true ->
+                    respond(404, Env);
+                false ->
+                    Args = [{"path", GotoPath},
+                            {"email", Email},
+                            {"msg", Msg},
+                            {"groups", {array, Groups}},
+                            {"view", none}],
+                    case hn_web_admin:rpc(UID, S, "invite_user", Args) of
+                        ok ->
+                            json(Env, "success");
+                        {error, Reason} ->
+                            ?E("invalid invite_user request ~p~n", [Reason]),
+                            json(Env, {struct, [{"failure", Reason}]})
+                    end
+            end;
+        Other ->
+            io:format("Other is ~p~n", [Other]),
+            respond(404, Env)
+    end;
 run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, _Uid)
-  when Act == "add_user" orelse Act == "remove_user" ->
+  when Act == "add_user" orelse
+       Act == "remove_user" ->
     [Expected] = new_db_api:matching_forms(RefX, 'users-and-groups'),
     case Expected of
         {form, _, {_, 'users-and-groups', _}, _, _, _} ->
-            {"user", Email} = lists:keyfind("user", 1, L),
+            {"user", Email}  = lists:keyfind("user", 1, L),
             {"group", Group} = lists:keyfind("group", 1, L),
             case Group of
                 "admin" ->

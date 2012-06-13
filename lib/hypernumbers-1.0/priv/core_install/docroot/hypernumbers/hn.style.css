@@ -520,6 +520,22 @@ label {
   width:            98px;
 }
 
+.hn_newuserfeedback
+{
+  margin: 0;
+  font-size: 80%;
+  }
+
+.hn_addnewuserbutton
+{
+  margin-left: 194px;
+  }
+
+.hn_newusermsg, .hn_emailforgroup
+{
+  width: 200px;
+  }
+
 #newusermsg {
   width: 170px;
 }
@@ -774,6 +790,12 @@ label {
   overflow: auto;
   }
 
+.hn_invite_path
+{
+  width: 290px;
+  margin-bottom : 12px;
+  }
+
 .hn_user_table
 {
   padding-bottom: 1.5em;
@@ -789,7 +811,7 @@ label {
   height: 100px;
   }
 
-.hn_site_admin, .hn_user_admin
+.hn_site_admin, .hn_user_admin, .hn_invite_admin
 {
   -moz-border-radius: 4px 4px 4px 4px;
   -webkit-border-radius: 4px 4px 4px 4px;
