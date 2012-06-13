@@ -276,11 +276,9 @@ backup_collateral(Name, Site) ->
     ok = dump_folder(Site, Dir, "views"),
     io:format("about to backup docroot~n"),
     ok = dump_folder(Site, Dir, "docroot"),
-    io:format("about to backup docroot~n"),
-    ok = dump_folder(Site, Dir, "docroot"),
     io:format("about to backup templates~n"),
     ok = dump_folder(Site, Dir, "templates"),
-    io:format("about to backup etl files~n"),
+    io:format("about to backup map files~n"),
     ok = dump_folder(Site, Dir, "etl"),
     io:format("backup of the collateral of ~p completed~n", [Site]),
 
