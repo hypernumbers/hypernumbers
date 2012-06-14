@@ -862,6 +862,10 @@ table.tablesorter tbody tr.highlight td {
     background-color: transparent;
 }
 
+.horiz_sep
+{
+  margin: 3px;
+ }
 
 .separator {
  cursor:       default;
