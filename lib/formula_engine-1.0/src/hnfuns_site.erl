@@ -54,16 +54,11 @@
                              X /= "admin"])
         ++ "</select></div>"
         ++ "</div>"
-        ++ "<div class='floatleft'>"
-        ++ "<textarea class='hn_newusermsg'>Dear workmake, "
+        ++ "<textarea class='hn_newusermsg'>Dear workmate, "
         ++ "please take a look at this page...</textarea>"
-        ++ "</div>"
-        ++ "<div class='clear'>"
-        ++ "<div>What page do you want the user "
-        ++ "to be sent to?</div>"
+        ++ "<div>Where do you want the user to go?</div>"
         ++ "<input class='hn_invite_path' value='"
         ++ hn_util:list_to_path(get(path)) ++ "' />"
-        ++ "<div>"
         ++ "<input class='hn_addnewuserbutton button' "
         ++ "value='Create User' type='submit' data-id='" ++ Id ++ "'>"
         ++ "<p class='hn_newuserfeedback'>&nbsp;</p>"
@@ -72,7 +67,7 @@
     JS = ["/webcomponents/hn.usersandgroups.js"],
     Reload = ["HN.UsersAndGroups.reload_invite_user();"],
     Incs = #incs{js= JS, js_reload = Reload},
-    Resize = #resize{width = 4, height = 13},
+    Resize = #resize{width = 4, height = 20},
     Preview = "Invite Users",
     Control = #form{id = {'invite-user', "Edit"},
                     kind = "invite-user"},
@@ -472,7 +467,7 @@ get_r2([{M, G} | T], All, Acc) ->
 get_r2a([], _M, _G, Acc) ->
     "<td>" ++ string:join(lists:reverse(Acc), "<br />") ++ "</td></tr>";
 get_r2a([H | T], M, G, Acc) ->
-    Start = "<label>""<input type='checkbox' class='hn_user_rem' data-group='"
+    Start = "<input type='checkbox' class='hn_user_rem' data-group='"
         ++ H ++ "' " ++ " data-user='" ++ M ++ "'",
     Middle = case {lists:member(H, G), H} of
                  {true,  "admin"} -> " checked='checked' disabled='disabled'";
@@ -481,8 +476,8 @@ get_r2a([H | T], M, G, Acc) ->
                  {false, _}       -> ""
              end,
     End = case H of
-              "admin" -> "><em>" ++ H ++ "</em></label>";
-              _       -> ">" ++ H ++ "</label>"
+              "admin" -> "><label><em>" ++ H ++ "</em></label>";
+              _       -> "><label>" ++ H ++ "</label>"
                   end,
     get_r2a(T, M, G, [Start ++ Middle ++ End | Acc]).
 
