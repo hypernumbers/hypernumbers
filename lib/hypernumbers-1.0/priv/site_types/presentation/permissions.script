@@ -1,0 +1,33 @@
+%%-*-erlang-*-
+{add_view,[{path,[]},{perms,["admin",everyone]},{view,"spreadsheet"}]}.
+{add_view,[{path,[]},{perms,["admin",everyone]},{view,"table"}]}.
+{add_view,[{path,[]},{perms,["admin",everyone]},{view,"webpage"}]}.
+{add_view,[{path,[]},{perms,["admin",everyone]},{view,"wikipage"}]}.
+{set_champion,[{path,[]},{view,"webpage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["[**]"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["business-logic"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["business-logic"]},{view,"webpage"}]}.
+{add_view,[{path,["database"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["database"]},{view,"webpage"}]}.
+{add_view,[{path,["debugger"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["debugger"]},{view,"webpage"}]}.
+{add_view,[{path,["instantiation"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["instantiation"]},{view,"webpage"}]}.
+{add_view,[{path,["instantiation","_replies"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{set_champion,[{path,["instantiation","_replies"]},{view,"table"}]}.
+{add_view,[{path,["integration"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["integration"]},{view,"wikipage"}]}.
+{add_view,[{path,["layout"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["layout"]},{view,"webpage"}]}.
+{add_view,[{path,["monads"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["monads"]},{view,"webpage"}]}.
+{add_view,[{path,["navigation"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["navigation"]},{view,"webpage"}]}.
+{add_view,[{path,["site-provisioning"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["site-provisioning"]},{view,"webpage"}]}.

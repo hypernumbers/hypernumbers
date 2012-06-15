@@ -1,0 +1,3 @@
+{head,"sheet","xls","blank","dont_overwrite",false,null,null,[]}.
+{validation,"Sheet1","A1","not_null"}.
+{mapping,"Sheet1","A1","A1"}.
