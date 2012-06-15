@@ -5,6 +5,7 @@
 ******************************************************************************/
 
 html, body {
+    line-height: normal !important;
     margin  : 0px;
     padding : 0px;
     font    : 12px/1.7 Verdana,Tahoma,sans-serif;
@@ -62,7 +63,6 @@ a img:hover { opacity: 0.6;}
     color: darkorange;
 }
 #editloggedin a:hover, a:hover  { color: #3f3f3f;}
-
 
 td {
     vertical-align:top;
@@ -310,9 +310,6 @@ input[type=submit].hninput:hover {
    top: 6px;
 }
 
-label {
-}
-
 .configrow input {
     width: 13px;
     height: 13px;
@@ -528,13 +525,9 @@ label {
 
 .hn_addnewuserbutton
 {
-  margin-left: 194px;
+  margin-left: 139px;
   }
 
-.hn_newusermsg, .hn_emailforgroup
-{
-  width: 200px;
-  }
 
 #newusermsg {
   width: 170px;
@@ -790,12 +783,6 @@ label {
   overflow: auto;
   }
 
-.hn_invite_path
-{
-  width: 290px;
-  margin-bottom : 12px;
-  }
-
 .hn_user_table
 {
   padding-bottom: 1.5em;
@@ -810,6 +797,11 @@ label {
 {
   height: 100px;
   }
+
+.hn_invite_admin
+{
+  padding-left: 42px !important;
+ }
 
 .hn_site_admin, .hn_user_admin, .hn_invite_admin
 {

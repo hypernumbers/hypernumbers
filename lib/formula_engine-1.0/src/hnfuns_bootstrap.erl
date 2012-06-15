@@ -37,10 +37,11 @@
     [W2] = typechecks:std_ints([W]),
     Path = get(path),
     HTML = breadcrumbs2(Path),
-    io:format("HTML is ~p~n", [HTML]),
     Resize = #resize{width = W2, height = 2},
     Preview = "Breadcrumbs",
-    #spec_val{val = HTML, preview = Preview, resize = Resize}.
+    CSS = ["/bootstrap/css/bootstrap.css", "/bootstrap/css/helper.css"],
+    Incs = #incs{css = CSS},
+    #spec_val{val = HTML, sp_incs = Incs, preview = Preview, resize = Resize}.
 
 breadcrumbs2(Path) ->
     Trail = trail2(lists:reverse(Path), []),
@@ -49,8 +50,7 @@ breadcrumbs2(Path) ->
         ++ "</ul>".
 
 trail2([], Acc) ->
-    Trail = lists:reverse(Acc),
-    Trail2 = ["<a href='/'>Home</a>" | Trail],
+    Trail2 = ["<a href='/'>home</a>" | Acc],
     "<li>" ++ string:join(Trail2, ?SEP) ++ "</li>";
 trail2([H | T] = L, Acc) ->
     Path = "/" ++ string:join(lists:reverse(L), "/") ++ "/",
@@ -78,10 +78,10 @@ trail2([H | T] = L, Acc) ->
     zdropdown(Text, Colour, ZQuery, Style, "btn-large").
 
 zdropdown(Text, Colour, ZQuery, Style, Button) ->
-    [Text2] = typechecks:std_strs([Text]),
-    [C2] = typechecks:std_ints([Colour]),
+    [Text2] = typechecks:throw_std_strs([Text]),
+    [C2] = typechecks:throw_std_ints([Colour]),
     C3 = get_colour(C2),
-    [S2] = typechecks:std_ints([Style]),
+    [S2] = typechecks:throw_std_ints([Style]),
     S3 = case S2 of
              0 -> vals;
              1 -> paths;
@@ -110,10 +110,10 @@ zdropdown(Text, Colour, ZQuery, Style, Button) ->
     dropdown(Text, Colour, Rest, "btn-large").
 
 dropdown(Text, Colour, Rest, Button) ->
-    [Text2] = typechecks:std_strs([Text]),
-    [C2] = typechecks:std_ints([Colour]),
+    [Text2] = typechecks:throw_std_strs([Text]),
+    [C2] = typechecks:throw_std_ints([Colour]),
     C3 = get_colour(C2),
-    Rest2 = typechecks:std_strs(Rest),
+    Rest2 = typechecks:throw_std_strs(Rest),
     Drop = make_dropdown(Rest2, []),
     HTML = "<a class='btn " ++ Button ++ " dropdown-toggle "
         ++ C3 ++ "' "
@@ -126,12 +126,16 @@ dropdown(Text, Colour, Rest, Button) ->
 
 'make.goto.buttonbar.'([W | Rest]) ->
     H = 2,
-    [W2] = typechecks:std_ints([W]),
-    R2 = typechecks:std_strs(Rest),
+    [W2] = typechecks:throw_std_ints([W]),
+    R2 = typechecks:throw_std_inc_strs(Rest),
     HTML = lists:flatten("<div class='btn-group'>" ++ R2 ++ "</div>"),
     Resize = #resize{width = W2, height = H},
     Preview = "Menu Buttons",
-    #spec_val{val = HTML, resize = Resize, preview = Preview}.
+    JS = ["/bootstrap/js/bootstrap.js", "/bootstrap/js/helper.js"],
+    Reload = ["HN.BootstrapHelper.reload();"],
+    CSS = ["/bootstrap/css/bootstrap.css", "/bootstrap/css/helper.css"],
+    Incs = #incs{js = JS, js_reload = Reload, css = CSS},
+    #spec_val{val = HTML, sp_incs = Incs, resize = Resize, preview = Preview}.
 
 'mini.goto.button'([Link, Text]) ->
     'mini.goto.button'([Link, Text, 0]);
@@ -168,23 +172,31 @@ dropdown(Text, Colour, Rest, Button) ->
     buttonbar("btn-large", "Large", W, 3, Rest).
 
 button(Class, Size, W, H, Link, Text, Colour) ->
-    [W2, H2] = typechecks:std_ints([W, H]),
+    [W2, H2] = typechecks:throw_std_ints([W, H]),
     [Link2, Text2] = typechecks:std_strs([Link, Text]),
     [C2] = typechecks:std_ints([Colour]),
     C3 = get_colour(C2),
     [Btn] = make_buttons([Link2, Text2], Class ++ " " ++ C3, []),
     Resize = #resize{width = W2, height = H2},
     Preview = Size ++ " Menu Buttons: " ++ Text2,
-    #spec_val{val = Btn, resize = Resize, preview = Preview}.
+    JS = ["/bootstrap/js/bootstrap.js", "/bootstrap/js/helper.js"],
+    Reload = ["HN.BootstrapHelper.reload();"],
+    CSS = ["/bootstrap/css/bootstrap.css", "/bootstrap/css/helper.css"],
+    Incs = #incs{js = JS, js_reload = Reload, css = CSS},
+    #spec_val{val = Btn, resize = Resize, sp_incs = Incs, preview = Preview}.
 
 buttonbar(Class, Size, W, H, Rest) ->
     [W2, H2] = typechecks:std_ints([W, H]),
-    Rest2 = typechecks:std_strs(Rest),
+    Rest2 = typechecks:throw_std_strs(Rest),
     Btns = make_buttons(Rest2, Class, []),
     HTML = lists:flatten("<div class='btn-group'>" ++ Btns ++ "</div>"),
     Resize = #resize{width = W2, height = H2},
     Preview = Size ++ " Menu Buttons: " ++ get_titles(Rest2, []),
-    #spec_val{val = HTML, resize = Resize, preview = Preview}.
+    JS = ["/bootstrap/js/bootstrap.js", "/bootstrap/js/helper.js"],
+    Reload = ["HN.BootstrapHelper.reload();"],
+    CSS = ["/bootstrap/css/bootstrap.css", "/bootstrap/css/helper.css"],
+    Incs = #incs{js = JS, js_reload = Reload, css = CSS},
+    #spec_val{val = HTML, sp_incs = Incs, resize = Resize, preview = Preview}.
 
 % will throw an error if odd length list passed in
 get_titles([], Acc) ->
