@@ -76,42 +76,35 @@ layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     Row = startrow(Ref),
     {H,RHs2} = row_height(Row, RHs),
     Rec = #rec{colwidths=CWs, palette=Palette, startcol=Col},
-    layout2(Cells, Type, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
+    GhostWidth = 0,
+    layout2(Cells, Type, Col, Row, PX, PY, H, CWs, RHs2, Rec, GhostWidth, []).
 
 -spec layout2(cells(), atom(),
              integer(), integer(), integer(), integer(), integer(),
-             cols(), rows(), #rec{}, [textdata()])
+             cols(), rows(), #rec{}, integer(), [textdata()])
             -> {[textdata()],integer(), integer()}.
 
 %% Emergency end of input
 %% End of input
-layout2(L, _Type, Col, Row, PX, PY, H, _CWs, _RHs, Rec, Acc)
+layout2(L, _Type, Col, Row, PX, PY, H, _CWs, _RHs, Rec, _GW, Acc)
       when Row > 1000 orelse Col > 1000 ->
-    %hn_util:log_terms({"emergency termination", L, Type, Col, Row, PX, PY, H, CWs},
-    %            "render_log.txt"),
     io:format("emergency exit from hn_render with head of L of ~p~n", [hd(L)]),
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% End of input
-layout2([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
-    %hn_util:log_terms({"normal termination", [], Type, Col, Row, PX, PY, H, CWs},
-    %            "render_log.txt"),
+layout2([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec, GW, Acc) ->
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
-    TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
+    TotalWidth = erlang:max(PX - GW, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 % dunno how this gets created
-layout2([{{0,0}, _L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
-    %hn_util:log_terms({"duff 00's", L, Type, C, R, PX, PY, H, CWs},
-    %            "render_log.txt"),
-    layout2(T, Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc);
+layout2([{{0, 0}, _L} | T], Type, C, R, PX, PY, H, CWs, RHs, Rec, GW, Acc) ->
+    layout2(T, Type, C, R, PX, PY, H, CWs, RHs, Rec, GW, Acc);
 
 %% Output the next cell value in the current row.
-layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
-    %hn_util:log_terms({"next cell in row", L, Type, C, R, PX, PY, H, CWs},
-    %            "render_log.txt"),
+layout2([{{C, R}, L} | T], Type, C, R, PX, PY, H, CWs, RHs, Rec, GW, Acc) ->
     Value = pget("value", L, ""),
     Ghost = pget("ghost", L, ""),
     Input = case Type of
@@ -119,7 +112,7 @@ layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
                 webpage   -> "none"
             end,
     Css = read_css(pget("style", L), Rec#rec.palette),
-    {W,CWs2} = col_width(C,CWs),
+    {W, CWs2} = col_width(C,CWs),
     Ghostable = case Input of
                     "inline"                 -> false;
                     "inlinerich"             -> false;
@@ -127,59 +120,73 @@ layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
                     {"dynamic_select", _, _} -> false;
                     _                      -> true
                 end,
-    case {Type, Ghost, Ghostable} of
-        {webpage, true, _} ->
-            layout2(T, Type, C, R, PX, PY, H, CWs2, RHs, Rec, Acc);
-        {wikipage, true, true} ->
-            layout2(T, Type, C, R, PX, PY, H, CWs2, RHs, Rec, Acc);
-        _ ->
-            case pget("merge", L) of
-                undefined ->
-                    NewAcc = draw(Value, Css, Input, C, R, PX, PY, W, H),
-                    Acc2 = [NewAcc | Acc],
-                    layout2(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
-                {struct, [{"right", Right}, {"down", Down}]} ->
-                    {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
-                    MH = height_below(R+1, R+Down, RHs, H),
-                    R2 = Rec#rec{maxmerge_height =
-                                 erlang:max(Rec#rec.maxmerge_height, MH + PY)},
-                    NewAcc = draw(Value, Css, Input, C, R, PX, PY, MW, MH),
-                    Acc2 = [NewAcc | Acc],
-                    T2 = expunge(T, {C,C + Right, R, R + Down}),
-                    layout2(T2, Type, C + Right + 1, R, PX + MW, PY, H, CWs3,
-                            RHs, R2, Acc2)
-            end
+    Visible = case {Type, Ghost, Ghostable} of
+                  {webpage, true, _}     -> false;
+                  {wikipage, true, true} -> false;
+                  _                      -> true
+              end,
+    case pget("merge", L) of
+        undefined ->
+            NewAcc = case Visible of
+                         true  ->
+                             draw(Value, Css, Input, C, R, PX, PY, W, H);
+                         false ->
+                             []
+                     end,
+            Acc2 = [NewAcc | Acc],
+            GW2 = case Visible of
+                      false -> GW + W;
+                      true  -> 0
+                  end,
+            layout2(T, Type, C + 1, R, PX + W, PY, H, CWs2, RHs,
+                    Rec, GW2, Acc2);
+        {struct, [{"right", Right}, {"down", Down}]} ->
+            {MW,CWs3} = width_across(C + 1, C + Right, CWs2, W),
+            MH = height_below(R + 1, R + Down, RHs, H),
+            R2 = Rec#rec{maxmerge_height =
+                         erlang:max(Rec#rec.maxmerge_height, MH + PY)},
+            NewAcc = case Visible of
+                         true ->
+                             draw(Value, Css, Input, C, R, PX, PY, MW, MH);
+                         false ->
+                             []
+                     end,
+            Acc2 = [NewAcc | Acc],
+            T2 = expunge(T, {C,C + Right, R, R + Down}),
+            GW2 = case Visible of
+                      false -> GW + MW;
+                      true  -> 0
+                  end,
+            layout2(T2, Type, C + Right + 1, R, PX + MW, PY, H, CWs3,
+                    RHs, R2, GW2, Acc2)
     end;
 
 %% No cell for this column, but still haven't changed rows.
-layout2(Lst=[{{_,R},_}|_], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
-    %hn_util:log_terms({"blank column", L, Type, C, R, PX, PY, H, CWs},
-    %            "render_log.txt"),
-    {W,CWs2} = col_width(C,CWs),
-    layout2(Lst, Type, C + 1, R, PX + W, PY, H, CWs2, RHs, Rec, Acc);
+layout2(Lst=[{{_C, R}, _L} | _], Type, C, R, PX, PY, H, CWs, RHs,
+        Rec, GW, Acc) ->
+    {W, CWs2} = col_width(C, CWs),
+    layout2(Lst, Type, C + 1, R, PX + W, PY, H, CWs2, RHs, Rec, GW + W, Acc);
 
 %% Wind back, and advance to the next row.
-layout2([_L | _T] = Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
-    %hn_util:log_terms({"wind back", L, Type, Col, Row, PX, PY, H, CWs},
-    %            "render_log.txt"),
+layout2([_L | _T] = Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, GW, Acc) ->
     PX2 = 0,
     PY2 = PY + H,
     Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
-    {H2,RHs2} = row_height(Row2, RHs),
-    Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX)},
+    {H2, RHs2} = row_height(Row2, RHs),
+    Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX - GW)},
     layout2(Lst, Type, Col2, Row2, PX2, PY2, H2,
-           Rec#rec.colwidths, RHs2, Rec2, Acc).
+           Rec#rec.colwidths, RHs2, Rec2, GW, Acc).
 
 -spec expunge(cells(), {integer(), integer(), integer(), integer()})
              -> cells().
 expunge([], _Rng) ->
     [];
 %% At a row past range, halt.
-expunge([{{_,R},_}|_]=Lst, {_RC1,_RC2,_RR1,RR2}) when R > RR2 ->
+expunge([{{_, R}, _} | _] = Lst, {_RC1, _RC2, _RR1, RR2}) when R > RR2 ->
     Lst;
 %% Expunge cell.
-expunge([{{C,R},_}|Tail], Rng={RC1,RC2,RR1,RR2}) when
+expunge([{{C, R}, _} | Tail], Rng = {RC1, RC2, RR1, RR2}) when
       RC1 =< C, C =< RC2,
       RR1 =< R, R =< RR2 ->
     expunge(Tail, Rng);
@@ -193,7 +200,7 @@ width_across(C, Stop, CWs, Acc) when C > Stop ->
     {Acc, CWs};
 width_across(C, Stop, CWs, Acc) ->
     {W, CWs2} = col_width(C, CWs),
-    width_across(C+1, Stop, CWs2, W + Acc).
+    width_across(C + 1, Stop, CWs2, W + Acc).
 
 -spec height_below(integer(), integer(), rows(), integer())
                    -> integer().
@@ -201,7 +208,7 @@ height_below(R, Stop, _RHs, Acc) when R > Stop ->
     Acc;
 height_below(R, Stop, RHs, Acc) ->
     {H, RHs2} = row_height(R, RHs),
-    height_below(R+1, Stop, RHs2, H + Acc).
+    height_below(R + 1, Stop, RHs2, H + Acc).
 
 row_height(Y, [{Y, H}|T]) -> {H, T};
 row_height(_, T)          -> {?DEFAULT_HEIGHT, T}.
@@ -216,22 +223,22 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
            integer(), integer(), integer(), integer())
           -> textdata().
 % all four inputs need to be drawn even if there is no value
-draw(undefined,Css,"inline",C,R,X,Y,W,H) ->
-    draw("",Css, "inline",C,R,X,Y,W,H);
-draw(undefined,Css,"inlinerich",C,R,X,Y,W,H) ->
-    draw("",Css, "inlinerich",C,R,X,Y,W,H);
-draw(undefined,Css,{"select", _}=Inp,C,R,X,Y,W,H) ->
-    draw("",Css,Inp,C,R,X,Y,W,H);
-draw(undefined,Css,{"dynamic_select", _}=Inp,C,R,X,Y,W,H) ->
-    draw("",Css,Inp,C,R,X,Y,W,H);
-draw(undefined,"",_Inp,_C,_R,_X,_Y,_W,_H) -> "";
-draw(Value,Css,Inp,C,R,X,Y,W,H) ->
+draw(undefined, Css, "inline", C, R, X, Y, W, H) ->
+    draw("", Css, "inline", C, R, X, Y, W, H);
+draw(undefined, Css, "inlinerich", C, R, X, Y, W, H) ->
+    draw("", Css, "inlinerich", C, R, X, Y, W, H);
+draw(undefined, Css, {"select", _} = Inp, C, R, X, Y, W, H) ->
+    draw("", Css, Inp, C, R, X, Y, W, H);
+draw(undefined, Css, {"dynamic_select", _} = Inp, C, R, X, Y, W, H) ->
+    draw("", Css, Inp, C, R, X, Y, W, H);
+draw(undefined, "", _Inp, _C, _R, _X, _Y, _W, _H) -> "";
+draw(Value, Css, Inp, C, R, X, Y, W, H) ->
     % Tom wants to fix this up :(
     {Val, Prompt}
         = case Value of
               {errval, ErrVal} ->
                   {atom_to_list(ErrVal), false};
-              {datetime, {1,1,1}  = Date, Time} ->
+              {datetime, {1, 1, 1}  = Date, Time} ->
                   {dh_date:format("g:i A", {Date, Time}), false};
               {datetime, Date, Time} ->
                   {muin_date:to_rfc1123_string({datetime, Date, Time}), false};
@@ -248,8 +255,6 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
           end,
     Cell = tconv:to_b26(C) ++ integer_to_list(R),
     St = "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s",
-        %++" -moz-border-radius: 2px 2px 2px 2px;"
-        %++" -webkit-border-radius: 2px 2px 2px 2px;",
 
     case Inp of
         "inline" ->
@@ -261,11 +266,11 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
                        false -> Val;
                        _     -> Prompt
                    end,
-            Style = io_lib:format(St ++"padding:1px 1px;'",
+            Style = io_lib:format(St ++ "padding:1px 1px;'",
                                   [X, Y, W - 4, H - 2, Css]),
             StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
                                     [W - 8, H - 4]),
-                "<div "++ Style ++">" ++
+                "<div " ++ Style ++ ">" ++
                 "<div class='" ++ Class ++ "' " ++ StyleIn ++
                 " data-ref='" ++ Cell ++ "'>" ++ Val2 ++
                 "</div></div>";
@@ -278,34 +283,34 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
                        false -> Val;
                        _     -> Prompt
                    end,
-            Style = io_lib:format(St ++"padding:1px 1px;'",
+            Style = io_lib:format(St ++ "padding:1px 1px;'",
                                   [X, Y, W - 4, H - 2, Css]),
             StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
                                     [W - 8, H - 4]),
-                "<div "++Style ++">"++
+                "<div " ++ Style  ++ ">" ++
                 "<div class='" ++ Class ++ "' "
                 ++ StyleIn ++ " data-ref='" ++ Cell ++ "'>" ++ Val2 ++
                 "</div></div>";
         {"select", Options} ->
-            Style = io_lib:format(St ++"padding:1px 1px;'",
+            Style = io_lib:format(St ++ "padding:1px 1px;'",
                                   [X, Y, W - 4, H - 1, Css]),
             Ref = hn_util:obj_to_ref({cell, {C, R}}),
-            "<div data-ref='"++Cell++"'"++Style++">"++
+            "<div data-ref='" ++ Cell ++ "'" ++ Style ++ ">" ++
                 make_select(tconv:to_s(Val), Ref, Options) ++ "</div>";
         {"dynamic_select", _Source, Options} ->
             Style = io_lib:format(St ++"padding:1px 1px;'",
                                   [X, Y, W - 4, H - 1, Css]),
             Ref = hn_util:obj_to_ref({cell, {C, R}}),
-            "<div data-ref='"++Cell++"'"++Style++">"++
+            "<div data-ref='" ++ Cell ++ "'" ++ Style ++ ">" ++
                 make_select(tconv:to_s(Val), Ref, Options) ++ "</div>";
         _ ->
             Style = io_lib:format(St ++ "padding:1px 3px;'",
                                   [X, Y, W - 6, H - 2, Css]),
-            "<div data-ref='"++Cell++"'"++Style++">"++Val++"</div>"
+            "<div data-ref='" ++ Cell ++ "'" ++ Style ++ ">" ++ Val ++ "</div>"
         end.
 
 -spec order_objs({#xrefX{},any()}, {#xrefX{},any()}) -> boolean().
-order_objs({RA,_}, {RB,_}) ->
+order_objs({RA, _}, {RB, _}) ->
     {_, {XA, YA}} = RA#xrefX.obj,
     {_, {XB, YB}} = RB#xrefX.obj,
     if YA /= YB -> YA < YB;
@@ -315,23 +320,24 @@ order_objs({RA,_}, {RB,_}) ->
 -spec read_css(undefined | integer(), gb_tree()) -> string().
 read_css(undefined, _Palette) -> "";
 read_css(Idx, Palette) -> case gb_trees:lookup(Idx, Palette) of
-                              none -> "";
+                              none       -> "";
                               {value, V} -> V
                           end.
 
 -spec startcol(#refX{}) -> integer().
-startcol(#refX{obj={range,{X,_,_,_}}}) -> X;
-startcol(_)                            -> 1.
+startcol(#refX{obj = {range, {X, _, _, _}}}) -> X;
+startcol(_)                                  -> 1.
 
 -spec startrow(#refX{}) -> integer().
-startrow(#refX{obj={range,{_,Y,_,_}}}) -> Y;
-startrow(_)                            -> 1.
+startrow(#refX{obj = {range, {_, Y, _, _}}}) -> Y;
+startrow(_)                                  -> 1.
 
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
 pget(K,L,D) -> proplists:get_value(K,L,D).
 
--spec wrap_page([textdata()], list(), integer(), integer(), #render{}, list()) -> [textdata()].
+-spec wrap_page([textdata()], list(), integer(), integer(),
+                #render{}, list()) -> [textdata()].
 wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'",
                                [TotalWidth, TotalHeight]),
@@ -343,7 +349,7 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
     ["<!DOCTYPE html>
 <html lang='en'>
          <head>
-"     ++Title++
+"     ++ Title ++
 "        <meta charset='utf-8' />
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
@@ -352,7 +358,7 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
          <link rel='stylesheet' href='/tblsorter/style.css' />
          <link rel='stylesheet' href='/cleditor/jquery.cleditor.css' />
 
-"     ++Addons#render.css++
+"     ++ Addons#render.css ++
 "         <script src='/hypernumbers/jquery-1.7.1.min.js'></script>
          <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>-->
          <script src='/hypernumbers/err.remoterr.js'></script>
