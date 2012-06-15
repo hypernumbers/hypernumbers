@@ -94,7 +94,10 @@ upgrade_relations_record_2012_06_14() ->
                                           DP, DPI, [include]};
                                      false ->
                                          {relation, C, Ch, P, InfP, ZP,
-                                          DP, DPI, []}
+                                          DP, DPI, []};
+                                     List ->
+                                         {relation, C, Ch, P, InfP, ZP,
+                                          DP, DPI, List}
                                  end
                          end,
                    Tbl = new_db_wu:trans(Site, relation),
