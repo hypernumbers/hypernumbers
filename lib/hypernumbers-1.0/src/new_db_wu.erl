@@ -70,7 +70,7 @@
          mark_these_idxs_dirtyD/3,
          mark_dirty_for_inclD/2,
          idx_to_xrefXD/2,
-         get_cell_for_muin/3,
+         get_cell_for_muin/4,
          delete_cells/3,
          shift_cellsD/5,
          shift_rows_and_columnsD/4,
@@ -481,7 +481,7 @@ copy_c2(#xrefX{obj = {cell, {FX, FY}}},
             _ ->
                 ""
         end,
-    Attrs2 = copy_attributes(Attrs, orddict:new(), ["merge", "style", "input"]),
+    Attrs2 = copy_attributes(Attrs, orddict:new(), ["ghost", "merge", "style", "input"]),
     Attrs3 = orddict:store("formula", Formula2, Attrs2),
     write_attrs(To, Attrs3, Uid),
     ok.
@@ -507,7 +507,7 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                          case lists:keymember("formula", 1, Attrs) of
                              true ->
                                  % set relations to handle other cells
-                                 ok = set_relationsD(XRefX, [], [], false),
+                                 ok = set_relationsD(XRefX, [], [], false, false),
                                  ok = clean_up(XRefX, Attrs),
                                  ok = mark_these_dirtyD([XRefX], nil);
                              false ->
@@ -517,6 +517,8 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                              true ->
                                  ok = clean_up_dynamic_select(XRefX);
                              false ->
+                                 % might need to recalc an include anyhoo
+                                 ok = mark_dirty_for_inclD([XRefX], nil),
                                  ok
                          end,
                          {clean, del_attributes(Attrs, DelAttrs)}
@@ -556,7 +558,7 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             % children cells replacing the reference to this cell
             % with #ref!
             % THESE NOW RETURN IDX's!
-            LocalChildren = [get_childrenD(C) || C <- Cells],
+            LocalChildren = [get_childrenD(C, normal) || C <- Cells],
             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
 
             % sometimes a cell will have local children that are also
@@ -827,20 +829,21 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
             write_error_attrs(Attrs, XRefX, Formula, Error);
         % a special return
         {ok, {Pcode, #spec_val{} = Res, Parents, InfParents,
-              Recompile, CircRef}} ->
+              Recompile, CircRef, IsSelfRef}} ->
             Attrs2 = proc_special(Res, XRefX, Attrs, Parents),
             write_formula_attrs(Attrs2, XRefX, Formula, Pcode,
                                 Res#spec_val.val,
                                 {Parents, Res#spec_val.include}, InfParents,
-                                Recompile, CircRef);
+                                Recompile, CircRef, IsSelfRef);
         % bog standard function!
-        {ok, {Pcode, Res, Parents, InfParents, Recompile, CircRef}} ->
+        {ok, {Pcode, Res, Parents, InfParents, Recompile,
+              CircRef, IsSelfRef}} ->
             % there might have been a preview before - nuke it!
             % mebbies there was incs, nuke 'em (WHY?)
             ok = update_incsD(XRefX, #incs{}),
             write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents,
-                                Recompile, CircRef)
+                                Recompile, CircRef, IsSelfRef)
     end.
 
 proc_special(#spec_val{rawform = null} = SP, XRefX, Attrs, Pars) ->
@@ -931,7 +934,7 @@ write_formula2(XRefX, OrigVal, {Type, Val},
                   int      -> OrigVal;
                   _        -> hn_util:text(Val)
               end,
-    ok = set_relationsD(XRefX, [], [], false),
+    ok = set_relationsD(XRefX, [], [], false, false),
     Attrs2 = add_attributes(Attrs, [{"__default-align", Align},
                                     {"__rawvalue", Val},
                                     {"formula", Formula},
@@ -946,7 +949,7 @@ write_formula2(XRefX, OrigVal, {Type, Val},
     end.
 
 write_error_attrs(Attrs, XRefX, Formula, Error) ->
-    ok = set_relationsD(XRefX, [], [], false),
+    ok = set_relationsD(XRefX, [], [], false, false),
     add_attributes(Attrs, [{"formula", Formula},
                            {"__rawvalue", {errval, Error}},
                            {"__ast", []}]).
@@ -962,20 +965,28 @@ set_dyn_relationsD(#xrefX{idx = CellIdx, site = Site}, DynParents,
     Rel2 = set_dyn_parents(Tbl, Site, Rel, DynParents, DynInfParents),
     mnesia:write(Tbl, Rel2, write).
 
--spec set_relationsD(#xrefX{}, [#xrefX{}], [#xrefX{}], boolean()) -> ok.
+-spec set_relationsD(#xrefX{}, [#xrefX{}], [#xrefX{}],
+                     boolean(), boolean()) -> ok.
 set_relationsD(#xrefX{idx = CellIdx, site = Site}, FiniteParents,
-               InfParents, IsIncl) ->
+               InfParents, IsIncl, IsSelfRef) ->
     Tbl = trans(Site, relation),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R;
               []  -> #relation{cellidx = CellIdx}
           end,
     Rel2 = set_parents(Tbl, Site, Rel, FiniteParents, InfParents, IsIncl),
+    #relation{attrs = Attrs} = Rel2,
+    Attrs2 = case {lists:member(selfreference, Attrs), IsSelfRef} of
+                 {true, true}   -> Attrs;
+                 {false, true}  -> [selfreference | Attrs];
+                 {true, false}  -> lists:delete(selfreference, Attrs);
+                 {false, false} -> Attrs
+             end,
     case IsIncl of
         true  -> [mark_in_includeFn(Site, X) || X <- Rel2#relation.parents];
         false -> ok
     end,
-    mnesia:write(Tbl, Rel2, write).
+    mnesia:write(Tbl, Rel2#relation{attrs = Attrs2}, write).
 
 mark_in_includeFn(Site, Idx) ->
     XRefX = idx_to_xrefXD(Site, Idx),
@@ -1031,8 +1042,6 @@ set_parents(Tbl,
     LostParents = ordsets:subtract(CurParents, NewParentIdxs),
     [del_childD(P, CellIdx, Tbl) || P <- LostParents],
     [ok = add_childD(P, CellIdx, Tbl, IsIncl) || P <- NewParentIdxs],
-    %Ret = read_relationsD(Site, CellIdx, write),
-    %Cell = idx_to_xrefXD(Site, CellIdx),
     NewInfParIdxs = ordsets:from_list(InfPIdxs),
     XCurInfPars = [idx_to_xrefXD(Site, X) || X <- CurInfPars],
     case InfPars of
@@ -1215,8 +1224,8 @@ attach_formD(#xrefX{idx = Idx, site = Site}, Form) ->
     mnesia:write(Tbl, Form#form{key = Idx}, write).
 
 write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res, {Parents, IsIncl},
-                    InfParents, Recompile, CircRef) ->
-    ok = set_relationsD(XRefX, Parents, InfParents, IsIncl),
+                    InfParents, Recompile, CircRef, IsSelfRef) ->
+    ok = set_relationsD(XRefX, Parents, InfParents, IsIncl, IsSelfRef),
     Align = default_align(Res),
     % if it is a circular reference it is going to be recalculated
     % so stop the recalc NEXT TIME by replacing the current
@@ -1318,8 +1327,19 @@ del_childD(CellIdx, Child, Tbl) ->
 -spec add_childD(cellidx(), cellidx(), atom(), boolean()) -> ok.
 add_childD(CellIdx, Child, Tbl, IsIncl) ->
     Rel = case mnesia:read(Tbl, CellIdx, write) of
-              [R] -> R#relation{include = IsIncl};
-              []  -> #relation{cellidx = CellIdx, include = IsIncl}
+              [R] ->
+                  #relation{attrs = OldAttrs} = R,
+                  NewAttrs = case lists:member(include, OldAttrs) of
+                                 true  -> OldAttrs;
+                                 false -> [include | OldAttrs]
+                             end,
+                  R#relation{attrs = NewAttrs};
+              [] ->
+                  Attrs = case IsIncl of
+                                 true  -> [include];
+                                 false -> []
+                          end,
+                  #relation{cellidx = CellIdx, attrs = Attrs}
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
     mnesia:write(Tbl, Rel#relation{children = Children}, write).
@@ -1412,13 +1432,13 @@ del_a1([H | T], L, Acc)             ->
         false -> del_a1(T, L, [H | Acc])
     end.
 
--spec get_cell_for_muin(#refX{}, [finite | infinite], list()) ->
+-spec get_cell_for_muin(#refX{}, [finite | infinite], list(), boolean()) ->
     {any(), any(), any()}.
 %% @doc this function is called by muin during recalculation and should
 %%      not be used for any other purpose
 %% takes a  #refX{} and not an xrefX{} because it is spat out of the compiler
 %% and I don't know what the idx is, or if it exists yet
-get_cell_for_muin(#refX{} = RefX, Type, ValType)
+get_cell_for_muin(#refX{} = RefX, Type, ValType, OverrideCantInc)
   when ValType == "value" orelse ValType == "__rawvalue" ->
     XRefX = refX_to_xrefX_createD(RefX),
     Attrs = case read_ref(XRefX, inside, write) of
@@ -1427,10 +1447,10 @@ get_cell_for_muin(#refX{} = RefX, Type, ValType)
             end,
     % you can't use the values of a form in a formula
     CantInc = has_cantinc(Attrs),
-    Value = case CantInc of
-                true ->
+    Value = case {CantInc, OverrideCantInc} of
+                {true, false} ->
                     ?ERRVAL_CANTINC;
-                false ->
+                {_, _} ->
                     case orddict:find(ValType, Attrs) of
                         {ok, {datetime, _, [N]}} ->
                             muin_date:from_gregorian_seconds(N);
@@ -1735,7 +1755,7 @@ has_includeD(Site, CellIdx) ->
     Tbl = trans(Site, relation),
     case mnesia:read(Tbl, CellIdx, write) of
         []  -> false;
-        [R] -> R#relation.include
+        [R] -> lists:member(include, R#relation.attrs)
     end.
 
 log_page(#refX{site = S, path = P, obj = {page, "/"} = O}, Action, Uid) ->
@@ -1816,7 +1836,8 @@ shift_cellsD(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
             % We might need to rewrite the formulas and dynamic selectors of
             % all the child cells so lets collect them
             RefXList = [lobj_to_xrefX(Site, O) || O <- ObjsList],
-            ChildCells = lists:flatten([get_childrenD(X) || X <- RefXList]),
+            ChildCells = lists:flatten([get_childrenD(X, self)
+                                        || X <- RefXList]),
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
 
@@ -1825,6 +1846,7 @@ shift_cellsD(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
                              F <- read_ref_field(X, "formula", write)],
             Acc = {{From, {XOff, YOff}, Uid}, []},
             {_, DirtyCh1} = lists:foldl(fun rewrite_formulae/2, Acc, Formulas),
+
             % now rewrite any dynamic selects that are affected
             DynSels = [F || X <- DedupedChildren,
                             F <- read_ref_field(X, "input", write)],
@@ -1905,15 +1927,25 @@ shift_obj(#local_obj{path = P, obj = {row, {Y1, Y2}}} = LO, _XOff, YOff) ->
     LO#local_obj{obj = O2, revidx = term_to_binary(RevIdx2)};
 shift_obj(LO, _, _) -> LO.
 
--spec get_childrenD(#xrefX{}) -> [cellidx()].
-get_childrenD(#xrefX{site = Site, obj = {cell, _}} = XRefX) ->
+-spec get_childrenD(#xrefX{}, normal | self) -> [cellidx()].
+get_childrenD(#xrefX{site = Site, obj = {cell, _}} = XRefX, Type)
+  when Type == normal orelse Type == self ->
     Table = trans(Site, relation),
-    Idxs = case mnesia:read(Table, XRefX#xrefX.idx, read) of
-               [R] -> R#relation.children;
-               _   -> []
-           end,
-    [idx_to_xrefXD(Site, X) || X <- Idxs];
-get_childrenD(#xrefX{obj = {Type, _}} = Ref)
+    {Idxs, IsSelfRef} = case mnesia:read(Table, XRefX#xrefX.idx, read) of
+                            [R] ->
+                                {R#relation.children,
+                                 lists:member(selfreference, R#relation.attrs)};
+                            _ ->
+                                {[], false}
+                        end,
+    XRefXs = [idx_to_xrefXD(Site, X) || X <- Idxs],
+    case {Type, IsSelfRef} of
+        {normal, _}   -> XRefXs;
+        {self, false} -> XRefXs;
+        {self, true}  -> [XRefX | XRefXs]
+    end;
+% WTF? is this clause for...
+get_childrenD(#xrefX{obj = {Type, _}} = Ref, _Type)
   when (Type ==  row) orelse (Type ==  column) orelse
        (Type ==  range) orelse (Type ==  page) ->
     lists:flatten(expand_ref(Ref)).

@@ -336,8 +336,8 @@ print_rel2(S, R, Acc) ->
     O2 = print_rel3(S, R#relation.parents,    "parents",          O1),
     O3 = print_rel3(S, R#relation.infparents, "infinite parents", O2),
     O4 = print_rel3(S, R#relation.z_parents,  "z parents",        O3),
-    [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is it an include? ~p",
-                   [R#relation.include]) | O4].
+    [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is it an include/circ? ~p",
+                   [R#relation.attrs]) | O4].
 
 print_rel3(_S, [], Type, Acc) -> [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;"
                                                 ++ "&nbsp; no " ++ Type, [])

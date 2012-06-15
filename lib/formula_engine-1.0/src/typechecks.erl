@@ -15,13 +15,15 @@
          throw_std_nums/1,
          throw_flat_strs/1,
          throw_html_box_contents/1,
+         throw_std_inc_strs/1,
          % returns errors to fn
          std_bools/1,
          std_strs/1,
          std_ints/1,
          std_pos_ints/1,
          std_nums/1,
-         flat_strs/1
+         flat_strs/1,
+         std_strs/1
         ]).
 
 % schmancies!
@@ -48,6 +50,7 @@ throw_std_ints(X)           -> errthrow(std_ints(X)).
 throw_std_nums(X)           -> errthrow(std_nums(X)).
 throw_flat_strs(X)          -> errthrow(flat_strs(X)).
 throw_html_box_contents(X)  -> errthrow(html_box_contents(X)).
+throw_std_inc_strs(X)       -> errthrow(std_inc_strs(X)).
 
 errthrow(X) -> th(X, []).
 
@@ -120,6 +123,11 @@ flat_strs(Vals) ->
 
 html_box_contents(Vals) ->
     Rules = [eval_funs, fetch, flatten, strip_spec, {cast, str}],
+    Passes = [return_errors, {all, fun muin_collect:is_string/1}],
+    muin_collect:col(Vals, Rules, Passes).
+
+std_inc_strs(Vals) ->
+    Rules = [eval_funs, fetch_incs, area_first, {cast, str}],
     Passes = [return_errors, {all, fun muin_collect:is_string/1}],
     muin_collect:col(Vals, Rules, Passes).
 

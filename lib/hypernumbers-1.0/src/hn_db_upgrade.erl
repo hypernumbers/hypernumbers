@@ -9,6 +9,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_relations_record_2012_06_14/0,
          remove_dirty_q_caches_2012_06_13/0,
          remove_duff_dirty_q_caches_2012_06_03/0,
          add_dirty_queue_cache_2012_06_03/0,
@@ -82,6 +83,32 @@
          % upgrade_1743_B/0,
          % upgrade_1776/0
         ]).
+
+upgrade_relations_record_2012_06_14() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fun = fun({relation, C, Ch, P, InfP, ZP, DP, DPI, Inc}) ->
+                                 case Inc of
+                                     true ->
+                                         {relation, C, Ch, P, InfP, ZP,
+                                          DP, DPI, [include]};
+                                     false ->
+                                         {relation, C, Ch, P, InfP, ZP,
+                                          DP, DPI, []}
+                                 end
+                         end,
+                   Tbl = new_db_wu:trans(Site, relation),
+                   io:format("Table ~p transformed~n", [Tbl]),
+                   Ret1 = mnesia:transform_table(Tbl, Fun,
+                                                 [cellidx, children, parents,
+                                                  infparents, z_parents,
+                                                  dyn_parents, dyn_infparents,
+                                                  attrs]),
+                   io:format("Ret is ~p~n", [Ret1])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
 
 remove_dirty_q_caches_2012_06_13() ->
     Sites = hn_setup:get_sites(),
@@ -264,11 +291,11 @@ recalc_includes() ->
                    io:format("~nForcing recalcs on includes in ~p~n", [Site]),
                    Tbl2 = new_db_wu:trans(Site, relation),
                    Fun2 = fun(X, N) ->
-                                  case X#relation.include of
-                                      false ->
+                                  case X#relation.attrs of
+                                      [] ->
                                           io:format("."),
                                           ok;
-                                      true  ->
+                                      _  ->
                                           io:format("*"),
                                           [new_db_api:mark_idx_dirty(Site, Y)
                                            || Y <- X#relation.children]

@@ -298,6 +298,10 @@ rl(fetchdb, Ref) when ?is_rangeref(Ref) ->
 rl(fetchdb, Ref) when ?is_cellref(Ref) ->
     muin:fetch(Ref, "__rawvalue");
 
+rl(fetch_incs, Ref) when ?is_cellref(Ref) orelse ?is_rangeref(Ref) ->
+    io:format("In fetch_incs for ~p~n", [Ref]),
+    muin:fetch(Ref, "__rawvalue", true);
+
 rl({conv, Type, Val}, {Area, Rows}=Va) when ?is_area(Va) ->
     {Area, [ muin_collect:col(X, [{conv, Type, Val}]) || X <- Rows ]};
 

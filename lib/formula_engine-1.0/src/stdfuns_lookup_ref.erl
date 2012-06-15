@@ -7,6 +7,7 @@
          address/1,
          choose/1,
          column/1,
+         cellref/1,
          index/1,
          match/1,
          row/1,
@@ -40,11 +41,37 @@ choose([Idx], List) ->
         Else              -> Else
     end.
 
-column([])                          -> muin:context_setting(col);
-column([C]) when ?is_namedexpr(C)   -> ?ERRVAL_NAME;
-column([C]) when ?is_cellref(C)     -> muin:col_index(muin:col(C));
-column([Err]) when ?is_errval(Err)  -> Err;
-column(_Else)                       -> ?ERRVAL_VAL.
+cellref([]) ->
+    put(selfreference, true),
+    {X, Y} = muin:context_setting(cell),
+    tconv:to_b26(X) ++ integer_to_list(Y);
+cellref([C]) when ?is_cellref(C) ->
+    % need to set children so it will rewrite
+    % when columns are inserted, so do a fake fetch
+    _ = muin:fetch(C ,"__rawvalue"),
+    tconv:to_b26(muin:col_index(muin:col(C)))
+        ++ integer_to_list(muin:row_index(muin:row(C)));
+cellref([Err]) when ?is_errval(Err) ->
+    Err;
+cellref([C]) when ?is_namedexpr(C) ->
+    ?ERRVAL_NAME;
+cellref([_]) ->
+    ?ERR_VAL.
+
+column([]) ->
+    put(selfreference, true),
+    muin:context_setting(col);
+column([C]) when ?is_namedexpr(C) ->
+    ?ERRVAL_NAME;
+column([C]) when ?is_cellref(C) ->
+    % need to set children so it will rewrite
+    % when columns are inserted, so do a fake fetch
+    _ = muin:fetch(C ,"__rawvalue"),
+    muin:col_index(muin:col(C));
+column([Err]) when ?is_errval(Err) ->
+    Err;
+column(_Else) ->
+    ?ERRVAL_VAL.
 
 %% TODO: Needs to be recompiled every time -- how to handle that cleanly?
 %% (without writing to proc dict)
@@ -69,9 +96,22 @@ indirect_([Str], [_Bool]) ->
         {error, syntax_error} -> ?ERRVAL_REF
     end.
 
-row([])                      -> muin:context_setting(row);
-row([C]) when ?is_cellref(C) -> muin:row_index(muin:row(C));
-row(_X)                       -> ?ERR_VAL.
+% TODO fix row and column rewritting
+% need to add a circular children
+row([]) ->
+    put(selfreference, true),
+    muin:context_setting(row);
+row([C]) when ?is_namedexpr(C) ->
+    ?ERRVAL_NAME;
+row([C]) when ?is_cellref(C) ->
+    % need to set children so it will rewrite
+    % when rows are inserted, so do a fake fetch
+    _ = muin:fetch(C ,"__rawvalue"),
+    muin:row_index(muin:row(C));
+row([Err]) when ?is_errval(Err) ->
+    Err;
+row(_Else)->
+    ?ERR_VAL.
 
 address([Row, Col]) ->
     address([Row, Col, 1]);

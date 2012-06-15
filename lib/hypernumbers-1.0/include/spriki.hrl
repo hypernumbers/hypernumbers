@@ -114,7 +114,7 @@
           z_parents      = ordsets:new() :: ordsets:ordset(#refX{}),
           dyn_parents    = ordsets:new() :: ordsets:ordset(cellidx()),
           dyn_infparents = ordsets:new() :: ordsets:ordset(cellidx()),
-          include = false
+          attrs          = []
        }).
 
 -record(dirty_queue,

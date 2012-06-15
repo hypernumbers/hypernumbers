@@ -9,7 +9,8 @@
 -include("hypernumbers.hrl").
 -include("muin_proc_dict.hrl").
 
--define(notincfns, [include, tick, timestamp, snapshot, input, fixedval,
+-define(notincfns, [include, tick, timestamp, snapshot,
+                    input, fixedval,
                     textarea, button, radio, select, 'create.button',
                     'map.rows.button', 'map.sheet.button',
                     'map.custom.button',
@@ -43,11 +44,12 @@
          call_fun/3,
          force_load/1,
          fetch/2,
+         fetch/3,
          prefetch_references/1,
          get_hypernumber/9,
          userdef_call/2,
          toidx/1,
-         do_cell/5,
+         do_cell/6,
          parse/2,
          expand/1
         ]).
@@ -131,12 +133,13 @@ run_code(Pcode, Rti) ->
     FiniteRefs = [{X, L} || {X, _, L} <- References],
     InfiniteRefs = get(infinite),
     {ok, {Fcode, Result, FiniteRefs, InfiniteRefs,
-          get(recompile), get(circref)}}.
+          get(recompile), get(circref), get(selfreference)}}.
 
 % not all functions can be included in other functions
 external_eval_formula(X) ->
     case lists:member(X, ?notincfns) of
-        true  -> ?ERRVAL_CANTINC;
+        true  -> io:format("cant inc (1)"),
+                 ?ERRVAL_CANTINC;
         false -> eval_formula(X)
     end.
 
@@ -461,14 +464,16 @@ funcall(Fname, Args0) ->
              tan, tanh,
              sin, sinh,
              thelifeuniverseandeverything,
-             row,
+             row, cellref,
              cell, timevalue, npv, max, maxa, min, mina, syd,
              sumsq, sum, stdevpa, stdevp, stdeva, stdev, product, mdeterm,
              median, replace, rows, sumif,
              odd, int, degrees, radians, proper, index, var, steyx,
              small, skew, large, sumproduct, daverage, dcount, isref,
              irr, even,
-             include, 'tim.tabs.', 'table.', 'phone.menu.', 'phone.menu.dial'],
+             include, 'tim.tabs.', 'table.',
+             'phone.menu.', 'phone.menu.dial',
+             'make.goto.buttonbar.'],
 
     Args = case lists:member(Fname, Funs) of
                true  -> Args0;
@@ -594,7 +599,7 @@ implicit_intersection_col(R) ->
             {col, Col} = R#rangeref.tl,
             ColIdx = col_index(Col),
             xx1(),
-            do_cell(R#rangeref.path, ?my, ColIdx, finite, "__rawvalue");
+            do_cell(R#rangeref.path, ?my, ColIdx, finite, "__rawvalue", false);
         _ ->
             ?ERRVAL_VAL
     end.
@@ -605,7 +610,7 @@ implicit_intersection_row(R) ->
             {row, Row} = R#rangeref.tl,
             RowIdx = row_index(Row),
             xx2(),
-            do_cell(R#rangeref.path, RowIdx, ?mx, finite, "__rawvalue");
+            do_cell(R#rangeref.path, RowIdx, ?mx, finite, "__rawvalue", false);
         _ ->
             ?ERRVAL_VAL
     end.
@@ -616,25 +621,28 @@ implicit_intersection_finite(R) ->
         {1, 1} ->
             [{X, Y}] = muin_util:expand_cellrange(R),
             xx3(),
-            do_cell(R#rangeref.path, Y, X, finite, "__rawvalue");
+            do_cell(R#rangeref.path, Y, X, finite, "__rawvalue", false);
         {1, _H} -> % vertical vector
             CellCoords = muin_util:expand_cellrange(R),
             case lists:filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
                 [{X, Y}] -> xx4(),
-                            do_cell(R#rangeref.path, Y, X, finite, "__rawvalue");
+                            do_cell(R#rangeref.path, Y, X, finite,
+                                    "__rawvalue", false);
                 []       -> ?ERRVAL_VAL
             end;
         {_W, 1} -> % horizontal vector
             CellCoords = muin_util:expand_cellrange(R),
             case lists:filter(fun({X, _Y}) -> X == ?mx end, CellCoords) of
                 [{X, Y}] -> xx5(),
-                            do_cell(R#rangeref.path, Y, X, finite, "__rawvalue");
+                            do_cell(R#rangeref.path, Y, X, finite,
+                                    "__rawvalue", false);
                 []       -> ?ERRVAL_VAL
             end;
         {_, _} ->
             ?ERRVAL_VAL
     end.
 
+context_setting(cell)          -> {?mx, ?my};
 context_setting(col)           -> ?mx;
 context_setting(row)           -> ?my;
 context_setting(path)          -> ?mpath;
@@ -655,7 +663,8 @@ prefetch_references(L) ->
              (X, Acc) when is_list(X)->
                   % not all functions can be included in other functions
                   case lists:member(hd(X), ?notincfns) of
-                      true  -> ?ERRVAL_CANTINC;
+                      true  -> io:format("cant inc (2)~n"),
+                               ?ERRVAL_CANTINC;
                       false -> [X | Acc]
                   end;
              (X, Acc) ->
@@ -669,7 +678,11 @@ row_index({offset, N}) -> ?my + N.
 col_index(N) when is_integer(N) -> N;
 col_index({offset, N}) -> ?mx + N.
 
-fetch(#zcellref{zpath = Z, cellref = C}, ValType) when is_record(C, cellref) ->
+fetch(Ref, ValType) -> fetch(Ref, ValType, false).
+
+% Override makes no sense on a zquery
+fetch(#zcellref{zpath = Z, cellref = C}, ValType, false)
+  when is_record(C, cellref) ->
     {zpath, ZList} = Z,
     NewPath = muin_util:walk_zpath(?mpath, ZList),
     PageTree = page_srv:get_pages(?msite),
@@ -683,7 +696,7 @@ fetch(#zcellref{zpath = Z, cellref = C}, ValType) when is_record(C, cellref) ->
     NewInfinites = ordsets:add_element({local, XRefX}, Infinites),
     put(infinite, NewInfinites),
     {zeds, Vals, NoMatch, Err};
-fetch(#zrangeref{zpath = Z, rangeref = R}, ValType)
+fetch(#zrangeref{zpath = Z, rangeref = R}, ValType, false)
   when is_record(R, rangeref) ->
     {zpath, ZList} = Z,
     ZP = make_zpath(ZList, []),
@@ -698,14 +711,14 @@ fetch(#zrangeref{zpath = Z, rangeref = R}, ValType)
     NewInfinites = lists:foldl(Fun, Infinites, lists:flatten(XRefXs)),
     put(infinite, NewInfinites),
     {zeds, Ranges, NoMatch, Err};
-fetch(N, _ValType) when ?is_namedexpr(N) ->
+fetch(N, _ValType, _Override) when ?is_namedexpr(N) ->
     ?ERRVAL_NAME;
-fetch(#cellref{col = Col, row = Row, path = Path}, ValType) ->
+fetch(#cellref{col = Col, row = Row, path = Path}, ValType, Override) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
     xx6(),
-    do_cell(Path, RowIndex, ColIndex, finite, ValType);
-fetch(#rangeref{type = Type, path = Path} = Ref, ValType)
+    do_cell(Path, RowIndex, ColIndex, finite, ValType, Override);
+fetch(#rangeref{type = Type, path = Path} = Ref, ValType, Oride)
   when Type == row orelse Type == col ->
     NewPath = muin_util:walk_path(?mpath, Path),
     #refX{obj = Obj} = RefX = muin_util:make_refX(?msite, NewPath, Ref),
@@ -713,14 +726,14 @@ fetch(#rangeref{type = Type, path = Path} = Ref, ValType)
     put(infinite, ordsets:add_element(RefX,Infinites)),
     Refs = new_db_wu:expand_ref(RefX),
     Rows = case Obj of
-               {Type2, {_I, _I}} -> sort1D(Refs, Path, Type2, ValType);
-               {Type2, {I,   J}} -> sort2D(Refs, Path, {Type2, I, J}, ValType)
+               {T2, {_I, _I}} -> sort1D(Refs, Path, T2, ValType, Oride);
+               {T2, {I,   J}} -> sort2D(Refs, Path, {T2, I, J}, ValType, Oride)
            end,
     % pinch out the functionality for a release
     {range, Rows};
 % error_logger:info_msg("Somebody tried a row or column rangeref~n"),
 % ?ERRVAL_ERR;
-fetch(#rangeref{type = finite} = Ref, ValType) ->
+fetch(#rangeref{type = finite} = Ref, ValType, Override) ->
     CellCoords = muin_util:expand_cellrange(Ref),
     Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows
                    Fun2 = fun({_, Y}) ->
@@ -729,7 +742,7 @@ fetch(#rangeref{type = finite} = Ref, ValType) ->
                    Fun3 = fun({X, Y}) ->
                                   xx7(),
                                   do_cell(Ref#rangeref.path, Y, X,
-                                          finite, ValType)
+                                          finite, ValType, Override)
                           end,
                    RowCoords = lists:filter(Fun2, CellCoords),
                    Row = lists:map(Fun3, RowCoords),
@@ -823,12 +836,12 @@ userdef_call(Fname, Args) ->
     end.
 
 %% Returns value in the cell + get_value_and_link() is called`
-do_cell(RelPath, Rowidx, Colidx, Type, ValType) ->
+do_cell(RelPath, Rowidx, Colidx, Type, ValType, OverrideCantInc) ->
     Path = muin_util:walk_path(?mpath, RelPath),
 
     FetchFun = fun() ->
-                       get_cell_info(?msite, Path,
-                                     Colidx, Rowidx, Type, ValType)
+                       get_cell_info(?msite, Path, Colidx, Rowidx, Type,
+                                     ValType, OverrideCantInc)
                end,
     case ?mar of
         nil   -> get_value_and_link(FetchFun);
@@ -870,15 +883,15 @@ toidx(N) when is_number(N) -> N;
 toidx({row, Offset})       -> ?my + Offset;
 toidx({col, Offset})       -> ?mx + Offset.
 
-get_cell_info(S, P, Col, Row, Type, ValType) ->
+get_cell_info(S, P, Col, Row, Type, ValType, OverrideCantInclude) ->
     RefX = #refX{site = string:to_lower(S), path = P, type = url,
                  obj = {cell, {Col, Row}}},
-    new_db_wu:get_cell_for_muin(RefX, Type, ValType).
+    new_db_wu:get_cell_for_muin(RefX, Type, ValType, OverrideCantInclude).
 
-sort1D(Refs, Path, Type, ValType) ->
-    sort1D_(Refs, Path, Type, orddict:new(), ValType).
+sort1D(Refs, Path, Type, ValType, Override) ->
+    sort1D_(Refs, Path, Type, orddict:new(), ValType, Override).
 
-sort1D_([], _Path, Type, Dict, _ValType) ->
+sort1D_([], _Path, Type, Dict, _ValType, _Override) ->
     Size = orddict:size(Dict),
     List = orddict:to_list(Dict),
     Filled = fill1D(List, 1, 1, Size + 1, [],
@@ -890,40 +903,40 @@ sort1D_([], _Path, Type, Dict, _ValType) ->
         column -> Filled;
         row    -> [[X || [X] <- Filled]]
     end;
-sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, row, Dict, ValType) ->
+sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, row, Dict, ValType, Oride) ->
     xx8(),
-    V = do_cell(Path, Y, X, infinite, ValType),
-    sort1D_(T, Path, row, orddict:append(X, V, Dict), ValType);
-sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, column, Dict, ValType) ->
+    V = do_cell(Path, Y, X, infinite, ValType, Oride),
+    sort1D_(T, Path, row, orddict:append(X, V, Dict), ValType, Oride);
+sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, column, Dict, ValType, Oride) ->
     xx9(),
-    V = do_cell(Path, Y, X, infinite, ValType),
-    sort1D_(T, Path, column, orddict:append(Y, V, Dict), ValType).
+    V = do_cell(Path, Y, X, infinite, ValType, Oride),
+    sort1D_(T, Path, column, orddict:append(Y, V, Dict), ValType, Oride).
 
 %% if all the cells are blank will return an array of arrays.
 %% if type is 'column' this will be one array for each column each with
 %% a 'blank' in it
 %% if type is a 'row' this will be one list with as many 'blank's as there
 %% are rows specified
-sort2D(Refs, Path, Def, ValType) ->
-    sort2D_(Refs, Path, Def, orddict:new(), ValType).
+sort2D(Refs, Path, Def, ValType, Override) ->
+    sort2D_(Refs, Path, Def, orddict:new(), ValType, Override).
 
-sort2D_([], _Path, {Type, Start, End}, Dict, _ValType) ->
+sort2D_([], _Path, {Type, Start, End}, Dict, _ValType, _Override) ->
     Ret = case {Type, orddict:size(Dict)} of
               {row, 0}    -> [lists:duplicate(End - Start, blank)];
               {column, 0} ->  lists:duplicate(End - Start, [blank]);
               {_, _}      -> fill2D(Dict, Type, Start, End, [])
           end,
     Ret;
-sort2D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, Def, Dict, ValType) ->
+sort2D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, Def, Dict, ValType, Oride) ->
     SubDict = case orddict:is_key(X, Dict) of
                   true  -> orddict:fetch(X, Dict);
                   false -> orddict:new()
               end,
     xx10(),
-    V = do_cell(Path, Y, X, infinite, ValType),
+    V = do_cell(Path, Y, X, infinite, ValType, Oride),
     NewSub  = orddict:append(Y, V, SubDict),  % works because there are no dups!
     NewDict = orddict:store(X, NewSub, Dict),
-    sort2D_(T, Path, Def, NewDict, ValType).
+    sort2D_(T, Path, Def, NewDict, ValType, Oride).
 
 %% for columns you infill to the number of columns
 %% get the size of each row, and take the maximum of the
@@ -1062,7 +1075,7 @@ zeval2(XRefX, Toks) ->
     {Return, CircRef} =
         case catch(xfl_parser:parse(Toks)) of
             {ok, Ast} ->
-                {ok, {_, Rs, _, _, _, CR}} = muin:run_code(Ast, RTI),
+                {ok, {_, Rs, _, _, _, CR, _}} = muin:run_code(Ast, RTI),
                 % cast to a boolean
                 Rs2 = typechecks:std_bools([Rs]),
                 case Rs2 of
@@ -1117,7 +1130,7 @@ fetch_r2([{cell, {X, Y}} | T], Path, ZPath, ValType, Acc1, Acc2) ->
     NewAcc1 = make_inf_xrefX(ZPath, Cell),
     URL = {Path, Cell},
     xx11(),
-    NewAcc2 = do_cell(Path, Y, X, infinite, ValType),
+    NewAcc2 = do_cell(Path, Y, X, infinite, ValType, false),
     fetch_r2(T, Path, ZPath, ValType, [NewAcc1 | Acc1],
              [{URL, NewAcc2} | Acc2]).
 
@@ -1130,7 +1143,7 @@ fetch_v1([H | T], Row, Col, ValType, Acc) ->
     ColIndex = col_index(Col),
     URL = {H, tconv:to_b26(ColIndex) ++ integer_to_list(RowIndex)},
     xx12(),
-    NewAcc = do_cell(Path, RowIndex, ColIndex, infinite, ValType),
+    NewAcc = do_cell(Path, RowIndex, ColIndex, infinite, ValType, false),
     fetch_v1(T, Row, Col, ValType, [{URL, NewAcc} | Acc]).
 
 make_inf_xrefX(Path, Text) ->
@@ -1247,7 +1260,8 @@ init_proc_dict(#muin_rti{site = Site, path = Path, col = Col,
                {array_context, AryCtx}, {infinite, []},
                {retvals, {[], []}}, {recompile, false},
                {auth_req, AuthReq},
-               {circref, false}]),
+               {circref, false},
+               {selfreference, false}]),
     ok.
 
 special_flatten([], Acc)                      -> Acc;

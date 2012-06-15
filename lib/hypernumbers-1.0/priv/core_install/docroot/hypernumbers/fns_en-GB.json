@@ -361,6 +361,24 @@
         ]
     },
     {
+        "fn": "cellref",
+        "category": "Lookup And Reference",
+        "desc": "Returns the cell reference of a cell",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/lookup-and-reference/cellref.html",
+        "args": [
+            {
+                "name": "Reference",
+                "desc": "A cell reference",
+                "type": "optional"
+            }
+        ]
+    },
+    {
         "fn": "choose",
         "category": "Lookup And Reference",
         "desc": "Uses an index number to select from a list of values.",
@@ -397,7 +415,7 @@
             {
                 "name": "Reference",
                 "desc": "A cell reference",
-                "type": "finite"
+                "type": "optional"
             }
         ]
     },
@@ -2507,6 +2525,19 @@
         ]
     },
     {
+        "fn": "invite.users",
+        "category": "Site Administration <- new!",
+        "desc": "Allows you to invite users to the site",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/site-administration/invite.users.html",
+        "args": [
+        ]
+    },
+    {
         "fn": "irr",
         "category": "Financial",
         "desc": "Returns the internal rate of return for a series of cash flows.",
@@ -4020,7 +4051,7 @@
             {
                 "name": "Reference",
                 "desc": "A cell reference",
-                "type": "finite"
+                "type": "optional"
             }
         ]
     },
@@ -5144,7 +5175,11 @@
         "wizardready": true,
         "link": "http://documentation.vixo.com/contents/vixo-functions/site-administration/users-and-groups.html",
         "args": [
-
+            {
+                "name": "Type",
+                "desc": "0, 1 or 2",
+                "type": "optional"
+            }
         ]
     },
     {

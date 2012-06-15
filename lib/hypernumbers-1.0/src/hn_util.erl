@@ -279,6 +279,9 @@ mk_f([{name, _, "CELL"} | T], {_St, A}) ->
 mk_f([{name, _, "ADDRESS"} | T], {_St, A}) ->
     mk_f(T, {dirty, ["ADDRESS" | A]});
 
+mk_f([{name, _, "CELLREF"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["CELLREF" | A]});
+
 mk_f([{name, _, "ROW"} | T], {_St, A}) ->
     mk_f(T, {dirty, ["ROW" | A]});
 
@@ -290,7 +293,6 @@ mk_f([{name, _, S} | T], {St, A}) ->
 
 mk_f([{H, _} | T], {St, A}) ->
     mk_f(T, {St, [atom_to_list(H) | A]}).
-
 
 -spec extract_name_from_email(string()) -> string().
 extract_name_from_email(Email) ->
