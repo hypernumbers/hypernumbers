@@ -229,9 +229,7 @@ check_messages(Site, Since, WorkPlan, Graph) ->
 
 -spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()].
 build_workplan(Site, Dirty, Graph) ->
-    Report = mnesia_mon:get_stamp("build_workplan"),
     Trans = fun() ->
-                    mnesia_mon:report(Report),
                     % if the cell is a new cell then recalc if it is
                     % a circular dependency, otherwise don't
                     case update_recalc_graph(Dirty, Site, Graph) of
@@ -244,7 +242,7 @@ build_workplan(Site, Dirty, Graph) ->
                             ok
                     end
             end,
-    ok = mnesia_mon:log_act(transaction, Trans, Report),
+    ok = mnesia:activity(transaction, Trans),
     case digraph_utils:topsort(Graph) of
         false -> eliminate_circ_ref(Site, Dirty, Graph);
         Work  -> Work
