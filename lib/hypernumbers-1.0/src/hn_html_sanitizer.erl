@@ -152,6 +152,13 @@ is_s3([{token, "<br " ++ _Rest = Tk} | T], Acc) ->
 is_s3([{token, "</br>"} | T], Acc) ->
     is_s3(T, ["</br>" | Acc]);
 
+is_s3([{token, "<p>" ++ _Rest = Tk} | T], Acc) ->
+    is_s3(T, [esc(Tk) | Acc]);
+is_s3([{token, "<p " ++ _Rest = Tk} | T], Acc) ->
+    is_s3(T, [esc(Tk) | Acc]);
+is_s3([{token, "</p>"} | T], Acc) ->
+    is_s3(T, ["</p>" | Acc]);
+
 is_s3([{token, "<b>" ++ _Rest = Tk} | T], Acc) ->
     is_s3(T, [esc(Tk) | Acc]);
 is_s3([{token, "<b " ++ _Rest = Tk} | T], Acc) ->
