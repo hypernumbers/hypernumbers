@@ -67,7 +67,6 @@ make_stats_page(Site) ->
         "<small>(no news is good news here)</small><br />" ++
         Sups ++
         "<h3>Billing Statistics</h3>" ++
-        "<small>Memory is in Erlang Words</small><br />" ++
         Billing ++
         "<h3>Status Of Queues</h3>" ++
         "<small>(should mostly be 0 but less than 250 is OK " ++
@@ -100,16 +99,17 @@ table_s2(Site, Tables, billing) ->
     Tab2 = get_site_tables(Tables, Site2, []),
     {Mem, Cells} = lists:foldl(fun table_s3b/2, {0, 0}, Tab2),
     Pages = length(page_srv:get_flatpages(Site)),
-    io_lib:format("Cells:   ~p~nPages:   ~p~nMemory: ~p~n",
-                  [Cells, Pages, Mem]).
+    io_lib:format("Cells:   ~p~nPages:   ~p~nMemory:  ~s~n",
+                  [Cells, Pages, format_mem(Mem)]).
 
 table_s3a(X) ->
     TabInfo = mnesia:table_info(list_to_atom(X), all),
     {size, Size} = lists:keyfind(size, 1, TabInfo),
     {memory, Memory} = lists:keyfind(memory, 1, TabInfo),
+    Mem2 = format_mem(Memory),
     Type = get_type(TabInfo),
-    io_lib:format("~nTable: ~p~n~p Records~n~p~n~p Words of memory used~n",
-                  [X, Size, Type, Memory]).
+    io_lib:format("~nTable: ~p~n~p Records~n~p~n~s memory used~n",
+                  [X, Size, Type, Mem2]).
 
 table_s3b(X, {Total, Items}) ->
     X1 = trim(X),
@@ -522,3 +522,15 @@ get_billing(Site) ->
     Tables = [atom_to_list(X) || X <- mnesia:system_info(tables)],
     table_s2(Site, Tables, billing).
 
+format_mem(N) ->
+    % normalise to bytes for 32/64 bit architectures
+    N2 = N/erlang:system_info(wordsize),
+    % cast to kB
+    N3 = N2/1024,
+    if
+        N3 <  1024 ->
+            string:strip(lists:flatten(io_lib:format("~10.2f", [N3]) ++ "Kb"));
+        N3 >= 1024 ->
+            N4 = N2/(1024*1024),
+            string:strip(lists:flatten(io_lib:format("~10.2f", [N4]) ++ "Mb"))
+    end.
