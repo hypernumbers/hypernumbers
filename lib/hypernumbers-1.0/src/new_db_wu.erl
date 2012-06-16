@@ -495,9 +495,10 @@ clear_cells(RefX, Uid) -> clear_cells(RefX, contents, Uid).
 clear_cells(Ref, contents, Uid) ->
     do_clear_cells(Ref, content_attrs(), clear, Uid);
 clear_cells(Ref, all, Uid) ->
-    do_clear_cells(Ref, ["style", "merge" | content_attrs()], clear, Uid);
+    do_clear_cells(Ref, ["style", "merge", "input", "ghost"
+                         | content_attrs()], clear, Uid);
 clear_cells(Ref, style, Uid) ->
-    do_clear_cells(Ref, ["style", "merge"], ignore, Uid);
+    do_clear_cells(Ref, ["style", "merge", "input", "ghost"], ignore, Uid);
 clear_cells(Ref, {attributes, DelAttrs}, Uid) ->
     do_clear_cells(Ref, DelAttrs, clear, Uid).
 
@@ -2689,7 +2690,6 @@ content_attrs() ->
      "value",
      "preview",
      "overwrite-color",
-     "input",
      "__hasincs",
      "__hasform",
      "__rawvalue",
@@ -2699,8 +2699,7 @@ content_attrs() ->
      "__area",
      "__default-align",
      "__lastcalced",
-     "__unique",
-     "ghost"
+     "__unique"
     ].
 
 copy_attributes(_SD, TD, []) -> TD;
