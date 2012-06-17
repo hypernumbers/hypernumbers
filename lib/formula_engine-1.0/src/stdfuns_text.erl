@@ -27,6 +27,11 @@
 
 -import(muin_collect, [col/3, col/2, col/4]).
 
+%% not in Excel but belongs here-ish
+-export([
+         quote/1
+        ]).
+
 %% Excel 2004 API.
 -export([
          value/1,
@@ -69,6 +74,10 @@ t([V]) ->
         _Else -> ""
     end.
 
+
+quote([V]) ->
+    [Str] = typechecks:std_strs([V]),
+    lists:flatten(io_lib:format("~p", [Str])).
 
 value([V]) ->
     col([V], [eval_funs, area_first, {cast, str, num}],

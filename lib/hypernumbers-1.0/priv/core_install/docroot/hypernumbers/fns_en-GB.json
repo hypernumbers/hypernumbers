@@ -3801,6 +3801,44 @@
         ]
     },
     {
+        "fn": "quote <- new!",
+        "category": "Text",
+        "desc": "Returns the present value of an investment.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/financial/quote.html",
+        "args": [
+            {
+                "name": "Rate",
+                "desc": "Defines the interest rate per period.",
+                "type": "finite"
+            },
+            {
+                "name": "No Of Periods",
+                "desc": "The total number of periods.",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The regular payment per period.",
+                "type": "finite"
+            },
+            {
+                "name": "Future Value",
+                "desc": "The future value after the last payment.",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "Due date for payments.",
+                "type": "optional"
+            }
+        ]
+    },
+    {
         "fn": "radians",
         "category": "Maths And Trigonometry",
         "desc": "Converts degrees to radians.",
