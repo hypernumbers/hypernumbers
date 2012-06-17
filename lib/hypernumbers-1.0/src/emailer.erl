@@ -18,12 +18,12 @@ get_default_details() -> {?MASTER_EMAIL, ?MASTER_SIG}.
 
 get_details(Site) ->
     V = new_db_api:read_kv(Site, site_email),
-    DefFrom =  ?MASTER_EMAIL,
+    DefFrom = ?MASTER_EMAIL,
     DefSig = ?MASTER_SIG,
     case V of
         [] ->
             {DefFrom, DefSig};
-        [{kvstore, site_email, Rec}] ->
+        [{kvstore, site_email, {_, Rec}}] ->
             case Rec#site_email.email_validated of
                 true  -> {Rec#site_email.email, Rec#site_email.signature};
                 false -> {DefFrom, DefSig}
