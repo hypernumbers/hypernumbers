@@ -122,7 +122,7 @@ check(To, Su, Cn, CC, Reply) ->
     To3 = hn_util:split_emails(To2),
     CC3 = hn_util:split_emails(CC2),
     Emails = lists:merge([To3, CC3, [Fr]]),
-    case is_valid_email(Emails) of
+    case is_valid_email(Emails, Domain) of
         false -> ?ERR_VAL;
         true  -> [string:join(To3, ";"), Su2, Cn2, string:join(CC3, ";"), Fr]
     end.
@@ -273,12 +273,18 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
     #spec_val{val = HTML, preview = PreV, resize = Resize,
               sp_phone = Payload}.
 
-is_valid_email([])       -> true;
-is_valid_email(["" | T]) -> is_valid_email(T);
-is_valid_email([H | T])  -> case hn_util:valid_email(H) of
-                                true   -> is_valid_email(T);
-                                false  -> false
-                            end.
+% exemption for testing domain
+is_valid_email(_List, "hypernumbers.dev") ->
+    true;
+is_valid_email([], _) ->
+    true;
+is_valid_email(["" | T], Domain) ->
+    is_valid_email(T, Domain);
+is_valid_email([H | T], Domain) ->
+    case hn_util:valid_email(H) of
+        true   -> is_valid_email(T, Domain);
+        false  -> false
+    end.
 
 get_domain("http://" ++ Domain) ->
     [D, _] = string:tokens(Domain, ":"),
