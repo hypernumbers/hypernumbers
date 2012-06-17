@@ -465,7 +465,7 @@ get_r2([{M, G} | T], All, Acc) ->
     get_r2(T, All, [NewAcc | Acc]).
 
 get_r2a([], _M, _G, Acc) ->
-    "<td>" ++ string:join(lists:reverse(Acc), "<br />") ++ "</td></tr>";
+    "<td>" ++ lists:reverse(Acc) ++ "</td></tr>";
 get_r2a([H | T], M, G, Acc) ->
     Start = "<input type='checkbox' class='hn_user_rem' data-group='"
         ++ H ++ "' " ++ " data-user='" ++ M ++ "'",
