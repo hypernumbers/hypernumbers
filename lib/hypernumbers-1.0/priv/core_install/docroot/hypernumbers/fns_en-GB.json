@@ -3812,29 +3812,9 @@
         "link": "http://documentation.vixo.com/contents/excel-compatible-functions/financial/quote.html",
         "args": [
             {
-                "name": "Rate",
-                "desc": "Defines the interest rate per period.",
+                "name": "Text",
+                "desc": "Reference to some text"
                 "type": "finite"
-            },
-            {
-                "name": "No Of Periods",
-                "desc": "The total number of periods.",
-                "type": "finite"
-            },
-            {
-                "name": "Payment",
-                "desc": "The regular payment per period.",
-                "type": "finite"
-            },
-            {
-                "name": "Future Value",
-                "desc": "The future value after the last payment.",
-                "type": "optional"
-            },
-            {
-                "name": "Type",
-                "desc": "Due date for payments.",
-                "type": "optional"
             }
         ]
     },
