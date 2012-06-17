@@ -1,3 +1,14 @@
+.hn-btn-large
+{
+  width  : 126px !important;
+  height : auto !important;
+  }
+
+.hn-btn-small
+{
+  width  : 56px !important;
+  height : auto !important;
+ }
 
 /*.crumb + span
 {

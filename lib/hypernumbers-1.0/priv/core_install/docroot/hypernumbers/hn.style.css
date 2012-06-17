@@ -838,11 +838,13 @@ input[type=submit].hninput:hover {
   color:       #ff6000;
  }
 
-.hn_inlineselect {
-                   width: 100%;
-                   height: 20px;
-                   font-size: 95%;
-                   }
+.hn_inlineselect
+{
+  padding : 0px !important;
+  width: 100%;
+  height: 20px;
+  font-size: 95%;
+  }
 
 #ctrlpanel a:link, #ctrlpanel a:visited { border-bottom: none }
 

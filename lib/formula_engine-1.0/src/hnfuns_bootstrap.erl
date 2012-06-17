@@ -9,22 +9,13 @@
 
 -export([
          'breadcrumbs.'/1,
-         'make.goto.buttonbar.'/1,
-         'mini.goto.zdropdown'/1,
-         'goto.zdropdown'/1,
          'small.goto.zdropdown'/1,
          'large.goto.zdropdown'/1,
-         'mini.goto.dropdown'/1,
-         'goto.dropdown'/1,
          'small.goto.dropdown'/1,
          'large.goto.dropdown'/1,
-         'mini.buttonbar.'/1,
          'small.buttonbar.'/1,
-         'buttonbar.'/1,
          'large.buttonbar.'/1,
-         'mini.goto.button'/1,
          'small.goto.button'/1,
-         'goto.button'/1,
          'large.goto.button'/1
         ]).
 
@@ -57,27 +48,17 @@ trail2([H | T] = L, Acc) ->
     NewAcc = " <a class='crumb' href='" ++ Path ++ "'>" ++ H ++ "</a>",
     trail2(T, [NewAcc | Acc]).
 
-'mini.goto.zdropdown'([Text, Colour, ZQuery]) ->
-    'mini.goto.zdropdown'([Text, Colour, ZQuery, 0]);
-'mini.goto.zdropdown'([Text, Colour, ZQuery, Style]) ->
-    zdropdown(Text, Colour, ZQuery, Style, "btn-mini").
-
 'small.goto.zdropdown'([Text, Colour, ZQuery]) ->
     'small.goto.zdropdown'([Text, Colour, ZQuery, 0]);
 'small.goto.zdropdown'([Text, Colour, ZQuery, Style]) ->
-    zdropdown(Text, Colour, ZQuery, Style, "btn-small").
-
-'goto.zdropdown'([Text, Colour, ZQuery]) ->
-    'goto.zdropdown'([Text, Colour, ZQuery, 0]);
-'goto.zdropdown'([Text, Colour, ZQuery, Style]) ->
-    zdropdown(Text, Colour, ZQuery, Style, "").
+    zdropdown(1, 1, Text, Colour, ZQuery, Style, "btn-small hn-btn-small").
 
 'large.goto.zdropdown'([Text, Colour, ZQuery]) ->
     'large.goto.zdropdown'([Text, Colour, ZQuery, 0]);
 'large.goto.zdropdown'([Text, Colour, ZQuery, Style]) ->
-    zdropdown(Text, Colour, ZQuery, Style, "btn-large").
+    zdropdown(2, 2, Text, Colour, ZQuery, Style, "btn-large hn-btn-large").
 
-zdropdown(Text, Colour, ZQuery, Style, Button) ->
+zdropdown(W, H, Text, Colour, ZQuery, Style, Button) ->
     [Text2] = typechecks:throw_std_strs([Text]),
     [C2] = typechecks:throw_std_ints([Colour]),
     C3 = get_colour(C2),
@@ -94,22 +75,22 @@ zdropdown(Text, Colour, ZQuery, Style, Button) ->
         ++ "<span class='caret'></span>"
         ++ "</a>"
         ++ ZQuery2,
+    Resize = #resize{width = W, height = H},
     Preview = "Dropdown: " ++ contact_utils:rightsize(Text2, 30),
-    #spec_val{val = lists:flatten(HTML), preview = Preview}.
-
-'mini.goto.dropdown'([Text, Colour | Rest]) ->
-    dropdown(Text, Colour, Rest, "btn-mini").
+    JS = ["/bootstrap/js/bootstrap.js", "/bootstrap/js/helper.js"],
+    Reload = ["HN.BootstrapHelper.reload();"],
+    CSS = ["/bootstrap/css/bootstrap.css", "/bootstrap/css/helper.css"],
+    Incs = #incs{js = JS, js_reload = Reload, css = CSS},
+    #spec_val{val = lists:flatten(HTML), sp_incs = Incs,
+              resize = Resize, preview = Preview}.
 
 'small.goto.dropdown'([Text, Colour | Rest]) ->
-    dropdown(Text, Colour, Rest, "btn-small").
-
-'goto.dropdown'([Text, Colour | Rest]) ->
-    dropdown(Text, Colour, Rest, "").
+    dropdown(1, 1, Text, Colour, Rest, "btn-small hn-btn-small").
 
 'large.goto.dropdown'([Text, Colour | Rest]) ->
-    dropdown(Text, Colour, Rest, "btn-large").
+    dropdown(2, 2, Text, Colour, Rest, "btn-large hn-btn-large").
 
-dropdown(Text, Colour, Rest, Button) ->
+dropdown(W, H, Text, Colour, Rest, Button) ->
     [Text2] = typechecks:throw_std_strs([Text]),
     [C2] = typechecks:throw_std_ints([Colour]),
     C3 = get_colour(C2),
@@ -122,51 +103,26 @@ dropdown(Text, Colour, Rest, Button) ->
         ++ "</a>"
         ++ Drop,
     Preview = "Dropdown: " ++ contact_utils:rightsize(Text2, 30),
-    #spec_val{val = lists:flatten(HTML), preview = Preview}.
-
-'make.goto.buttonbar.'([W | Rest]) ->
-    H = 2,
-    [W2] = typechecks:throw_std_ints([W]),
-    R2 = typechecks:throw_std_inc_strs(Rest),
-    HTML = lists:flatten("<div class='btn-group'>" ++ R2 ++ "</div>"),
-    Resize = #resize{width = W2, height = H},
-    Preview = "Menu Buttons",
+    Resize = #resize{width = W, height = H},
     JS = ["/bootstrap/js/bootstrap.js", "/bootstrap/js/helper.js"],
     Reload = ["HN.BootstrapHelper.reload();"],
     CSS = ["/bootstrap/css/bootstrap.css", "/bootstrap/css/helper.css"],
     Incs = #incs{js = JS, js_reload = Reload, css = CSS},
-    #spec_val{val = HTML, sp_incs = Incs, resize = Resize, preview = Preview}.
-
-'mini.goto.button'([Link, Text]) ->
-    'mini.goto.button'([Link, Text, 0]);
-'mini.goto.button'([Link, Text, Colour]) ->
-    button("btn-mini", "Mini", 1, 1, Link, Text, Colour).
+    #spec_val{val = lists:flatten(HTML), resize = Resize,
+              sp_incs = Incs, preview = Preview}.
 
 'small.goto.button'([Link, Text]) ->
     'small.goto.button'([Link, Text, 0]);
 'small.goto.button'([Link, Text, Colour]) ->
-    button("btn-small", "Small", 1, 2, Link, Text, Colour).
-
-% normal button don't need decoration
-'goto.button'([Link, Text]) ->
-    'goto.button'([Link, Text, 0]);
-'goto.button'([Link, Text, Colour]) ->
-    button("", "", 1, 2, Link, Text, Colour).
+    button("btn-small hn-btn-small", "Small", 1, 2, Link, Text, Colour).
 
 'large.goto.button'([Link, Text]) ->
     'large.goto.button'([Link, Text, 0]);
 'large.goto.button'([Link, Text, Colour]) ->
-    button("btn-large", "Large", 2, 2, Link, Text, Colour).
-
-'mini.buttonbar.'([W | Rest]) ->
-    buttonbar("btn-mini", "Mini", W, 1, Rest).
+    button("btn-large hn-btn-large", "Large", 2, 2, Link, Text, Colour).
 
 'small.buttonbar.'([W | Rest]) ->
     buttonbar("btn-small", "Small", W, 2, Rest).
-
-% normal buttonbar don't need decoration
-'buttonbar.'([W | Rest]) ->
-    buttonbar("", "", W, 2, Rest).
 
 'large.buttonbar.'([W | Rest]) ->
     buttonbar("btn-large", "Large", W, 3, Rest).
