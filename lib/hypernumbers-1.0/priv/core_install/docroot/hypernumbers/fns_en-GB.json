@@ -3801,7 +3801,7 @@
         ]
     },
     {
-        "fn": "quote <- new!",
+        "fn": "quote",
         "category": "Text",
         "desc": "Returns the present value of an investment.",
         "experimental": false,
