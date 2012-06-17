@@ -78,13 +78,21 @@
 % that don't have any content - so hoy in a non-breaking space
 anchor([Anchor]) ->
     [A2] = typechecks:std_strs([Anchor]),
+    A3 = case A2 of
+             "#" ++ Rest -> Rest;
+             _           -> A2
+         end,
     Preview = "Anchor " ++ Anchor,
-    HTML = "<a class='hn_anchor' name='" ++ A2 ++ "'>&nbsp;</a>",
+    HTML = "<a class='hn_anchor' name='" ++ A3 ++ "'>&nbsp;</a>",
     #spec_val{val = HTML, preview = Preview};
 anchor([Anchor, Text]) ->
     [A2, Txt2] = typechecks:std_strs([Anchor, Text]),
+    A3 = case A2 of
+             "#" ++ Rest -> Rest;
+             _           -> A2
+         end,
     Preview = "Anchor " ++ Anchor,
-    HTML = "<a class='hn_anchor' name='" ++ A2 ++ "'>" ++ Txt2 ++ "</a>",
+    HTML = "<a class='hn_anchor' name='" ++ A3 ++ "'>" ++ Txt2 ++ "</a>",
     #spec_val{val = HTML, preview = Preview}.
 
 'toggle.views'([]) ->
