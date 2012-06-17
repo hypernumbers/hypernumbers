@@ -519,6 +519,7 @@ input[type=submit].hninput:hover {
 
 .hn_newuserfeedback
 {
+  line-height: 0.9 !important;
   margin: 0;
   font-size: 80%;
   }
