@@ -96,7 +96,7 @@
     },
     {
         "fn": "array1d",
-        "category": "Special",
+        "category": "Special <- new!",
         "desc": "Stiches a series of references and elements into a 1D array",
         "experimental": false,
         "includable": true,
@@ -945,7 +945,7 @@
     },
     {
         "fn": "debug.array",
-        "category": "Special",
+        "category": "Special <- new!",
         "desc": "Helps debug functions that return arrays",
         "experimental": false,
         "includable": true,
@@ -3012,13 +3012,13 @@
     {
         "fn": "manual.email",
         "category": "Phone And Email <- new!",
-        "desc": "Sends a email based on a condition being fulfilled.",
+        "desc": "Sends a email",
         "experimental": true,
         "includable": false,
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://http://documentation.vixo.com/contents/vixo-functions/phone-and-email/manual-email.html",
+        "link": "http://documentation.vixo.com/contents/vixo-functions/phone-and-email/manual-email.html",
         "args": [
             {
                 "name": "To",
@@ -3041,7 +3041,7 @@
                 "type": "optional"
             },
             {
-                "name": "Replay",
+                "name": "Reply",
                 "desc": "A name",
                 "type": "optional"
             }
