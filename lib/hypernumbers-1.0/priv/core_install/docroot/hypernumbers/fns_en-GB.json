@@ -3813,7 +3813,7 @@
         "args": [
             {
                 "name": "Text",
-                "desc": "Reference to some text"
+                "desc": "Reference to some text",
                 "type": "finite"
             }
         ]
