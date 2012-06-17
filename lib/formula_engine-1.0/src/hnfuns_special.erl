@@ -67,7 +67,7 @@ flattenon([], List)     -> List;
 flattenon([H | T], Acc) -> flattenon(T, [H | Acc]).
 
 snapshot([Arg]) ->
-    Rules = [first_array, fetch_name, fetch_ref, eval_funs],
+    Rules = [first_array, fetch_name, fetch_ref, eval_funs, blank_as_str],
     Passes = [],
     [Ret] = muin_collect:col([Arg], Rules, Passes),
     {Errors, _References} = get(retvals),
