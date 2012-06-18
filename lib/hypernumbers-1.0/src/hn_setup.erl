@@ -56,7 +56,6 @@ copy_collateral(From, To) ->
     Root = code:lib_dir(hypernumbers),
     F2 = Root ++ "/../../var/sites/" ++ hn_util:site_to_fs(From),
     T2 = Root ++ "/../../var/sites/" ++ hn_util:site_to_fs(To),
-    io:format("F2 is ~p T2 is ~p~n", [F2, T2]),
     % clear the to directory - it will have gumph in it from the site setup
     ok = hn_util:delete_directory(T2),
     ok = hn_util:recursive_copy(F2, T2).
