@@ -12,6 +12,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         is_site_valid/1,
          site_type_exists/1,
          split_emails/1,
          read_lines/1,
@@ -75,7 +76,7 @@
 
          % List Utils
          is_alpha/1,
-         is_numeric/1,
+         is_numeric_int/1,
          text/1,
          list_to_path/1,
 
@@ -420,9 +421,9 @@ is_alpha(Str) ->
 
 
 %% is string a list of digits
--spec is_numeric(string()) -> true | false.
-is_numeric([]) -> false;
-is_numeric(Str) ->
+-spec is_numeric_int(string()) -> true | false.
+is_numeric_int([]) -> false;
+is_numeric_int(Str) ->
     Fun = fun(XX) ->
                   if XX < 48 -> false;
                      XX > 57 -> false;
@@ -774,8 +775,6 @@ js_to_utf8({Key, Val})    -> {xmerl_ucs:to_utf8(Key), js_to_utf8(Val)};
 js_to_utf8(X) when is_integer(X); is_float(X); is_atom(X) -> X;
 js_to_utf8(X)             -> xmerl_ucs:to_utf8(X).
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Path Utilities                                                           %%%
@@ -912,6 +911,30 @@ add_views() ->
           auth_srv:add_view(Site, [], ["admin"], "webpage"),
           auth_srv:add_view(Site, ["[**]"], ["admin"], "webpage")
       end || Site <- hn_setup:get_sites()].
+
+is_site_valid(Site) ->
+    case string:tokens(Site, ":") of
+        ["http", "//" ++ Domain, Port] ->
+            Split = string:tokens(Domain, "."),
+            Len = length(Split),
+            if
+                Len  > 1 ->
+                    case hn_util:is_numeric_int(Port) of
+                        true ->
+                            Port2 = list_to_integer(Port),
+                            if
+                                Port2  > 0 andalso Port2 =< 65536 -> true;
+                                Port2 =< 0 orelse  Port2  > 65536 -> false
+                            end;
+                        false ->
+                            false
+                    end;
+                Len =< 1 ->
+                    false
+            end;
+        _Other ->
+            false
+    end.
 
 %% function to prevent doing an unchecked list_to_atom...
 %% only converts lists if they are in the file system

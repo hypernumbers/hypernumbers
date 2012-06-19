@@ -28,28 +28,35 @@
 %% copies a site from one domain to another
 -spec copy_site(string(), string()) ->
     ok | {error, from_site_doesnt_exists} | {error, to_site_exists}.
-copy_site(From, To) ->
-    case hn_setup:site_exists(To) of
-        true ->
-            {error, to_site_exists};
-        false ->
-            overwrite_site(From, To)
-    end.
+copy_site(From, To) -> copy_site2(From, To, dontoverwrite).
 
 -spec overwrite_site(string(), string()) ->
     ok | {error, from_site_doesnt_exist}.
-overwrite_site(From, To) ->
+overwrite_site(From, To) -> copy_site2(From, To, overwrite).
+
+copy_site2(From, To, Type) ->
+    case {hn_util:is_site_valid(From), hn_util:is_site_valid(To)} of
+        {false, true}  -> {error, invalid_from_site};
+        {true, false}  -> {error, invalid_to_site};
+        {false, false} -> {error, invalid_to_and_from_site};
+        {true, true}   -> copy_site3(From, To, Type)
+        end.
+
+copy_site3(From, To, Type) ->
     case hn_setup:site_exists(From) of
-        false ->
-            {error, from_site_doesnt_exist};
-        true ->
-            site(To, blank, []),
-            ok = sitemaster_sup:delete_site(From),
-            ok = sitemaster_sup:delete_site(To),
-            ok = copy_tables(From, To),
-            ok = copy_collateral(From, To),
-            ok = sitemaster_sup:add_site(From),
-            ok = sitemaster_sup:add_site(To)
+        false -> {error, from_site_doesnt_exist};
+        true  -> case {hn_setup:site_exists(To), Type} of
+                     {true, dontoverwrite} ->
+                         {error, to_site_exists};
+                     _ ->
+                         site(To, blank, []),
+                         ok = sitemaster_sup:delete_site(From),
+                         ok = sitemaster_sup:delete_site(To),
+                    ok = copy_tables(From, To),
+                         ok = copy_collateral(From, To),
+                         ok = sitemaster_sup:add_site(From),
+                         ok = sitemaster_sup:add_site(To)
+                 end
     end.
 
 copy_collateral(From, To) ->
@@ -407,3 +414,4 @@ init_telephony(Site) ->
 
 create_userfiles(Site) ->
     filelib:ensure_dir(hn_util:userfilesroot(Site) ++ "force").
+
