@@ -1,7 +1,9 @@
 %%-*-erlang-*-
 {add_view,[{path,[]},{perms,["admin"]},{view,"spreadsheet"}]}.
 {add_view,[{path,[]},{perms,["admin"]},{view,"table"}]}.
-{add_view,[{path,[]},{perms,["admin","editor","user"]},{view,"webpage"}]}.
+{add_view,[{path,[]},
+           {perms,["admin","editor","reviewer","user"]},
+           {view,"webpage"}]}.
 {add_view,[{path,[]},{perms,["admin"]},{view,"wikipage"}]}.
 {set_champion,[{path,[]},{view,"webpage"}]}.
 {add_view,[{path,["[**]"]},{perms,["admin"]},{view,"spreadsheet"}]}.
@@ -30,9 +32,11 @@
 {add_view,[{path,["admin","script"]},{perms,["admin"]},{view,"spreadsheet"}]}.
 {add_view,[{path,["admin","script"]},{perms,["admin"]},{view,"table"}]}.
 {add_view,[{path,["admin","script"]},
-           {perms,["admin","user"]},
+           {perms,["admin","editor","reviewer","user"]},
            {view,"webpage"}]}.
-{add_view,[{path,["admin","script"]},{perms,["admin"]},{view,"wikipage"}]}.
+{add_view,[{path,["admin","script"]},
+           {perms,["admin","editor"]},
+           {view,"wikipage"}]}.
 {set_champion,[{path,["admin","script"]},{view,"webpage"}]}.
 {add_view,[{path,["admin","status"]},{perms,["admin"]},{view,"spreadsheet"}]}.
 {add_view,[{path,["admin","status"]},{perms,["admin"]},{view,"table"}]}.
@@ -62,7 +66,7 @@
 {add_view,[{path,["contacts"]},{perms,["admin"]},{view,"spreadsheet"}]}.
 {add_view,[{path,["contacts"]},{perms,["admin"]},{view,"table"}]}.
 {add_view,[{path,["contacts"]},
-           {perms,["admin","editor","user"]},
+           {perms,["admin","editor","reviewer","user"]},
            {view,"webpage"}]}.
 {add_view,[{path,["contacts"]},{perms,["admin"]},{view,"wikipage"}]}.
 {set_champion,[{path,["contacts"]},{view,"webpage"}]}.
@@ -71,21 +75,34 @@
            {view,"spreadsheet"}]}.
 {add_view,[{path,["contacts","0000001"]},{perms,["admin"]},{view,"table"}]}.
 {add_view,[{path,["contacts","0000001"]},
-           {perms,["admin","editor","user"]},
+           {perms,["admin","editor","reviewer","user"]},
            {view,"webpage"}]}.
 {add_view,[{path,["contacts","0000001"]},
-           {perms,["admin","editor"]},
+           {perms,["admin","editor","user"]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["contacts","0000001"]},{view,"webpage"}]}.
+{add_view,[{path,["contacts","0000001","_contacts"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["contacts","0000001","_contacts"]},
+           {perms,["admin","editor","reviewer","user"]},
+           {view,"table"}]}.
+{add_view,[{path,["contacts","0000001","_contacts"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["contacts","0000001","_contacts"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["contacts","0000001","_contacts"]},{view,"table"}]}.
 {add_view,[{path,["contacts","0000002"]},
            {perms,["admin"]},
            {view,"spreadsheet"}]}.
 {add_view,[{path,["contacts","0000002"]},{perms,["admin"]},{view,"table"}]}.
 {add_view,[{path,["contacts","0000002"]},
-           {perms,["admin","editor","user"]},
+           {perms,["admin","editor","reviewer","user"]},
            {view,"webpage"}]}.
 {add_view,[{path,["contacts","0000002"]},
-           {perms,["admin","editor"]},
+           {perms,["admin","editor","user"]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["contacts","0000002"]},{view,"webpage"}]}.
 {add_view,[{path,["contacts","0000003"]},
@@ -93,15 +110,50 @@
            {view,"spreadsheet"}]}.
 {add_view,[{path,["contacts","0000003"]},{perms,["admin"]},{view,"table"}]}.
 {add_view,[{path,["contacts","0000003"]},
-           {perms,["admin","editor","user"]},
+           {perms,["admin","editor","reviewer","user"]},
            {view,"webpage"}]}.
 {add_view,[{path,["contacts","0000003"]},
-           {perms,["admin","editor"]},
+           {perms,["admin","editor","user"]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["contacts","0000003"]},{view,"webpage"}]}.
+{add_view,[{path,["contacts","0000004"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["contacts","0000004"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["contacts","0000004"]},
+           {perms,["admin","editor","reviewer","user"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["contacts","0000004"]},
+           {perms,["admin","editor","user"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["contacts","0000004"]},{view,"webpage"}]}.
+{add_view,[{path,["contacts","0000005"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["contacts","0000005"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["contacts","0000005"]},
+           {perms,["admin","editor","reviewer","user"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["contacts","0000005"]},
+           {perms,["admin","editor","user"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["contacts","0000005"]},{view,"webpage"}]}.
+{add_view,[{path,["contacts","0000006"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["contacts","0000006"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["contacts","0000006"]},
+           {perms,["admin","editor","reviewer","user"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["contacts","0000006"]},
+           {perms,["admin","editor"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["contacts","0000006"]},{view,"webpage"}]}.
 {add_view,[{path,["faq"]},{perms,["admin"]},{view,"spreadsheet"}]}.
 {add_view,[{path,["faq"]},{perms,["admin"]},{view,"table"}]}.
-{add_view,[{path,["faq"]},{perms,["admin","editor","user"]},{view,"webpage"}]}.
+{add_view,[{path,["faq"]},
+           {perms,["admin","editor","reviewer","user"]},
+           {view,"webpage"}]}.
 {add_view,[{path,["faq"]},{perms,["admin"]},{view,"wikipage"}]}.
 {set_champion,[{path,["faq"]},{view,"webpage"}]}.
 {add_view,[{path,["static-data"]},{perms,["admin"]},{view,"webpage"}]}.
@@ -113,6 +165,20 @@
            {perms,["admin","editor","user"]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["team","0000001"]},{view,"wikipage"}]}.
+{add_view,[{path,["team","0000002"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["team","0000002"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["team","0000002"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["team","0000002"]},
+           {perms,["admin","editor","user"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["team","0000002"]},{view,"wikipage"}]}.
+{add_view,[{path,["team","0000003"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["team","0000003"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["team","0000003"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["team","0000003"]},
+           {perms,["admin","editor","user"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["team","0000003"]},{view,"wikipage"}]}.
 {add_view,[{path,["tmp"]},{perms,["admin"]},{view,"spreadsheet"}]}.
 {add_view,[{path,["tmp"]},{perms,["admin"]},{view,"table"}]}.
 {add_view,[{path,["tmp"]},{perms,["admin","editor","user"]},{view,"webpage"}]}.
