@@ -1,3 +1,4 @@
+
 /******************************************************************************
    TAG STYLES
 ******************************************************************************/
@@ -188,8 +189,24 @@ html,body {
     margin: 5px;
 }
 
+.hn_code
+{
+  font-family: Courier, monospace;
+ }
+
+#hn_makewikiselect > div > ul
+{
+  padding-left: 0;
+ }
+
+#hn_insertwikiselect
+{
+  width     : 480px;
+  font-size : 80%;
+ }
+
 #hn_makewikiselect {
-    width    : 290px;
+    width    : 590px;
     height   : auto;
     left     : 350px;
     top      : 220px;
