@@ -184,13 +184,15 @@ does_page_exist(#refX{site = S, obj = {page , "/"}} = RefX) ->
         Recs -> do_items_existD(Recs, S)
     end.
 
+% "__in_includeFn" is stored in the db as a binary
+-define(in_inc, <<131,108,0,0,0,1,104,2,107,0,14,95,95,105,110,95,105,110,99,108,117,100,101,70,110,100,0,4,116,114,117,101,106>>).
 do_items_existD([], _Site) -> false;
 do_items_existD([#local_obj{idx = Idx, obj = {cell, _}} | T], Site) ->
     Tbl = trans(Site, item),
     case mnesia:read(Tbl, Idx, read) of
         []       -> do_items_existD(T, Site);
         [Items]  -> case Items of
-                        [{"__in_includeFn", _}] ->
+                        {item, _, ?in_inc} ->
                             do_items_existD(T, Site);
                         _ ->
                             true
