@@ -14,7 +14,7 @@
          randomsalt/0
         ]).
 
-%% ivctor, server_keya and server_token_key are used in user management
+%% ivctor, server_key and server_token_key are used in user management
 
 %% How I generated this.
 %% X = crypto:rand_uniform(round(math:pow(2,128)),
