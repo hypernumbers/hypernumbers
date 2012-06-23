@@ -104,107 +104,109 @@
          read_styles_IMPORT/1
         ]).
 
+-define(wu, new_db_wu).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 any_adminD(Site) ->
-    Tbl = new_db_wu:trans(Site, group),
+    Tbl = ?wu:trans(Site, group),
     Fun = fun() ->
                   case mnesia:read(Tbl, "admin", read) of
-                    [#group{members = M}] ->
+                      [#group{members = M}] ->
                           case gb_sets:is_empty(M) of
                               false -> gb_sets:smallest(M);
                               true  -> no_admin
                           end;
                       _ ->
-                        no_group
-                end
-        end,
+                          no_group
+                  end
+          end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
     write_activity(RefX, Fun, "quiet").
 
 set_usersD(Site, Users, GroupN) ->
-    Tbl = new_db_wu:trans(Site, group),
+    Tbl = ?wu:trans(Site, group),
     Fun = fun() ->
-                case mnesia:read(Tbl, GroupN, write) of
-                    [G] ->
-                        Members = gb_sets:from_list(Users),
-                        G2 = G#group{members=Members},
-                        mnesia:write(Tbl, G2, write),
-                        new_db_wu:mark_site_dirtyD(Site);
-                    _ ->
-                        no_group
-                end
-        end,
+                  case mnesia:read(Tbl, GroupN, write) of
+                      [G] ->
+                          Members = gb_sets:from_list(Users),
+                          G2 = G#group{members=Members},
+                          mnesia:write(Tbl, G2, write),
+                          ?wu:mark_site_dirtyD(Site);
+                      _ ->
+                          no_group
+                  end
+          end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
     write_activity(RefX, Fun, "quiet").
 
 rem_userD(Site, Uid, GroupN) ->
-    Tbl = new_db_wu:trans(Site, group),
+    Tbl = ?wu:trans(Site, group),
     Fun = fun() ->
-                case mnesia:read(Tbl, GroupN, write) of
-                    [G] ->
-                        Members = gb_sets:delete_any(Uid, G#group.members),
-                        G2 = G#group{members=Members},
-                        mnesia:write(Tbl, G2, write),
-                        new_db_wu:mark_site_dirtyD(Site);
-                    _ ->
-                        no_group
-                end
-        end,
+                  case mnesia:read(Tbl, GroupN, write) of
+                      [G] ->
+                          Members = gb_sets:delete_any(Uid, G#group.members),
+                          G2 = G#group{members=Members},
+                          mnesia:write(Tbl, G2, write),
+                          ?wu:mark_site_dirtyD(Site);
+                      _ ->
+                          no_group
+                  end
+          end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
     write_activity(RefX, Fun, "quiet").
 
 add_userD(Site, Uid, GroupN) ->
-    Tbl = new_db_wu:trans(Site, group),
+    Tbl = ?wu:trans(Site, group),
     Fun = fun() ->
-                case mnesia:read(Tbl, GroupN, write) of
-                    [G] ->
-                        Members = gb_sets:add(Uid, G#group.members),
-                        G2 = G#group{members=Members},
-                        ok = mnesia:write(Tbl, G2, write),
-                        new_db_wu:mark_site_dirtyD(Site);
-                    _ ->
-                        no_group
-                end
-        end,
+                  case mnesia:read(Tbl, GroupN, write) of
+                      [G] ->
+                          Members = gb_sets:add(Uid, G#group.members),
+                          G2 = G#group{members=Members},
+                          ok = mnesia:write(Tbl, G2, write),
+                          ?wu:mark_site_dirtyD(Site);
+                      _ ->
+                          no_group
+                  end
+          end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
     write_activity(RefX, Fun, "quiet").
 
 delete_groupD(Site, GroupN) ->
-    Tbl = new_db_wu:trans(Site, group),
+    Tbl = ?wu:trans(Site, group),
     Fun = fun() ->
                   mnesia:delete(Tbl, GroupN, write),
-                  new_db_wu:mark_site_dirtyD(Site)
+                  ?wu:mark_site_dirtyD(Site)
           end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
     write_activity(RefX, Fun, "quiet").
 
 create_groupD(Site, GroupN) ->
-    Tbl = new_db_wu:trans(Site, group),
+    Tbl = ?wu:trans(Site, group),
     Fun = fun() ->
                   case mnesia:read(Tbl, GroupN, write) of
                       [] ->
                           Group = #group{name = GroupN},
                           mnesia:write(Tbl, Group, write),
-                          new_db_wu:mark_site_dirtyD(Site);
+                          ?wu:mark_site_dirtyD(Site);
                       _ ->
                           ok
-                end
+                  end
           end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
     write_activity(RefX, Fun, "quiet").
 
 is_memberD(Site, Uid, Groups) ->
-    Tbl = new_db_wu:trans(Site, group),
+    Tbl = ?wu:trans(Site, group),
     Fun = fun() ->
                   is_member1(Groups, Tbl, Uid)
           end,
@@ -224,19 +226,19 @@ is_member1([GroupN|Rest], Tbl, Uid) ->
 
 get_all_groups(Site) ->
     Fun = fun() ->
-                  new_db_wu:all_groupsD(Site)
+                  ?wu:all_groupsD(Site)
           end,
     mnesia:activity(transaction, Fun).
 
 get_groups(Site) ->
     Fun = fun() ->
-                  new_db_wu:groupsD(Site)
+                  ?wu:groupsD(Site)
           end,
     mnesia:activity(transaction, Fun).
 
 rollback_dirty_cacheD(Site) ->
-    Tbl = new_db_wu:trans(Site, dirty_queue),
-    TblC = new_db_wu:trans(Site, dirty_queue_cache),
+    Tbl = ?wu:trans(Site, dirty_queue),
+    TblC = ?wu:trans(Site, dirty_queue_cache),
     Fun1 = fun(#dirty_queue_cache{id = I, dirty = D, auth_req = A}) ->
                    #dirty_queue{id = I, dirty = D, auth_req = A}
            end,
@@ -251,20 +253,20 @@ rollback_dirty_cacheD(Site) ->
     ok.
 
 clear_dirty_cacheD(Site) ->
-    Tbl = new_db_wu:trans(Site, dirty_queue_cache),
+    Tbl = ?wu:trans(Site, dirty_queue_cache),
     {atomic, ok} = mnesia:clear_table(Tbl),
     ok.
 
 revert(#refX{} = RefX, Revision, UID) ->
     Fun = fun() ->
-                  new_db_wu:revertD(RefX, Revision, UID)
+                  ?wu:revertD(RefX, Revision, UID)
           end,
     write_activity(RefX, Fun, "quiet").
 
 clear_factory(Site) ->
     Fun = fun() ->
-                  new_db_wu:delete_kvD(Site, factory),
-                  new_db_wu:mark_site_dirtyD(Site)
+                  ?wu:delete_kvD(Site, factory),
+                  ?wu:mark_site_dirtyD(Site)
           end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
@@ -278,8 +280,8 @@ make_factory(Site, List) when is_list(List) ->
 
 make_factory2(Site, Terms) ->
     Fun = fun() ->
-                  new_db_wu:write_kvD(Site, factory, Terms),
-                  new_db_wu:mark_site_dirtyD(Site)
+                  ?wu:write_kvD(Site, factory, Terms),
+                  ?wu:mark_site_dirtyD(Site)
           end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
@@ -287,8 +289,8 @@ make_factory2(Site, Terms) ->
 
 mark_site_dirty(Site) ->
     Fun = fun() ->
-                  new_db_wu:mark_site_dirtyD(Site)
-           end,
+                  ?wu:mark_site_dirtyD(Site)
+          end,
     % use a spoof RefX for write activity
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
     write_activity(RefX, Fun, "quiet").
@@ -305,42 +307,40 @@ wait_for_dirty(Site) ->
 
 mark_idx_dirty(Site, Idx) ->
     Fun1 = fun() ->
-                   new_db_wu:idx_to_xrefXD(Site, Idx)
+                   ?wu:idx_to_xrefXD(Site, Idx)
            end,
     XRefX = mnesia:activity(transaction, Fun1),
     Fun2 = fun() ->
-                   ok = new_db_wu:mark_these_dirtyD([XRefX], nil)
+                   ok = ?wu:mark_these_dirtyD([XRefX], nil)
            end,
     RefX = hn_util:xrefX_to_refX(XRefX),
     write_activity(RefX, Fun2, "quiet").
 
 read_timers(Site) ->
     Fun = fun() ->
-                  new_db_wu:read_timersD(Site)
+                  ?wu:read_timersD(Site)
           end,
     mnesia:activity(transaction, Fun).
 
 read_includes(#refX{obj = {page, "/"}} = RefX) ->
     Fun = fun() ->
-                  XRefX = new_db_wu:refX_to_xrefX_createD(RefX),
-                  unpack_incs(new_db_wu:read_incsD(XRefX))
+                  XRefX = ?wu:refX_to_xrefX_createD(RefX),
+                  unpack_incs(?wu:read_incsD(XRefX))
           end,
     mnesia:activity(transaction, Fun).
 
 -spec handle_circref_cell(string(), cellidx(), auth_srv:auth_spec()) -> ok.
 handle_circref_cell(Site, Idx, Ar) ->
     Fun = fun() ->
-                  Cell = new_db_wu:idx_to_xrefXD(Site, Idx),
-                  _Dict = new_db_wu:write_attrs(Cell,
-                                                [{"formula", "=#CIRCREF!"}],
-                                                Ar),
+                  Cell = ?wu:idx_to_xrefXD(Site, Idx),
+                  _Dct = ?wu:write_attrs(Cell, [{"formula", "=#CIRCREF!"}], Ar),
                   ok
           end,
     mnesia:activity(transaction, Fun).
 
 get_logs(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  new_db_wu:get_logsD(RefX)
+                  ?wu:get_logsD(RefX)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -348,7 +348,7 @@ get_logs(RefX) when is_record(RefX, refX) ->
 -spec load_dirty_since(term(), atom()) -> {term(), [cellidx()]}.
 load_dirty_since(Site, Since) ->
     F = fun() ->
-                new_db_wu:load_dirty_sinceD(Site, Since)
+                ?wu:load_dirty_sinceD(Site, Since)
         end,
     case mnesia:activity(transaction, F) of
         []  -> {Since, []};
@@ -361,7 +361,7 @@ load_dirty_since(Site, Since) ->
 % this fn is used in subscribing/unsubscribe operations for dirty_zinf
 length_dirty_zinf_q(Site) ->
     Fun  = fun() ->
-                   new_db_wu:len_dirty_zinf_qD(Site)
+                   ?wu:len_dirty_zinf_qD(Site)
            end,
     mnesia:activity(transaction, Fun).
 
@@ -370,19 +370,19 @@ length_dirty_zinf_q(Site) ->
 %% a hard failure AND NOT FOR ANY OTHER REASON
 reset_dirty_zinfs(Site) ->
     Fun  = fun() ->
-                   new_db_wu:reset_dirty_zinfsD(Site)
+                   ?wu:reset_dirty_zinfsD(Site)
            end,
     mnesia:activity(transaction, Fun).
 
 %% this function decides to maybe write the zinf tree
 %% depending on the log queue
 maybe_write_zinftree(Site, Tree, MaxSize) ->
-    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Tbl = ?wu:trans(Site, dirty_zinf),
     Size = mnesia:table_info(Tbl, size),
     if
         Size > MaxSize ->
             Fun  = fun() ->
-                           new_db_wu:maybe_write_zinftreeD(Site, Tree)
+                           ?wu:maybe_write_zinftreeD(Site, Tree)
                    end,
             mnesia:activity(transaction, Fun);
         Size =< MaxSize ->
@@ -391,13 +391,13 @@ maybe_write_zinftree(Site, Tree, MaxSize) ->
 
 process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
     Fun = fun() ->
-                  new_db_wu:proc_dirty_zinfsD(Site, Tree, AddFun, DelFun)
+                  ?wu:proc_dirty_zinfsD(Site, Tree, AddFun, DelFun)
           end,
     mnesia:activity(transaction, Fun).
 
 process_dirties_for_zinf(Site, Tree, CheckFun) ->
     Fun = fun() ->
-                  new_db_wu:proc_dirties_for_zinfD(Site, Tree, CheckFun)
+                  ?wu:proc_dirties_for_zinfD(Site, Tree, CheckFun)
           end,
     % using a spoof RefX because it is not going to the front end
     % (change that from a quiet report and watch it die!)
@@ -407,19 +407,19 @@ process_dirties_for_zinf(Site, Tree, CheckFun) ->
 
 idx_to_xrefX(Site, Idx) ->
     Fun = fun() ->
-                  new_db_wu:idx_to_xrefXD(Site, Idx)
+                  ?wu:idx_to_xrefXD(Site, Idx)
           end,
     mnesia:activity(transaction, Fun).
 
 delete_siteonly(#refX{} = RefX, Type) ->
     Fun = fun() ->
-                  new_db_wu:delete_siteonlyD(RefX, Type)
+                  ?wu:delete_siteonlyD(RefX, Type)
           end,
     mnesia:activity(transaction, Fun).
 
 read_siteonly(#refX{} = RefX, Type) ->
     Fun = fun() ->
-                  new_db_wu:read_siteonlyD(RefX, Type)
+                  ?wu:read_siteonlyD(RefX, Type)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -427,9 +427,9 @@ write_siteonly(#refX{} = RefX, Type, Payload) ->
     Fun = fun() ->
                   % this is a 'write once' record can only be
                   % one of each type per site
-                  case new_db_wu:read_siteonly(RefX, Type) of
+                  case ?wu:read_siteonly(RefX, Type) of
                       [] ->
-                          new_db_wu:write_siteonlyD(RefX, Type, Payload);
+                          ?wu:write_siteonlyD(RefX, Type, Payload);
                       [_R] ->
                           {error, exists}
                   end
@@ -438,73 +438,73 @@ write_siteonly(#refX{} = RefX, Type, Payload) ->
 
 get_phone(Site, Idx) ->
     Fun = fun() ->
-                  new_db_wu:get_phone(Site, Idx)
+                  ?wu:get_phone(Site, Idx)
           end,
     mnesia:activity(transaction, Fun).
 
 get_phone(#refX{obj = {cell, _}} = RefX) ->
     Fun = fun() ->
-                  new_db_wu:get_phone(RefX)
+                  ?wu:get_phone(RefX)
           end,
     mnesia:activity(transaction, Fun).
 
 does_page_exist(#refX{obj = {page, "/"}} = RefX) ->
     Fun = fun() ->
-                  new_db_wu:does_page_exist(RefX)
+                  ?wu:does_page_exist(RefX)
           end,
     mnesia:activity(transaction, Fun).
 
 delete_api(Site, PublicKey) ->
     Fun = fun() ->
-                  new_db_wu:delete_apiD(Site, PublicKey)
+                  ?wu:delete_apiD(Site, PublicKey)
           end,
     mnesia:activity(transaction, Fun).
 
 write_api(Site, #api{} = API) ->
     Fun = fun() ->
-                  new_db_wu:write_apiD(Site, API)
+                  ?wu:write_apiD(Site, API)
           end,
     mnesia:activity(transaction, Fun).
 
 get_api_keys(Site) ->
     Fun = fun() ->
-                  new_db_wu:get_api_keysD(Site)
+                  ?wu:get_api_keysD(Site)
           end,
     mnesia:activity(transaction, Fun).
 
 read_api(Site, PublicKey) ->
     Fun = fun() ->
-                  new_db_wu:read_apiD(Site, PublicKey)
+                  ?wu:read_apiD(Site, PublicKey)
           end,
     mnesia:activity(transaction, Fun).
 
 delete_user_fn(Site, FnName) ->
     Fun = fun() ->
-                  new_db_wu:delete_user_fnD(Site, FnName)
+                  ?wu:delete_user_fnD(Site, FnName)
           end,
     mnesia:activity(transaction, Fun).
 
 write_user_fn(Site, #user_fns{} = Fn) ->
     Fun = fun() ->
-                  new_db_wu:write_user_fnD(Site, Fn)
+                  ?wu:write_user_fnD(Site, Fn)
           end,
     mnesia:activity(transaction, Fun).
 
 read_user_fn(Site, FnName) ->
     Fun = fun() ->
-                  new_db_wu:read_user_fnD(Site, FnName)
+                  ?wu:read_user_fnD(Site, FnName)
           end,
     mnesia:activity(transaction, Fun).
 
 write_kv(Site, Key, Value) ->
     Fun = fun() ->
-                  new_db_wu:write_kvD(Site, Key, Value)
+                  ?wu:write_kvD(Site, Key, Value)
           end,
     mnesia:activity(transaction, Fun).
 
 read_kv(Site, Key) ->
     Fun = fun() ->
-                  new_db_wu:read_kvD(Site, Key)
+                  ?wu:read_kvD(Site, Key)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -522,13 +522,13 @@ read_page_structure(#refX{site = Site}) ->
 -spec read_intersect_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
 read_intersect_ref(RefX) ->
     Fun = fun() ->
-                  new_db_wu:read_ref(RefX, intersect)
+                  ?wu:read_ref(RefX, intersect)
           end,
     read_activity(RefX, Fun).
 
 read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  new_db_wu:read_styles_IMPORTD(RefX)
+                  ?wu:read_styles_IMPORTD(RefX)
           end,
     read_activity(RefX, Fun).
 
@@ -539,33 +539,33 @@ handle_form_post(#refX{site = S, path = P,
                   ok = init_front_end_notify(),
                   ok = page_srv:page_written(S, P),
                   % Labels from the results page
-                  LabXs = new_db_wu:expand_ref(RefX),
-                  OldLabs = [new_db_wu:read_ref_field(X, "__rawvalue", read)
+                  LabXs = ?wu:expand_ref(RefX),
+                  OldLabs = [?wu:read_ref_field(X, "__rawvalue", read)
                              || X <- LabXs],
                   OldLabs2 = lists:flatten(OldLabs),
 
                   Values = [ {"submitted", dh_date:format("d/m/Y h:i:s")} |
-                             lists:reverse(lists:foldl(fun generate_labels/2, [],
-                                                       Array)) ],
+                             lists:reverse(lists:foldl(fun generate_labels/2,
+                                                       [], Array)) ],
                   LastCol = get_last_col(OldLabs2),
                   {NewLabels, NVals} =
                       allocate_values(S, P, Values, OldLabs2, RefX, LastCol),
                   NLbls = [ {Lref, [{"formula", Val}]}
                             || {Lref, Val} <- NewLabels],
                   [begin
-                       XRefX = new_db_wu:refX_to_xrefX_createD(X),
-                       _Dict = new_db_wu:write_attrs(XRefX, A, PosterUid)
+                       XRefX = ?wu:refX_to_xrefX_createD(X),
+                       _Dict = ?wu:write_attrs(XRefX, A, PosterUid)
                    end || {X, A} <- NLbls],
-                  Row = new_db_wu:get_last_row(RefX) + 1,
+                  Row = ?wu:get_last_row(RefX) + 1,
                   F = fun(X, Val) ->
                               Obj = {cell, {X, Row}},
                               RefX2 = #refX{site = S, type = url, path = P,
                                             obj = Obj},
-                              XRefX2 = new_db_wu:refX_to_xrefX_createD(RefX2),
-                              _Dict = new_db_wu:write_attrs(XRefX2,
-                                                            [{"formula", Val}],
-                                                            PosterUid),
-                              ok = new_db_wu:mark_these_dirtyD([XRefX2], PosterUid)
+                              XRefX2 = ?wu:refX_to_xrefX_createD(RefX2),
+                              _Dict = ?wu:write_attrs(XRefX2,
+                                                      [{"formula", Val}],
+                                                      PosterUid),
+                              ok = ?wu:mark_these_dirtyD([XRefX2], PosterUid)
                       end,
                   [F(X, V) || {#refX{site = S1, type = gurl, path = P1,
                                      obj = {column, {X, X}}}, V}
@@ -583,16 +583,15 @@ append_row(List, PAr, VAr) when is_list(List) ->
         fun() ->
                 ok = init_front_end_notify(),
                 ok = page_srv:page_written(S, P),
-                Row = new_db_wu:get_last_row(RefX) + 1,
+                Row = ?wu:get_last_row(RefX) + 1,
                 F = fun(X, Val) ->
                             Obj = {cell, {X, Row}},
                             RefX2 = #refX{site = S, type = url, path = P,
                                           obj = Obj},
-                            XRefX2 = new_db_wu:refX_to_xrefX_createD(RefX2),
-                            _Dict = new_db_wu:write_attrs(XRefX2,
-                                                          [{"formula", Val}],
-                                                          PAr),
-                            ok = new_db_wu:mark_these_dirtyD([XRefX2], VAr)
+                            XRefX2 = ?wu:refX_to_xrefX_createD(RefX2),
+                            _Dict = ?wu:write_attrs(XRefX2, [{"formula", Val}],
+                                                    PAr),
+                            ok = ?wu:mark_these_dirtyD([XRefX2], VAr)
                     end,
                 [F(X, V) || {#refX{site = S1, type = gurl, path = P1,
                                    obj = {column, {X, X}}}, V}
@@ -604,7 +603,7 @@ append_row(List, PAr, VAr) when is_list(List) ->
 -spec matching_forms(#refX{}, common | string()) -> [#form{}].
 matching_forms(RefX, Transaction) ->
     Fun = fun() ->
-                  new_db_wu:matching_formsD(RefX, Transaction)
+                  ?wu:matching_formsD(RefX, Transaction)
           end,
     read_activity(RefX, Fun).
 
@@ -714,33 +713,33 @@ set_borders2(#refX{site = S, path = P} = RefX, Where, Border,
                   B   = "border-" ++ Where ++ "-width",
                   B_S = "border-" ++ Where ++ "-style",
                   B_C = "border-" ++ Where ++ "-color",
-                  _ = new_db_wu:write_attrs(RefX, [{B,   Border}]),
-                  _ = new_db_wu:write_attrs(RefX, [{B_S, B_Style}]),
-                  _ = new_db_wu:write_attrs(RefX, [{B_C, B_Color}])
+                  _ = ?wu:write_attrs(RefX, [{B,   Border}]),
+                  _ = ?wu:write_attrs(RefX, [{B_S, B_Style}]),
+                  _ = ?wu:write_attrs(RefX, [{B_C, B_Color}])
           end,
     write_activity(RefX, Fun, "set_borders2").
 
 -spec read_ref(#refX{}) -> [{#refX{}, term()}].
 read_ref(#refX{obj = {cell, _}} = RefX) ->
     Fun = fun() ->
-                  new_db_wu:read_ref(RefX, inside, read)
+                  ?wu:read_ref(RefX, inside, read)
           end,
     read_activity(RefX, Fun).
 
 -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
 read_attribute(RefX, Field) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  XRefX = new_db_wu:refX_to_xrefX_createD(RefX),
-                  new_db_wu:read_ref_field(XRefX, Field, read)
+                  XRefX = ?wu:refX_to_xrefX_createD(RefX),
+                  ?wu:read_ref_field(XRefX, Field, read)
           end,
     read_activity(RefX, Fun).
 
 recalc(#refX{} = RefX) ->
     Fun = fun() ->
-                  XRefX = new_db_wu:refX_to_xrefX_createD(RefX),
-                  Refs = new_db_wu:read_ref(XRefX, inside),
+                  XRefX = ?wu:refX_to_xrefX_createD(RefX),
+                  Refs = ?wu:read_ref(XRefX, inside),
                   Refs2 = [X || {X, L} <- Refs, L =/= []],
-                  ok = new_db_wu:mark_these_dirtyD(Refs2, nil)
+                  ok = ?wu:mark_these_dirtyD(Refs2, nil)
           end,
     write_activity(RefX, Fun, "refresh").
 
@@ -752,7 +751,7 @@ clear(#refX{obj = {page, "/"}} = RefX, Type, Ar) ->
     % Instead we clear the page row-by-row starting with the last
     % row.
     Fun1 = fun() ->
-                   new_db_wu:get_last_row(RefX)
+                   ?wu:get_last_row(RefX)
            end,
     NoOfRows = mnesia:activity(transaction, Fun1),
     clear_by_rows(NoOfRows, 0, RefX, Type, Ar);
@@ -760,7 +759,7 @@ clear(#refX{} = RefX, Type, Ar) ->
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
-                ok = new_db_wu:clear_cells(RefX, Type, Ar)
+                ok = ?wu:clear_cells(RefX, Type, Ar)
         end,
     write_activity(RefX, Fun, "clear").
 
@@ -773,7 +772,8 @@ clear(#refX{} = RefX, Type, Ar) ->
 %% @doc copies the formula and formats from a cell or range and
 %% pastes them to the destination then deletes the original.
 %%
-%% (see also {@link new_db_api:drag_n_drop/2} and {@link new_db_api:copy_n_paste/2} -
+%% (see also {@link new_db_api:drag_n_drop/2}
+%% and {@link new_db_api:copy_n_paste/2} -
 %% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that
 %% drag'n'drop increments)
 %%
@@ -785,8 +785,8 @@ clear(#refX{} = RefX, Type, Ar) ->
 %% <li>range</li>
 %% </ul>
 %%
-%% If a range is to be cut'n'pasted to a range then one of the following criteria MUST
-%% true:
+%% If a range is to be cut'n'pasted to a range then one of the following
+%% criteria MUST be true:
 %% <ul>
 %% <li>the <b>from</b> range must be the same dimensions as the
 %% <b>to</b> range</li>
@@ -809,7 +809,8 @@ clear(#refX{} = RefX, Type, Ar) ->
 %% @doc copies the formula and formats from a cell or range and
 %% pastes them to the destination.
 %%
-%% (see also {@link new_db_api:drag_n_drop/2} and {@link new_db_api:cut_n_paste/2} -
+%% (see also {@link new_db_api:drag_n_drop/2}
+%% and {@link new_db_api:cut_n_paste/2} -
 %% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that
 %% drag'n'drop increments)
 %%
@@ -821,7 +822,8 @@ clear(#refX{} = RefX, Type, Ar) ->
 %%
 %% Also whole pages can be copy_n_pasted by making both From and To
 %% page refX's
--spec copy_n_paste(#refX{}, #refX{}, all | style | value, auth_srv:auth_spec()) -> ok.
+-spec copy_n_paste(#refX{}, #refX{}, all | style | value,
+                   auth_srv:auth_spec()) -> ok.
 copy_n_paste(From, #refX{site = ToS, path = ToP} = To, What, Ar) when
 is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
@@ -835,7 +837,8 @@ is_record(From, refX), is_record(To, refX) ->
 %% them over a destination (the difference between drag'n'drop
 %% and copy/cut'n'paste is that drag'n'drop increments)
 %%
-%% (see also {@link new_db_api:cut_n_paste/2} and {@link new_db_api:copy_n_paste/2} -
+%% (see also {@link new_db_api:cut_n_paste/2}
+%% and {@link new_db_api:copy_n_paste/2} -
 %% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that
 %% drag'n'drop increments)
 %%
@@ -951,15 +954,15 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
     Fun1 = fun() ->
                    % log it as a page delete in this transaction
                    % bit of a cheat...
-                   new_db_wu:log_page(RefX, 'page deleted', Ar),
-                   new_db_wu:get_last_row(RefX)
+                   ?wu:log_page(RefX, 'page deleted', Ar),
+                   ?wu:get_last_row(RefX)
            end,
     NoOfRows = mnesia:activity(transaction, Fun1),
     ok = delete_by_rows(NoOfRows, 0, RefX, Ar),
     % now do a 'normal' delete to clear off the rows and columns
     Fun2 = fun() ->
-                   ReWr = new_db_wu:delete_cells(RefX, vertical, Ar),
-                   ok = new_db_wu:mark_these_dirtyD(ReWr, Ar)
+                   ReWr = ?wu:delete_cells(RefX, vertical, Ar),
+                   ok = ?wu:mark_these_dirtyD(ReWr, Ar)
            end,
     % because we have cleared all the cells that have to be deleted
     % in advance we expect delete_cells to return an empty list
@@ -1008,24 +1011,23 @@ handle_dirty_cell(Site, Idx, Ar) ->
     Fun =
         fun() ->
                 % check if the cell has been deleted
-                case new_db_wu:has_cell_been_deletedD(Site, Idx) of
+                case ?wu:has_cell_been_deletedD(Site, Idx) of
                     true ->
                         [];
                     false ->
-                        Cell = new_db_wu:idx_to_xrefXD(Site, Idx),
-                        Attrs = case new_db_wu:read_ref(Cell, inside, write) of
+                        Cell = ?wu:idx_to_xrefXD(Site, Idx),
+                        Attrs = case ?wu:read_ref(Cell, inside, write) of
                                     [{_, A}] -> A;
                                     _        -> orddict:new()
                                 end,
                         case orddict:find("formula", Attrs) of
                             {ok, F} ->
-                                _Dict1 = new_db_wu:write_attrs(Cell,
-                                                               [{"formula", F}],
-                                                               Ar),
+                                _D = ?wu:write_attrs(Cell, [{"formula", F}],
+                                                     Ar),
                                 % cells may have been written that now depend
                                 % on this cell so it needs to report back
                                 % dirty children
-                                [Rels] = new_db_wu:read_relations(Cell, read),
+                                [Rels] = ?wu:read_relations(Cell, read),
                                 Rels#relation.children;
                             _ ->
                                 []
@@ -1051,7 +1053,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
                                     _ ->
                                         {"dynamic_select", S, _Vals} = I,
                                         NewI = [{"input", {"dynamic_select", S}}],
-                                        _Dict2 = new_db_wu:write_attrs(Cell, NewI, Ar)
+                                        _Dict2 = ?wu:write_attrs(Cell, NewI, Ar)
                                 end,
                                 [];
                             _  ->
@@ -1112,7 +1114,7 @@ expand(List) ->
 
 expand2([], [], Acc) -> Acc;
 expand2([R | TR], [A | TA], Acc) ->
-    R2 = new_db_wu:refXs_to_xrefXs_create([R]),
+    R2 = ?wu:refXs_to_xrefXs_create([R]),
     NewAcc = case length(R2) of
                  1 -> [R3] = R2,
                       {R3, A};
@@ -1122,16 +1124,16 @@ expand2([R | TR], [A | TA], Acc) ->
     expand2(TR, TA, lists:flatten([NewAcc | Acc])).
 
 write_attributes1(#xrefX{} = XRefX, List, PAr, VAr) ->
-    new_db_wu:write_attrs(XRefX, List, PAr),
+    ?wu:write_attrs(XRefX, List, PAr),
     % first up do the usual 'dirty' stuff - this cell is dirty
     case lists:keymember("formula", 1, List) of
-        true  -> new_db_wu:mark_these_dirtyD([XRefX], VAr);
+        true  -> ?wu:mark_these_dirtyD([XRefX], VAr);
         false -> ok
     end,
     % now do the include dirty stuff (ie this cell has had it's format updated)
     % so make any cells that use '=include(...)' on it redraw themselves
     case lists:keymember("__in_includeFn", 1, List) of
-        true -> new_db_wu:mark_dirty_for_inclD([XRefX], VAr);
+        true -> ?wu:mark_dirty_for_inclD([XRefX], VAr);
         false -> ok
     end.
 
@@ -1145,7 +1147,7 @@ read_activity(#refX{site = _Site}, Op) ->
                        mnesia:activity(transaction, Op)
                end,
     Activity().
-    %dbsrv:read_only_activity(Site, Activity).
+%dbsrv:read_only_activity(Site, Activity).
 
 % expose for debugging only
 write_activity_DEBUG(RefX, Op, FrontEnd) ->
@@ -1166,8 +1168,8 @@ tell_front_end("quiet", _RefX) ->
 tell_front_end(Type, #refX{path = P} = RefX)
   when Type == "move" orelse Type == "refresh" ->
     Notifications = get('front_end_notify'),
-    % the move or refresh notifications are used when a page is changed radically
-    % - they tell the front end to request the whole page
+    % the move or refresh notifications are used when a page is changed
+    % radically - they tell the front end to request the whole page
     % but if there is a formula on another page referring to a cell on a page
     % with, say an insert or delete, then that page has its formulae
     % rewritten/recalculated that page needs to get details notifications
@@ -1217,19 +1219,19 @@ move_tr(RefX, Type, Disp, Ar, LogChange) ->
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
     case LogChange of
-        true  -> new_db_wu:log_move(RefX, Type, Disp, Ar);
+        true  -> ?wu:log_move(RefX, Type, Disp, Ar);
         false -> ok
     end,
     ReWr = do_delete(Type, RefX, Disp, Ar),
-    ok = new_db_wu:shift_rows_and_columnsD(RefX, Type, Disp, Ar),
-    MoreDirty = new_db_wu:shift_cellsD(RefX, Type, Disp, ReWr, Ar),
-    ok = new_db_wu:mark_these_dirtyD(ReWr, Ar),
-    ok = new_db_wu:mark_these_dirtyD(MoreDirty, Ar).
+    ok = ?wu:shift_rows_and_columnsD(RefX, Type, Disp, Ar),
+    MoreDirty = ?wu:shift_cellsD(RefX, Type, Disp, ReWr, Ar),
+    ok = ?wu:mark_these_dirtyD(ReWr, Ar),
+    ok = ?wu:mark_these_dirtyD(MoreDirty, Ar).
 
 do_delete(insert, _RefX, _Disp, _UId) ->
     [];
 do_delete(delete, RefX, Disp, Uid) ->
-    new_db_wu:delete_cells(RefX, Disp, Uid).
+    ?wu:delete_cells(RefX, Disp, Uid).
 
 %% the last parameter returned is whether dates and integers should be
 %% incremented this can only be true for a vertical or horizontal drag
@@ -1256,9 +1258,11 @@ is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {range, _}}) ->
 is_valid_d_n_d(#refX{obj = {range, Range}}, #refX{obj = {range, Range}}) ->
     {ok, 'onto self', false};
 is_valid_d_n_d(#refX{obj = {range, {X, _FY1, X, _FY2}}},
-               #refX{obj = {range, {X, _TY1, X, _TY2}}}) -> {ok, col_range_to_range};
+               #refX{obj = {range, {X, _TY1, X, _TY2}}}) ->
+    {ok, col_range_to_range};
 is_valid_d_n_d(#refX{obj = {range, {_FX1, Y, _FX2, Y}}},
-               #refX{obj = {range, {_TX1, Y, _TX2, Y}}}) -> {ok, row_range_to_range};
+               #refX{obj = {range, {_TX1, Y, _TX2, Y}}}) ->
+    {ok, row_range_to_range};
 is_valid_d_n_d(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
     {error, "from range is invalid"};
 is_valid_d_n_d(_, _) -> {error, "not valid either"}.
@@ -1283,10 +1287,10 @@ cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
-            XFrom = new_db_wu:refX_to_xrefX_createD(From),
-            XTo = new_db_wu:refX_to_xrefX_createD(To),
-            ok = new_db_wu:copy_cell(XFrom, XTo, Incr, What, Ar),
-            ok = new_db_wu:mark_these_dirtyD([XTo], Ar);
+            XFrom = ?wu:refX_to_xrefX_createD(From),
+            XTo = ?wu:refX_to_xrefX_createD(To),
+            ok = ?wu:copy_cell(XFrom, XTo, Incr, What, Ar),
+            ok = ?wu:mark_these_dirtyD([XTo], Ar);
         _ ->
             throw(auth_error)
     end.
