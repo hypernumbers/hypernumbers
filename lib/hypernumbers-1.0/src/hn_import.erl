@@ -314,10 +314,12 @@ rows(#refX{site = _S} = Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
     ok.
 
 cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun, Uid) ->
+    Rw = ltoi(Row),
+    Cl = ltoi(Col),
     NRef = case Type of
-               cell   -> Ref#refX{type = url,  obj = {Type, {ltoi(Col), ltoi(Row)}}};
-               row    -> Ref#refX{type = gurl, obj = {Type, {ltoi(Col), ltoi(Row)}}};
-               column -> Ref#refX{type = gurl, obj = {Type, {ltoi(Col), ltoi(Row)}}}
+               cell   -> Ref#refX{type = url,  obj = {Type, {Cl, Rw}}};
+               row    -> Ref#refX{type = gurl, obj = {Type, {Cl, Rw}}};
+               column -> Ref#refX{type = gurl, obj = {Type, {Cl, Rw}}}
            end,
     Fun(NRef, Styles, Attrs, Uid),
     ok.
