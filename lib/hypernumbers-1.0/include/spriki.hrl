@@ -103,7 +103,11 @@
           idx
          }).
 
--record(item, {idx, attrs}).
+-record(item,
+        {
+          idx,
+          attrs
+        }).
 
 -record(relation,
         {
