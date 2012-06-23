@@ -1022,48 +1022,50 @@ handle_dirty_cell(Site, Idx, Ar) ->
                                 end,
                         case orddict:find("formula", Attrs) of
                             {ok, F} ->
-                                _D = ?wu:write_attrs(Cell, [{"formula", F}],
-                                                     Ar),
-                                % cells may have been written that now depend
-                                % on this cell so it needs to report back
-                                % dirty children
-                                [Rels] = ?wu:read_relations(Cell, read),
-                                Rels#relation.children;
+                                _ = ?wu:write_attrs(Cell, [{"formula", F}], Ar);
                             _ ->
                                 []
                         end,
-                        case orddict:find("input", Attrs) of
-                            {ok, I} ->
-                                % need to reset the dynamic select as if
-                                % it hasn't calculated yet so that the
-                                % recalc will 'fire' on writing
-                                case I of
-                                    "inline" ->
-                                        % normal inlines don't have vals to recalcrecalc
-                                        ok;
-                                    "inlinerich" ->
-                                        % rich inlines don't have vals to recalcrecalc
-                                        ok;
-                                    "none" ->
-                                        % used to have an input but it's been cleared
-                                        ok;
-                                    {"select", _} ->
-                                        % normal select's don't recalc their vals
-                                        ok;
-                                    _ ->
-                                        {"dynamic_select", S, _Vals} = I,
-                                        NewI = [{"input", {"dynamic_select", S}}],
-                                        _Dict2 = ?wu:write_attrs(Cell, NewI, Ar)
-                                end,
-                                [];
-                            _  ->
-                                []
-                        end
+                        ok = handle_dirty_c2(Cell, Attrs, Ar),
+                        % cells may have been written that now depend
+                        % on this cell so it needs to report back
+                        % dirty children
+                        [Rel] = ?wu:read_relations(Cell, read),
+                        Ch = Rel#relation.children,
+                        ?wu:mark_these_idxs_dirtyD(Ch, Site, Ar)
                 end
         end,
-    NewDirties = mnesia:activity(transaction, Fun),
+    ok = mnesia:activity(transaction, Fun),
     tell_front_end("handle dirty", #refX{}),
-    NewDirties.
+    ok.
+
+handle_dirty_c2(Cell, Attrs, Ar) ->
+    case orddict:find("input", Attrs) of
+        {ok, I} ->
+            % need to reset the dynamic select as if
+            % it hasn't calculated yet so that the
+            % recalc will 'fire' on writing
+            case I of
+                "inline" ->
+                    % normal inlines don't have vals to recalcrecalc
+                    ok;
+                "inlinerich" ->
+                    % rich inlines don't have vals to recalcrecalc
+                    ok;
+                "none" ->
+                    % used to have an input but it's been cleared
+                    ok;
+                {"select", _} ->
+                    % normal select's don't recalc their vals
+                    ok;
+                {"dynamic_select", S, _Vals} ->
+                    NewI = [{"input", {"dynamic_select", S}}],
+                    _Dict2 = ?wu:write_attrs(Cell, NewI, Ar)
+            end,
+            ok;
+        _  ->
+            ok
+    end.
 
 %% @spec write_attributes(RefX :: #refX{}, List) -> ok
 %% List = [{Key, Value}]

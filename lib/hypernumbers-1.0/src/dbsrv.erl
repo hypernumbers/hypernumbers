@@ -309,11 +309,10 @@ execute_plan([C | T], Site, Graph) ->
         false ->
             execute_plan(T, Site, Graph);
         _ ->
-            _NewChildren = new_db_api:handle_dirty_cell(Site, C, nil),
+            ok = new_db_api:handle_dirty_cell(Site, C, nil),
             digraph:del_vertex(Graph, C),
             execute_plan(T, Site, Graph)
     end.
 
 -spec new_graph() -> digraph().
 new_graph() -> digraph:new([private]).
-
