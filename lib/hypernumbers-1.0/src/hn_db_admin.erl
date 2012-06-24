@@ -16,6 +16,8 @@
          all_sites_disc_only/0,
          disc_only/1,
          disc_only/2,
+         mem_only/1,
+         mem_only/2,
          all_sites_disc_and_mem/0,
          disc_and_mem/1,
          disc_and_mem/2,
@@ -115,6 +117,20 @@ disc_only("http://" ++ SiteAndPort) ->
 disc_only("http://" ++ SiteAndPort, Table) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
     ok = chg_copy_type(Site, Port, Table, disc_only_copies),
+    ok.
+
+-spec mem_only(list()) -> ok.
+mem_only("http://" ++ SiteAndPort) ->
+    [Site, Port] = string:tokens(SiteAndPort, ":"),
+    Cacheable = [X || {X, _, _, _, _, C} <- hn_setup:tables(), C == cache],
+    [ok = chg_copy_type(Site, Port, X, ram_copies)
+      || X <- Cacheable],
+    ok.
+
+-spec mem_only(list(), list()) -> ok.
+mem_only("http://" ++ SiteAndPort, Table) ->
+    [Site, Port] = string:tokens(SiteAndPort, ":"),
+    ok = chg_copy_type(Site, Port, Table, ram_copies),
     ok.
 
 chg_copy_type(Site, Port, Table, Mode) ->
