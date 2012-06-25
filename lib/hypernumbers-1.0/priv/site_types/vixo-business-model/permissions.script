@@ -261,5 +261,156 @@
            {view,"wikipage"}]}.
 {set_champion,[{path,["scenario_0000003","summary-cashflow"]},
                {view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000004"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000004"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["scenario_0000004"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["scenario_0000004"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000004"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000004","core-cash-flow"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000004","core-cash-flow"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000004","core-cash-flow"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000004","core-cash-flow"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000004","core-cash-flow"]},
+               {view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000004","cost-profile"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000004","cost-profile"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000004","cost-profile"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000004","cost-profile"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000004","cost-profile"]},{view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000004","growth-model"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000004","growth-model"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000004","growth-model"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000004","growth-model"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000004","growth-model"]},{view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000004","marketing-program-costs"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000004","marketing-program-costs"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000004","marketing-program-costs"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000004","marketing-program-costs"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000004","marketing-program-costs"]},
+               {view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000004","summary-cashflow"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000004","summary-cashflow"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000004","summary-cashflow"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000004","summary-cashflow"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000004","summary-cashflow"]},
+               {view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000005"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000005"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["scenario_0000005"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["scenario_0000005"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000005"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000005","core-cash-flow"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000005","core-cash-flow"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000005","core-cash-flow"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000005","core-cash-flow"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000005","core-cash-flow"]},
+               {view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000005","cost-profile"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000005","cost-profile"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000005","cost-profile"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000005","cost-profile"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000005","cost-profile"]},{view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000005","growth-model"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000005","growth-model"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000005","growth-model"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000005","growth-model"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000005","growth-model"]},{view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000005","marketing-program-costs"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000005","marketing-program-costs"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000005","marketing-program-costs"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000005","marketing-program-costs"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000005","marketing-program-costs"]},
+               {view,"wikipage"}]}.
+{add_view,[{path,["scenario_0000005","summary-cashflow"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["scenario_0000005","summary-cashflow"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["scenario_0000005","summary-cashflow"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["scenario_0000005","summary-cashflow"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["scenario_0000005","summary-cashflow"]},
+               {view,"wikipage"}]}.
+{add_view,[{path,["static-data"]},{perms,["admin"]},{view,"webpage"}]}.
 {add_view,[{path,["static-data"]},{perms,["admin"]},{view,"wikipage"}]}.
-{set_champion,[{path,["static-data"]},{view,"wikipage"}]}.
+{set_champion,[{path,["static-data"]},{view,"webpage"}]}.
