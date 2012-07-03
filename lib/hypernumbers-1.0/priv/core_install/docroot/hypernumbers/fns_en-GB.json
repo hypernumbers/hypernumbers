@@ -480,7 +480,7 @@
     },
     {
         "fn": "configure.email",
-        "category": "Site Administration <- new!",
+        "category": "Site Admin <- new!",
         "desc": "Sets the email address of the site administrator which appears on all emails to the users",
         "experimental": false,
         "includable": true,
@@ -2526,7 +2526,7 @@
     },
     {
         "fn": "invite.users",
-        "category": "Site Administration <- new!",
+        "category": "Site Admin <- new!",
         "desc": "Allows you to invite users to the site",
         "experimental": false,
         "includable": true,
@@ -5182,7 +5182,7 @@
     },
     {
         "fn": "users.and.groups",
-        "category": "Site Administration <- new!",
+        "category": "Site Admin <- new!",
         "desc": "Displays which users are on the system and which groups they belong to",
         "experimental": false,
         "includable": true,
