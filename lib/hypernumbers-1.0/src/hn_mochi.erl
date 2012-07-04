@@ -270,8 +270,7 @@ authorize_get(#refX{site = Site, path = [X | []] = Path},
               #qry{_ = undefined}, #env{accept = html, uid = Uid})
   when  X == "_sites";
         X == "_replies";
-        X == "_contacts";
-        X == "_audit" ->
+        X == "_contacts" ->
     auth_srv:check_get_view(Site, Path, Uid);
 
 authorize_get(#refX{path = ["_" ++ X | []]}, _Qry, #env{accept = Accept})
@@ -280,6 +279,17 @@ authorize_get(#refX{path = ["_" ++ X | []]}, _Qry, #env{accept = Accept})
        andalso X == "sites";
        X == "replies";
        X == "contacts" ->
+    allowed;
+
+% _audit is odd - most "_paths" are only allowed one deep - but _audit isn't
+% so it gets its own clauses
+authorize_get(#refX{site = Site, path = ["_audit" | _Rest] = Path},
+              #qry{_ = undefined}, #env{accept = html, uid = Uid}) ->
+    auth_srv:check_get_view(Site, Path, Uid);
+
+authorize_get(#refX{path = ["_audit" | _Rest]}, _Qry, #env{accept = Accept})
+  when Accept == html;
+       Accept == json ->
     allowed;
 
 % Feature Flag them out
