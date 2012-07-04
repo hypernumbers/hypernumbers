@@ -603,7 +603,7 @@ iget(#refX{path = ["_services", "phone" | []], obj = {page, "/"}} = Ref,
       page, _Qry, Env = #env{accept = html}) ->
     case hn_twilio_mochi:handle_call(Ref, Env) of
         error     -> '500'(Env);
-        {ok, 200} -> json(Env, "success");
+        {ok, 200} -> xml(Env, twiml:encode([])); % empty response
         TwiML     -> xml(Env, TwiML)
     end;
 
