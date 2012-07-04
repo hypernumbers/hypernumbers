@@ -286,7 +286,7 @@ write_log(#refX{path = P} = RefX, Log) ->
              {struct, [{"label", "type"},
                        {"formula", Log#contact_log.type}]},
              {struct, [{"label", "call_sid"},
-                       {"formula", Log#contact_log.call_sid}]},
+                       {"formula", integer_to_list(Log#contact_log.call_sid)}]},
              {struct, [{"label", "from"},
                        {"formula", Log#contact_log.from}]},
              {struct, [{"label", "reply_to"},
