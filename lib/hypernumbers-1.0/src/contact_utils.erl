@@ -70,7 +70,6 @@ check_if_paid(Fun, Args, Type) ->
         ?ERRVAL_PAYONLY ->
             ?ERRVAL_PAYONLY;
         AC ->
-            io:format("AC is ~p~n", [AC]),
             case Type of
                 outbound ->
                     Fun(Args, AC);
