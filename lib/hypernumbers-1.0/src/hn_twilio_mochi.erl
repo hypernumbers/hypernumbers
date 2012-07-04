@@ -36,7 +36,7 @@
 
 % debug
 -export([
-         handle_c2_DEBUG/1
+         handle_c2_DEBUG/2
         ]).
 
 get_phone(#refX{site = _S},
@@ -305,9 +305,9 @@ write_log(#refX{path = P} = RefX, Log) ->
     new_db_api:handle_form_post(RefX2, Array, nil).
 
 % debugging interface
-handle_c2_DEBUG(Body) ->
+handle_c2_DEBUG(Body, Site) ->
     Type = twilio_web_util:get_type(Body),
-    Ref = #refX{site = "http://hypernumbers.dev:9000", path = []},
+    Ref = #refX{site = Site, path = []},
     handle_c2(Ref, Type, Body).
 
 process_env(Env) ->

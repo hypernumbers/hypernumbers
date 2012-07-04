@@ -1,5 +1,7 @@
 -module(twilio_test).
 
+-define(SITE, "http://hypernumbers.dev:9000").
+
 -export([
          testing1/0,
          testing2/0
@@ -8,20 +10,20 @@
 % normal call
 testing1() ->
     Sid = util2:get_timestamp(),
-    Ret1 = hn_twilio_mochi:handle_c2_DEBUG(start_inbound_call(Sid)),
+    Ret1 = hn_twilio_mochi:handle_c2_DEBUG(start_inbound_call(Sid), ?SITE),
     io:format("Ret1 is ~p~n", [Ret1]),
-    Ret2 = hn_twilio_mochi:handle_c2_DEBUG(complete_inbound_call(Sid)),
+    Ret2 = hn_twilio_mochi:handle_c2_DEBUG(complete_inbound_call(Sid), ?SITE),
     io:format("Ret2 is ~p~n", [Ret2]),
     ok.
 
 % normal call with recording
 testing2() ->
     Sid = util2:get_timestamp(),
-    Ret1 = hn_twilio_mochi:handle_c2_DEBUG(start_inbound_call(Sid)),
+    Ret1 = hn_twilio_mochi:handle_c2_DEBUG(start_inbound_call(Sid), ?SITE),
     io:format("Ret1 is ~p~n", [Ret1]),
-    Ret2 = hn_twilio_mochi:handle_c2_DEBUG(completed_with_recording(Sid)),
+    Ret2 = hn_twilio_mochi:handle_c2_DEBUG(completed_with_recording(Sid), ?SITE),
     io:format("Ret2 is ~p~n", [Ret2]),
-    Ret3 = hn_twilio_mochi:handle_c2_DEBUG(complete_inbound_call(Sid)),
+    Ret3 = hn_twilio_mochi:handle_c2_DEBUG(complete_inbound_call(Sid), ?SITE),
     io:format("Ret3 is ~p~n", [Ret3]),
     ok.
 
