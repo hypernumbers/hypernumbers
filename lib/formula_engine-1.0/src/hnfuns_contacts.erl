@@ -12,7 +12,7 @@
 
 -export([
          'display.phone.nos'/1,
-         'text.answer.phone'/1,
+         'text.answerphone'/1,
          'manual.email'/1,
          'auto.email'/1,
          'manual.sms.out'/1,
@@ -37,16 +37,16 @@
             Site_Phone ++ " (" ++ atom_to_list(Type) ++ ")"
     end.
 
-'text.answer.phone'([]) ->
-    'text.answer.phone'(["Please leave a message after the beep"]);
-'text.answer.phone'([Msg]) ->
-    'text.answer.phone'([Msg, false]);
-'text.answer.phone'([Msg, IsMan]) ->
-    'text.answer.phone'([Msg, IsMan, ?en_gb]);
-'text.answer.phone'([Msg, IsMan, Language]) ->
-    ?check_paid(fun 'text.answer.phone2'/2, [Msg, IsMan, Language], inbound).
+'text.answerphone'([]) ->
+    'text.answerphone'(["Please leave a message after the beep. Press Star to finish"]);
+'text.answerphone'([Msg]) ->
+    'text.answerphone'([Msg, false]);
+'text.answerphone'([Msg, IsMan]) ->
+    'text.answerphone'([Msg, IsMan, ?en_gb]);
+'text.answerphone'([Msg, IsMan, Language]) ->
+    ?check_paid(fun 'text.answerphone2'/2, [Msg, IsMan, Language], inbound).
 
-'text.answer.phone2'([Msg, IsMan, Language], _AC) ->
+'text.answerphone2'([Msg, IsMan, Language], _AC) ->
     [Msg2] = typechecks:std_strs([Msg]),
     [IsMan2, L2] = typechecks:std_ints([IsMan, Language]),
     Voice = contact_utils:get_voice(IsMan2),
@@ -56,7 +56,7 @@
     Title = contact_utils:rightsize(Msg2, 40),
     Preview = "ANSWERPHONE: " ++ Title,
     Resize = #resize{width = 2, height = 2},
-    RECORD = #record{},
+    RECORD = #record{finishOnKey = "*"},
     #spec_val{val = "", preview = Preview, resize = Resize,
               sp_phone = #phone{twiml = [SAY, RECORD]}}.
 
