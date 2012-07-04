@@ -233,8 +233,8 @@ u_and_g(W, H, Type) ->
     [RLen2] = typechecks:std_ints([RecordingLen]),
     [Trans2] = typechecks:std_bools([Transcribe]),
     [Voice2, Lang2] = typechecks:std_ints([Voice, Lang]),
-    V3 = get_voice(Voice2),
-    L3 = get_lang(Lang2),
+    V3 = contact_utils:get_voice(Voice2),
+    L3 = contact_utils:get_lang(Lang2),
     SAY = #say{text = Text2, voice = V3, language = L3},
     REC = #record{playBeep = PlayBeep2, transcribe = Trans2, maxLength = RLen2},
     Twiml = [SAY, REC],
@@ -277,8 +277,8 @@ phsay(Text, Voice, Language, Loop) ->
     [V2, L2, Lp2] = typechecks:std_pos_ints([Voice, Language, Loop]),
     Len = length(Text2),
     ok = typechecks:in_range(Len, 1, 4000),
-    V3 = get_voice(V2),
-    L3 = get_lang(L2),
+    V3 = contact_utils:get_voice(V2),
+    L3 = contact_utils:get_lang(L2),
     Title = contact_utils:rightsize(Text2, 40),
     Preview = "SAY: " ++ Title,
     Resize = #resize{width = 2, height = 2},
@@ -423,17 +423,6 @@ send_invite(From, Idx) ->
               % init...
               emailer:send_email(From, CC, ?MASTER_EMAIL, Subject, EmailBody)
    end.
-
-get_voice(0) -> "woman";
-get_voice(1) -> "man";
-get_voice(_) -> ?ERR_VAL.
-
-get_lang(0) -> "en-gb";
-get_lang(1) -> "en";
-get_lang(2) -> "es";
-get_lang(3) -> "fr";
-get_lang(4) -> "de";
-get_lang(_) -> ?ERR_VAL.
 
 invert([], Acc) -> lists:sort(Acc);
 invert([{Group, Users} | T], Acc) ->

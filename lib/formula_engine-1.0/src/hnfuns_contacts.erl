@@ -8,6 +8,7 @@
 -module(hnfuns_contacts).
 
 -define(check_paid, contact_utils:check_if_paid).
+-define(en_gb, 0).
 
 -export([
          'display.phone.nos'/1,
@@ -36,29 +37,28 @@
             Site_Phone ++ " (" ++ atom_to_list(Type) ++ ")"
     end.
 
+'text.answer.phone'([]) ->
+    'text.answer.phone'(["Please leave a message after the beep"]);
 'text.answer.phone'([Msg]) ->
     'text.answer.phone'([Msg, false]);
 'text.answer.phone'([Msg, IsMan]) ->
-    'text.answer.phone'([Msg, IsMan, "en-gb"]);
+    'text.answer.phone'([Msg, IsMan, ?en_gb]);
 'text.answer.phone'([Msg, IsMan, Language]) ->
-    ?check_paid(fun 'text.answer.phone2'/3, [Msg, IsMan, Language], inbound).
+    ?check_paid(fun 'text.answer.phone2'/2, [Msg, IsMan, Language], inbound).
 
-'text.answer.phone2'(Msg, IsMan, Language) ->
-    [Msg2, L2] = typechecks:std_strs([Msg, Language]),
-    L3 = string:to_lower(L2),
-    [IsMan2] = typechecks:std_bools([IsMan]),
-    Voice = case IsMan2 of
-                true  -> "man";
-                false -> "woman"
-            end,
-    case lists:member(L3, ?SAYLanguages) of
-        true  -> ok;
-        false -> ?ERR_VAL
-    end,
+'text.answer.phone2'([Msg, IsMan, Language], _AC) ->
+    [Msg2] = typechecks:std_strs([Msg]),
+    [IsMan2, L2] = typechecks:std_ints([IsMan, Language]),
+    Voice = contact_utils:get_voice(IsMan2),
+    L3 = contact_utils:get_lang(L2),
     Msg3 = contact_utils:rightsize(Msg2, ?SAYLength),
-    Say = #say{voice = Voice, language = L3, text = Msg3},
-    io:format("Say is ~p~n", [Say]),
-    "banjo".
+    SAY = #say{voice = Voice, language = L3, text = Msg3},
+    Title = contact_utils:rightsize(Msg2, 40),
+    Preview = "ANSWERPHONE: " ++ Title,
+    Resize = #resize{width = 2, height = 2},
+    RECORD = #record{},
+    #spec_val{val = "", preview = Preview, resize = Resize,
+              sp_phone = #phone{twiml = [SAY, RECORD]}}.
 
 'manual.email'([To, Subject, Contents]) ->
     'manual.email'([To, Subject, Contents, [], []]);

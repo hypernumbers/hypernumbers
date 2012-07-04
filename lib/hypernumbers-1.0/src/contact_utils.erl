@@ -7,6 +7,7 @@
 
 -module(contact_utils).
 
+% normal utilities
 -export([
          rightsize/2,
          get_site_phone_no/1,
@@ -18,19 +19,37 @@
          get_twilio_account/1
          ]).
 
+% typechecking style utilities
+-export([
+         get_voice/1,
+         get_lang/1
+        ]).
+
 -include("keyvalues.hrl").
 -include("errvals.hrl").
 -include("spriki.hrl").
 -include("twilio.hrl").
 
+get_voice(0) -> "woman";
+get_voice(1) -> "man";
+get_voice(_) -> ?ERR_VAL.
+
+get_lang(0) -> "en-gb";
+get_lang(1) -> "en";
+get_lang(2) -> "es";
+get_lang(3) -> "fr";
+get_lang(4) -> "de";
+get_lang(_) -> ?ERR_VAL.
+
 get_phone_menu(S) ->
+    io:format("S is ~p~n", [S]),
     case new_db_api:read_kv(S, site_phone_menu) of
-        [] -> [_Proto, "//" ++ Domain, Port] = string:tokens(S, ":"),
-              Site = say_site(Domain, Port),
-              [#say{text = Site ++ " is not configured for incoming calls",
-                   voice = "woman", language = "en-gb"}];
+        [] ->
+            [_Proto, "//" ++ Domain, Port] = string:tokens(S, ":"),
+            Site = say_site(Domain, Port),
+            [#say{text = Site ++ " is not configured for incoming calls",
+                  voice = "woman", language = "en-gb"}];
         [{kvstore, site_phone_menu, {Idx, null}}] ->
-            io:format("Idx is ~p~n", [Idx]),
             [Phone] = new_db_api:get_phone(S, Idx),
             #phone{twiml = TwiML} = Phone,
             TwiML
@@ -51,6 +70,7 @@ check_if_paid(Fun, Args, Type) ->
         ?ERRVAL_PAYONLY ->
             ?ERRVAL_PAYONLY;
         AC ->
+            io:format("AC is ~p~n", [AC]),
             case Type of
                 outbound ->
                     Fun(Args, AC);
