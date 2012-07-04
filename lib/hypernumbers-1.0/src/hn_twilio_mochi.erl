@@ -192,19 +192,19 @@ handle_c2(#refX{site = S, path = P}, "start outbound" = Type, Body) ->
 
 % handle inbound calls coming in from cold
 handle_c2(#refX{site = S}, "start inbound" = Type, Recs) ->
-    io:format("phone ringing...~n"),
+    io:format("> CALL STATUS: phone ringing...~n"),
     Callbacks = get_callbacks(S, Type),
     TwiML_ext = contact_utils:get_phone_menu(S),
     phonecall_sup:init_call(S, Type, Recs, TwiML_ext, Callbacks);
 % handle the recording message being sent prior to hangup
 handle_c2(#refX{site = S}, "recording notification", Recs) ->
-    io:format("being notified of recording...~n"),
+    io:format("> CALL STATUS: being notified of recording...~n"),
     % twilio_web_util:pretty_print(Tw),
     ok = phonecall_sup:recording_notification(S, Recs),
     {ok, 200};
 % handle another (?) inprogress bit of a call
 handle_c2(Ref, "in progress", Recs) ->
-    io:format("Call back on ~p~n", [Ref#refX.path]),
+    io:format("> CALL STATUS: Call back on ~p~n", [Ref#refX.path]),
     % twilio_web_util:pretty_print(Recs),
     Path = "dindy",
     exit("fix me up in handle_c2 (2)"),
@@ -218,7 +218,7 @@ handle_c2(Ref, "in progress", Recs) ->
     end;
 % handle call complete message when a call terminates
 handle_c2(#refX{site = S, path = Path}, "call completed", Recs) ->
-    io:format("call completed...~n"),
+    io:format("> CALL STATUS: call completed...~n"),
     % twilio_web_util:pretty_print(Recs),
     case Path of
         [] ->
