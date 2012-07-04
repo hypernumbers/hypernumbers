@@ -69,10 +69,12 @@ get_type(#twilio{direction = "inbound", call_status = "ringing",
                  call_duration = null, inprogress = null, recording = null})
   when C =/= null andalso Cr =/= null andalso Fr =/= null andalso To =/= null ->
     "start inbound";
-get_type(#twilio{direction = "inbound", call_status = "in-progress"} = Tw) ->
-    io:format("Tw for start in-progress not tightly specified~n-~p~n",
-              [Tw]),
-    "in-progress";
+get_type(#twilio{direction = "inbound", call_status = "in-progress",
+                 called = C, caller = Cr, from = Fr, to = To,
+                call_duration = null, inprogress = Ip, recording = Rc} = Tw)
+  when C =/= null andalso Cr =/= null andalso Fr =/= null andalso To =/= null
+       andalso Ip =/= null andalso Rc =/= null ->
+    "in-progress recording notification";
 get_type(#twilio{direction = "inbound", call_status = "completed",
                  called = C, caller = Cr, from = Fr, to = To,
                  call_duration = null, inprogress = Ip, recording = Rc})

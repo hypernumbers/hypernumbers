@@ -197,7 +197,8 @@ handle_c2(#refX{site = S}, "start inbound" = Type, Recs) ->
     TwiML_ext = contact_utils:get_phone_menu(S),
     phonecall_sup:init_call(S, Type, Recs, TwiML_ext, Callbacks);
 % handle the recording message being sent prior to hangup
-handle_c2(#refX{site = S}, "recording notification", Recs) ->
+handle_c2(#refX{site = S}, Type, Recs) when Type == "recording notification"
+orelse Type == "in-progress recording notification" ->
     io:format("> CALL STATUS: being notified of recording...~n"),
     % twilio_web_util:pretty_print(Tw),
     ok = phonecall_sup:recording_notification(S, Recs),
@@ -233,7 +234,8 @@ handle_c2(Ref, Type, Recs) ->
               [Type, Ref#refX.path]),
     twilio_web_util:pretty_print(Recs),
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response>"
-        ++ "<Say>something has gone wrong, folks.</Say></Response>".
+        ++ "<Say>Debugging message. Something has gone wrong, folks."
+        ++ "Unhandled Twilio callback...</Say></Response>".
 
 validate([], _Args) ->
     true;
@@ -307,7 +309,7 @@ write_log(#refX{path = P} = RefX, Log) ->
 % debugging interface
 handle_c2_DEBUG(Body, Site) ->
     Type = twilio_web_util:get_type(Body),
-    Ref = #refX{site = Site, path = []},
+    Ref = #refX{site = Site, path = ["_services", "phone"]},
     handle_c2(Ref, Type, Body).
 
 process_env(Env) ->
