@@ -196,14 +196,12 @@ handle_c2(#refX{site = S}, "start inbound" = Type, Recs) ->
     Callbacks = get_callbacks(S, Type),
     TwiML_ext = contact_utils:get_phone_menu(S),
     phonecall_sup:init_call(S, Type, Recs, TwiML_ext, Callbacks);
-
 % handle the recording message being sent prior to hangup
 handle_c2(#refX{site = S}, "recording notification", Recs) ->
     io:format("being notified of recording...~n"),
     % twilio_web_util:pretty_print(Tw),
     ok = phonecall_sup:recording_notification(S, Recs),
     {ok, 200};
-
 % handle another (?) inprogress bit of a call
 handle_c2(Ref, "in progress", Recs) ->
     io:format("Call back on ~p~n", [Ref#refX.path]),
@@ -218,7 +216,6 @@ handle_c2(Ref, "in progress", Recs) ->
             io:format("return to state ~p~n", [State]),
             phonecall_sup:goto_state(Recs, State)
     end;
-
 % handle call complete message when a call terminates
 handle_c2(#refX{site = S, path = Path}, "call completed", Recs) ->
     io:format("call completed...~n"),
@@ -280,6 +277,7 @@ log(Site, #contact_log{} = Log) ->
     write_log(RefX, Log).
 
 write_log(#refX{path = P} = RefX, Log) ->
+    io:format("Logging ~p~n- to ~p~n", [Log, RefX]),
     P2 = lists:append(P, ["_contacts"]),
     RefX2 = RefX#refX{type = gurl, path = P2, obj = {row, {1, 1}}},
     Array = [
