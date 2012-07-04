@@ -221,10 +221,10 @@ handle_c2(#refX{site = S, path = Path}, "call completed", Recs) ->
     io:format("> CALL STATUS: call completed...~n"),
     % twilio_web_util:pretty_print(Recs),
     case Path of
-        [] ->
+        ["_services", "phone"] ->
             ok = phonecall_sup:call_complete(S, Recs),
             {ok, 200};
-        _Sub ->
+        ["_services", "phone", _Sub] ->
             % do nothing here
             {ok, 200}
     end;
@@ -284,7 +284,7 @@ write_log(#refX{path = P} = RefX, Log) ->
              {struct, [{"label", "type"},
                        {"formula", Log#contact_log.type}]},
              {struct, [{"label", "call_sid"},
-                       {"formula", integer_to_list(Log#contact_log.call_sid)}]},
+                       {"formula", Log#contact_log.call_sid}]},
              {struct, [{"label", "from"},
                        {"formula", Log#contact_log.from}]},
              {struct, [{"label", "reply_to"},
