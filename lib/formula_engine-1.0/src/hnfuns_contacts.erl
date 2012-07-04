@@ -56,7 +56,7 @@
     Title = contact_utils:rightsize(Msg2, 40),
     Preview = "ANSWERPHONE: " ++ Title,
     Resize = #resize{width = 2, height = 2},
-    RECORD = #record{finishOnKey = "*"},
+    RECORD = #record{method = "GET", finishOnKey = "*"},
     #spec_val{val = "", preview = Preview, resize = Resize,
               sp_phone = #phone{twiml = [SAY, RECORD]}}.
 
