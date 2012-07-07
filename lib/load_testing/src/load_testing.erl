@@ -544,13 +544,13 @@ load_pret2(Lable, Dir, [H | T], Map) ->
     ok = log(Msg, Lable),
     load_pret2(Lable, Dir, T, Map).
 
-close(TraceFile) ->
-    case dbsrv:is_busy("http://load.hypernumbers.dev:9000") of
-        true -> timer:sleep(1000),
-                close(TraceFile);
-        false -> dbsrv:stop_fprof("http://load.hypernumbers.dev:9000",
-                                  TraceFile)
-    end.
+%% close(TraceFile) ->
+%%     case dbsrv:is_busy("http://load.hypernumbers.dev:9000") of
+%%         true -> timer:sleep(1000),
+%%                 close(TraceFile);
+%%         false -> dbsrv:stop_fprof("http://load.hypernumbers.dev:9000",
+%%                                   TraceFile)
+%%     end.
 
 load_data(Stamp) ->
     load_data2(Stamp, ?dataprefix, ?no_of_datapages).
