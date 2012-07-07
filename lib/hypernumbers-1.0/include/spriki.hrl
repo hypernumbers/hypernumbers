@@ -31,6 +31,7 @@
         {
           css = [],
           js = [],
+          js_head = [],
           js_reload = [],
           title = []
          }).
@@ -376,6 +377,7 @@
 -record(incs,
         {
           js         = [],
+          js_head    = [],
           js_reload  = [],
           css        = []
          }).
@@ -393,6 +395,7 @@
           idx,
           path,
           js,
+          js_head,
           js_reload,
           css
          }).

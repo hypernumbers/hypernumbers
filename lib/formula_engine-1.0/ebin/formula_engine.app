@@ -8,6 +8,7 @@
             hnfuns_controls,
             hnfuns_forms,
             hnfuns_graphs,
+            hnfuns_graphs2,
             hnfuns_html,
             hnfuns_integration,
             hnfuns_contacts,

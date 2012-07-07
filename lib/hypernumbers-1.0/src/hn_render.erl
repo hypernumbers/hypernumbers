@@ -45,7 +45,7 @@ content(Ref, Type) ->
     % 'new style' which are in the include table
     CSSList = new_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "css"),
     JSList = new_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "js"),
-    {Js2, Js_reload, CSS2} = new_db_api:read_includes(Ref#refX{obj = {page, "/"}}),
+    {Js2, JS_Head, Js_reload, CSS2} = new_db_api:read_includes(Ref#refX{obj = {page, "/"}}),
     TitleList = new_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "title"),
     Open = "<link rel='stylesheet' href='",
     {_, CSSList2} = lists:unzip(CSSList),
@@ -54,11 +54,14 @@ content(Ref, Type) ->
             || X <- lists:merge(CSSList2, CSS2)],
     JS3 = ["<script src='" ++ X ++ "'></script>\n"
            || X <- lists:merge(JSList2, Js2)],
+    JS_Head2 = ["<script src='" ++ X ++ "'></script>\n" ||
+                   X <- JS_Head],
     Js_r2 = "<script type='text/javascript'>HN.Includes = {}; "
         ++ "HN.Includes.reload = function () { "
         ++ lists:flatten(Js_reload) ++ "};</script>",
     Title = ["<title>" ++ X ++ "</title>\n" || {_, X} <- TitleList],
-    Addons = #render{css=CSS3, js=JS3, js_reload = Js_r2, title=Title},
+    Addons = #render{css = CSS3, js = JS3, js_head = JS_Head2,
+                     js_reload = Js_r2, title = Title},
     {layout(Ref, Type, Cells, ColWs, RowHs, Palette), Addons}.
 
 read_data_without_page(Ref) ->
@@ -357,12 +360,11 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
          <link rel='stylesheet' href='/webcomponents/webbasic.css' />
          <link rel='stylesheet' href='/tblsorter/style.css' />
          <link rel='stylesheet' href='/cleditor/jquery.cleditor.css' />
-
-"     ++ Addons#render.css ++
+"     ++ Addons#render.css ++ Addons#render.js_head ++
 "         <script src='/hypernumbers/jquery-1.7.1.min.js'></script>
          <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>-->
          <script src='/hypernumbers/err.remoterr.js'></script>
-         </head>
+        </head>
 
          <body data-view='" ++ PageType ++ "'>
          <span id='hidden_input'></span>
@@ -415,7 +417,8 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
   <script src='/hypernumbers/hn.data.js'></script>
   <script src='/hypernumbers/hn.sitedata.js'></script>
   <script src='/hypernumbers/hn.callbacks.js'></script>"
-     ++ Addons#render.js ++ "" ++ Addons#render.js_reload ++
+     ++ Addons#render.js
+     ++ "" ++ Addons#render.js_reload ++
 "  <script src='/cleditor/jquery.cleditor.js'></script>
    <script src='/hypernumbers/hn.renderpage.js'></script>
   </body>

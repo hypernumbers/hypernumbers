@@ -9,6 +9,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_incs_record_2012_07_07/0,
          upgrade_relations_record_2012_06_14/0,
          remove_dirty_q_caches_2012_06_13/0,
          remove_duff_dirty_q_caches_2012_06_03/0,
@@ -84,6 +85,22 @@
          % upgrade_1776/0
         ]).
 
+upgrade_incs_record_2012_07_07() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fun = fun({include, Idx, P, Js, JsR, Css}) ->
+                                 {include, Idx, P, Js, [], JsR, Css}
+                         end,
+                   Tbl = new_db_wu:trans(Site, include),
+                   io:format("Table ~p transformed~n", [Tbl]),
+                   Ret1 = mnesia:transform_table(Tbl, Fun,
+                                                 [idx, path, js, js_head,
+                                                  js_realod, css]),
+                   io:format("Ret is ~p~n", [Ret1])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
 upgrade_relations_record_2012_06_14() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
@@ -111,7 +128,6 @@ upgrade_relations_record_2012_06_14() ->
            end,
     lists:foreach(Fun1, Sites),
     ok.
-
 
 remove_dirty_q_caches_2012_06_13() ->
     Sites = hn_setup:get_sites(),

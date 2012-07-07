@@ -1252,21 +1252,22 @@ update_timerD(#xrefX{idx = Idx, site = S}, Spec) ->
 update_incsD(XRefX, Incs) when is_record(XRefX, xrefX)
                                andalso is_record(Incs, incs) ->
     #xrefX{idx = Idx, site = S, path = P} = XRefX,
-    #incs{js = Js, js_reload = Js_reload, css = CSS} = Incs,
+    #incs{js = Js, js_head = Jh, js_reload = Js_reload, css = CSS} = Incs,
     Tbl = trans(S, include),
     Blank = #incs{},
     case {mnesia:read(Tbl, Idx, write), Incs} of
         {[], Blank}  -> ok;
         {Incs, Incs} -> ok;
         _            -> Inc = #include{idx = Idx, path = P, js = Js,
-                                       js_reload = Js_reload, css = CSS},
+                                       js_head = Jh, js_reload = Js_reload,
+                                       css = CSS},
                         mnesia:write(Tbl, Inc, write)
     end.
 
 bring_through(Attrs, XRefX, Pars) ->
     Pars2 = [X || {Type, X} <- Pars, Type ==  local],
     Pars3 = remove_same_page(Pars2, XRefX, []),
-    Incs = get_incs(Pars3, [], [], []),
+    Incs = get_incs(Pars3, [], [], [], []),
     Blank = #incs{}, % no you can't just use #incs{} in the case statement, duh!
     case Incs of
         Blank -> Attrs;
@@ -1284,26 +1285,31 @@ remove_same_page([H | T], #xrefX{path = P1} = XRefX, Acc) ->
              end,
     remove_same_page(T, XRefX, NewAcc).
 
-get_incs([], Js, Js_R, CSS) -> #incs{js = hslists:uniq(Js),
-                                     js_reload = hslists:uniq(Js_R),
-                                     css = hslists:uniq(CSS)};
-get_incs([H | T], Js, Js_R, CSS) ->
-    {NewJ, NewJs_R, NewC} = case read_incsD(H) of
-                                []   -> {Js, Js_R, CSS};
-                                Incs -> process_incs(Incs, [], [], [])
-                            end,
-    get_incs(T, NewJ, NewJs_R, NewC).
+get_incs([], Js, Js_H, Js_R, CSS) ->
+    #incs{js = hslists:uniq(Js),
+          js_head = hslists:uniq(Js_H),
+          js_reload = hslists:uniq(Js_R),
+          css = hslists:uniq(CSS)};
+get_incs([H | T], Js, Js_H, Js_R, CSS) ->
+    {NewJ, NewJh, NewJs_R, NewC} = case read_incsD(H) of
+                                       []   ->
+                                           {Js, Js_H, Js_R, CSS};
+                                       Incs ->
+                                           process_incs(Incs, [], [], [], [])
+                                   end,
+    get_incs(T, NewJ, NewJh, NewJs_R, NewC).
 
 read_incsD(#xrefX{site = S, path = P}) ->
     Table = trans(S, include),
     mnesia:index_read(Table, P, #include.path).
 
-process_incs([], J, Js_R, CSS) -> {J, Js_R, CSS};
-process_incs([H | T], Js, Js_R, CSS) ->
+process_incs([], J, Js_H, Js_R, CSS) -> {J, Js_H, Js_R, CSS};
+process_incs([H | T], Js, Js_H, Js_R, CSS) ->
     NewJ = lists:append(Js, H#include.js),
+    NewJh = lists:append(Js_H, H#include.js_head),
     NewJs_R = lists:append(Js_R, H#include.js_reload),
     NewC = lists:append(CSS, H#include.css),
-    process_incs(T, NewJ, NewJs_R, NewC).
+    process_incs(T, NewJ, NewJh, NewJs_R, NewC).
 
 add_attributes(D, []) -> D;
 add_attributes(D, [{Key, Val}|T]) ->

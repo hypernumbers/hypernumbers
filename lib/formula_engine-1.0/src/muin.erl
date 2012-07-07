@@ -280,6 +280,9 @@ transform("histogram." ++ R, Args) ->
 transform("linegraph." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("linegraph."), [W , H | Args]};
+transform("new.linegraph." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("new.linegraph."), [W , H | Args]};
 transform("dategraph." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("dategraph."), [W , H | Args]};
@@ -525,6 +528,7 @@ get_modules() ->
      stdfuns_logical,
      stdfuns_db,
      hnfuns_graphs,
+     hnfuns_graphs2,
      hnfuns_web,
      hnfuns_integration,
      hnfuns_html,

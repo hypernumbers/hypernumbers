@@ -1461,17 +1461,21 @@ filter_pages([], Tree) ->
 filter_pages([Path | T], Tree) ->
     filter_pages(T, dh_tree:add(Path, Tree)).
 
-unpack_incs(List) -> unpack_1(List, [], [], []).
+unpack_incs(List) -> unpack_1(List, [], [], [], []).
 
-unpack_1([], Js, Js_r, CSS) -> {hslists:uniq(Js),
-                                hslists:uniq(Js_r),
-                                hslists:uniq(CSS)};
-unpack_1([H | T], Js, Js_r, CSS) ->
-    #include{js = J, js_reload = R, css = C} = H,
+unpack_1([], Js, Js_H, Js_r, CSS) ->
+    {hslists:uniq(Js), hslists:uniq(Js_H),
+     hslists:uniq(Js_r), hslists:uniq(CSS)};
+unpack_1([H | T], Js, Js_H, Js_r, CSS) ->
+    #include{js = J, js_head = Jh, js_reload = R, css = C} = H,
     NewJ = case J of
                [] -> Js;
                _  -> lists:append([J, Js])
            end,
+    NewJs_H = case Jh of
+                  [] -> Js_H;
+                  _ -> lists:append([Jh, Js_H])
+              end,
     NewR = case R of
                [] -> Js_r;
                _  -> lists:append([R, Js_r])
@@ -1480,4 +1484,4 @@ unpack_1([H | T], Js, Js_r, CSS) ->
                [] -> CSS;
                _  -> lists:append([C, CSS])
            end,
-    unpack_1(T, NewJ, NewR, NewC).
+    unpack_1(T, NewJ, NewJs_H, NewR, NewC).
