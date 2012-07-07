@@ -737,11 +737,13 @@ iget(#refX{site = Site} = RefX, _Type, #qry{view=?RECALC}, Env) ->
     Html = hn_util:viewroot(Site) ++ "/recalc.html",
     serve_html(Env, Html);
 
-iget(#refX{site = Site}, cell,  #qry{view=?PHONE},
-     #env{accept = html} = Env) ->
-            Dir = hn_util:viewroot(Site) ++ "/",
-            File = "softphone.html",
-            serve_html(200, Env, [Dir, File]);
+iget(#refX{site = Site}, cell,  #qry{view=?PHONE}, #env{accept = html} = Env) ->
+    File = case application:get_env(hypernumbers, phone_debug) of
+               {ok, true} -> "softphone2.html";
+               _          -> "softphone.html"
+           end,
+    Dir = hn_util:viewroot(Site) ++ "/",
+    serve_html(200, Env, [Dir, File]);
 
 iget(Ref, cell,  #qry{view=?PHONE} = _Qry, #env{accept = json, uid = Uid} = Env) ->
     case  new_db_api:get_phone(Ref) of
