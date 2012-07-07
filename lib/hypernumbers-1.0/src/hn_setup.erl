@@ -17,13 +17,18 @@
          tables/0
         ]).
 
+% non-production exports
 -export([
+         load_TEST/3,
          import_json_DEBUG/2
         ]).
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 -include("keyvalues.hrl").
+
+-define(TO_LOAD, [corefiles, sitefiles, json, groups, permissions, script]).
+-define(sitelog, "site.building").
 
 %% copies a site from one domain to another
 -spec copy_site(string(), string()) ->
@@ -94,26 +99,53 @@ copy_t2([H | T], From, To) ->
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok | exists.
 site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
-    site(Site, Type, Opts, [corefiles, sitefiles, json, groups,
-                            permissions, script]).
+    site(Site, Type, Opts, ?TO_LOAD).
 
 -spec site(string(), atom(), [{atom(), any()}], [atom()]) ->
     {error, site_exists} | {initial_view, string()} .
 site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
     case hn_setup:site_exists(Site) of
-        true ->
-            {error, site_exists};
-        false ->
-            error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
-            ok = create_site_tables(Site, Type),
-            ok = create_blank_z_and_infs(Site),
-            ok = create_blank_pages(Site),
-            ok = init_telephony(Site),
-            ok = create_userfiles(Site),
-            ok = sitemaster_sup:add_site(Site),
-            ok = update(Site, Type, Opts, ToLoad),
-            get_initial_params(Site)
+        true  -> {error, site_exists};
+        false -> site2(Site, Type, Opts, ToLoad, false)
     end.
+
+load_TEST(Site, Type, MemType) -> site2(Site, Type, [], ?TO_LOAD, MemType).
+
+site2(Site, Type, Opts, ToLoad, IsLoadTesting) ->
+    error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
+    Start = get_time(),
+    Stamp = "." ++ dh_date:format("Y_M_d_H_i_s") ++ ".csv",
+    case IsLoadTesting of
+       false ->
+            ok;
+       _ ->
+            Msg = io_lib:format("Starting,0,0", []),
+            hn_util:log(Msg, ?sitelog ++ Stamp)
+    end,
+    ok = create_site_tables(Site, Type),
+    ok = create_blank_z_and_infs(Site),
+    ok = create_blank_pages(Site),
+    ok = init_telephony(Site),
+    ok = create_userfiles(Site),
+    ok = sitemaster_sup:add_site(Site),
+    case IsLoadTesting of
+        false ->
+            ok;
+        disc_and_mem ->
+            % spawn(systrace, log_profile_site, [Site, 300]);
+            ok;
+        mem   ->
+            hn_db_admin:mem_only(Site)
+            % spawn(systrace, log_profile_site, [Site, 300])
+    end,
+    ok = update(Site, Type, Opts, ToLoad),
+    case IsLoadTesting of
+       false ->
+            ok;
+       _ ->
+            log_til_ended(Site, Stamp ++ ?sitelog, Start)
+    end,
+    get_initial_params(Site).
 
 %% Delete a site
 %% Todo: Does not currently remove DNS entries.
@@ -142,7 +174,6 @@ update() ->
 -spec update(list()) -> ok.
 update(Opts) ->
     update([], Opts).
-
 
 %% Update all sites
 -spec update(list(), list()) -> ok.
@@ -415,3 +446,17 @@ init_telephony(Site) ->
 create_userfiles(Site) ->
     filelib:ensure_dir(hn_util:userfilesroot(Site) ++ "force").
 
+get_time() -> util2:get_timestamp()/1000000.
+
+log_til_ended(Site, File, Start) ->
+    QLen = dbsrv:dump_q_len(Site),
+    Time = get_time(),
+    Msg = io_lib:format("queue,~p,~p", [Time - Start, QLen]),
+    hn_util:log(Msg, File),
+    if
+        QLen ==  0 ->
+            ok;
+        QLen =/= 0 ->
+            timer:sleep(10000),
+            log_til_ended(Site, File, Start)
+    end.
