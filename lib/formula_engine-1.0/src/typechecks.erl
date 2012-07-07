@@ -22,8 +22,7 @@
          std_ints/1,
          std_pos_ints/1,
          std_nums/1,
-         flat_strs/1,
-         std_strs/1
+         flat_strs/1
         ]).
 
 % schmancies!
@@ -62,19 +61,25 @@ th(X, []) when ?is_errval(X)          -> throw(X).
 
 std_phone_no(Prefix, blank) ->
     std_phone_no(Prefix, "");
+std_phone_no(Prefix, Number) when is_integer(Number) ->
+    std_phone_no(Prefix, integer_to_list(Number));
 std_phone_no("", "++" ++ Number) ->
     N2 = compress(Number),
     {"", N2};
 std_phone_no("", "+" ++ Number) ->
     N2 = compress(Number),
     {"", N2};
-std_phone_no("", Number) ->
+std_phone_no("", Number) when is_list(Number) ->
     N2 = compress(Number),
     {"", N2};
-std_phone_no(Prefix, Number) ->
+std_phone_no(Prefix, Number) when is_list(Number) ->
     P2 = normalise(Prefix),
     N2 = compress(Number),
-    {P2, N2}.
+    {P2, N2};
+% last chance throw it to integer
+std_phone_no(Prefix, Number) ->
+    [N2] = std_ints([Number]),
+    std_phone_no(Prefix, N2).
 
 rgbcolours([$#| Rest]) ->
     case length(Rest) of
