@@ -1,0 +1,77 @@
+#hn_phone_dialpad, #hn_phone_email
+{
+    display: none;
+}
+.hn_phone
+{
+    width: 45px;
+    font-family: monospace;
+    font-size: 190%;
+    margin-bottom: 3px;
+}
+#hn_phone_panel
+{
+    vertical-align: top;
+    padding: 20px;
+}
+#hn_phone_page
+{
+    width: 100%;
+    height: 100%;
+}
+#hn_phone_number, #hn_phone_text
+{
+    width: 135px;
+    margin-bottom: 6px;
+}
+table
+{
+    border: 1px solid #f66;
+    height: 100%;
+}
+iframe
+{
+    height: inherit;
+    width: inherit;
+}
+.hn_phone_display
+{
+    text-align: center;
+    color: #999;
+    margin-bottom: 3px;
+      }
+#hn_phone_buttons
+{
+    margin-bottom: 3px;
+}
+#hn_phone_controls
+{
+    margin-bottom: 3px;
+}
+.hn_phone_control
+{
+    width: 70px;
+    margin-bottom: 3px;
+}
+.hn_phone_email_input
+{
+    width: 200px;
+    float: right;
+}
+.hn_phone_email_label
+{
+    margin-bottom: 3px;
+    float: left;
+}
+#hn_phone_dialpad
+{
+    width: 146px;
+}
+#hn_phone_email
+{
+    width: 250px;
+}
+#hn_phone_subject, #hn_phone_body
+{
+    width: 250px;
+}
