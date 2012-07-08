@@ -14,10 +14,13 @@
       <td id='hn_phone_panel'>
         <div id='hn_phone_dialpad'>
         <div id='hn_phone_status' class='hn_phone_display'>On The Hook</div>
-        <div>Member of Groups...</div>
         <div>User Name</div>
+        <div>Member of Groups...</div>
         <textarea id='hn_phone_number' type='textarea' disabled></textarea>
+        <div id='hn_phone_text_container'>
         <textarea id='hn_phone_text' type='textarea' disabled></textarea>
+        <div id='hn_phone_text_msg'></div>
+        </div>
         <div id='hn_phone_controls'>
           <button class='btn btn-success hn_phone_control' id='hn_phone_dial' disabled>
             Dial
@@ -65,8 +68,11 @@
           <span class='hn_phone_email_label'>BCC:</span>
           <input id='hn_phone_bcc' class='hn_phone_email_input' type='text' />
           </div>
-          <input id='hn_phone_subject' class='hn_phone_email_subject' type='text' />
-          <textarea id='hn_phone_body' class='hn_phone_email_body' type='textarea'></textarea>
+          <input id='hn_phone_subject' class='hn_phone_email_fields' type='text' />
+          <textarea id='hn_phone_body' class='hn_phone_email_fields' type='textarea'></textarea>
+          <button class='btn btn-success hn_phone_control' id='hn_email_send'>
+            Send
+          </button>
         </div>
       </td>
       <td>
