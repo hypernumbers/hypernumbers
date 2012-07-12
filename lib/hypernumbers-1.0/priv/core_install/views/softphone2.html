@@ -12,10 +12,13 @@
   <table>
     <tr>
       <td id='hn_phone_panel'>
+        <div id='hn_phone_signed_in'>
+          <div id='hn_phone_user_name'></div>
+          <div id='hn_phone_user_xtn'></div>
+          <div id='hn_phone_user_groups'></div>
+        </div>
         <div id='hn_phone_dialpad'>
-        <div id='hn_phone_status' class='hn_phone_display'>On The Hook</div>
-        <div>User Name</div>
-        <div>Member of Groups...</div>
+        <div id='hn_phone_status' class='hn_phone_display'>Ready</div>
         <textarea id='hn_phone_number' type='textarea' disabled></textarea>
         <div id='hn_phone_text_container'>
         <textarea id='hn_phone_text' type='textarea' disabled></textarea>
@@ -29,10 +32,10 @@
             Hangup
           </button>
           <br />
-          <button class='btn btn-invert hn_phone_control' id='hn_phone_away' disabled>
+          <button class='btn btn-invert hn_phone_control' id='hn_phone_away' data-away='false' disabled>
             Away
           </button>
-          <button class='btn hn_phone_control' id='hn_phone_sms' disabled disabled>
+          <button class='btn hn_phone_control' id='hn_phone_send_sms' disabled disabled>
             Text
           </button>
         </div>
@@ -75,14 +78,13 @@
           </button>
         </div>
       </td>
-      <td>
+      <!--<td>
         <div id='hn_phone_debug'>
           <div>Twilio Capabilities</div>
           <select id='hn_capabilities_debug'>
             <option>none</option>
             <option>phone out</option>
             <option>phone in</option>
-            <option>sms out</option>
             </select>
           <div>Phone Out Permissions</div>
           <select id='hn_phone_out_debug'>
@@ -111,7 +113,7 @@
             <option>us</option>
             </select>
         </div>
-      </td>
+      </td>-->
       <td id='hn_phone_page'>
         <iframe src='http://example.com'></iframe>
       </td>
@@ -119,8 +121,8 @@
   </table>
 </body>
     <script src="/hypernumbers/jquery-1.7.1.js"></script>
+    <script src='http://static.twilio.com/libs/twiliojs/1.0/twilio.js'></script>
     <script src="/contacts/hn.phone2.js"></script>
     <script src="/bootstrap/js/bootstrap.js"></script>
     <script src="/bootstrap/js/helper.js"></script>
-    <script src='http://static.twilio.com/libs/twiliojs/1.0/twilio.js'></script>
 </html>

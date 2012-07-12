@@ -1,8 +1,14 @@
-#hn_phone_dialpad, #hn_phone_email
+html,body{
+      margin:0;
+      padding:0;
+      height:100%;
+      border:none
+   }
+#hn_phone_dialpad, #hn_phone_email, #hn_phone_signed_in
 {
     display: none;
 }
-#hn_phone_email
+#hn_phone_dialpad, #hn_phone_email
 {
     margin-top: 20px;
 }
@@ -13,9 +19,8 @@
     font-size: 190%;
     margin-bottom: 3px;
 }
-#hn_phone_panel
+#hn_phone_panel, #hn_phone_debug
 {
-    vertical-align: top;
     padding: 20px;
 }
 #hn_phone_page
@@ -28,10 +33,14 @@
     width: 135px;
     margin-bottom: 6px;
 }
-table td
+table
 {
+    height: 100%
+}
+td
+{
+    vertical-align: top;
     border: 1px solid #f00;
-    height: 100%;
 }
 iframe
 {
@@ -70,13 +79,26 @@ iframe
     margin-bottom: 12px;
     float: left;
 }
-#hn_phone_dialpad
+#hn_phone_dialpad, #hn_phone_email
 {
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    border-radius: 12px;
+    -webkit-box-shadow: 2px 2px 4px #aaa;
+    -moz-box-shadow: 2px 2px 4px #aaa;
+    box-shadow: 2px 2px 4px #aaa;
+    background-color: #fdfdff;
+}
+#hn_phone_dialpad, #hn_phone_email, #hn_phone_signed_in
+{
+    border: 3px solid #ddd;
+    padding: 20px;
     width: 146px;
 }
 #hn_phone_email
 {
     width: 250px;
+    padding-bottom: 50px;
 }
 .hn_phone_email_fields
 {
@@ -91,4 +113,21 @@ iframe
 #hn_email_send
 {
     float: right;
+}
+#hn_phone_user_name, #hn_phone_user_groups, #hn_phone_user_xtn
+{
+    color: #999;
+}
+.hn_label
+{
+    color: #666;
+}
+.hn_flash
+{
+    color: darkorange;
+}
+
+.hn_flash_shadow
+{
+    box-shadow: 2px 2px 4px orange !important;
 }

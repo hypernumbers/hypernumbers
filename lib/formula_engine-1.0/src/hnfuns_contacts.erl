@@ -19,7 +19,8 @@
          'auto.sms.out'/1,
          'auto.robocall'/1,
          'phone.out'/1,
-         'phone.in'/1
+         'phone.in'/1,
+         'create.phone'/1
         ]).
 
 -include("spriki.hrl").
@@ -201,6 +202,56 @@ check(To, Su, Cn, CC, Reply) ->
             "SMS: " ++ Msg2 ++ " to be sent to phone (+" ++ Prefix ++ ")"
                 ++ PhNo3
     end.
+
+'create.phone'([]) ->
+    'create.phone'([0]);
+'create.phone'([Type]) ->
+    create_p2(Type).
+
+create_p2(Type) ->
+    [Type2] = typechecks:std_ints([Type]),
+    Type3 = make_type(Type2),
+    Site = get(site),
+    case contact_utils:get_twilio_account(Site) of
+        ?ERRVAL_PAYONLY ->
+            ?ERRVAL_PAYONLY;
+        AC ->
+            #twilio_account{application_sid = AppSID,
+                            site_phone_no = Site_Phone} = AC,
+            Log = #contact_log{idx = get(idx), type = "outbound call",
+                               to = "+yerk"},
+            TwiML = [
+                     #dial{callerId = Site_Phone, record = true,
+                           body = [#number{number = "+yerk"}]}
+                    ],
+            Capability = [{client_outgoing, AppSID, []}],
+            Config = make_config(Type2),
+            Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
+                           softphone_type = Type3, softphone_config = Config},
+            Headline = "Make Phone Call",
+            ButtonTxt = "Dandle",
+            phone(Phone, "Phone Out: ", Headline, ButtonTxt)
+    end.
+
+make_type(0) -> {"capabilities", {struct, [{"phone_in",  "true"},
+                                           {"phone_out", "true"}]}};
+make_type(1) -> {"capabilities", {struct, [{"phone_in",  "true"},
+                                           {"phone_out", "false"}]}};
+make_type(2) -> {"capabilities", {struct, [{"phone_in",  "false"},
+                                           {"phone_out", "true"}]}};
+make_type(3) -> {"capabilities", {struct, [{"phone_in",  "false"},
+                                           {"phone_out", "false"}]}};
+make_type(_) -> {"capabilities", {struct, [{"phone_in",  "false"},
+                                           {"phone_out", "false"}]}}.
+
+make_config(_) -> {"permissions",
+                   {struct, [
+                             {"phone_out_permissions", "free dial"},
+                             {"sms_out_permissions",  "free all"},
+                             {"email_permissions",     "free all"}
+                            ]
+                   }
+                  }.
 
 % TODO make it handle errors better
 'phone.out'([PhNo, Prefix]) ->
