@@ -1,10 +1,15 @@
-html,body{
-      margin:0;
-      padding:0;
-      height:100%;
-      border:none
-   }
-#hn_phone_dialpad, #hn_phone_email, #hn_phone_signed_in
+html,body
+{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    border: none
+}
+body
+{
+    display: none;
+}
+#hn_phone_dialpad, #hn_phone_email, #hn_phone_signed_in, #hn_phone_text_container
 {
     display: none;
 }
@@ -32,6 +37,10 @@ html,body{
 {
     width: 135px;
     margin-bottom: 6px;
+}
+#hn_phone_text
+{
+    font-size: 90%;
 }
 table
 {
@@ -107,8 +116,9 @@ iframe
 #hn_phone_text_msg
 {
     font-size: 80%;
-    color: #ccc;
-    align: right;
+    color: #999;
+    text-align: right;
+    padding-right: 2px;
 }
 #hn_email_send
 {
