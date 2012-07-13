@@ -35,7 +35,6 @@
          'phone.menu.conference'/1,
          'phone.menu.dial'/1,
          'phone.menu.sms'/1
-         % 'phone.menu.conference'/1
         ]).
 
 'invite.users'([]) ->
@@ -170,6 +169,7 @@ u_and_g(W, H, Type) ->
 
 'phone.menu.dial'(List) ->
     Dial = collect(List),
+    io:format("Dial is ~p~n", [Dial]),
     Twiml = [#dial{body = Dial, record = true}],
     case twiml:is_valid(Twiml) of
         false -> ?ERRVAL_VAL;
@@ -212,19 +212,21 @@ u_and_g(W, H, Type) ->
     [Name2] = typechecks:std_strs([Name]),
     [Beep2] = typechecks:std_bools([Beep]),
     [Max2] = typechecks:std_ints([MaxUsers]),
-    Max3 = typechecks:in_range(Max2, 1, 40),
+    ok = typechecks:in_range(Max2, 1, 40),
     [Start2, End2, Muted2] = typechecks:std_bools([StartOnEnter,
                                                    EndOnExit, Muted]),
     Twiml = case URL of
                 none -> [#conference{conference = Name, beep = Beep2,
-                                     maxParticipants = Max3,
+                                     maxParticipants = Max2,
                                      startConferenceOnEnter = Start2,
                                      endConferenceOnExit = End2,
-                                     muted = Muted2}];
+                                     waitMethod = "GET",
+                                     muted = Muted2, waitUrl = ""}];
                 _    -> [#conference{conference = Name, beep = Beep2,
-                                     maxParticipants = Max3,
+                                     maxParticipants = Max2,
                                      startConferenceOnEnter = Start2,
                                      endConferenceOnExit = End2,
+                                     waitMethod = "GET",
                                      muted = Muted2, waitUrl = URL}]
             end,
     % this Twiml isn't valid on its loneo!
