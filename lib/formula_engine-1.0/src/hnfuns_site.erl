@@ -153,23 +153,18 @@ u_and_g(W, H, Type) ->
     'phone.menu.sms'([Text, Number, ""]);
 'phone.menu.sms'([Text, Number, Prefix]) ->
     {Prefix2, PhNo2} = typechecks:std_phone_no(Prefix, Number),
-    io:format("Prefix2 is ~p PhNo2 is ~p~n", [Prefix2, PhNo2]),
     [Text2] = typechecks:std_strs([Text]),
     Text3 = contact_utils:rightsize(Text2, ?SMSLength),
-    io:format("Text3 is ~p~n", [Text3]),
     From = contact_utils:get_site_phone_no(?msite),
-    io:format("From is ~p~n", [From]),
     Twiml = [#sms{from = From, to = "+" ++ Prefix2 ++ PhNo2, text = Text3}],
     Resize = #resize{width = 2, height = 2},
     Preview = "Send SMS to (+" ++ Prefix2 ++ ") " ++ PhNo2 ++ " "
         ++ contact_utils:rightsize(Text3, 10),
-    io:format("Preview is ~p~n", [Preview]),
     #spec_val{val = "", preview = Preview, resize = Resize,
               sp_phone = #phone{twiml = Twiml}}.
 
 'phone.menu.dial'(List) ->
     Dial = collect(List),
-    io:format("Dial is ~p~n", [Dial]),
     Twiml = [#dial{body = Dial, record = true}],
     case twiml:is_valid(Twiml) of
         false -> ?ERRVAL_VAL;
