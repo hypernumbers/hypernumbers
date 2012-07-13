@@ -32,6 +32,7 @@
          'phone.menu.transcribe'/1,
          'phone.menu.phoneno'/1,
          'phone.menu.extension'/1,
+         'phone.menu.conference'/1,
          'phone.menu.dial'/1,
          'phone.menu.sms'/1
          % 'phone.menu.conference'/1
@@ -185,6 +186,49 @@ u_and_g(W, H, Type) ->
     Twiml = [#client{client = Name2}],
     % this Twiml isn't valid on its loneo!
     Preview = "EXTENSION: " ++ Name2,
+    Resize = #resize{width = 2, height = 2},
+    #spec_val{val = "", preview = Preview, resize = Resize,
+              sp_phone = #phone{twiml = Twiml}}.
+
+'phone.menu.conference'([]) ->
+    'phone.menu.conference'(["Default"]);
+'phone.menu.conference'([Name]) ->
+    'phone.menu.conference'([Name, true]);
+'phone.menu.conference'([Name, Beep]) ->
+    'phone.menu.conference'([Name, Beep, 40]);
+'phone.menu.conference'([Name, Beep, MaxUsers]) ->
+    'phone.menu.conference'([Name, Beep, MaxUsers, false]);
+'phone.menu.conference'([Name, Beep, MaxUsers, StartOnEnter]) ->
+    'phone.menu.conference'([Name, Beep, MaxUsers, StartOnEnter, false]);
+'phone.menu.conference'([Name, Beep, MaxUsers, StartOnEnter, EndOnExit]) ->
+    'phone.menu.conference'([Name, Beep, MaxUsers, StartOnEnter,
+                             EndOnExit, false]);
+'phone.menu.conference'([Name, Beep, MaxUsers, StartOnEnter,
+                         EndOnExit, Muted]) ->
+    'phone.menu.conference'([Name, Beep, MaxUsers, StartOnEnter,
+                         EndOnExit, Muted, none]);
+'phone.menu.conference'([Name, Beep, MaxUsers, StartOnEnter,
+                         EndOnExit, Muted, URL]) ->
+    [Name2] = typechecks:std_strs([Name]),
+    [Beep2] = typechecks:std_bools([Beep]),
+    [Max2] = typechecks:std_ints([MaxUsers]),
+    Max3 = typechecks:in_range(Max2, 1, 40),
+    [Start2, End2, Muted2] = typechecks:std_bools([StartOnEnter,
+                                                   EndOnExit, Muted]),
+    Twiml = case URL of
+                none -> [#conference{conference = Name, beep = Beep2,
+                                     maxParticipants = Max3,
+                                     startConferenceOnEnter = Start2,
+                                     endConferenceOnExit = End2,
+                                     muted = Muted2}];
+                _    -> [#conference{conference = Name, beep = Beep2,
+                                     maxParticipants = Max3,
+                                     startConferenceOnEnter = Start2,
+                                     endConferenceOnExit = End2,
+                                     muted = Muted2, waitUrl = URL}]
+            end,
+    % this Twiml isn't valid on its loneo!
+    Preview = "CONFERENCE: " ++ Name2,
     Resize = #resize{width = 2, height = 2},
     #spec_val{val = "", preview = Preview, resize = Resize,
               sp_phone = #phone{twiml = Twiml}}.
