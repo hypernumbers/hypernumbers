@@ -237,7 +237,7 @@ write_twilio_use_kvs() ->
                          auth_token      = "9248c9a2a25f6914fad9c9fb5b30e69c",
                          application_sid = "APf2b5e475549b404e8ff26ed1a9fb8bcb",
                          site_phone_no   = "+441315101883",
-                         type            = fulll},
+                         type            = full},
     new_db_api:write_kv(Site, ?twilio, AC).
 
 change_hns_record_table() ->
