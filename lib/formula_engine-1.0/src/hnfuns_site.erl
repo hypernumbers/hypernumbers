@@ -62,7 +62,6 @@
         ++ "<input class='hn_addnewuserbutton button' "
         ++ "value='Create User' type='submit' data-id='" ++ Id ++ "'>"
         ++ "<p class='hn_newuserfeedback'>&nbsp;</p>"
-        ++ "</div>"
         ++ "</div>",
     JS = ["/webcomponents/hn.usersandgroups.js"],
     Reload = ["HN.UsersAndGroups.reload_invite_user();"],
