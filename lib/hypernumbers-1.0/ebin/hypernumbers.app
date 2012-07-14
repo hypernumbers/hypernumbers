@@ -57,6 +57,7 @@
                   simplexml,
                   sitemaster_sup,
                   site_sup,
+                  softphone_srv,
                   status_srv,
                   tconv,
                   test,
@@ -68,5 +69,5 @@
                  ]},
   {registered,   [ ]},
   {included_applications, []},
-  {applications, [kernel, stdlib, crypto, inets, mnesia, ssl]},
+  {applications, [kernel, sasl, stdlib, crypto, inets, mnesia, ssl]},
   {mod,		{hypernumbers_app, []}}]}.
