@@ -23,6 +23,9 @@
 
 -define(SERVER, ?MODULE).
 
+-include("twilio.hrl").
+-include("phonecall_srv.hrl").
+
 -record(state, {}).
 
 %%%===================================================================
@@ -39,9 +42,11 @@
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
-check(List) ->
-    io:format("List is ~p~n", [List]),
-    ok.
+check(State) ->
+    io:format("Initial params is ~p~n", [State#pc_state.initial_params]),
+    Number = #number{number = "0044776251669"},
+    Dial = #dial{body = [Number]},
+    {[Dial], State}.
 
 %%%===================================================================
 %%% gen_server callbacks

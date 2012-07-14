@@ -220,10 +220,9 @@ create_p2(Type) ->
                             site_phone_no = Site_Phone} = AC,
             Log = #contact_log{idx = get(idx), type = "outbound call",
                                to = "+yerk"},
-            TwiML = [
-                     #dial{callerId = Site_Phone, record = true,
-                           body = [#number{number = "+yerk"}]}
-                    ],
+            TwiML = [#function_EXT{title = "make phone call",
+                                   module = "softphone_srv",
+                                   fn = "check"}],
             Capability = [{client_outgoing, AppSID, []}],
             Config = make_config(Type2),
             Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
