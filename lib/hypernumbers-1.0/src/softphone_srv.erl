@@ -11,7 +11,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0]).
+-export([start_link/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -39,8 +39,13 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+start_link(Site) ->
+        case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("...starting softphone_srv for ~p~n", [Site]);
+       _Other     -> ok
+    end,
+    Id = hn_util:site_to_atom(Site, "_softphone"),
+    gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
 check(State) ->
     io:format("Initial params is ~p~n", [State#pc_state.initial_params]),
@@ -63,7 +68,7 @@ check(State) ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([]) ->
+init([_Site]) ->
     {ok, #state{}}.
 
 %%--------------------------------------------------------------------
