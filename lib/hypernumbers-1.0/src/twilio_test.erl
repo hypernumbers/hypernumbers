@@ -5,7 +5,8 @@
 -export([
          testing1/0,
          testing2/0,
-         testing3/0
+         testing3/0,
+         testing4/0
         ]).
 
 % normal call
@@ -37,6 +38,13 @@ testing3() ->
     io:format("Ret2 is ~p~n", [Ret2]),
     Ret3 = hn_twilio_mochi:handle_c2_DEBUG(complete_inbound_call(Sid), ?SITE),
     io:format("Ret3 is ~p~n", [Ret3]),
+    ok.
+
+% setup an outbound call
+testing4() ->
+    Sid = integer_to_list(util2:get_timestamp()),
+    Ret1 = hn_twilio_mochi:handle_c2_DEBUG(start_outbound_call(Sid), ?SITE),
+    io:format("Ret1 is ~p~n", [Ret1]),
     ok.
 
 
@@ -90,4 +98,13 @@ inprogress_with_recording(Sid) ->
      {twilio_inprogress,"*",undefined},
      {twilio_recording,"REc44d27ac765c0129e9cd819409735543","5",
       "http://api.twilio.com/2010-04-01/Accounts/AC7a076e30da6d49119b335d3a6de43844/Recordings/REc44d27ac765c0129e9cd819409735543"}}.
+
+start_outbound_call(SID) ->
+    {twilio,"AC7a076e30da6d49119b335d3a6de43844",
+     "AP93d273f3cc624008805842376d561bed","inbound","ringing",
+     SID,"2010-04-01",
+     [{"hypertag",
+       "f8a6711f90a55a09fa54410966863564b97493ad20742b0854601dcf6602d319a441041b334e53428f08c0d97d0f6c9ce568a23ed66b0d6d66e0bbde40bfabc3d770d2043cd7b5fc75f8f9225f6aa9127bdc22c6a87e410f3d2bbd3cc8ea0d03f2ec663145f6958c9358c00e775cdae09b487f43d86e2fcb8683a06abc1fc53d6ae7d7c095cc307cb6be17d623cef9d3"},
+         {"site","http://hypernumbers.dev:9000"}],
+     null,null,null,null,null,null,null}.
 
