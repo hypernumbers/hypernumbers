@@ -216,8 +216,7 @@ create_p2(Type) ->
         ?ERRVAL_PAYONLY ->
             ?ERRVAL_PAYONLY;
         AC ->
-            #twilio_account{application_sid = AppSID,
-                            site_phone_no = Site_Phone} = AC,
+            #twilio_account{application_sid = AppSID} = AC,
             Log = #contact_log{idx = get(idx), type = "outbound call",
                                to = "+yerk"},
             TwiML = [#function_EXT{title = "make phone call",
@@ -287,9 +286,8 @@ make_config(_) -> {"permissions",
 'phone.in'([]) -> 'phone.in'(["Default"]);
 'phone.in'([Name]) -> ?check_paid(fun 'phone.in2'/2, [Name], inbound).
 
-'phone.in2'([Name], AC) ->
+'phone.in2'([Name], _AC) ->
     [Name2] = typechecks:std_strs([Name]),
-    #twilio_account{application_sid = AppSID} = AC,
     Log = #contact_log{idx = get(idx), type = "inbound call", to = "Name2"},
     TwiML = [],
     Capability = [{client_incoming, Name}],
