@@ -18,7 +18,9 @@
 
 % utilities for using state stuff
 -export([
-         get_log/1
+         get_log/1,
+         get_hypertag/1,
+         get_site/1
         ]).
 
 % export for tidying up
@@ -311,7 +313,7 @@ apply_function(Module, Function, State) ->
     NewFSM3  = store(NewCState, NewFSM2),
     NewCBs   = lists:merge(CBs, CBs2),
     NewState = State#pc_state{fsm = NewFSM3, history = NewHist,
-                           eventcallbacks = NewCBs},
+                              eventcallbacks = NewCBs},
     NewState.
 
 store([], Orddict)           -> Orddict;
@@ -386,3 +388,14 @@ make_log(Type, #twilio{} = Rec) ->
                  from = F1, to = T1}.
 
 get_log(#pc_state{} = State) -> State#pc_state.log.
+
+get_hypertag(#pc_state{} = State) -> get_(State, "hypertag").
+
+get_site(#pc_state{} = State) -> get_(State, "site").
+
+get_(State, Key) ->
+    InitParam = State#pc_state.initial_params,
+    case proplists:lookup(Key, InitParam#twilio.custom_params) of
+        none       -> none;
+        {Key, Val} -> Val
+    end.
