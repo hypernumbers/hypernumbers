@@ -18,11 +18,12 @@
          terminate/2, code_change/3]).
 
 -export([
-         check/1
+         make_free_dial_call/1
         ]).
 
 -define(SERVER, ?MODULE).
 
+-include("spriki.hrl").
 -include("twilio.hrl").
 -include("phonecall_srv.hrl").
 
@@ -47,11 +48,26 @@ start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_softphone"),
     gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
-check(State) ->
-    io:format("Initial params is ~p~n", [State#pc_state.initial_params]),
-    Number = #number{number = "0044776251669"},
-    Dial = #dial{body = [Number]},
-    {[Dial], State}.
+make_free_dial_call(State) ->
+    HyperTag = phonecall_srv:get_hypertag(State),
+    S = phonecall_srv:get_site(State),
+    P = ["_services", "phone"],
+    io:format("HyperTag is ~p~n", [HyperTag]),
+    HT = passport:open_hypertag(S, P, HyperTag),
+    io:format("HT is ~p~n", [HT]),
+    {ok, _Uid, _EMail, [Idx, _OrigEmail], _, _} = HT,
+    XRefX = new_db_api:idx_to_xrefX(S, Idx),
+    #xrefX{path = OrigP, obj = OrigCell} = XRefX,
+    OrigRef = hn_util:xrefX_to_refX(XRefX),
+    io:format("OrigRef is ~p~n", [OrigRef]),
+    [Phone] = new_db_api:get_phone(OrigRef),
+    Config = Phone#phone.softphone_config,
+    % the config has to be "free dial" or this is a bummer
+    % and should wig out
+    "free dial" = get_perms(Config, "phone_out_permissions"),
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    TwiML = gen_server:call({global, Id}, {get_twiml, OrigP, OrigCell}),
+    {TwiML, []}.
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -85,8 +101,11 @@ init([_Site]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(_Request, _From, State) ->
-    Reply = ok,
+handle_call(Request, _From, State) ->
+    io:format("Request is ~p~n", [Request]),
+    Number = #number{number="++44776251669"},
+    Dial = #dial{body = [Number]},
+    Reply = [Dial],
     {reply, Reply, State}.
 
 %%--------------------------------------------------------------------
@@ -143,3 +162,9 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+get_perms({"permissions", {struct, List}}, Key) ->
+    case proplists:lookup(Key, List) of
+        none       -> none;
+        {Key, Val} -> Val
+    end.
+

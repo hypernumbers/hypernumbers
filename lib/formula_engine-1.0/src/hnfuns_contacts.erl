@@ -218,10 +218,10 @@ create_p2(Type) ->
         AC ->
             #twilio_account{application_sid = AppSID} = AC,
             Log = #contact_log{idx = get(idx), type = "outbound call",
-                               to = "+yerk"},
+                               to = ""},
             TwiML = [#function_EXT{title = "make phone call",
                                    module = "softphone_srv",
-                                   fn = "check"}],
+                                   fn = "make_free_dial_call"}],
             Capability = [{client_outgoing, AppSID, []}],
             Config = make_config(Type2),
             Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
