@@ -18,7 +18,10 @@
          terminate/2, code_change/3]).
 
 -export([
-         make_free_dial_call/1
+         make_free_dial_call/1,
+         register_dial/3,
+         register_phone/2,
+         has_phone/2
         ]).
 
 -define(SERVER, ?MODULE).
@@ -27,7 +30,7 @@
 -include("twilio.hrl").
 -include("phonecall_srv.hrl").
 
--record(state, {}).
+-record(state, {softphones = []}).
 
 %%%===================================================================
 %%% API
@@ -48,18 +51,27 @@ start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_softphone"),
     gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
+has_phone(S, Uid) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {has_phone, Uid}).
+
+register_phone(#refX{site = S, path = P, obj = O}, Uid) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {register_phone, P, O, Uid}).
+
+register_dial(#refX{site = S, path = P, obj = O}, Uid, Numbers) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {register_dial, P, O, Uid, Numbers}).
+
 make_free_dial_call(State) ->
     HyperTag = phonecall_srv:get_hypertag(State),
     S = phonecall_srv:get_site(State),
     P = ["_services", "phone"],
-    io:format("HyperTag is ~p~n", [HyperTag]),
     HT = passport:open_hypertag(S, P, HyperTag),
-    io:format("HT is ~p~n", [HT]),
     {ok, _Uid, _EMail, [Idx, _OrigEmail], _, _} = HT,
     XRefX = new_db_api:idx_to_xrefX(S, Idx),
     #xrefX{path = OrigP, obj = OrigCell} = XRefX,
     OrigRef = hn_util:xrefX_to_refX(XRefX),
-    io:format("OrigRef is ~p~n", [OrigRef]),
     [Phone] = new_db_api:get_phone(OrigRef),
     Config = Phone#phone.softphone_config,
     % the config has to be "free dial" or this is a bummer
@@ -101,12 +113,33 @@ init([_Site]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(Request, _From, State) ->
-    io:format("Request is ~p~n", [Request]),
-    Number = #number{number="++44776251669"},
-    Dial = #dial{body = [Number]},
-    Reply = [Dial],
+handle_call({get_twiml, Path, Obj}, _From, State) ->
+    io:format("in get_twiml for ~p ~p~n", [Path, Obj]),
+    io:format("State is ~p~n", [State]),
+    Key = {Path, Obj},
+    {_, _, Numbers} = lists:keyfind(Key, 1, State#state.softphones),
+    Reply = make_dial(Numbers),
+    {reply, Reply, State};
+handle_call({register_dial, Path, Obj, Uid, Numbers}, _From, State) ->
+    io:format("in register_dial for ~p ~p ~p~n", [Path, Obj, Uid]),
+    Softphones = State#state.softphones,
+    Key = {Path, Obj},
+    NewSoftphones = lists:keystore(Key, 1, Softphones, {Key, Uid, Numbers}),
+    {reply, ok, State#state{softphones = NewSoftphones}};
+handle_call({register_phone, Path, Obj, Uid}, _From, State) ->
+    io:format("in register_phone for ~p ~p ~p~n", [Path, Obj, Uid]),
+    Softphones = State#state.softphones,
+    Key = {Path, Obj},
+    NewSoftphones = lists:keystore(Key, 1, Softphones, {Key, Uid, []}),
+    {reply, ok, State#state{softphones = NewSoftphones}};
+handle_call({has_phone, Uid}, _From, State) ->
+    io:format("in has_phone for ~p~n", [Uid]),
+    Reply = case lists:keyfind(Uid, 2, State#state.softphones) of
+                false -> false;
+                _     -> true
+            end,
     {reply, Reply, State}.
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -168,3 +201,8 @@ get_perms({"permissions", {struct, List}}, Key) ->
         {Key, Val} -> Val
     end.
 
+make_dial(Numbers) -> make_d2(Numbers, []).
+
+make_d2([], Acc)      -> #dial{body = lists:reverse(Acc)};
+make_d2([H | T], Acc) -> NewAcc = #number{number = H},
+                         make_d2(T, [NewAcc | Acc]).

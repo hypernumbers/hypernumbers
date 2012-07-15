@@ -745,7 +745,7 @@ iget(#refX{site = Site}, cell,  #qry{view=?PHONE}, #env{accept = html} = Env) ->
     Dir = hn_util:viewroot(Site) ++ "/",
     serve_html(200, Env, [Dir, File]);
 
-iget(Ref, cell,  #qry{view=?PHONE} = _Qry, #env{accept = json, uid = Uid} = Env) ->
+iget(Ref, cell,  #qry{view=?PHONE}, #env{accept = json, uid = Uid} = Env) ->
     case  new_db_api:get_phone(Ref) of
         []      -> json(Env, {struct, [{"error", "no phone at this url"}]});
         [Phone] -> JSON = hn_twilio_mochi:get_phone(Ref, Phone, Uid),
@@ -2084,7 +2084,7 @@ run_actions(#refX{} = RefX, Env, {struct, [{Act, {struct, L}}]}, Uid)
   when Act == "dial" ->
     [{"numbers", {array, Numbers}}] = L,
     ok = status_srv:update_status(Uid, RefX, "made a phone call"),
-    Ret = softphone_srv:register_dial(RefX, Numbers),
+    Ret = softphone_srv:register_dial(RefX, Uid, Numbers),
     io:format("Ret is ~p~n", [Ret]),
     json(Env, "success");
 run_actions(#refX{site = S, path = P} = RefX, Env,

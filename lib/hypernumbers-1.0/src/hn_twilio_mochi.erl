@@ -39,37 +39,52 @@
          handle_c2_DEBUG/2
         ]).
 
-get_phone(#refX{site = _S},
+get_phone(#refX{},
           #phone{capability = [{manual_email, _To, _Fr, _CC, _Su, _Cn}]} = P,
           _Uid) ->
-    {struct, lists:flatten([P#phone.softphone_config,
-                            P#phone.softphone_type])};
+    Json = lists:flatten([
+                          P#phone.softphone_config,
+                          P#phone.softphone_type
+                         ]),
+    {struct, Json};
+
 get_phone(#refX{site = _S},
           #phone{capability = [{manual_sms, PhoneNo, Msg}]} = P,
           _Uid) ->
-    {struct, lists:flatten([{"phoneno", PhoneNo},
+    {struct, lists:flatten([
+                            {"phoneno", PhoneNo},
                             {"msg", Msg},
                             P#phone.softphone_config,
-                            P#phone.softphone_type])};
+                            P#phone.softphone_type
+                           ])};
 get_phone(#refX{site = S},
           #phone{capability = [{client_outgoing, _, _}] = C} = P, Uid) ->
     HyperTag = get_hypertag(S, P, Uid),
     io:format("HyperTag is ~p~n", [HyperTag]),
     Token = get_phonetoken(S, C),
-    {struct, lists:flatten([{"phonetoken", Token},
+    {ok, User} = passport:uid_to_email(Uid),
+    IsAlreadyReg = softphone_srv:has_phone(S, Uid),
+    UJson = {"user", {struct, [{"name", User},
+                               {"already_registered", IsAlreadyReg}]}},
+    {struct, lists:flatten([
+                            {"phonetoken", Token},
                             {"hypertag", HyperTag},
                             {"site", S},
                             P#phone.softphone_config,
-                            P#phone.softphone_type])};
+                            P#phone.softphone_type,
+                            UJson
+                           ])};
 get_phone(#refX{site = S},
           #phone{capability = [{client_incoming, Ext}] = C} = P, Uid) ->
     HyperTag = get_hypertag(S, P, Uid),
     Token = get_phonetoken(S, C),
-    {struct, lists:flatten([{"phonetoken", Token},
+    {struct, lists:flatten([
+                            {"phonetoken", Token},
                             {"hypertag", HyperTag},
                             {"ext", Ext},
                             P#phone.softphone_config,
-                            P#phone.softphone_type])}.
+                            P#phone.softphone_type
+                           ])}.
 
 view_recording(#refX{site = S, path = P}, HyperTag) ->
     HT = passport:open_hypertag(S, P, HyperTag),
