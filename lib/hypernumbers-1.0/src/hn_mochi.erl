@@ -2080,6 +2080,13 @@ run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, _Uid)
         _ ->
             respond(404, Env)
     end;
+run_actions(#refX{} = RefX, Env, {struct, [{Act, {struct, L}}]}, Uid)
+  when Act == "dial" ->
+    [{"numbers", {array, Numbers}}] = L,
+    ok = status_srv:update_status(Uid, RefX, "made a phone call"),
+    Ret = softphone_srv:register_dial(RefX, Numbers),
+    io:format("Ret is ~p~n", [Ret]),
+    json(Env, "success");
 run_actions(#refX{site = S, path = P} = RefX, Env,
             {struct, [{_, {array, Json}}]}, Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->

@@ -245,14 +245,19 @@ make_type(3) -> {"capabilities", {struct, [{"phone_in",  "false"},
 make_type(_) -> {"capabilities", {struct, [{"phone_in",  "false"},
                                            {"phone_out", "false"}]}}.
 
-make_config(_) -> {"permissions",
-                   {struct, [
-                             {"phone_out_permissions", "free dial"},
-                             {"sms_out_permissions",  "free all"},
-                             {"email_permissions",     "free all"}
-                            ]
-                   }
-                  }.
+make_config(_) ->
+    {"config", {struct, [
+                         {"phone_out_permissions",     "free dial"},
+                         {"sms_out_permissions",       "free all"},
+                         {"email_permissions",         "free all"},
+                         {"default_dialling_code",     false},
+                         {"extension",                 "1234"},
+                         {"groups",                    {array, [
+                                                                "Sales",
+                                                                "Marketing"
+                                                               ]}}
+                        ]}
+    }.
 
 % TODO make it handle errors better
 'phone.out'([PhNo, Prefix]) ->
