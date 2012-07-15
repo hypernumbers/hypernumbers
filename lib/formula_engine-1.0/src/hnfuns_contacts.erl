@@ -209,6 +209,9 @@ check(To, Su, Cn, CC, Reply) ->
     create_p2(Type).
 
 create_p2(Type) ->
+    % this is a self referencing formula that needs to rewrite if the
+    % cell moves
+    put(selfreference, true),
     [Type2] = typechecks:std_ints([Type]),
     Type3 = make_type(Type2),
     Site = get(site),
@@ -227,7 +230,7 @@ create_p2(Type) ->
             Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
                            softphone_type = Type3, softphone_config = Config},
             Headline = "Make Phone Call",
-            ButtonTxt = "Dandle",
+            ButtonTxt = "Create Phone",
             phone(Phone, "Phone Out: ", Headline, ButtonTxt)
     end.
 
@@ -258,6 +261,9 @@ make_config(_) -> {"permissions",
     'phone.out2'(PhNo, "").
 
 'phone.out2'(PhNo, Prefix) ->
+    % this is a self referencing formula that needs to rewrite if the
+    % cell moves
+    put(selfreference, true),
     Site = get(site),
     case contact_utils:get_twilio_account(Site) of
         ?ERRVAL_PAYONLY ->
@@ -287,6 +293,9 @@ make_config(_) -> {"permissions",
 'phone.in'([Name]) -> ?check_paid(fun 'phone.in2'/2, [Name], inbound).
 
 'phone.in2'([Name], _AC) ->
+    % this is a self referencing formula that needs to rewrite if the
+    % cell moves
+    put(selfreference, true),
     [Name2] = typechecks:std_strs([Name]),
     Log = #contact_log{idx = get(idx), type = "inbound call", to = "Name2"},
     TwiML = [],
