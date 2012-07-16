@@ -255,7 +255,15 @@ make_config(_) ->
                          {"groups",                    {array, [
                                                                 "Sales",
                                                                 "Marketing"
-                                                               ]}}
+                                                               ]}},
+                         {"phone_no",                  "+12345"},
+                         {"sms_msg",                  "yowza"},
+                         {"email_to",                  "gordon@vixo.com"},
+                         {"email_cc",                  "debug@vixo.com"},
+                         {"email_from",                "root@vixo.com"},
+                         {"email_subject",             "Hasta Victoria Sempre"},
+                         {"email_body",                "erk..."},
+                         {"email_signature",           "Respec'"}
                         ]}
     }.
 

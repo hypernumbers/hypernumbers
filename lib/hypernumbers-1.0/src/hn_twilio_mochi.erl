@@ -16,7 +16,12 @@
 -export([
          redir/1,
          handle_call/2,
-         handle_phone_post/3
+         handle_webcontrol_post/4
+        ]).
+
+% need to get rid of
+-export([
+         handle_phone_post_DEPR/3
         ]).
 
 % setup the softphone
@@ -101,9 +106,31 @@ view_recording(#refX{site = S, path = P}, HyperTag) ->
                                      no_recording
                              end.
 
-handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
+handle_phone_post_DEPR(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
     case Body of
         [{"manual_sms", {struct, Args}}] ->
+            Log = Phone#phone.log,
+            {ok, Email} = passport:uid_to_email(Uid),
+            case handle_sms_DEPR(Ref, Phone, Args) of
+                {ok, ok}   ->
+                    log(S, Log#contact_log{from = Email, status = "ok"}),
+                    {ok, 200};
+                {error, N} ->
+                    log(S, Log#contact_log{from = Email, status = "failed"}),
+                    {error, N}
+            end;
+        [{"manual_email", {struct, Args}}] ->
+            ok = handle_email_DEPR(Phone, Args),
+            {ok, Email} = passport:uid_to_email(Uid),
+            Log = Phone#phone.log,
+            log(S, Log#contact_log{from = Email}),
+            {ok, 200};
+        _  -> {error, 401}
+    end.
+
+handle_webcontrol_post(#refX{site = S} = Ref, Phone, Payload, Uid) ->
+    case Payload of
+        {"send_sms", {struct, Args}} ->
             Log = Phone#phone.log,
             {ok, Email} = passport:uid_to_email(Uid),
             case handle_sms(Ref, Phone, Args) of
@@ -114,7 +141,7 @@ handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
                     log(S, Log#contact_log{from = Email, status = "failed"}),
                     {error, N}
             end;
-        [{"manual_email", {struct, Args}}] ->
+        {"send_email", {struct, Args}} ->
             ok = handle_email(Phone, Args),
             {ok, Email} = passport:uid_to_email(Uid),
             Log = Phone#phone.log,
@@ -124,6 +151,32 @@ handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
     end.
 
 handle_sms(Ref, Phone, Args) ->
+    #phone{softphone_config = Cf} = Phone,
+    % check that the phone no and msg in the request matches those
+    % in the capability
+    % * sms
+    %   - fixed all
+    %   - free message
+    %   - free all
+    SMSConfig = read_config(Cf, "sms_out_permissions"),
+    IsValid = case SMSConfig of
+                  "free all"     -> true;
+                  "free message" -> No = read_config(Cf, "phone_no"),
+                                    validate([No], Args);
+                  "fixed all"    -> No = read_config(Cf, "phone_no"),
+                                    Msg = read_config(Cf, "sms_msg"),
+                                    validate([No, Msg], Args)
+              end,
+    case IsValid of
+        false -> {error, 401};
+        true  -> #refX{site = S} = Ref,
+                 AC = contact_utils:get_twilio_account(S),
+                 {"phone_no", P2} = lists:keyfind("phone_no", 1, Args),
+                 {"sms_msg", Msg2} = lists:keyfind("sms_msg", 1, Args),
+                 contact_utils:post_sms(AC, P2, Msg2)
+    end.
+
+handle_sms_DEPR(Ref, Phone, Args) ->
     #phone{capability = [{manual_sms, P, Msg}]} = Phone,
     % check that the phone no and msg in the request matches those
     % in the capability
@@ -135,6 +188,41 @@ handle_sms(Ref, Phone, Args) ->
     end.
 
 handle_email(Phone, Args) ->
+    % check that the phone no and msg in the request matches those
+    % in the capability
+    % * email
+    %   - fixed all
+    %   - free all
+    %   - free body
+    #phone{softphone_config = Cf} = Phone,
+    EmailConfig = read_config(Cf, "email_permissions"),
+    IsValid = case EmailConfig of
+                  "free all" -> true;
+                  "free body" -> Subject = read_config(Cf, "email_subject"),
+                                 Body    = read_config(Cf, "email_body"),
+                                 From    = read_config(Cf, "email_from"),
+                                 validate([From, Subject, Body], Args);
+                  "fixed all" -> To      = read_config(Cf, "email_to"),
+                                 CC      = read_config(Cf, "email_cc"),
+                                 From    = read_config(Cf, "email_from"),
+                                 Subject = read_config(Cf, "email_subject"),
+                                 Body    = read_config(Cf, "email_body"),
+                                 validate([To, CC, From, Subject, Body], Args)
+              end,
+    case IsValid of
+        false ->
+            {error, 401};
+        true  ->
+            {"email_to",      To2} = lists:keyfind("email_to",      1, Args),
+            {"email_cc",      CC2} = lists:keyfind("email_cc",      1, Args),
+            {"email_from",    Fr2} = lists:keyfind("email_from",    1, Args),
+            {"email_subject", S2}  = lists:keyfind("email_subject", 1, Args),
+            {"email_body",    B2}  = lists:keyfind("email_body",    1, Args),
+
+            ok = hn_net_util:email(To2, CC2, Fr2, S2, B2)
+    end.
+
+handle_email_DEPR(Phone, Args) ->
     #phone{capability = Capability} = Phone,
     [{_, To, Fr, CC, Su, Cn}] = Capability,
     Caps = [{"to", To},
@@ -360,3 +448,6 @@ get_hypertag(Site, Phone, Uid) ->
     P2 = [Idx, Email],
     passport:create_hypertag(Site, IncomingPath, Uid, Email, P2, Age).
 
+read_config({"config", {struct, List}}, Perm) ->
+    {Perm, Val} = lists:keyfind(Perm, 1, List),
+    Val.

@@ -846,13 +846,14 @@ iget(Ref, _Type, Qry, Env) ->
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
 
 % a post to the phone view - need to check there is a control
+%% TODO remove this clause
 ipost(#refX{obj = {cell, _}} = Ref, #qry{view = ?PHONE},
                #env{accept = json} = Env) ->
     case  new_db_api:get_phone(Ref) of
         []      ->
             json(Env, {struct, [{"error", "no phone at this url"}]});
         [Phone] ->
-            case hn_twilio_mochi:handle_phone_post(Ref, Phone, Env) of
+            case hn_twilio_mochi:handle_phone_post_DEPR(Ref, Phone, Env) of
                 {ok, 200}    -> json(Env, "success");
                 {error, 401} -> respond(401, Env);
                 _            -> '500'(Env)
@@ -2082,11 +2083,31 @@ run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, _Uid)
     end;
 run_actions(#refX{} = RefX, Env, {struct, [{Act, {struct, L}}]}, Uid)
   when Act == "dial" ->
-    [{"numbers", {array, Numbers}}] = L,
-    ok = status_srv:update_status(Uid, RefX, "made a phone call"),
-    Ret = softphone_srv:register_dial(RefX, Uid, Numbers),
-    io:format("Ret is ~p~n", [Ret]),
-    json(Env, "success");
+    case  new_db_api:get_phone(RefX) of
+        []      ->
+            json(Env, {struct, [{"error", "no phone at this url"}]});
+        [_Phone] ->
+            io:format("Need to check perms on Phone before allowing...~n"),
+            [{"numbers", {array, Numbers}}] = L,
+            ok = status_srv:update_status(Uid, RefX, "made a phone call"),
+            Ret = softphone_srv:register_dial(RefX, Uid, Numbers),
+            io:format("Ret is ~p~n", [Ret]),
+            json(Env, "success")
+    end;
+% also need to remove direct ipost clause for old email
+run_actions(#refX{} = RefX, Env, {struct, [{Act, {struct, _L}} = Payload]}, Uid)
+  when Act == "send_sms" orelse Act == "send_email" ->
+    case  new_db_api:get_phone(RefX) of
+        []      ->
+            json(Env, {struct, [{"error", "no phone at this url"}]});
+        [Phone] ->
+            case hn_twilio_mochi:handle_webcontrol_post(RefX, Phone,
+                                                        Payload, Uid) of
+                {ok, 200}    -> json(Env, "success");
+                {error, 401} -> respond(401, Env);
+                _            -> '500'(Env)
+            end
+    end;
 run_actions(#refX{site = S, path = P} = RefX, Env,
             {struct, [{_, {array, Json}}]}, Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
