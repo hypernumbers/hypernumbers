@@ -1,10 +1,11 @@
 %%%-------------------------------------------------------------------
-%%% @author Gordon Guthrie <gordon@gordon.dev>
-%%% @copyright (C) 2012, Gordon Guthrie
-%%% @doc
+%%% @author     Gordon Guthrie
+%%% @copyright  (C) 2012, Hypernumbers Ltd
+%%% @doc        registers phone handsets and maintains their
+%%%             state
 %%%
 %%% @end
-%%% Created : 13 Jul 2012 by Gordon Guthrie <gordon@gordon.dev>
+%%% Created :   13 Jul 2012 by <gordon@vixo.com>
 %%%-------------------------------------------------------------------
 -module(softphone_srv).
 
@@ -17,20 +18,34 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
+% normal api
 -export([
          make_free_dial_call/1,
-         register_dial/3,
-         register_phone/2,
-         has_phone/2
+         reg_dial/3,
+         reg_phone/2,   % register a phone
+         break_phone/2, % sets a break when the socket times out - see expire/1
+         unreg_phone/2, % actually unregisters the phone
+         has_phone/2,
+         dump_phones/1
+        ]).
+
+% for use internally by softphone_srv only
+% expire is used to check if a softphone has really gone away
+% or it is just reregistering with a new TCP connection
+-export([
+         expire/2
         ]).
 
 -define(SERVER, ?MODULE).
+-define(TIMEOUT, 3000).
 
 -include("spriki.hrl").
 -include("twilio.hrl").
 -include("phonecall_srv.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
--record(state, {softphones = []}).
+-record(state, {site, softphones = []}).
+-record(phone_status, {uid, key, away = false, numbers}).
 
 %%%===================================================================
 %%% API
@@ -51,17 +66,35 @@ start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_softphone"),
     gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
+dump_phones(S) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, dump_phones).
+
 has_phone(S, Uid) ->
     Id = hn_util:site_to_atom(S, "_softphone"),
     gen_server:call({global, Id}, {has_phone, Uid}).
 
-register_phone(#refX{site = S, path = P, obj = O}, Uid) ->
+expire(#refX{site = S}, Uid) ->
     Id = hn_util:site_to_atom(S, "_softphone"),
-    gen_server:call({global, Id}, {register_phone, P, O, Uid}).
+    {ok, _TRef} = timer:apply_after(?TIMEOUT, gen_server, call,
+                                    [{global, Id}, {expire, Uid}]),
+    ok.
 
-register_dial(#refX{site = S, path = P, obj = O}, Uid, Numbers) ->
+break_phone(#refX{site = S} = Ref, Uid) ->
     Id = hn_util:site_to_atom(S, "_softphone"),
-    gen_server:call({global, Id}, {register_dial, P, O, Uid, Numbers}).
+    gen_server:call({global, Id}, {break_phone, Ref, Uid}).
+
+unreg_phone(#refX{site = S}, Uid) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {unreg_phone, Uid}).
+
+reg_phone(#refX{site = S}, Uid) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {reg_phone, Uid}).
+
+reg_dial(#refX{site = S, path = P, obj = O}, Uid, Numbers) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {reg_dial, P, O, Uid, Numbers}).
 
 make_free_dial_call(State) ->
     HyperTag = phonecall_srv:get_hypertag(State),
@@ -96,8 +129,8 @@ make_free_dial_call(State) ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([_Site]) ->
-    {ok, #state{}}.
+init([Site]) ->
+    {ok, #state{site = Site}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -113,28 +146,55 @@ init([_Site]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_call(dump_phones, _From, State) ->
+    io:format("about to dump softphones for ~p~n", [State#state.site]),
+    Fun = fun(#phone_status{uid = U, key = K, away = A, numbers = N}) ->
+                  {ok, Email} = passport:uid_to_email(U),
+                  io:format("Phone for ~p: on ~p~n- is away?     : ~p~n"
+                            ++ "- with numbers : ~p~n",
+                            [Email, K, A, N])
+          end,
+    [Fun(X) || X <- State#state.softphones],
+    {reply, ok, State};
 handle_call({get_twiml, Path, Obj}, _From, State) ->
     io:format("in get_twiml for ~p ~p~n", [Path, Obj]),
-    io:format("State is ~p~n", [State]),
     Key = {Path, Obj},
-    {_, _, Numbers} = lists:keyfind(Key, 1, State#state.softphones),
-    Reply = make_dial(Numbers),
+    #phone_status{numbers = N} = lists:keyfind(Key, 2, State#state.softphones),
+    Reply = make_dial(N),
     {reply, Reply, State};
-handle_call({register_dial, Path, Obj, Uid, Numbers}, _From, State) ->
-    io:format("in register_dial for ~p ~p ~p~n", [Path, Obj, Uid]),
+handle_call({reg_dial, Path, Obj, Uid, Numbers}, _From, State) ->
     Softphones = State#state.softphones,
     Key = {Path, Obj},
-    NewSoftphones = lists:keystore(Key, 1, Softphones, {Key, Uid, Numbers}),
+    NewPhone = #phone_status{uid = Uid, key = Key, numbers = Numbers},
+    NewSoftphones = lists:keyreplace(Uid, 2, Softphones, NewPhone),
     {reply, ok, State#state{softphones = NewSoftphones}};
-handle_call({register_phone, Path, Obj, Uid}, _From, State) ->
-    io:format("in register_phone for ~p ~p ~p~n", [Path, Obj, Uid]),
+handle_call({unreg_phone, Uid}, _From, State) ->
     Softphones = State#state.softphones,
-    Key = {Path, Obj},
-    NewSoftphones = lists:keystore(Key, 1, Softphones, {Key, Uid, []}),
+    NewSoftphones = lists:keydelete(Uid, 2, Softphones),
+    {reply, ok, State#state{softphones = NewSoftphones}};
+handle_call({reg_phone, Uid}, _From, State) ->
+    Softphones = State#state.softphones,
+    NewPhone = #phone_status{uid = Uid},
+    NewSoftphones = lists:keystore(Uid, 2, Softphones, NewPhone),
+    {reply, ok, State#state{softphones = NewSoftphones}};
+handle_call({expire, Uid}, _From, State) ->
+    Softphones = State#state.softphones,
+    Phone = lists:keysearch(Uid, 2, Softphones),
+    #phone_status{away = A} = Phone,
+    NewSoftphones = case A of
+                        break -> lists:keydelete(Uid, 2, Softphones);
+                        _     -> Softphones
+                    end,
+    {reply, ok, State#state{softphones = NewSoftphones}};
+handle_call({break_phone, Ref, Uid}, _From, State) ->
+    Softphones = State#state.softphones,
+    Phone = lists:keysearch(Uid, 2, Softphones),
+    NewPhone = Phone#phone_status{away = break},
+    NewSoftphones = lists:keystore(Uid, 2, Softphones, NewPhone),
+    ok = softphone_srv:expire(Ref, Uid),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({has_phone, Uid}, _From, State) ->
-    io:format("in has_phone for ~p~n", [Uid]),
-    Reply = case lists:keyfind(Uid, 2, State#state.softphones) of
+    Reply = case lists:keyfind(Uid, 1, State#state.softphones) of
                 false -> false;
                 _     -> true
             end,
@@ -206,3 +266,9 @@ make_dial(Numbers) -> make_d2(Numbers, []).
 make_d2([], Acc)      -> #dial{body = lists:reverse(Acc)};
 make_d2([H | T], Acc) -> NewAcc = #number{number = H},
                          make_d2(T, [NewAcc | Acc]).
+
+%%%===================================================================
+%% EUnit Tests
+%%%===================================================================
+%testA19{{S, P}) ->
+

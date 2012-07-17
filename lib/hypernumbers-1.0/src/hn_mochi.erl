@@ -845,6 +845,32 @@ iget(Ref, _Type, Qry, Env) ->
 
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
 
+% register the handset
+ipost(#refX{path = ["_services", "phone", "register"]} = Ref, #qry{} = _Qry,
+               #env{mochi = Mochi, accept = json, body = Body, uid = U} = Env) ->
+    Sock = Mochi:get(socket),
+    inet:setopts(Sock, [{active, once}]),
+
+    % make sure the user isn't being spoofed when registering the phone
+    [{"user", Email}] = Body,
+    {ok, U2} = passport:email_to_uid(Email),
+    case U of
+        U2 -> ok = softphone_srv:reg_phone(Ref, U2),
+              % now keep the socket alive for ever
+              receive
+                  {tcp_closed, Sock} -> ok = softphone_srv:unreg_phone(Ref, U2),
+                                        ok;
+                  {error, timeout}   -> ok = softphone_srv:unreg_phone(Ref, U2),
+                                        json(Env, <<"timeout">>)
+              after
+                  600000 ->
+                      ok = softphone_srv:unreg_phone(Ref, U2),
+                    json(Env,  <<"timeout">>)
+              end,
+              json(Env, "success");
+        _  -> respond(401, Env)
+    end;
+
 % a post to the phone view - need to check there is a control
 %% TODO remove this clause
 ipost(#refX{obj = {cell, _}} = Ref, #qry{view = ?PHONE},
@@ -868,8 +894,8 @@ ipost(Ref=#refX{path=["_parse_expression"]}=Ref, _Qry, Env) ->
     Expr2 = muin:parse_expr_for_gui(Expr),
     json(Env, {struct, [{"expression", Expr2}]});
 
-ipost(Ref=#refX{path=["_forgotten_password"]}=Ref, _Qry,
-      Env=#env{uid=Uid}) ->
+ipost(Ref=#refX{path = ["_forgotten_password"]} = Ref, _Qry,
+      Env=#env{uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "forgot password"),
     case passport_running() of
         false -> '404'(Ref, Env);
@@ -1596,7 +1622,7 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
         {msg, Data}          -> Data2 = expand_binaries(Data),
                                 json(Env, Data2)
     after
-%% TODO : Fix, should be controlled by remoting_reg
+        % TODO : Fix, should be controlled by remoting_reg
         600000 ->
             json(Env, {struct, [{"time", remoting_reg:timestamp()},
                                 {"timeout", "true"}]})
@@ -2090,7 +2116,7 @@ run_actions(#refX{} = RefX, Env, {struct, [{Act, {struct, L}}]}, Uid)
             io:format("Need to check perms on Phone before allowing...~n"),
             [{"numbers", {array, Numbers}}] = L,
             ok = status_srv:update_status(Uid, RefX, "made a phone call"),
-            Ret = softphone_srv:register_dial(RefX, Uid, Numbers),
+            Ret = softphone_srv:reg_dial(RefX, Uid, Numbers),
             io:format("Ret is ~p~n", [Ret]),
             json(Env, "success")
     end;

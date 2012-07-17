@@ -257,7 +257,7 @@ make_config(_) ->
                                                                 "Marketing"
                                                                ]}},
                          {"phone_no",                  "+12345"},
-                         {"sms_msg",                  "yowza"},
+                         {"sms_msg",                   "yowza"},
                          {"email_to",                  "gordon@vixo.com"},
                          {"email_cc",                  "debug@vixo.com"},
                          {"email_from",                "root@vixo.com"},
