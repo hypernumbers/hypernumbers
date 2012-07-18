@@ -57,13 +57,13 @@ run_validate([E = #form{id = {_, _, L}} | LT], [{L, Val} | RT]) ->
 run_validate(_E, _S) ->
     false.
 
-pget(K,L) -> proplists:get_value(K,L,undefined).
+pget(K, L) -> proplists:get_value(K, L, undefined).
 
 %%% EUnit tests
 
 %% Simple test with sane input.
 basic_test_() ->
-    Expected = [#form{key=1, id = {[],common,"one"},
+    Expected = [#form{key=1, id = {[], common, "one"},
                       kind = input,
                       restrictions = none,
                       attrs = []},
