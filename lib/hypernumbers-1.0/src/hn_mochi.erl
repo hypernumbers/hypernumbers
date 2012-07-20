@@ -848,26 +848,30 @@ iget(Ref, _Type, Qry, Env) ->
 % register the handset
 ipost(#refX{path = ["_services", "phone", "register"]} = Ref, #qry{} = _Qry,
                #env{mochi = Mochi, accept = json, body = Body, uid = U} = Env) ->
-    Sock = Mochi:get(socket),
-    inet:setopts(Sock, [{active, once}]),
-
     % make sure the user isn't being spoofed when registering the phone
     [{"user", Email}] = Body,
     {ok, U2} = passport:email_to_uid(Email),
     case U of
-        U2 -> ok = softphone_srv:reg_phone(Ref, U2),
-              % now keep the socket alive for ever
+        U2 -> Socket = Mochi:get(socket),
+              % TODO this code doesn't work - it don't
+              % detect when a socket goes away
+              inet:setopts(Socket, [{active, once}]),
+              ok = softphone_srv:reg_phone(Ref, self(), U2),
+              % now keep the socket alive
               receive
-                  {tcp_closed, Sock} -> ok = softphone_srv:unreg_phone(Ref, U2),
-                                        ok;
-                  {error, timeout}   -> ok = softphone_srv:unreg_phone(Ref, U2),
-                                        json(Env, <<"timeout">>)
-              after
-                  600000 ->
+                  {tcp_closed, Socket} ->
                       ok = softphone_srv:unreg_phone(Ref, U2),
-                    json(Env,  <<"timeout">>)
-              end,
-              json(Env, "success");
+                      ok;
+                  {error, timeout}->
+                      ok = softphone_srv:unreg_phone(Ref, U2),
+                      json(Env, <<"timeout">>);
+                  {msg, is_available} ->
+                      json(Env, <<"is available?">>)
+              after
+                  3000 ->
+                      ok = softphone_srv:break_phone(Ref, U2),
+                      json(Env, <<"timeout">>)
+              end;
         _  -> respond(401, Env)
     end;
 
@@ -1612,8 +1616,10 @@ post_column_values(Ref, Values, PAr, VAr, Offset) ->
         end,
     lists:foldl(F, 0, Values).
 
-remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
+remoting_request(Env = #env{mochi = Mochi}, Site, Paths, Time) ->
     Socket = Mochi:get(socket),
+    % TODO this code doesn't work - it doesn't detect the socket
+    % going away - doesn't matter with updates - does with softphone
     inet:setopts(Socket, [{active, once}]),
     remoting_reg:request_update(Site, Paths, ltoi(Time), self()),
     receive
@@ -1623,7 +1629,7 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
                                 json(Env, Data2)
     after
         % TODO : Fix, should be controlled by remoting_reg
-        600000 ->
+        30000 ->
             json(Env, {struct, [{"time", remoting_reg:timestamp()},
                                 {"timeout", "true"}]})
     end.

@@ -2,11 +2,14 @@
 
 -define(SITE, "http://hypernumbers.dev:9000").
 
+-include("spriki.hrl").
+
 -export([
          testing1/0,
          testing2/0,
          testing3/0,
-         testing4/0
+         testing4/0,
+         is_available/1
         ]).
 
 % normal call
@@ -104,7 +107,25 @@ start_outbound_call(SID) ->
      "AP93d273f3cc624008805842376d561bed","inbound","ringing",
      SID,"2010-04-01",
      [{"hypertag",
-       "f8a6711f90a55a09fa54410966863564b97493ad20742b0854601dcf6602d319a441041b334e53428f08c0d97d0f6c9ce568a23ed66b0d6d66e0bbde40bfabc3d770d2043cd7b5fc75f8f9225f6aa9127bdc22c6a87e410f3d2bbd3cc8ea0d03f2ec663145f6958c9358c00e775cdae09b487f43d86e2fcb8683a06abc1fc53d6ae7d7c095cc307cb6be17d623cef9d3"},
+"f8a6711f90a55a09fa54410966863564b97493ad20742b0854601dcf6602d319a441041b334e53428f08c0d97d0f6c9ce568a23ed66b0d6d66e0bbde40bfabc3d770d2043cd7b5fc75f8f9225f6aa9127bdc22c6af7d40093b2bbd3cc8ea0d03c1cf88c50e95d2a680a13fddf63d9415c489c872502b0cb16cfb3976698a8137f2c686b2741e3947dc7b25308271c7e4"},
          {"site","http://hypernumbers.dev:9000"}],
      null,null,null,null,null,null,null}.
+
+is_available(0) ->
+    ok;
+is_available(N) when is_integer(N) andalso N > 0 ->
+    Email = "test@hypernumbers.com",
+    {ok, U} = passport:email_to_uid(Email),
+    Site = "http://hypernumbers.dev:9000",
+    Path = [],
+    Obj = hn_util:parse_ref("D3"),
+    RefX = #refX{site = Site, path = Path, obj = Obj},
+    io:format("Is ~p available for a call? (~p)~n", [Email, N]),
+    N2 = case softphone_srv:is_available(RefX, U) of
+        {ok, available}   -> N - 1;
+        {ok, unavailable} -> io:format("~nNot available~n"),
+                             0
+    end,
+    timer:sleep(1000),
+    is_available(N2).
 
