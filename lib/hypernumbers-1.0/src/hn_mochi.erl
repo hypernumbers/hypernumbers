@@ -195,14 +195,13 @@ authorize_r2(Env, Ref, Qry) ->
                                            utf8}]))(Ret)})
     end.
 
-handle_resource(Ref, Qry, Env=#env{method = 'GET'}) ->
+handle_resource(Ref, Qry, Env = #env{method = 'GET'}) ->
     mochilog:log(Env, Ref),
     ObjType = element(1, Ref#refX.obj),
     iget(Ref, ObjType, Qry, Env);
 
-handle_resource(Ref, _Qry,
-                Env=#env{method='POST', body=multipart,
-                         mochi=Mochi, uid=Uid}) ->
+handle_resource(Ref, _Qry, Env=#env{method = 'POST', body = multipart,
+                                    mochi = Mochi, uid = Uid}) ->
     {ok, UserName} = passport:uid_to_email(Uid),
     {ok, File, Name, Data} = hn_file_upload:handle_upload(Mochi, Ref,
                                                           UserName),
@@ -213,7 +212,7 @@ handle_resource(Ref, _Qry,
     Mochi:ok({"text/html",
               (mochijson:encoder([{input_encoding, utf8}]))(Ret)});
 
-handle_resource(Ref, Qry, Env=#env{method = 'POST'}) ->
+handle_resource(Ref, Qry, Env = #env{method = 'POST'}) ->
     mochilog:log(Env, Ref),
     ipost(Ref, Qry, Env).
 
@@ -328,11 +327,16 @@ authorize_get(#refX{site = Site, path = Path},
   when U /= undefined ->
     case auth_srv:check_particular_view(Site, Path, Uid, ?SHEETVIEW) of
         {view, ?SHEETVIEW} ->
-            MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid)
-                         || P <- string:tokens(More, ",")],
-            case lists:all(fun({view, _}) -> true;
-                              (_) -> false end,
-                           MoreViews) of
+            Fun1 = fun(X) ->
+                          Tks = string:tokens(X, "/"),
+                          auth_srv:get_any_main_view(Site, Tks, Uid)
+                  end,
+            MoreViews = [Fun1(P) || P <- string:tokens(More, ",")],
+            Fun2 = fun
+                      ({view, _}) -> true;
+                      (_)         -> false
+                  end,
+            case lists:all(Fun2, MoreViews) of
                 true  -> allowed;
                 _Else -> denied
             end;
@@ -356,7 +360,7 @@ authorize_get(#refX{site = Site, path = Path},
 % a recording is stored against a link with a hypertag signed with its url
 % so authorise anyone with any view of that page to see it
 authorize_get(#refX{site = Site, path = Path}, #qry{view = ?RECORDING}, Env) ->
-    case auth_srv:get_any_view(Site, Path, Env#env.uid) of
+    case auth_srv:get_any_main_view(Site, Path, Env#env.uid) of
         {view, _} -> allowed;
         _Else     -> denied
     end;
@@ -381,13 +385,13 @@ authorize_get(R, #qry{view = ?RECALC} = Q, E) ->
 %% Allow the softphone if there is a softphone control on the cell
 %% for both html and json
 authorize_get(#refX{site = S, path = P, obj = {cell, _}} = R,
-              #qry{view=?PHONE}, Env) ->
+              #qry{view = ?PHONE}, Env) ->
     case new_db_api:get_phone(R) of
-        []      -> denied;
-        [_Phone]-> case auth_srv:get_any_view(S, P, Env#env.uid) of
-                       false -> denied;
-                       _     -> allowed
-                   end
+        []       -> denied;
+        [_Phone] -> case auth_srv:get_any_main_view(S, P, Env#env.uid) of
+                        denied -> denied;
+                        _Other -> allowed
+                    end
     end;
 
 %% Authorize access to one particular view.
@@ -400,7 +404,7 @@ authorize_get(#refX{site = Site, path = Path},
 %% As a last resort, we will authorize a GET request to a location
 %% from which we have a view.
 authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
-    case auth_srv:get_any_view(Site, Path, Env#env.uid) of
+    case auth_srv:get_any_main_view(Site, Path, Env#env.uid) of
         {view, _} -> allowed;
         _Else     -> denied
     end.
@@ -422,9 +426,9 @@ authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
     end;
 
 % allow a post to a phone view for a cell - gonnae check it later
-authorize_post(#refX{obj = {cell, _}}, #qry{view = ?PHONE},
-               #env{accept = json}) ->
-    allowed;
+% authorize_post(#refX{obj = {cell, _}}, #qry{view = ?PHONE},
+%               #env{accept = json}) ->
+%    allowed;
 
 %% Allow a post to occur, if the user has access to a spreadsheet on
 %% the target. But it might be a post from a form or an inline
@@ -732,24 +736,26 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
             end
     end;
 
-iget(#refX{site = Site} = RefX, _Type, #qry{view=?RECALC}, Env) ->
+iget(#refX{site = Site} = RefX, _Type, #qry{view = ?RECALC}, Env) ->
     ok = new_db_api:recalc(RefX),
     Html = hn_util:viewroot(Site) ++ "/recalc.html",
     serve_html(Env, Html);
 
-iget(#refX{site = Site} = Ref, cell, #qry{view=?PHONE},
-     #env{accept = html, uid = Uid} = Env) ->
+iget(#refX{site = Site} = Ref, cell, #qry{view = ?PHONE},
+     #env{accept = html} = Env) ->
     File = case application:get_env(hypernumbers, phone_debug) of
                {ok, true} -> "softphone2.html";
                _          -> "softphone.html"
            end,
-    Dir = hn_util:viewroot(Site) ++ "/",
-    % unregister the phone (mebbies the user is refreshing a softphone?)
-    ok = softphone_srv:unreg_phone(Ref, Uid),
-    serve_html(200, Env, [Dir, File]);
+    %% make sure there is a phone
+    case new_db_api:get_phone(Ref) of
+        []       -> '404'(Ref, Env);
+        [_Phone] -> Dir = hn_util:viewroot(Site) ++ "/",
+                    serve_html(200, Env, [Dir, File])
+    end;
 
 iget(Ref, cell,  #qry{view=?PHONE}, #env{accept = json, uid = Uid} = Env) ->
-    case  new_db_api:get_phone(Ref) of
+    case new_db_api:get_phone(Ref) of
         []      -> json(Env, {struct, [{"error", "no phone at this url"}]});
         [Phone] -> JSON = hn_twilio_mochi:get_phone(Ref, Phone, Uid),
                    json(Env, JSON)
@@ -847,36 +853,6 @@ iget(Ref, _Type, Qry, Env) ->
     '404'(Ref, Env).
 
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
-
-% register the handset
-ipost(#refX{path = ["_services", "phone", "register"]} = Ref, #qry{} = _Qry,
-               #env{mochi = Mochi, accept = json, body = Body, uid = U} = Env) ->
-    % make sure the user isn't being spoofed when registering the phone
-    [{"user", Email}] = Body,
-    {ok, U2} = passport:email_to_uid(Email),
-    case U of
-        U2 -> Socket = Mochi:get(socket),
-              % TODO this code doesn't work - it don't
-              % detect when a socket goes away
-              inet:setopts(Socket, [{active, once}]),
-              ok = softphone_srv:reg_phone(Ref, self(), U2),
-              % now keep the socket alive
-              receive
-                  {tcp_closed, Socket} ->
-                      ok = softphone_srv:unreg_phone(Ref, U2),
-                      ok;
-                  {error, timeout}->
-                      ok = softphone_srv:unreg_phone(Ref, U2),
-                      json(Env, <<"timeout">>);
-                  {msg, is_available} ->
-                      json(Env, <<"is available?">>)
-              after
-                  20000 ->
-                      ok = softphone_srv:break_phone(Ref, U2),
-                      json(Env, <<"timeout">>)
-              end;
-        _  -> respond(401, Env)
-    end;
 
 % a post to the phone view - need to check there is a control
 %% TODO remove this clause
@@ -1197,7 +1173,7 @@ ipost(Ref = #refX{obj = {cell, _}}, _Qry,
     {struct, Act} = Actions,
     Status = element(1, hd(Act)),
     ok = status_srv:update_status(Uid, Ref, Status),
-    run_actions(Ref, Env, Actions, Uid);
+    run_actions(Ref, Env, Act, Uid);
 
 % revert a cell to an old value
 ipost(Ref = #refX{obj = {cell, _}} = Ref, _Qry,
@@ -2062,7 +2038,7 @@ reset_password(Email, Password, Hash) ->
                      ++ Msg}
             end
     end.
-run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, UID)
+run_actions(#refX{site = S} = RefX, Env, [{Act, {struct, L}}], UID)
   when Act == "invite_user" ->
     [Expected] = new_db_api:matching_forms(RefX, 'users-and-groups'),
     case Expected of
@@ -2092,7 +2068,7 @@ run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, UID)
             io:format("Other is ~p~n", [Other]),
             respond(404, Env)
     end;
-run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, _Uid)
+run_actions(#refX{site = S} = RefX, Env, [{Act, {struct, L}}], _Uid)
   when Act == "add_user" orelse
        Act == "remove_user" ->
     [Expected] = new_db_api:matching_forms(RefX, 'users-and-groups'),
@@ -2116,9 +2092,7 @@ run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, _Uid)
         _ ->
             respond(404, Env)
     end;
-run_actions(#refX{} = RefX, Env, {struct, [{"phone",
-                                            {struct, [{"dial", St}]}}]},
-                                  Uid) ->
+run_actions(#refX{} = RefX, Env, [{"phone", {struct, [{"dial", St}]}}], Uid) ->
     case  new_db_api:get_phone(RefX) of
         []      ->
             json(Env, {struct, [{"error", "no phone at this url"}]});
@@ -2131,9 +2105,34 @@ run_actions(#refX{} = RefX, Env, {struct, [{"phone",
             json(Env, "success")
     end;
 % also need to remove direct ipost clause for old email
-run_actions(#refX{} = RefX, Env, {struct, [{"phone", Action}]}, Uid)
+run_actions(#refX{} = RefX, #env{mochi = Mochi} = Env,
+            [{"phone", {struct, [{"register", PhoneId}]}}], Uid) ->
+    % make sure the user isn't being spoofed when registering the phone
+    Socket = Mochi:get(socket),
+    % TODO this code doesn't work - it don't
+    % detect when a socket goes away
+    inet:setopts(Socket, [{active, once}]),
+    case softphone_srv:reg_phone(RefX, self(), PhoneId, Uid) of
+        {phoneid, _PhoneId2} = PhId2 ->
+            % now keep the socket alive
+            receive
+                {tcp_closed, Socket} ->
+                    ok = softphone_srv:unreg_phone(RefX, Uid);
+                {error, timeout}->
+                    ok = softphone_srv:unreg_phone(RefX, Uid);
+                {msg, is_available} ->
+                    json(Env, {struct, [PhId2]})
+            after
+                20000 ->
+                    ok = softphone_srv:break_phone(RefX, Uid),
+                    json(Env, {struct, [PhId2]})
+            end;
+        user_already_registered ->
+            json(Env, {struct, [{"error", "user_already_registered"}]})
+    end;
+run_actions(#refX{} = RefX, Env, [{"phone", Action}], Uid)
   when Action == "hangup" orelse Action == "away" orelse Action == "back" ->
-    case  new_db_api:get_phone(RefX) of
+    case new_db_api:get_phone(RefX) of
         []      ->
             json(Env, {struct, [{"error", "no phone at this url"}]});
         [_Phone] ->
@@ -2144,21 +2143,22 @@ run_actions(#refX{} = RefX, Env, {struct, [{"phone", Action}]}, Uid)
             end,
             json(Env, "success")
     end;
-run_actions(#refX{} = RefX, Env, {struct, [{Act, {struct, _L}} = Payload]}, Uid)
+run_actions(#refX{} = RefX, Env, [{Act, {struct, _L}} = Payload], Uid)
   when Act == "send_sms" orelse Act == "send_email" ->
     case  new_db_api:get_phone(RefX) of
         []      ->
             json(Env, {struct, [{"error", "no phone at this url"}]});
         [Phone] ->
             case hn_twilio_mochi:handle_webcontrol_post(RefX, Phone,
+
+
                                                         Payload, Uid) of
                 {ok, 200}    -> json(Env, "success");
                 {error, 401} -> respond(401, Env);
                 _            -> '500'(Env)
             end
     end;
-run_actions(#refX{site = S, path = P} = RefX, Env,
-            {struct, [{_, {array, Json}}]}, Uid) ->
+run_actions(#refX{site = S, path = P} = RefX, Env, [{_, {array, Json}}], Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
                    N2 = list_to_integer(N),
                    {N2, lists:flatten([json_recs:json_to_rec(X)

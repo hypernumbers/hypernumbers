@@ -5,7 +5,14 @@ html,body
     height: 100%;
     border: none
 }
-body
+#hn_phone_already_registered
+{
+    display     : none;
+    padding     : 20px;
+    font-weight : bold;
+    font-size   : 150%;
+}
+#hn_phone_container
 {
     display: none;
 }

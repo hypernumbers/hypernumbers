@@ -17,7 +17,7 @@
          check_particular_view/4,
          check_get_challenger/3,
          get_views/3,
-         get_any_view/3,
+         get_any_main_view/3,
          add_view/4,
          set_view/4,
          set_champion/3,
@@ -101,12 +101,15 @@ check_particular_view(Site, Path, Uid, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call({global, Id}, {check_particular_view, Path, Uid, View}).
 
--spec get_any_view(string(), [string()], uid()) -> {view, string()} | denied.
-get_any_view(Site, Path, Uid) ->
+-spec get_any_main_view(string(), [string()], uid()) ->
+    {view, string()} | denied.
+get_any_main_view(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     case gen_server:call({global, Id}, {get_views, Path, Uid}) of
-        [V|_] -> {view, V};
-        _     -> denied
+        []   -> denied;
+        List -> L2 = [X || X <- List, "table" =/= X],
+                [V | _T] = L2,
+                {view, V}
     end.
 
 -spec get_views(string(), [string()], uid()) -> [string()].
