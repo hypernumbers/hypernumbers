@@ -9,7 +9,8 @@
          testing2/0,
          testing3/0,
          testing4/0,
-         is_available/1
+         is_available/1,
+         is_available_SPAWN/1
         ]).
 
 % normal call
@@ -111,9 +112,11 @@ start_outbound_call(SID) ->
          {"site","http://hypernumbers.dev:9000"}],
      null,null,null,null,null,null,null}.
 
-is_available(0) ->
+is_available(N) -> spawn(twilio_test, is_available_SPAWN, [N]).
+
+is_available_SPAWN(0) ->
     ok;
-is_available(N) when is_integer(N) andalso N > 0 ->
+is_available_SPAWN(N) when is_integer(N) andalso N > 0 ->
     Email = "test@hypernumbers.com",
     {ok, U} = passport:email_to_uid(Email),
     Site = "http://hypernumbers.dev:9000",
@@ -122,10 +125,11 @@ is_available(N) when is_integer(N) andalso N > 0 ->
     RefX = #refX{site = Site, path = Path, obj = Obj},
     io:format("Is ~p available for a call? (~p)~n", [Email, N]),
     N2 = case softphone_srv:is_available(RefX, U) of
-        {ok, available}   -> N - 1;
-        {ok, unavailable} -> io:format("~nNot available~n"),
+        {ok, available}   -> io:format("~nphone is available...~n~n"),
+                             N - 1;
+        {ok, unavailable} -> io:format("~nphone is not available~n~n"),
                              0
     end,
     timer:sleep(1000),
-    is_available(N2).
+    is_available_SPAWN(N2).
 

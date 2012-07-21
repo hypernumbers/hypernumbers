@@ -38,13 +38,23 @@
 
 % normal api
 -export([
-         make_free_dial_call/1,
-         reg_dial/3,
+         % these fns register the phone with the server for inbound calls
          reg_phone/3,   % register a phone
          break_phone/2, % sets a break when the socket times out - see expire/1
          unreg_phone/2, % actually unregisters the phone
+         % this fn handle the busy/idle states
+         reg_dial/3,
+         idle/2,
+         % this fun is called for a free dial
+         make_free_dial_call/1,
+         % these funs allow the operator to be away
+         away/2,
+         back/2,
+         % ensure that each person has one phone only open
          has_phone/2,
+         % checks is the user can take an inbound call
          is_available/2,
+         % debugging
          dump_phones/1
         ]).
 
@@ -65,8 +75,9 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -record(state, {site, softphones = []}).
--record(phone_status, {uid, key, away = false, registered_pid = none,
-                       waiting_pid = none, numbers}).
+-record(phone_status, {uid = "", key = none, break = false, away = false,
+                       busy = false, registered_pid = none,
+                       waiting_pid = none, numbers = []}).
 
 %%%===================================================================
 %%% API
@@ -87,6 +98,18 @@ start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_softphone"),
     gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
+away(#refX{site = S}, Uid) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {away, Uid}).
+
+back(#refX{site = S}, Uid) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {back, Uid}).
+
+idle(#refX{site = S}, Uid) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {idle, Uid}).
+
 dump_phones(S) ->
     Id = hn_util:site_to_atom(S, "_softphone"),
     gen_server:call({global, Id}, dump_phones).
@@ -106,9 +129,10 @@ is_available(#refX{site = S}, Uid) ->
     Pid = self(),
     gen_server:call({global, Id}, {waiting, Pid, Uid}),
     receive
-        {msg, available} -> {ok, available}
+        {msg, available}   -> {ok, available};
+        {msg, unavailable} -> {ok, unavailable}
     after
-        ?WAITINGTIMEOUT  -> {ok, unavailable}
+        ?WAITINGTIMEOUT    -> {ok, unavailable}
     end.
 
 break_phone(#refX{site = S} = Ref, Uid) ->
@@ -179,17 +203,7 @@ init([Site]) ->
 %%--------------------------------------------------------------------
 handle_call(dump_phones, _From, State) ->
     io:format("about to dump softphones for ~p~n", [State#state.site]),
-    Fun = fun(#phone_status{uid = U, key = K, away = A, waiting_pid = W,
-                            registered_pid = P, numbers = N}) ->
-                  {ok, Email} = passport:uid_to_email(U),
-                  io:format("Phone for ~p: on ~p~n"
-                            ++ "- is away?       : ~p~n"
-                            ++ "- with numbers   : ~p~n"
-                            ++ "- Registered Pid : ~p~n"
-                            ++ "- Waiting Pid    : ~p~n",
-                            [Email, K, A, N, P, W])
-          end,
-    [Fun(X) || X <- State#state.softphones],
+    print_phones(State#state.softphones),
     {reply, ok, State};
 handle_call({get_twiml, Path, Obj}, _From, State) ->
     io:format("in get_twiml for ~p ~p~n", [Path, Obj]),
@@ -200,41 +214,91 @@ handle_call({get_twiml, Path, Obj}, _From, State) ->
 handle_call({reg_dial, Path, Obj, Uid, Numbers}, _From, State) ->
     Softphones = State#state.softphones,
     Key = {Path, Obj},
-    NewPhone = #phone_status{uid = Uid, key = Key, numbers = Numbers},
+    NewPhone = #phone_status{uid = Uid, busy = true, key = Key,
+                             numbers = Numbers},
     NewSoftphones = lists:keyreplace(Uid, 2, Softphones, NewPhone),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({unreg_phone, Uid}, _From, State) ->
     Softphones = State#state.softphones,
     NewSoftphones = lists:keydelete(Uid, 2, Softphones),
     {reply, ok, State#state{softphones = NewSoftphones}};
-handle_call({reg_phone, Pid, Uid}, _From, State) ->
+handle_call({away, Uid}, _From, State) ->
     Softphones = State#state.softphones,
     NewSoftphones
         = case lists:keyfind(Uid, 2, Softphones) of
               false ->
-                  NewP = #phone_status{uid = Uid, registered_pid = Pid},
+                  % create a new phone record
+                  NewP = #phone_status{uid = Uid, busy = false},
                   lists:keystore(Uid, 2, Softphones, NewP);
-              Phone ->
-                  % if a call is waiting on the phone then tell it to go ahead
-                  case Phone#phone_status.waiting_pid of
-                      none    -> ok;
-                      Waiting -> Waiting ! {msg, available}
+              P ->
+                  NewP = P#phone_status{away = true},
+                  lists:keystore(Uid, 2, Softphones, NewP)
+          end,
+    {reply, ok, State#state{softphones = NewSoftphones}};
+handle_call({back, Uid}, _From, State) ->
+    Softphones = State#state.softphones,
+    NewSoftphones
+        = case lists:keyfind(Uid, 2, Softphones) of
+              false ->
+                  % create a new phone record
+                  NewP = #phone_status{uid = Uid, busy = false},
+                  lists:keystore(Uid, 2, Softphones, NewP);
+              P ->
+                  NewP = P#phone_status{away = false},
+                  lists:keystore(Uid, 2, Softphones, NewP)
+          end,
+    {reply, ok, State#state{softphones = NewSoftphones}};
+handle_call({idle, Uid}, _From, State) ->
+    Softphones = State#state.softphones,
+    NewSoftphones
+        = case lists:keyfind(Uid, 2, Softphones) of
+              false ->
+                  % create a new phone record
+                  NewP = #phone_status{uid = Uid, busy = false},
+                  lists:keystore(Uid, 2, Softphones, NewP);
+              P ->
+                  NewP = P#phone_status{busy = false, numbers = []},
+                  lists:keystore(Uid, 2, Softphones, NewP)
+          end,
+    {reply, ok, State#state{softphones = NewSoftphones}};
+handle_call({reg_phone, RegPid, Uid}, _From, State) ->
+    Softphones = State#state.softphones,
+    NewSoftphones
+        = case lists:keyfind(Uid, 2, Softphones) of
+              false ->
+                  % create a new phone record
+                  NewP = #phone_status{uid = Uid, registered_pid = RegPid},
+                  lists:keystore(Uid, 2, Softphones, NewP);
+              P ->
+                  % if a call is waiting on the phone, and the phone is free
+                  % then tell it to go ahead and connect
+                  W = P#phone_status.waiting_pid,
+                  B = P#phone_status.busy,
+                  A = P#phone_status.away,
+                  io:format("Waiting: ~p Busy: ~p Away: ~p~n", [W, B, A]),
+                  case {W, B, A} of
+                      {none, _, _}            -> ok;
+                      {Waiting, false, false} -> Waiting ! {msg, available};
+                      {Waiting, _, _}         -> Waiting ! {msg, unavailable}
                   end,
-                  Softphones
+                  NewP = P#phone_status{break = false,
+                                        registered_pid = RegPid,
+                                        waiting_pid = none},
+                  lists:keystore(Uid, 2, Softphones, NewP)
           end,
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({expire, Uid}, _From, State) ->
     Softphones = State#state.softphones,
-    % the expire message comes in after the phone coulda be unregistered
+    % the expire message comes in after the phone coulda been unregistered
     % mebbies the phone no longer exists
     case lists:keysearch(Uid, 2, Softphones) of
         false ->
             {reply, ok, State};
         {value, Phone} ->
-            #phone_status{away = A} = Phone,
-            NewSoftphones = case A of
-                                break -> lists:keydelete(Uid, 2, Softphones);
-                                _     -> Softphones
+            #phone_status{break = B} = Phone,
+            NewSoftphones = case B of
+                                true  -> lists:keydelete(Uid, 2, Softphones);
+                                false -> Softphones
                             end,
             {reply, ok, State#state{softphones = NewSoftphones}}
     end;
@@ -243,17 +307,26 @@ handle_call({waiting, WaitPid, Uid}, _From, State) ->
     NewSoftphones =
         case lists:keysearch(Uid, 2, Softphones) of
             false ->
+                % phone ain't registered (yet) but tell state that
+                % the call is waiting and give it a go
+                % mebbies it will time out? mebbies get registered?
                 NewP = #phone_status{uid = Uid, waiting_pid = WaitPid},
                 lists:keystore(Uid, 2, Softphones, NewP);
             {value, #phone_status{registered_pid = RegPid} = PS} ->
                 case RegPid of
                     none ->
-                        NewP = #phone_status{uid = Uid, waiting_pid = WaitPid},
+                        % there is a phone but it has no registered PID so
+                        % mark the status as waiting
+                        % mebbies it will time out? mebbies get registered?
+                        NewP = PS#phone_status{waiting_pid = WaitPid},
                         lists:keystore(Uid, 2, Softphones, NewP);
                     _ ->
+                        % there is a call registered - tell it to return and
+                        % reregister, if it does it will trigger a message
+                        % back to the calling process
                         RegPid ! {msg, is_available},
-                        NewPhoneStatus = PS#phone_status{waiting_pid = WaitPid},
-                        lists:keystore(Uid, 2, Softphones, NewPhoneStatus)
+                        NewP = PS#phone_status{waiting_pid = WaitPid},
+                        lists:keystore(Uid, 2, Softphones, NewP)
                 end
         end,
     {reply, ok, State#state{softphones = NewSoftphones}};
@@ -265,7 +338,7 @@ handle_call({break_phone, Ref, Uid}, _From, State) ->
         false ->
             {reply, ok, State};
         {value, Phone} ->
-            NewPhone = Phone#phone_status{away = break},
+            NewPhone = Phone#phone_status{break = true},
             NewSoftphones = lists:keystore(Uid, 2, Softphones, NewPhone),
             ok = softphone_srv:expire(Ref, Uid),
             {reply, ok, State#state{softphones = NewSoftphones}}
@@ -343,3 +416,19 @@ make_d2([], Acc)      -> #dial{body = lists:reverse(Acc)};
 make_d2([H | T], Acc) -> NewAcc = #number{number = H},
                          make_d2(T, [NewAcc | Acc]).
 
+print_phones(SoftPhones) ->
+    Fun = fun(#phone_status{uid = U, key = K, busy = B, break = Bk, away = A,
+                            waiting_pid = W, registered_pid = P,
+                            numbers = N}) ->
+                  {ok, Email} = passport:uid_to_email(U),
+                  io:format("Phone for ~p: on ~p~n"
+                            ++ "- is busy?       : ~p~n"
+                            ++ "- is away?       : ~p~n"
+                            ++ "- is breaking?   : ~p~n"
+                            ++ "- with numbers   : ~p~n"
+                            ++ "- Registered Pid : ~p~n"
+                            ++ "- Waiting Pid    : ~p~n",
+                            [Email, K, B, A, Bk, N, P, W])
+          end,
+    [Fun(X) || X <- SoftPhones],
+    ok.

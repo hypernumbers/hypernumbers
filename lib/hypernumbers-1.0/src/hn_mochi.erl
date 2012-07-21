@@ -737,12 +737,15 @@ iget(#refX{site = Site} = RefX, _Type, #qry{view=?RECALC}, Env) ->
     Html = hn_util:viewroot(Site) ++ "/recalc.html",
     serve_html(Env, Html);
 
-iget(#refX{site = Site}, cell,  #qry{view=?PHONE}, #env{accept = html} = Env) ->
+iget(#refX{site = Site} = Ref, cell, #qry{view=?PHONE},
+     #env{accept = html, uid = Uid} = Env) ->
     File = case application:get_env(hypernumbers, phone_debug) of
                {ok, true} -> "softphone2.html";
                _          -> "softphone.html"
            end,
     Dir = hn_util:viewroot(Site) ++ "/",
+    % unregister the phone (mebbies the user is refreshing a softphone?)
+    ok = softphone_srv:unreg_phone(Ref, Uid),
     serve_html(200, Env, [Dir, File]);
 
 iget(Ref, cell,  #qry{view=?PHONE}, #env{accept = json, uid = Uid} = Env) ->
@@ -868,7 +871,7 @@ ipost(#refX{path = ["_services", "phone", "register"]} = Ref, #qry{} = _Qry,
                   {msg, is_available} ->
                       json(Env, <<"is available?">>)
               after
-                  3000 ->
+                  20000 ->
                       ok = softphone_srv:break_phone(Ref, U2),
                       json(Env, <<"timeout">>)
               end;
@@ -2113,20 +2116,34 @@ run_actions(#refX{site = S} = RefX, Env, {struct, [{Act, {struct, L}}]}, _Uid)
         _ ->
             respond(404, Env)
     end;
-run_actions(#refX{} = RefX, Env, {struct, [{Act, {struct, L}}]}, Uid)
-  when Act == "dial" ->
+run_actions(#refX{} = RefX, Env, {struct, [{"phone",
+                                            {struct, [{"dial", St}]}}]},
+                                  Uid) ->
     case  new_db_api:get_phone(RefX) of
         []      ->
             json(Env, {struct, [{"error", "no phone at this url"}]});
         [_Phone] ->
             io:format("Need to check perms on Phone before allowing...~n"),
-            [{"numbers", {array, Numbers}}] = L,
+            {struct, [{"numbers", {array, Numbers}}]} = St,
             ok = status_srv:update_status(Uid, RefX, "made a phone call"),
             Ret = softphone_srv:reg_dial(RefX, Uid, Numbers),
             io:format("Ret is ~p~n", [Ret]),
             json(Env, "success")
     end;
 % also need to remove direct ipost clause for old email
+run_actions(#refX{} = RefX, Env, {struct, [{"phone", Action}]}, Uid)
+  when Action == "hangup" orelse Action == "away" orelse Action == "back" ->
+    case  new_db_api:get_phone(RefX) of
+        []      ->
+            json(Env, {struct, [{"error", "no phone at this url"}]});
+        [_Phone] ->
+            case Action of
+                "hangup" -> ok = softphone_srv:idle(RefX, Uid);
+                "away"   -> ok = softphone_srv:away(RefX, Uid);
+                "back"   -> ok = softphone_srv:back(RefX, Uid)
+            end,
+            json(Env, "success")
+    end;
 run_actions(#refX{} = RefX, Env, {struct, [{Act, {struct, _L}} = Payload]}, Uid)
   when Act == "send_sms" orelse Act == "send_email" ->
     case  new_db_api:get_phone(RefX) of
