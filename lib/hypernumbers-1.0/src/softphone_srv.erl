@@ -39,7 +39,7 @@
 % normal api
 -export([
          % these fns register the phone with the server for inbound calls
-         reg_phone/4,   % register a phone
+         reg_phone/5,   % register a phone
          break_phone/2, % sets a break when the socket times out - see expire/1
          unreg_phone/2, % actually unregisters the phone
          % this fn handle the busy/idle states
@@ -54,6 +54,8 @@
          has_phone/2,
          % checks is the user can take an inbound call
          is_available/2,
+         % funs for finding a particular user
+         hunt/2,
          % debugging
          dump_phones/1
         ]).
@@ -77,7 +79,8 @@
 -record(state, {site, softphones = []}).
 -record(phone_status, {uid = "", key = none, break = false, away = false,
                        busy = false, registered_pid = none,
-                       waiting_pid = none, numbers = [], id = []}).
+                       waiting_pid = none, numbers = [], id = [],
+                       groups = []}).
 
 %%%===================================================================
 %%% API
@@ -124,6 +127,10 @@ expire(#refX{site = S}, Uid) ->
                                     [{global, Id}, {expire, Uid}]),
     ok.
 
+hunt(#refX{site = S}, Group) ->
+    Id = hn_util:site_to_atom(S, "_softphone"),
+    gen_server:call({global, Id}, {hunt, Group}).
+
 is_available(#refX{site = S}, Uid) ->
     Id = hn_util:site_to_atom(S, "_softphone"),
     Pid = self(),
@@ -143,9 +150,9 @@ unreg_phone(#refX{site = S}, Uid) ->
     Id = hn_util:site_to_atom(S, "_softphone"),
     gen_server:call({global, Id}, {unreg_phone, Uid}).
 
-reg_phone(#refX{site = S}, Pid, PhoneID, Uid) ->
+reg_phone(#refX{site = S}, Pid, PhoneID, Groups, Uid) ->
     Id = hn_util:site_to_atom(S, "_softphone"),
-    gen_server:call({global, Id}, {reg_phone, Pid, PhoneID, Uid}).
+    gen_server:call({global, Id}, {reg_phone, Pid, PhoneID, Groups, Uid}).
 
 reg_dial(#refX{site = S, path = P, obj = O}, Uid, Numbers) ->
     Id = hn_util:site_to_atom(S, "_softphone"),
@@ -261,7 +268,7 @@ handle_call({idle, Uid}, _From, State) ->
                   lists:keystore(Uid, 2, Softphones, NewP)
           end,
     {reply, ok, State#state{softphones = NewSoftphones}};
-handle_call({reg_phone, RegPid, PhoneId, Uid}, _From, State) ->
+handle_call({reg_phone, RegPid, PhoneId, Groups, Uid}, _From, State) ->
     Softphones = State#state.softphones,
     {Reply, NewSoftphones}
         = case lists:keyfind(Uid, 2, Softphones) of
@@ -269,7 +276,7 @@ handle_call({reg_phone, RegPid, PhoneId, Uid}, _From, State) ->
                   % create a new phone record
                   Id = {phoneid, PhoneId},
                   NewP = #phone_status{uid = Uid, registered_pid = RegPid,
-                                       id = Id},
+                                       id = Id, groups = Groups},
                   {Id, lists:keystore(Uid, 2, Softphones, NewP)};
               P ->
                   % check if the registering phone is the one that exists
@@ -360,6 +367,16 @@ handle_call({has_phone, Uid}, _From, State) ->
                 false -> false;
                 _     -> true
             end,
+    {reply, Reply, State};
+handle_call({hunt, Group}, _From, State) ->
+    Softphones = State#state.softphones,
+    Fun = fun(#phone_status{uid = U, groups = G}, Acc) ->
+                  case lists:member(Group, G) of
+                      true  -> [U | Acc];
+                      false -> Acc
+                  end
+          end,
+    Reply = lists:foldl(Fun, [], Softphones),
     {reply, Reply, State}.
 
 %%--------------------------------------------------------------------

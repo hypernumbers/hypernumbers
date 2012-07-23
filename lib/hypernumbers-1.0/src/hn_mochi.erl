@@ -2104,15 +2104,29 @@ run_actions(#refX{} = RefX, Env, [{"phone", {struct, [{"dial", St}]}}], Uid) ->
             io:format("Ret is ~p~n", [Ret]),
             json(Env, "success")
     end;
+run_actions(#refX{} = RefX, Env, [{"phone", Action}], Uid)
+  when Action == "hangup" orelse Action == "away" orelse Action == "back" ->
+    case new_db_api:get_phone(RefX) of
+        []      ->
+            json(Env, {struct, [{"error", "no phone at this url"}]});
+        [_Phone] ->
+            case Action of
+                "hangup" -> ok = softphone_srv:idle(RefX, Uid);
+                "away"   -> ok = softphone_srv:away(RefX, Uid);
+                "back"   -> ok = softphone_srv:back(RefX, Uid)
+            end,
+            json(Env, "success")
+    end;
 % also need to remove direct ipost clause for old email
 run_actions(#refX{} = RefX, #env{mochi = Mochi} = Env,
-            [{"phone", {struct, [{"register", PhoneId}]}}], Uid) ->
+            [{"phone", {struct, [{"register", PhoneId},
+                                 {"groups", {array, G}}]}}], Uid) ->
     % make sure the user isn't being spoofed when registering the phone
     Socket = Mochi:get(socket),
     % TODO this code doesn't work - it don't
     % detect when a socket goes away
     inet:setopts(Socket, [{active, once}]),
-    case softphone_srv:reg_phone(RefX, self(), PhoneId, Uid) of
+    case softphone_srv:reg_phone(RefX, self(), PhoneId, G, Uid) of
         {phoneid, _PhoneId2} = PhId2 ->
             % now keep the socket alive
             receive
@@ -2129,19 +2143,6 @@ run_actions(#refX{} = RefX, #env{mochi = Mochi} = Env,
             end;
         user_already_registered ->
             json(Env, {struct, [{"error", "user_already_registered"}]})
-    end;
-run_actions(#refX{} = RefX, Env, [{"phone", Action}], Uid)
-  when Action == "hangup" orelse Action == "away" orelse Action == "back" ->
-    case new_db_api:get_phone(RefX) of
-        []      ->
-            json(Env, {struct, [{"error", "no phone at this url"}]});
-        [_Phone] ->
-            case Action of
-                "hangup" -> ok = softphone_srv:idle(RefX, Uid);
-                "away"   -> ok = softphone_srv:away(RefX, Uid);
-                "back"   -> ok = softphone_srv:back(RefX, Uid)
-            end,
-            json(Env, "success")
     end;
 run_actions(#refX{} = RefX, Env, [{Act, {struct, _L}} = Payload], Uid)
   when Act == "send_sms" orelse Act == "send_email" ->

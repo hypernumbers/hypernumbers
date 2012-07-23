@@ -62,11 +62,10 @@ get_phone(#refX{site = _S},
                             P#phone.softphone_config,
                             P#phone.softphone_type
                            ])};
-get_phone(#refX{site = S},
-          #phone{capability = [{client_outgoing, _, _}] = C} = P, Uid) ->
+get_phone(#refX{site = S}, #phone{capability = C} = P, Uid) ->
     HyperTag = get_hypertag(S, P, Uid),
     io:format("HyperTag is ~p~n", [HyperTag]),
-    Token = get_phonetoken(S, C),
+    Token = get_phonetoken(S, C, Uid),
     {ok, User} = passport:uid_to_email(Uid),
     IsAlreadyReg = softphone_srv:has_phone(S, Uid),
     UJson = {"user", {struct, [{"name", User},
@@ -78,17 +77,6 @@ get_phone(#refX{site = S},
                             P#phone.softphone_config,
                             P#phone.softphone_type,
                             UJson
-                           ])};
-get_phone(#refX{site = S},
-          #phone{capability = [{client_incoming, Ext}] = C} = P, Uid) ->
-    HyperTag = get_hypertag(S, P, Uid),
-    Token = get_phonetoken(S, C),
-    {struct, lists:flatten([
-                            {"phonetoken", Token},
-                            {"hypertag", HyperTag},
-                            {"ext", Ext},
-                            P#phone.softphone_config,
-                            P#phone.softphone_type
                            ])}.
 
 view_recording(#refX{site = S, path = P}, HyperTag) ->
@@ -158,7 +146,7 @@ handle_sms(Ref, Phone, Args) ->
     %   - fixed all
     %   - free message
     %   - free all
-    SMSConfig = read_config(Cf, "sms_out_permissions"),
+    SMSConfig = read_config(Cf, "sms_ou_permissions"),
     IsValid = case SMSConfig of
                   "free all"     -> true;
                   "free message" -> No = read_config(Cf, "phone_no"),
@@ -428,10 +416,11 @@ full_redir(Redir, Env) ->
     [_, Path] = string:tokens(Old, "?"),
     Redir ++ "?" ++ Path.
 
-get_phonetoken(Site, Capability) ->
+get_phonetoken(Site, Capability, Uid) ->
+    C2 = make_capability(Capability, Uid, []),
     AC = contact_utils:get_twilio_account(Site),
     #twilio_account{account_sid = AccSID, auth_token = AuthToken} = AC,
-    Tok = twilio_capabilities:generate(AccSID, AuthToken, Capability,
+    Tok = twilio_capabilities:generate(AccSID, AuthToken, C2,
                                  [{expires_after, 7200}]),
     binary_to_list(Tok).
 
@@ -451,3 +440,10 @@ get_hypertag(Site, Phone, Uid) ->
 read_config({"config", {struct, List}}, Perm) ->
     {Perm, Val} = lists:keyfind(Perm, 1, List),
     Val.
+
+make_capability([], _, Acc) -> lists:reverse(Acc);
+make_capability([{client_incoming, name_not_set} | T], Uid, Acc) ->
+    {ok, Email} = passport:uid_to_email(Uid),
+    make_capability(T, Uid, [{client_incoming, Email} | Acc]);
+make_capability([H | T], Uid, Acc) ->
+    make_capability(T, Uid, [H | Acc]).
