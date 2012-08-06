@@ -206,7 +206,7 @@ u_and_g(W, H, Type) ->
                          EndOnExit, Muted, URL]) ->
     [Name2] = typechecks:std_strs([Name]),
     [Beep2] = typechecks:std_bools([Beep]),
-    [Max2] = typechecks:std_ints([MaxUsers]),
+    [Max2]  = typechecks:std_ints([MaxUsers]),
     ok = typechecks:in_range(Max2, 1, 40),
     [Start2, End2, Muted2] = typechecks:std_bools([StartOnEnter,
                                                    EndOnExit, Muted]),
