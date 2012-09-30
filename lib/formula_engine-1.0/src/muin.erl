@@ -138,8 +138,7 @@ run_code(Pcode, Rti) ->
 % not all functions can be included in other functions
 external_eval_formula(X) ->
     case lists:member(X, ?notincfns) of
-        true  -> io:format("cant inc (1)"),
-                 ?ERRVAL_CANTINC;
+        true  -> ?ERRVAL_CANTINC;
         false -> eval_formula(X)
     end.
 
@@ -850,9 +849,10 @@ do_cell(RelPath, Rowidx, Colidx, Type, ValType, OverrideCantInc) ->
                end,
     case ?mar of
         nil   -> get_value_and_link(FetchFun);
-        _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of
+        _Else -> case auth_srv:get_any_main_view(?msite, Path, ?mar) of
                      {view, _} -> get_value_and_link(FetchFun);
-                     _Else     -> ?ERR_AUTH
+                     _Other    -> exit("This is a security bug"),
+                                  ?ERR_AUTH
                  end
     end.
 
