@@ -2,7 +2,7 @@ server {
     ## Same as default.conf, but special case for vixo.com
 
     listen       80;
-    server_name  vixo.com;
+    server_name  vixo.com *.vixo.com;
     error_page   502 503 504 /maintenance.html;
 
     location = /maintenance.html {
