@@ -60,6 +60,13 @@ init([Site]) ->
               worker,
               [auth_srv]},
 
+            {softphone_srv,
+              {softphone_srv, start_link, [Site]},
+              permanent,
+              2000,
+              worker,
+              [softphone_srv]},
+
              {page_srv,
               {page_srv, start_link, [Site]},
               permanent,

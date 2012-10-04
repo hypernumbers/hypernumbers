@@ -209,6 +209,9 @@ check(To, Su, Cn, CC, Reply) ->
     create_p2(Type).
 
 create_p2(Type) ->
+    % this is a self referencing formula that needs to rewrite if the
+    % cell moves
+    put(selfreference, true),
     [Type2] = typechecks:std_ints([Type]),
     Type3 = make_type(Type2),
     Site = get(site),
@@ -216,20 +219,19 @@ create_p2(Type) ->
         ?ERRVAL_PAYONLY ->
             ?ERRVAL_PAYONLY;
         AC ->
-            #twilio_account{application_sid = AppSID,
-                            site_phone_no = Site_Phone} = AC,
+            #twilio_account{application_sid = AppSID} = AC,
             Log = #contact_log{idx = get(idx), type = "outbound call",
-                               to = "+yerk"},
-            TwiML = [
-                     #dial{callerId = Site_Phone, record = true,
-                           body = [#number{number = "+yerk"}]}
-                    ],
-            Capability = [{client_outgoing, AppSID, []}],
+                               to = ""},
+            TwiML = [#function_EXT{title = "make phone call",
+                                   module = "softphone_srv",
+                                   fn = "make_free_dial_call"}],
+            Capability = [{client_outgoing, AppSID, []},
+                          {client_incoming, name_not_set}],
             Config = make_config(Type2),
             Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
                            softphone_type = Type3, softphone_config = Config},
             Headline = "Make Phone Call",
-            ButtonTxt = "Dandle",
+            ButtonTxt = "Create Phone",
             phone(Phone, "Phone Out: ", Headline, ButtonTxt)
     end.
 
@@ -244,14 +246,27 @@ make_type(3) -> {"capabilities", {struct, [{"phone_in",  "false"},
 make_type(_) -> {"capabilities", {struct, [{"phone_in",  "false"},
                                            {"phone_out", "false"}]}}.
 
-make_config(_) -> {"permissions",
-                   {struct, [
-                             {"phone_out_permissions", "free dial"},
-                             {"sms_out_permissions",  "free all"},
-                             {"email_permissions",     "free all"}
-                            ]
-                   }
-                  }.
+make_config(_) ->
+    {"config", {struct, [
+                         {"phone_out_permissions",     "free dial"},
+                         {"sms_out_permissions",       "free all"},
+                         {"email_permissions",         "free all"},
+                         {"default_dialling_code",     false},
+                         {"extension",                 "1234"},
+                         {"groups",                    {array, [
+                                                                "Sales",
+                                                                "Marketing"
+                                                               ]}},
+                         {"phone_no",                  "+12345"},
+                         {"sms_msg",                   "yowza"},
+                         {"email_to",                  "gordon@vixo.com"},
+                         {"email_cc",                  "debug@vixo.com"},
+                         {"email_from",                "root@vixo.com"},
+                         {"email_subject",             "Hasta Victoria Sempre"},
+                         {"email_body",                "erk..."},
+                         {"email_signature",           "Respec'"}
+                        ]}
+    }.
 
 % TODO make it handle errors better
 'phone.out'([PhNo, Prefix]) ->
@@ -260,6 +275,9 @@ make_config(_) -> {"permissions",
     'phone.out2'(PhNo, "").
 
 'phone.out2'(PhNo, Prefix) ->
+    % this is a self referencing formula that needs to rewrite if the
+    % cell moves
+    put(selfreference, true),
     Site = get(site),
     case contact_utils:get_twilio_account(Site) of
         ?ERRVAL_PAYONLY ->
@@ -288,9 +306,11 @@ make_config(_) -> {"permissions",
 'phone.in'([]) -> 'phone.in'(["Default"]);
 'phone.in'([Name]) -> ?check_paid(fun 'phone.in2'/2, [Name], inbound).
 
-'phone.in2'([Name], AC) ->
+'phone.in2'([Name], _AC) ->
+    % this is a self referencing formula that needs to rewrite if the
+    % cell moves
+    put(selfreference, true),
     [Name2] = typechecks:std_strs([Name]),
-    #twilio_account{application_sid = AppSID} = AC,
     Log = #contact_log{idx = get(idx), type = "inbound call", to = "Name2"},
     TwiML = [],
     Capability = [{client_incoming, Name}],

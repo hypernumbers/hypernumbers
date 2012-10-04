@@ -1,4 +1,0 @@
-{create_group,[{name,"admin"}]}.
-{create_group,[{name,"guest"}]}.
-{create_group,[{name,"user"}]}.
-{add_user,[{uid,'$creator'},{group,"admin"}]}.

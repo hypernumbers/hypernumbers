@@ -271,25 +271,22 @@ mk_f([{str, _, S} | T], {St, A}) ->
 mk_f([{recalc, S} | T], {_St, A}) ->
     mk_f(T, {dirty, [S | A]});
 
-mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["INDIRECT" | A]});
+%% some FN's are volatile on relocation so need to be
+%% recalced on moving
+mk_f([{name, _, FN} | T], {_St, A})
+  when FN == "INDIRECT"
+orelse FN == "CELL"
+orelse FN == "ADDRESS"
+orelse FN == "CELLREF"
+orelse FN == "ROW"
+orelse FN == "COLUMN"
+orelse FN == "CREATE.PHONE"
+orelse FN == "PHONE.IN"
+orelse FN == "PHONE.OUT" ->
+    mk_f(T, {dirty, [FN | A]});
 
-mk_f([{name, _, "CELL"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["CELL" | A]});
-
-mk_f([{name, _, "ADDRESS"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["ADDRESS" | A]});
-
-mk_f([{name, _, "CELLREF"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["CELLREF" | A]});
-
-mk_f([{name, _, "ROW"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["ROW" | A]});
-
-mk_f([{name, _, "COLUMN"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["COLUMN" | A]});
-
-mk_f([{name, _, S} | T], {St, A}) ->
+mk_f([{name, FN, S} | T], {St, A}) ->
+    io:format("FN is ~p~n", [FN]),
     mk_f(T, {St, [S | A]});
 
 mk_f([{H, _} | T], {St, A}) ->

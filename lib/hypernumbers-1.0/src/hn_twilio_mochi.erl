@@ -16,7 +16,12 @@
 -export([
          redir/1,
          handle_call/2,
-         handle_phone_post/3
+         handle_webcontrol_post/4
+        ]).
+
+% need to get rid of
+-export([
+         handle_phone_post_DEPR/3
         ]).
 
 % setup the softphone
@@ -39,36 +44,40 @@
          handle_c2_DEBUG/2
         ]).
 
-get_phone(#refX{site = _S},
+get_phone(#refX{},
           #phone{capability = [{manual_email, _To, _Fr, _CC, _Su, _Cn}]} = P,
           _Uid) ->
-    {struct, lists:flatten([P#phone.softphone_config,
-                            P#phone.softphone_type])};
+    Json = lists:flatten([
+                          P#phone.softphone_config,
+                          P#phone.softphone_type
+                         ]),
+    {struct, Json};
+
 get_phone(#refX{site = _S},
           #phone{capability = [{manual_sms, PhoneNo, Msg}]} = P,
           _Uid) ->
-    {struct, lists:flatten([{"phoneno", PhoneNo},
+    {struct, lists:flatten([
+                            {"phoneno", PhoneNo},
                             {"msg", Msg},
                             P#phone.softphone_config,
-                            P#phone.softphone_type])};
-get_phone(#refX{site = S},
-          #phone{capability = [{client_outgoing, _, _}] = C} = P, Uid) ->
+                            P#phone.softphone_type
+                           ])};
+get_phone(#refX{site = S}, #phone{capability = C} = P, Uid) ->
     HyperTag = get_hypertag(S, P, Uid),
-    Token = get_phonetoken(S, C),
-    {struct, lists:flatten([{"phonetoken", Token},
+    io:format("HyperTag is ~p~n", [HyperTag]),
+    Token = get_phonetoken(S, C, Uid),
+    {ok, User} = passport:uid_to_email(Uid),
+    IsAlreadyReg = softphone_srv:has_phone(S, Uid),
+    UJson = {"user", {struct, [{"name", User},
+                               {"already_registered", IsAlreadyReg}]}},
+    {struct, lists:flatten([
+                            {"phonetoken", Token},
                             {"hypertag", HyperTag},
                             {"site", S},
                             P#phone.softphone_config,
-                            P#phone.softphone_type])};
-get_phone(#refX{site = S},
-          #phone{capability = [{client_incoming, Ext}] = C} = P, Uid) ->
-    HyperTag = get_hypertag(S, P, Uid),
-    Token = get_phonetoken(S, C),
-    {struct, lists:flatten([{"phonetoken", Token},
-                            {"hypertag", HyperTag},
-                            {"ext", Ext},
-                            P#phone.softphone_config,
-                            P#phone.softphone_type])}.
+                            P#phone.softphone_type,
+                            UJson
+                           ])}.
 
 view_recording(#refX{site = S, path = P}, HyperTag) ->
     HT = passport:open_hypertag(S, P, HyperTag),
@@ -85,9 +94,31 @@ view_recording(#refX{site = S, path = P}, HyperTag) ->
                                      no_recording
                              end.
 
-handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
+handle_phone_post_DEPR(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
     case Body of
         [{"manual_sms", {struct, Args}}] ->
+            Log = Phone#phone.log,
+            {ok, Email} = passport:uid_to_email(Uid),
+            case handle_sms_DEPR(Ref, Phone, Args) of
+                {ok, ok}   ->
+                    log(S, Log#contact_log{from = Email, status = "ok"}),
+                    {ok, 200};
+                {error, N} ->
+                    log(S, Log#contact_log{from = Email, status = "failed"}),
+                    {error, N}
+            end;
+        [{"manual_email", {struct, Args}}] ->
+            ok = handle_email_DEPR(Phone, Args),
+            {ok, Email} = passport:uid_to_email(Uid),
+            Log = Phone#phone.log,
+            log(S, Log#contact_log{from = Email}),
+            {ok, 200};
+        _  -> {error, 401}
+    end.
+
+handle_webcontrol_post(#refX{site = S} = Ref, Phone, Payload, Uid) ->
+    case Payload of
+        {"send_sms", {struct, Args}} ->
             Log = Phone#phone.log,
             {ok, Email} = passport:uid_to_email(Uid),
             case handle_sms(Ref, Phone, Args) of
@@ -98,7 +129,7 @@ handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
                     log(S, Log#contact_log{from = Email, status = "failed"}),
                     {error, N}
             end;
-        [{"manual_email", {struct, Args}}] ->
+        {"send_email", {struct, Args}} ->
             ok = handle_email(Phone, Args),
             {ok, Email} = passport:uid_to_email(Uid),
             Log = Phone#phone.log,
@@ -108,6 +139,32 @@ handle_phone_post(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid}) ->
     end.
 
 handle_sms(Ref, Phone, Args) ->
+    #phone{softphone_config = Cf} = Phone,
+    % check that the phone no and msg in the request matches those
+    % in the capability
+    % * sms
+    %   - fixed all
+    %   - free message
+    %   - free all
+    SMSConfig = read_config(Cf, "sms_ou_permissions"),
+    IsValid = case SMSConfig of
+                  "free all"     -> true;
+                  "free message" -> No = read_config(Cf, "phone_no"),
+                                    validate([No], Args);
+                  "fixed all"    -> No = read_config(Cf, "phone_no"),
+                                    Msg = read_config(Cf, "sms_msg"),
+                                    validate([No, Msg], Args)
+              end,
+    case IsValid of
+        false -> {error, 401};
+        true  -> #refX{site = S} = Ref,
+                 AC = contact_utils:get_twilio_account(S),
+                 {"phone_no", P2} = lists:keyfind("phone_no", 1, Args),
+                 {"sms_msg", Msg2} = lists:keyfind("sms_msg", 1, Args),
+                 contact_utils:post_sms(AC, P2, Msg2)
+    end.
+
+handle_sms_DEPR(Ref, Phone, Args) ->
     #phone{capability = [{manual_sms, P, Msg}]} = Phone,
     % check that the phone no and msg in the request matches those
     % in the capability
@@ -119,6 +176,41 @@ handle_sms(Ref, Phone, Args) ->
     end.
 
 handle_email(Phone, Args) ->
+    % check that the phone no and msg in the request matches those
+    % in the capability
+    % * email
+    %   - fixed all
+    %   - free all
+    %   - free body
+    #phone{softphone_config = Cf} = Phone,
+    EmailConfig = read_config(Cf, "email_permissions"),
+    IsValid = case EmailConfig of
+                  "free all" -> true;
+                  "free body" -> Subject = read_config(Cf, "email_subject"),
+                                 Body    = read_config(Cf, "email_body"),
+                                 From    = read_config(Cf, "email_from"),
+                                 validate([From, Subject, Body], Args);
+                  "fixed all" -> To      = read_config(Cf, "email_to"),
+                                 CC      = read_config(Cf, "email_cc"),
+                                 From    = read_config(Cf, "email_from"),
+                                 Subject = read_config(Cf, "email_subject"),
+                                 Body    = read_config(Cf, "email_body"),
+                                 validate([To, CC, From, Subject, Body], Args)
+              end,
+    case IsValid of
+        false ->
+            {error, 401};
+        true  ->
+            {"email_to",      To2} = lists:keyfind("email_to",      1, Args),
+            {"email_cc",      CC2} = lists:keyfind("email_cc",      1, Args),
+            {"email_from",    Fr2} = lists:keyfind("email_from",    1, Args),
+            {"email_subject", S2}  = lists:keyfind("email_subject", 1, Args),
+            {"email_body",    B2}  = lists:keyfind("email_body",    1, Args),
+
+            ok = hn_net_util:email(To2, CC2, Fr2, S2, B2)
+    end.
+
+handle_email_DEPR(Phone, Args) ->
     #phone{capability = Capability} = Phone,
     [{_, To, Fr, CC, Su, Cn}] = Capability,
     Caps = [{"to", To},
@@ -165,6 +257,7 @@ handle_c2(#refX{site = S, path = P}, "start outbound" = Type, Body) ->
     #twilio_account{application_sid = LocalAppSID} = AC,
     #twilio{application_sid = AppSID, custom_params = CP} = Body,
     {"hypertag", HyperTag} = proplists:lookup("hypertag", CP),
+    io:format("S is ~p P is ~p~n", [S, P]),
     HT = passport:open_hypertag(S, P, HyperTag),
     {ok, Uid, EMail, [Idx, OrigEmail], _, _} = HT,
     XRefX = new_db_api:idx_to_xrefX(S, Idx),
@@ -323,10 +416,11 @@ full_redir(Redir, Env) ->
     [_, Path] = string:tokens(Old, "?"),
     Redir ++ "?" ++ Path.
 
-get_phonetoken(Site, Capability) ->
+get_phonetoken(Site, Capability, Uid) ->
+    C2 = make_capability(Capability, Uid, []),
     AC = contact_utils:get_twilio_account(Site),
     #twilio_account{account_sid = AccSID, auth_token = AuthToken} = AC,
-    Tok = twilio_capabilities:generate(AccSID, AuthToken, Capability,
+    Tok = twilio_capabilities:generate(AccSID, AuthToken, C2,
                                  [{expires_after, 7200}]),
     binary_to_list(Tok).
 
@@ -343,3 +437,13 @@ get_hypertag(Site, Phone, Uid) ->
     P2 = [Idx, Email],
     passport:create_hypertag(Site, IncomingPath, Uid, Email, P2, Age).
 
+read_config({"config", {struct, List}}, Perm) ->
+    {Perm, Val} = lists:keyfind(Perm, 1, List),
+    Val.
+
+make_capability([], _, Acc) -> lists:reverse(Acc);
+make_capability([{client_incoming, name_not_set} | T], Uid, Acc) ->
+    {ok, Email} = passport:uid_to_email(Uid),
+    make_capability(T, Uid, [{client_incoming, Email} | Acc]);
+make_capability([H | T], Uid, Acc) ->
+    make_capability(T, Uid, [H | Acc]).
