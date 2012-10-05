@@ -2,7 +2,7 @@ server {
     ## Same as default.conf, but special case for vixo.com
 
     listen       80;
-    server_name  vixo.com;
+    server_name  vixo.com *.vixo.com;
     error_page   502 503 504 /maintenance.html;
 
     location = /maintenance.html {
@@ -25,6 +25,8 @@ server {
    server_name   documentation.vixo.com;
 
    location / {
+       log_format docoformat '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" cookie_auth';
+       access_log /var/log/nginx/vixodoco.log docoformat;
        root /hn/files-www/vixo/documentation/;
    }
 }
