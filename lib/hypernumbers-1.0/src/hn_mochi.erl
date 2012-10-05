@@ -101,6 +101,22 @@ handle_(#refX{site="http://www."++Site}, E = #env{mochi=Mochi}, _Qry) ->
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
+% the documentation needs to get a cookie stamp to identify users
+% this function just handles that...
+handle_(#refX{site = _S, path = ["_sync", "documentation"]}, Env, Qry) ->
+    #env{mochi = Mochi} = Env,
+    Auth = Mochi:get_cookie_value("auth"),
+    Cookie = case Auth of
+               undefined -> Stamp = passport:temp_stamp(),
+                            hn_net_util:cookie("auth", Stamp, "never");
+               _         -> {"Set-Cookie", Auth}
+           end,
+    #qry{callback = Callback} = Qry,
+    {"Set-Cookie", C} = Cookie,
+    X = {"Access-Control-Allow-Origin", "*"},
+    E = Env#env{headers = [Cookie, X | Env#env.headers]},
+    jsonp(E, {struct, [{"auth", C}]}, Callback);
+
 handle_(#refX{site = _S, path = ["_sync" | Cmd]}, Env,
         #qry{return = QReturn, stamp = QStamp})
   when QReturn /= undefined ->
@@ -1922,6 +1938,12 @@ xml(#env{mochi = Mochi, headers = Headers}, Data) ->
               Headers ++ nocache(),
               Data}),
     ok.
+
+-spec jsonp(#env{}, any(), any()) -> any().
+jsonp(#env{mochi = Mochi, headers = Headers}, Data, CallbackFn) ->
+    JsonP = CallbackFn ++ "(" ++
+        (mochijson:encoder([{input_encoding, utf8}]))(Data) ++ ");",
+    Mochi:ok({"application/json", Headers ++ nocache(), JsonP}).
 
 -spec json(#env{}, any()) -> any().
 json(#env{mochi = Mochi, headers = Headers}, Data) ->
