@@ -311,6 +311,7 @@
 %% HN Mochi Query Parameters. Leave as undefined.
 -record(qry,
         {
+          callback,
           challenger,
           hypertag,
           jserr,
