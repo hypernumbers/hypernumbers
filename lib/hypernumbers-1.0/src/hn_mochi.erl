@@ -103,7 +103,7 @@ handle_(#refX{site="http://www."++Site}, E = #env{mochi=Mochi}, _Qry) ->
 
 % the documentation needs to get a cookie stamp to identify users
 % this function just handles that...
-handle_(#refX{site = _S, path = ["_sync", "documentation"]}, Env, Qry) ->
+handle_(#refX{site = _S, path = ["_sync", "externalcookie"]}, Env, Qry) ->
     #env{mochi = Mochi} = Env,
     Auth = Mochi:get_cookie_value("auth"),
     Cookie = case Auth of
