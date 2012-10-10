@@ -42,7 +42,7 @@ log(#env{mochi = Mochi,uid = Uid,
     log1(Mochi, Uid, NewBody, Email, Ref);
 log(#env{mochi = Mochi,uid = Uid,
          raw_body= <<"{\"email\":",_Rest/binary>>, email = Email} = Body,
-    Ref) ->
+    #refX{path = ["_login"]} = Ref) ->
     {"email",    E}  = lists:keyfind("email",    1, Body#env.body),
     {"pass",     _P} = lists:keyfind("pass",     1, Body#env.body),
     {"remember", R}  = lists:keyfind("remember", 1, Body#env.body),
