@@ -9,6 +9,11 @@
 {add_view,[{path,["[**]"]},{perms,["admin"]},{view,"webpage"}]}.
 {add_view,[{path,["[**]"]},{perms,["admin"]},{view,"wikipage"}]}.
 {set_champion,[{path,["[**]"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["admin"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["admin"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["admin"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["admin"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["admin"]},{view,"webpage"}]}.
 {add_view,[{path,["assumptions"]},
            {perms,["admin",everyone]},
            {view,"spreadsheet"}]}.
@@ -73,6 +78,17 @@
            {perms,["admin"]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["assumptions","customer-growth"]},{view,"webpage"}]}.
+{add_view,[{path,["assumptions","grants"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["assumptions","grants"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["assumptions","grants"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["assumptions","grants"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["assumptions","grants"]},{view,"webpage"}]}.
 {add_view,[{path,["assumptions","growth"]},
            {perms,["admin",everyone]},
            {view,"spreadsheet"}]}.
