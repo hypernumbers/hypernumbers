@@ -1287,7 +1287,7 @@ cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
                 auth_srv:uid())
 -> ok.
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
-    case auth_srv:get_any_view(Site, Path, Ar) of
+    case auth_srv:get_any_main_view(Site, Path, Ar) of
         {view, _} ->
             XFrom = ?wu:refX_to_xrefX_createD(From),
             XTo = ?wu:refX_to_xrefX_createD(To),
