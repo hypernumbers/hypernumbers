@@ -1,7 +1,7 @@
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2012, Hypernumbers Ltd
 %%% @doc       functions for handling phones
-%%%            These fns are mirroed in phone_twilm.erl
+%%%
 %%% @end
 %%% Created : 11 Feb 2012 by gordon@hypernumbers.com
 
@@ -9,6 +9,7 @@
 
 -define(check_paid, contact_utils:check_if_paid).
 -define(en_gb, 0).
+-define(t, typechecks).
 
 -export([
          'display.phone.nos'/1,
@@ -27,6 +28,7 @@
 -include("errvals.hrl").
 -include("keyvalues.hrl").
 -include("twilio.hrl").
+-include("muin_proc_dict.hrl").
 
 'display.phone.nos'([]) ->
     Site = get(site),
@@ -34,8 +36,8 @@
         ?ERRVAL_PAYONLY ->
             "No phone numbers have been purchased for this website";
         AC ->
-            #twilio_account{site_phone_no = Site_Phone, type = Type} = AC,
-            Site_Phone ++ " (" ++ atom_to_list(Type) ++ ")"
+            #twilio_account{site_phone_no = SitePhone, type = Type} = AC,
+            SitePhone ++ " (" ++ atom_to_list(Type) ++ ")"
     end.
 
 'text.answerphone'([]) ->
@@ -48,8 +50,8 @@
     ?check_paid(fun 'text.answerphone2'/2, [Msg, IsMan, Language], inbound).
 
 'text.answerphone2'([Msg, IsMan, Language], _AC) ->
-    [Msg2] = typechecks:std_strs([Msg]),
-    [IsMan2, L2] = typechecks:std_ints([IsMan, Language]),
+    [Msg2] = ?t:std_strs([Msg]),
+    [IsMan2, L2] = ?t:std_ints([IsMan, Language]),
     Voice = contact_utils:get_voice(IsMan2),
     L3 = contact_utils:get_lang(L2),
     Msg3 = contact_utils:rightsize(Msg2, ?SAYLength),
@@ -96,7 +98,7 @@
     'auto.email'([Condition, To, Subject, Contents, CC, []]);
 'auto.email'([Condition, To, Su, Cn, CC, Reply]) ->
     [To2, Su2, Cn2, CC2, Fr] = check(To, Su, Cn, CC, Reply),
-    [Cond2] = typechecks:std_bools([Condition]),
+    [Cond2] = ?t:std_bools([Condition]),
     case Cond2 of
         false -> "Email not sent";
         true  -> hn_net_util:email(To2, CC2, Fr, Su2, Cn2),
@@ -114,7 +116,7 @@
 
 check(To, Su, Cn, CC, Reply) ->
     Domain = get_domain(get(site)),
-    Vals = typechecks:std_strs([To, Su, Cn, CC, Reply]),
+    Vals = ?t:std_strs([To, Su, Cn, CC, Reply]),
     [To2, Su2, Cn2, CC2, R2] = Vals,
     Fr = case R2 of
              [] -> "no-reply@" ++ Domain;
@@ -139,9 +141,9 @@ check(To, Su, Cn, CC, Reply) ->
     ?check_paid(fun 'manual.sms.out2'/2, [PhNo, Msg, ""], outbound).
 
 'manual.sms.out2'([PhNo, Msg, Prefix], _AC) ->
-    [PhNo2] = typechecks:std_strs([PhNo]),
+    [PhNo2] = ?t:std_strs([PhNo]),
     Msg2 = contact_utils:rightsize(Msg, ?SMSLength),
-    {Prefix2, PhNo3} = typechecks:std_phone_no(Prefix, PhNo2),
+    {Prefix2, PhNo3} = ?t:std_phone_no(Prefix, PhNo2),
     Log = #contact_log{idx = get(idx), type = "manual sms",
                        to = "+" ++ Prefix2 ++ PhNo3, contents = Msg2},
     TwiML = "",
@@ -161,10 +163,10 @@ check(To, Su, Cn, CC, Reply) ->
     ?check_paid(fun 'auto.sms.out2'/2, [Cond, PhNo, Msg, ""], outbound).
 
 'auto.robocall2'([Cond, PhNo, Msg, Prefix], AC) ->
-    [Cond] = typechecks:std_bools([Cond]),
-    [PhNo2] = typechecks:std_strs([PhNo]),
-    {Prefix2, PhNo3} = typechecks:std_phone_no(Prefix, PhNo2),
-    [Msg2] = typechecks:std_strs([Msg]),
+    [Cond] = ?t:std_bools([Cond]),
+    [PhNo2] = ?t:std_strs([PhNo]),
+    {Prefix2, PhNo3} = ?t:std_phone_no(Prefix, PhNo2),
+    [Msg2] = ?t:std_strs([Msg]),
     case Cond of
         true ->
             case contact_utils:robocall(AC, "+" ++ Prefix2 ++ PhNo2, Msg2) of
@@ -178,9 +180,9 @@ check(To, Su, Cn, CC, Reply) ->
     end.
 
 'auto.sms.out2'([Cond, PhNo, Msg, Prefix], AC) ->
-    [Cond] = typechecks:std_bools([Cond]),
-    [PhNo2] = typechecks:std_strs([PhNo]),
-    {Prefix2, PhNo3} = typechecks:std_phone_no(Prefix, PhNo2),
+    [Cond] = ?t:std_bools([Cond]),
+    [PhNo2] = ?t:std_strs([PhNo]),
+    {Prefix2, PhNo3} = ?t:std_phone_no(Prefix, PhNo2),
     PhNo3 = "+" ++ Prefix2 ++ PhNo2,
     Msg2 = contact_utils:rightsize(Msg, ?SMSLength),
     Log = #contact_log{idx = get(idx), type = "automatic sms",
@@ -204,69 +206,215 @@ check(To, Su, Cn, CC, Reply) ->
     end.
 
 'create.phone'([]) ->
-    'create.phone'([0]);
+    'create.phone'([1]);
 'create.phone'([Type]) ->
-    create_p2(Type).
+    'create.phone'([Type, ""]);
+'create.phone'([Type, Groups]) ->
+    'create.phone'([Type, Groups, false]);
+'create.phone'([Type, Groups, Extension]) ->
+    'create.phone'([Type, Groups, Extension, ""]);
+'create.phone'([Type, Groups, Extension, DiallingCode]) ->
+    'create.phone'([Type, Groups, Extension, DiallingCode, ""]);
+'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo]) ->
+    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, ""]);
+'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg]) ->
+    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg, ""]);
+'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                EmailTo]) ->
+    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                    EmailTo, ""]);
+'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                EmailTo, EmailCC]) ->
+    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                    EmailTo, EmailCC, ""]);
+'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                EmailTo, EmailCC, EmailFrom]) ->
+    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                    EmailTo, EmailCC, EmailFrom, ""]);
+'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                EmailTo, EmailCC, EmailFrom, EmailSubject]) ->
+    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                    EmailTo, EmailCC, EmailFrom, EmailSubject, ""]);
+'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody]) ->
+    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                    EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody, ""]);
+'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody,
+                EmailSig]) ->
+    create_p2(Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+              EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody, EmailSig).
 
-create_p2(Type) ->
+create_p2(Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+          ETo, ECC, EFrom, ESubject, EBody, ESig) ->
+    [Type2] = ?t:std_ints([Type]),
+    Check = case type(Type2) of
+                'in/out' -> outbound;
+                in       -> inbound;
+                out      -> outbound;
+                none     -> none
+            end,
+    ?check_paid(fun create_p3/2,
+                [Type2, Groups, Extension, DiallingCode, PhoneNo,
+                 SMSMsg, ETo, ECC, EFrom, ESubject, EBody, ESig],
+                Check).
+create_p3([Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+          ETo, ECC, EFrom, ESubject, EBody, ESig], AC) ->
     % this is a self referencing formula that needs to rewrite if the
     % cell moves
     put(selfreference, true),
-    [Type2] = typechecks:std_ints([Type]),
-    Type3 = make_type(Type2),
-    Site = get(site),
-    case contact_utils:get_twilio_account(Site) of
-        ?ERRVAL_PAYONLY ->
-            ?ERRVAL_PAYONLY;
-        AC ->
-            #twilio_account{application_sid = AppSID} = AC,
-            Log = #contact_log{idx = get(idx), type = "outbound call",
-                               to = ""},
-            TwiML = [#function_EXT{title = "make phone call",
-                                   module = "softphone_srv",
-                                   fn = "make_free_dial_call"}],
+    [G2, Ext2] = ?t:throw_std_strs([Groups, Extension]),
+    io:format("G2 is ~p Ext2 is ~p~n", [G2, Ext2]),
+    Ext3 = case Ext2 of
+               "" -> name_not_set;
+               _  -> Ext2
+           end,
+    [D2] = ?t:throw_std_diallingcode(DiallingCode),
+    io:format("D2 is ~p~n", [D2]),
+    [D3, P2] = ?t:throw_std_phone_no(D2, PhoneNo),
+    io:format("D3 is ~p P2 is ~p~n", [D3, P2]),
+    [SMS2, To2, CC2] = ?t:throw_std_strs([SMSMsg, ETo, ECC]),
+    io:format("SMS2 is ~p To2 is ~p CC2 is ~p~n", [SMS2, To2, CC2]),
+    io:format("EFrom is ~p~n", [EFrom]),
+    From2 = valid_from_email(EFrom),
+    io:format("From2 is ~p~n", [From2]),
+    [Sbj2, B2, Sg2] = ?t:throw_std_strs([ESubject,EBody, ESig]),
+    io:format("Sjb2 is ~p B2 is ~p Sg2 is ~p~n", [Sbj2, B2, Sg2]),
+    Type3 = make_type(type(Type2)),
+    io:format("Type3 is ~p~n", [Type3]),
+    % Got all our parameters - need to validate them for the phone type
+    case is_valid(Type2, P2, SMS2, To2, Sbj2, B2) of
+        false ->
+            ?ERR_VAL;
+        true  ->
+            io:format("its valid...~n"),
+            #twilio_account{application_sid = AppSID,
+                            site_phone_no = SitePhone} = AC,
+            io:format("AppSID is ~p SitePhone is ~p~n", [AppSID, SitePhone]),
             Capability = [{client_outgoing, AppSID, []},
-                          {client_incoming, name_not_set}],
-            Config = make_config(Type2),
-            Phone = #phone{twiml = TwiML, capability = Capability, log = Log,
-                           softphone_type = Type3, softphone_config = Config},
+                          {client_incoming, Ext3}],
+            io:format("Capability is ~p~n", [Capability]),
+            Config = make_config(Type2, G2, Ext3, D3, P2, SMS2, To2,
+                                 CC2, From2, Sbj2, B2, Sg2),
+            io:format("Config is ~p~n", [Config]),
+            {TwiML, Log} = make_twiml(Type2, D3, P2, SitePhone),
+            io:format("TwiML is ~p Log is ~p~n", [TwiML, Log]),
+            Phone = #phone{twiml = TwiML, capability = Capability,
+                           log = Log, softphone_type = Type3,
+                           softphone_config = Config},
             Headline = "Make Phone Call",
-            ButtonTxt = "Create Phone",
+            ButtonTxt = "Open Phone",
             phone(Phone, "Phone Out: ", Headline, ButtonTxt)
     end.
 
-make_type(0) -> {"capabilities", {struct, [{"phone_in",  "true"},
-                                           {"phone_out", "true"}]}};
-make_type(1) -> {"capabilities", {struct, [{"phone_in",  "true"},
-                                           {"phone_out", "false"}]}};
-make_type(2) -> {"capabilities", {struct, [{"phone_in",  "false"},
-                                           {"phone_out", "true"}]}};
-make_type(3) -> {"capabilities", {struct, [{"phone_in",  "false"},
-                                           {"phone_out", "false"}]}};
-make_type(_) -> {"capabilities", {struct, [{"phone_in",  "false"},
-                                           {"phone_out", "false"}]}}.
+make_twiml(none, _, _, _) ->
+    {none, #contact_log{idx = get(idx)}};
+make_twiml(Type2, DiallingCode, PhoneNo, SitePhone) ->
+    io:format("in make_twiml with Type2 of ~p DiallingCode of ~p PhoneNo of ~p"
+              ++" SitePhone of ~p~n", [Type2, DiallingCode, PhoneNo, SitePhone]),
+    Type3 = type(Type2),
+    io:format("Type3 is ~p~n", [Type3]),
+    Type4 = case Type3 of
+                in       -> "incoming call";
+                out      -> "outbound call";
+                'in/out' -> "outbound call";
+                none     -> "none"
 
-make_config(_) ->
+            end,
+    io:format("Type4 is ~p~n", [Type4]),
+    Log = #contact_log{idx = get(idx), type = Type4, to = ""},
+    {PhonePerms, _SMSPerms, _EmailPerms} = get_config(Type2),
+    io:format("PhonePerms is ~p~n", [PhonePerms]),
+    TwiML = case PhonePerms of
+                "free dial"  -> [
+                                 #function_EXT{title = "make phone call",
+                                               module = "softphone_srv",
+                                               fn = "make_free_dial_call"}
+                                ];
+                "fixed dial" -> Number = "+" ++ DiallingCode ++ PhoneNo,
+                                io:format("Number is ~p~n", [Number]),
+                                [
+                                 #dial{callerId = SitePhone, record = true,
+                                       body = [
+                                               #number{number = Number}
+                                              ]}
+                                ];
+                "none"       -> []
+            end,
+    io:format("Twiml is ~p Log is ~p~n", [TwiML, Log]),
+    {TwiML, Log}.
+
+type(1)  -> 'in/out';
+type(2)  -> in;
+type(3)  -> out;
+type(4)  -> none;
+type(5)  -> none;
+type(6)  -> out;
+type(7)  -> 'in/out';
+type(8)  -> out;
+type(9)  -> none;
+type(10) -> none;
+type(11) -> none;
+type(12) -> none;
+type(13) -> 'in/out';
+type(14) -> 'in/out';
+type(15) -> 'in/out';
+type(16) -> out;
+type(17) -> out;
+type(18) -> out;
+type(_)  -> ?ERR_VAL.
+
+make_type('in/out') -> {"capabilities", {struct, [{"phone_in",  "true"},
+                                                  {"phone_out", "true"}]}};
+make_type(in)       -> {"capabilities", {struct, [{"phone_in",  "true"},
+                                                  {"phone_out", "false"}]}};
+make_type(out)      -> {"capabilities", {struct, [{"phone_in",  "false"},
+                                                  {"phone_out", "true"}]}};
+make_type(none)     -> {"capabilities", {struct, [{"phone_in",  "false"},
+                                                  {"phone_out", "false"}]}}.
+
+make_config(Type, Groups, Extension, DiallingCode,
+            PhoneNo, SMSMsg, EmailTo, EmailCC, EmailFrom, EmailSubject,
+            EmailBody, EmailSig) ->
+    {PhonePerms, SMSPerms, EmailPerms} = get_config(Type),
     {"config", {struct, [
-                         {"phone_out_permissions",     "free dial"},
-                         {"sms_out_permissions",       "free all"},
-                         {"email_permissions",         "free all"},
-                         {"default_dialling_code",     false},
-                         {"extension",                 "1234"},
-                         {"groups",                    {array, [
-                                                                "Sales",
-                                                                "Marketing"
-                                                               ]}},
-                         {"phone_no",                  "+12345"},
-                         {"sms_msg",                   "yowza"},
-                         {"email_to",                  "gordon@vixo.com"},
-                         {"email_cc",                  "debug@vixo.com"},
-                         {"email_from",                "root@vixo.com"},
-                         {"email_subject",             "Hasta Victoria Sempre"},
-                         {"email_body",                "erk..."},
-                         {"email_signature",           "Respec'"}
+                         {"phone_out_permissions",     PhonePerms},
+                         {"sms_out_permissions",       SMSPerms},
+                         {"email_permissions",         EmailPerms},
+                         {"default_dialling_code",     DiallingCode},
+                         {"extension",                 Extension},
+                         {"groups",                    {array, Groups}},
+                         {"phone_no",                  PhoneNo},
+                         {"sms_msg",                   SMSMsg},
+                         {"email_to",                  EmailTo},
+                         {"email_cc",                  EmailCC},
+                         {"email_from",                EmailFrom},
+                         {"email_subject",             EmailSubject},
+                         {"email_body",                EmailBody},
+                         {"email_signature",           EmailSig}
                         ]}
     }.
+
+% phone out, sms, email
+get_config(1)  -> {"free dial",  "free all",     "none"};
+get_config(2)  -> {"none",       "none",         "none"};
+get_config(3)  -> {"free dial",  "none",         "none"};
+get_config(4)  -> {"none",       "free all",     "none"};
+get_config(5)  -> {"none",       "none",         "free all"};
+get_config(6)  -> {"free dial",  "free all",     "none"};
+get_config(7)  -> {"free dial",  "free all",     "free all"};
+get_config(8)  -> {"fixed dial", "none",         "none"};
+get_config(9)  -> {"none",       "free message", "none"};
+get_config(10) -> {"none",       "fixed all",    "none"};
+get_config(11) -> {"none",       "none",         "fixed all"};
+get_config(12) -> {"none",       "none",         "free body"};
+get_config(13) -> {"fixed dial", "fixed all",    "none"};
+get_config(14) -> {"fixed dial", "fixed all",    "fixed all"};
+get_config(15) -> {"fixed dial", "free message", "none"};
+get_config(16) -> {"fixed dial", "fixed all",    "none"};
+get_config(17) -> {"fixed dial", "free message", "none"};
+get_config(18) -> {"fixed dial", "free message", "free body"};
+get_config(_)  -> ?ERR_VAL.
 
 % TODO make it handle errors better
 'phone.out'([PhNo, Prefix]) ->
@@ -284,12 +432,12 @@ make_config(_) ->
             ?ERRVAL_PAYONLY;
         AC ->
             #twilio_account{application_sid = AppSID,
-                            site_phone_no = Site_Phone} = AC,
-            {Prefix2, PhNo2} = typechecks:std_phone_no(Prefix, PhNo),
+                            site_phone_no = SitePhone} = AC,
+            {Prefix2, PhNo2} = ?t:std_phone_no(Prefix, PhNo),
             Log = #contact_log{idx = get(idx), type = "outbound call",
                                to = "+" ++ Prefix2 ++ PhNo2},
             TwiML = [
-                     #dial{callerId = Site_Phone, record = true,
+                     #dial{callerId = SitePhone, record = true,
                            body = [#number{number = "+" ++ Prefix2 ++ PhNo2}]}
                     ],
             Capability = [{client_outgoing, AppSID, []}],
@@ -310,7 +458,7 @@ make_config(_) ->
     % this is a self referencing formula that needs to rewrite if the
     % cell moves
     put(selfreference, true),
-    [Name2] = typechecks:std_strs([Name]),
+    [Name2] = ?t:std_strs([Name]),
     Log = #contact_log{idx = get(idx), type = "inbound call", to = "Name2"},
     TwiML = [],
     Capability = [{client_incoming, Name}],
@@ -360,3 +508,89 @@ is_valid_email([H | T], Domain) ->
 get_domain("http://" ++ Domain) ->
     [D, _] = string:tokens(Domain, ":"),
     D.
+
+% this function throws a #VAL! error if the parameters dont work at the most
+% basic level - so if you have a fixed dial phone out then the phone number
+% can't be blank, etc, etc
+% free phones
+is_valid(N, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody)
+  when N =< 7 ->
+    true;
+% fixed dial out
+is_valid(8, [], _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    false;
+is_valid(8, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% fixed dial SMS
+is_valid(9, [], _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    false;
+is_valid(9, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% full fixed SMS
+is_valid(10, Phone, SMS, _EmailTo, _EmailSubj, _EmailBody)
+  when Phone == [] orelse SMS == [] ->
+    false;
+is_valid(10, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% fixed email
+is_valid(11, _Phone, _SMS, EmailTo, EmailSubj, EmailBody)
+  when EmailTo == [] orelse EmailSubj == [] orelse EmailBody == [] ->
+    false;
+is_valid(11, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% free body email
+is_valid(12, _Phone, _SMS, EmailTo, _EmailSubj, _EmailBody)
+  when EmailTo == [] ->
+    false;
+is_valid(12, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% fixed out bound phone and SMS
+is_valid(13, Phone, SMS, _EmailTo, _EmailSubj, _EmailBody)
+  when Phone == [] orelse SMS == [] ->
+    false;
+is_valid(13, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% fixed out bound phone, SMS and email
+is_valid(14, Phone, SMS, EmailTo, EmailSubj, EmailBody)
+  when Phone == [] orelse SMS == [] orelse EmailTo == [] orelse EmailTo == []
+       orelse EmailSubj == [] orelse EmailBody == []->
+    true;
+is_valid(14, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% inbound with free message fixed dial outbound and SMS
+is_valid(15, [], _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    false;
+is_valid(15, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% all fixed out bound phone and SMS
+is_valid(16, Phone, SMS, _EmailTo, _EmailSubj, _EmailBody)
+  when Phone == [] orelse SMS == [] ->
+    false;
+is_valid(16, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% free message fixed dial outbound and SMS
+is_valid(17, [], _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    false;
+is_valid(17, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+% free message fixed dial outbound and SMS with fixed email/free email body
+is_valid(18, Phone, _SMS, EmailTo, EmailSubj, _EmailBody)
+  when Phone == [] orelse EmailTo == [] orelse EmailSubj == [] ->
+    true;
+is_valid(18, _Phone, _SMS, _EmailTo, _EmailSubj, _EmailBody) ->
+    true;
+is_valid(_, _, _, _, _, _) ->
+    false.
+
+valid_from_email("") ->
+    [_Proto, "//" ++ Domain, _Port] = string:tokens(?msite, ":"),
+    "no-reply@" ++ Domain;
+valid_from_email(Email) ->
+    case hn_util:valid_email(Email) of
+        false -> ?ERR_VAL;
+        true  -> [_Name, Domain] = string:tokens(Email, "@"),
+                 case ?msite of
+                     Domain -> Email;
+                     _      -> ?ERR_VAL
+                 end
+    end.

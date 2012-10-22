@@ -221,9 +221,15 @@ handle_call({get_twiml, Path, Obj}, _From, State) ->
 handle_call({reg_dial, Path, Obj, Uid, Numbers}, _From, State) ->
     Softphones = State#state.softphones,
     Key = {Path, Obj},
-    NewPhone = #phone_status{uid = Uid, busy = true, key = Key,
-                             numbers = Numbers},
-    NewSoftphones = lists:keyreplace(Uid, 2, Softphones, NewPhone),
+    CreateFun = fun() ->
+                        #phone_status{uid = Uid, busy = true, key = Key,
+                                      numbers = Numbers}
+                end,
+    ChangeFun = fun(P) ->
+                        P#phone_status{uid = Uid, busy = true, key = Key,
+                                      numbers = Numbers}
+                end,
+    NewSoftphones = update_state(Softphones, Uid, CreateFun, ChangeFun),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({unreg_phone, Uid}, _From, State) ->
     Softphones = State#state.softphones,
@@ -231,42 +237,33 @@ handle_call({unreg_phone, Uid}, _From, State) ->
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({away, Uid}, _From, State) ->
     Softphones = State#state.softphones,
-    NewSoftphones
-        = case lists:keyfind(Uid, 2, Softphones) of
-              false ->
-                  % create a new phone record
-                  NewP = #phone_status{uid = Uid, busy = false},
-                  lists:keystore(Uid, 2, Softphones, NewP);
-              P ->
-                  NewP = P#phone_status{away = true},
-                  lists:keystore(Uid, 2, Softphones, NewP)
-          end,
+    CreateFun = fun() ->
+                        #phone_status{uid = Uid, busy = false}
+                end,
+    ChangeFun = fun(P) ->
+                        P#phone_status{away = true}
+                end,
+    NewSoftphones = update_state(Softphones, Uid, CreateFun, ChangeFun),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({back, Uid}, _From, State) ->
     Softphones = State#state.softphones,
-    NewSoftphones
-        = case lists:keyfind(Uid, 2, Softphones) of
-              false ->
-                  % create a new phone record
-                  NewP = #phone_status{uid = Uid, busy = false},
-                  lists:keystore(Uid, 2, Softphones, NewP);
-              P ->
-                  NewP = P#phone_status{away = false},
-                  lists:keystore(Uid, 2, Softphones, NewP)
-          end,
+    CreateFun = fun() ->
+                        #phone_status{uid = Uid, busy = false}
+                end,
+    ChangeFun = fun(P) ->
+                        P#phone_status{away = false}
+                end,
+    NewSoftphones = update_state(Softphones, Uid, CreateFun, ChangeFun),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({idle, Uid}, _From, State) ->
     Softphones = State#state.softphones,
-    NewSoftphones
-        = case lists:keyfind(Uid, 2, Softphones) of
-              false ->
-                  % create a new phone record
-                  NewP = #phone_status{uid = Uid, busy = false},
-                  lists:keystore(Uid, 2, Softphones, NewP);
-              P ->
-                  NewP = P#phone_status{busy = false, numbers = []},
-                  lists:keystore(Uid, 2, Softphones, NewP)
-          end,
+    CreateFun = fun() ->
+                        #phone_status{uid = Uid, busy = false}
+                end,
+    ChangeFun = fun(P) ->
+                        P#phone_status{busy = false, numbers = []}
+                end,
+    NewSoftphones = update_state(Softphones, Uid, CreateFun, ChangeFun),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({reg_phone, RegPid, PhoneId, Groups, Uid}, _From, State) ->
     Softphones = State#state.softphones,
@@ -301,7 +298,6 @@ handle_call({reg_phone, RegPid, PhoneId, Groups, Uid}, _From, State) ->
                           NewS = lists:keystore(Uid, 2, Softphones, NewP),
                           {{phoneid, PhoneId}, NewS};
                       _ ->
-                          % the user has already registered a phone
                           {user_already_registered, Softphones}
                   end
           end,
@@ -463,3 +459,12 @@ print_phones(SoftPhones) ->
           end,
     [Fun(X) || X <- SoftPhones],
     ok.
+
+update_state(Softphones, Uid, CreateFun, ChangeFun) ->
+    NewP = case lists:keyfind(Uid, 2, Softphones) of
+        false -> CreateFun();
+        P     -> ChangeFun(P)
+    end,
+    lists:keystore(Uid, 2, Softphones, NewP).
+
+
