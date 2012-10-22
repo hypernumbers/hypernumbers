@@ -264,41 +264,28 @@ create_p3([Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
     % cell moves
     put(selfreference, true),
     [G2, Ext2] = ?t:throw_std_strs([Groups, Extension]),
-    io:format("G2 is ~p Ext2 is ~p~n", [G2, Ext2]),
     Ext3 = case Ext2 of
                "" -> name_not_set;
                _  -> Ext2
            end,
     [D2] = ?t:throw_std_diallingcode(DiallingCode),
-    io:format("D2 is ~p~n", [D2]),
     [D3, P2] = ?t:throw_std_phone_no(D2, PhoneNo),
-    io:format("D3 is ~p P2 is ~p~n", [D3, P2]),
     [SMS2, To2, CC2] = ?t:throw_std_strs([SMSMsg, ETo, ECC]),
-    io:format("SMS2 is ~p To2 is ~p CC2 is ~p~n", [SMS2, To2, CC2]),
-    io:format("EFrom is ~p~n", [EFrom]),
     From2 = valid_from_email(EFrom),
-    io:format("From2 is ~p~n", [From2]),
     [Sbj2, B2, Sg2] = ?t:throw_std_strs([ESubject,EBody, ESig]),
-    io:format("Sjb2 is ~p B2 is ~p Sg2 is ~p~n", [Sbj2, B2, Sg2]),
     Type3 = make_type(type(Type2)),
-    io:format("Type3 is ~p~n", [Type3]),
     % Got all our parameters - need to validate them for the phone type
     case is_valid(Type2, P2, SMS2, To2, Sbj2, B2) of
         false ->
             ?ERR_VAL;
         true  ->
-            io:format("its valid...~n"),
             #twilio_account{application_sid = AppSID,
                             site_phone_no = SitePhone} = AC,
-            io:format("AppSID is ~p SitePhone is ~p~n", [AppSID, SitePhone]),
             Capability = [{client_outgoing, AppSID, []},
                           {client_incoming, Ext3}],
-            io:format("Capability is ~p~n", [Capability]),
             Config = make_config(Type2, G2, Ext3, D3, P2, SMS2, To2,
                                  CC2, From2, Sbj2, B2, Sg2),
-            io:format("Config is ~p~n", [Config]),
             {TwiML, Log} = make_twiml(Type2, D3, P2, SitePhone),
-            io:format("TwiML is ~p Log is ~p~n", [TwiML, Log]),
             Phone = #phone{twiml = TwiML, capability = Capability,
                            log = Log, softphone_type = Type3,
                            softphone_config = Config},
@@ -310,10 +297,7 @@ create_p3([Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
 make_twiml(none, _, _, _) ->
     {none, #contact_log{idx = get(idx)}};
 make_twiml(Type2, DiallingCode, PhoneNo, SitePhone) ->
-    io:format("in make_twiml with Type2 of ~p DiallingCode of ~p PhoneNo of ~p"
-              ++" SitePhone of ~p~n", [Type2, DiallingCode, PhoneNo, SitePhone]),
     Type3 = type(Type2),
-    io:format("Type3 is ~p~n", [Type3]),
     Type4 = case Type3 of
                 in       -> "incoming call";
                 out      -> "outbound call";
@@ -321,10 +305,8 @@ make_twiml(Type2, DiallingCode, PhoneNo, SitePhone) ->
                 none     -> "none"
 
             end,
-    io:format("Type4 is ~p~n", [Type4]),
     Log = #contact_log{idx = get(idx), type = Type4, to = ""},
     {PhonePerms, _SMSPerms, _EmailPerms} = get_config(Type2),
-    io:format("PhonePerms is ~p~n", [PhonePerms]),
     TwiML = case PhonePerms of
                 "free dial"  -> [
                                  #function_EXT{title = "make phone call",
@@ -332,7 +314,6 @@ make_twiml(Type2, DiallingCode, PhoneNo, SitePhone) ->
                                                fn = "make_free_dial_call"}
                                 ];
                 "fixed dial" -> Number = "+" ++ DiallingCode ++ PhoneNo,
-                                io:format("Number is ~p~n", [Number]),
                                 [
                                  #dial{callerId = SitePhone, record = true,
                                        body = [
@@ -341,7 +322,6 @@ make_twiml(Type2, DiallingCode, PhoneNo, SitePhone) ->
                                 ];
                 "none"       -> []
             end,
-    io:format("Twiml is ~p Log is ~p~n", [TwiML, Log]),
     {TwiML, Log}.
 
 type(1)  -> 'in/out';
