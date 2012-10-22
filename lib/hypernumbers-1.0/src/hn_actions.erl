@@ -248,6 +248,8 @@ replace_user([H | T], EM, Groups)       -> replace_user(T, EM, [H | Groups]).
 numbers_match(Phone, {struct, [{"numbers", {array, L}}]}) ->
     N = get_config(Phone, "phone_no"),
     D = get_config(Phone, "default_dialling_code"),
+    io:format("for some reason not checking that numbers match...~n"),
+    exit(banjo),
     case length(L) of
         1 -> true;
         _ -> false
