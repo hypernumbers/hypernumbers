@@ -64,7 +64,6 @@ get_phone(#refX{site = _S},
                            ])};
 get_phone(#refX{site = S}, #phone{capability = C} = P, Uid) ->
     HyperTag = get_hypertag(S, P, Uid),
-    io:format("HyperTag is ~p~n", [HyperTag]),
     Token = get_phonetoken(S, C, Uid),
     {ok, User} = passport:uid_to_email(Uid),
     IsAlreadyReg = softphone_srv:has_phone(S, Uid),
@@ -146,7 +145,7 @@ handle_sms(Ref, Phone, Args) ->
     %   - fixed all
     %   - free message
     %   - free all
-    SMSConfig = read_config(Cf, "sms_ou_permissions"),
+    SMSConfig = read_config(Cf, "sms_out_permissions"),
     IsValid = case SMSConfig of
                   "free all"     -> true;
                   "free message" -> No = read_config(Cf, "phone_no"),
@@ -252,12 +251,10 @@ handle_call(#refX{} = Ref, #env{} = Env) ->
 % this function head is for an outbound call
 % twilio is calling back to get the details that the user has enabled
 handle_c2(#refX{site = S, path = P}, "start outbound" = Type, Body) ->
-    io:format("starting outbound call~n"),
     AC = contact_utils:get_twilio_account(S),
     #twilio_account{application_sid = LocalAppSID} = AC,
     #twilio{application_sid = AppSID, custom_params = CP} = Body,
     {"hypertag", HyperTag} = proplists:lookup("hypertag", CP),
-    io:format("S is ~p P is ~p~n", [S, P]),
     HT = passport:open_hypertag(S, P, HyperTag),
     {ok, Uid, EMail, [Idx, OrigEmail], _, _} = HT,
     XRefX = new_db_api:idx_to_xrefX(S, Idx),
@@ -372,7 +369,6 @@ log(Site, #contact_log{} = Log) ->
     write_log(RefX, Log).
 
 write_log(#refX{path = P} = RefX, Log) ->
-    io:format("Logging ~p~n- to ~p~n", [Log, RefX]),
     P2 = lists:append(P, ["_contacts"]),
     RefX2 = RefX#refX{type = gurl, path = P2, obj = {row, {1, 1}}},
     Array = [
