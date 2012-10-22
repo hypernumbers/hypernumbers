@@ -3,8 +3,10 @@
 -define(SITE, "http://hypernumbers.dev:9000").
 
 -include("spriki.hrl").
+-include("twilio.hrl").
 
 -export([
+         testing/0,
          testing1/0,
          testing2/0,
          testing3/0,
@@ -14,6 +16,13 @@
         ]).
 
 % normal call
+testing() ->
+    TwiML = [#dial{body=[#number{number = "+447776251669"}]}],
+    io:format("TwiML is ~p~n", [TwiML]),
+    Ret = twiml:compile(TwiML, fsm, "1"),
+    io:format("Ret is ~p~n", [Ret]),
+    ok.
+
 testing1() ->
     Sid = integer_to_list(util2:get_timestamp()),
     Ret1 = hn_twilio_mochi:handle_c2_DEBUG(start_inbound_call(Sid), ?SITE),
