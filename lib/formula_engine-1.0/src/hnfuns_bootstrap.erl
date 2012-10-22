@@ -61,7 +61,7 @@ trail2([H | T] = L, Acc) ->
 zdropdown(W, H, Text, Colour, ZQuery, Style, Button) ->
     [Text2] = typechecks:throw_std_strs([Text]),
     [C2] = typechecks:throw_std_ints([Colour]),
-    C3 = get_colour(C2),
+    C3 = bootstrap_utils:get_colour(C2),
     [S2] = typechecks:throw_std_ints([Style]),
     S3 = case S2 of
              0 -> vals;
@@ -93,7 +93,7 @@ zdropdown(W, H, Text, Colour, ZQuery, Style, Button) ->
 dropdown(W, H, Text, Colour, Rest, Button) ->
     [Text2] = typechecks:throw_std_strs([Text]),
     [C2] = typechecks:throw_std_ints([Colour]),
-    C3 = get_colour(C2),
+    C3 = bootstrap_utils:get_colour(C2),
     Rest2 = typechecks:throw_std_strs(Rest),
     Drop = make_dropdown(Rest2, []),
     HTML = "<a class='btn " ++ Button ++ " dropdown-toggle "
@@ -131,7 +131,7 @@ button(Class, Size, W, H, Link, Text, Colour) ->
     [W2, H2] = typechecks:throw_std_ints([W, H]),
     [Link2, Text2] = typechecks:std_strs([Link, Text]),
     [C2] = typechecks:std_ints([Colour]),
-    C3 = get_colour(C2),
+    C3 = bootstrap_utils:get_colour(C2),
     [Btn] = make_buttons([Link2, Text2], Class ++ " " ++ C3, []),
     Resize = #resize{width = W2, height = H2},
     Preview = Size ++ " Menu Buttons: " ++ Text2,
@@ -181,14 +181,6 @@ make_buttons([Link, Text | Rest], Class, Acc) ->
     NewAcc = "<a class='" ++ C ++ Class ++ "' " ++ "href='" ++ Link ++ "'>"
         ++ Text ++ "</a>",
     make_buttons(Rest, Class, [NewAcc | Acc]).
-
-get_colour(0) -> "btn-primary";
-get_colour(1) -> "btn-warning";
-get_colour(2) -> "btn-danger";
-get_colour(3) -> "btn-success";
-get_colour(4) -> "btn-info";
-get_colour(5) -> "btn-inverse";
-get_colour(_) -> ?ERR_VAL.
 
 get_z(Fun, Z, Style) ->
     case muin_collect:col([Z], [fetch, fetch_z_debug, blank_as_str],

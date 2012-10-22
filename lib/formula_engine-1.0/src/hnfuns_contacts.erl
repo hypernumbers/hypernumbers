@@ -206,47 +206,60 @@ check(To, Su, Cn, CC, Reply) ->
     end.
 
 'create.phone'([]) ->
-    'create.phone'([1]);
-'create.phone'([Type]) ->
-    'create.phone'([Type, ""]);
-'create.phone'([Type, Groups]) ->
-    'create.phone'([Type, Groups, false]);
-'create.phone'([Type, Groups, Extension]) ->
-    'create.phone'([Type, Groups, Extension, ""]);
-'create.phone'([Type, Groups, Extension, DiallingCode]) ->
-    'create.phone'([Type, Groups, Extension, DiallingCode, ""]);
-'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo]) ->
-    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, ""]);
-'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg]) ->
-    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg, ""]);
-'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+    'create.phone'(["Open Phone"]);
+'create.phone'([Title]) ->
+    'create.phone'([Title, 1]);
+'create.phone'([Title, Type]) ->
+    'create.phone'([Title, Type, ""]);
+'create.phone'([Title, Type, Groups]) ->
+    'create.phone'([Title, Type, Groups, false]);
+'create.phone'([Title, Type, Groups, Extension]) ->
+    'create.phone'([Title, Type, Groups, Extension, ""]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode]) ->
+    'create.phone'([Title, Type, Groups, Extension, DiallingCode, ""]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo]) ->
+    'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo, ""]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo,
+                SMSMsg]) ->
+    'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo,
+                    SMSMsg, ""]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
                 EmailTo]) ->
-    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
-                    EmailTo, ""]);
-'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+    'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo,
+                    SMSMsg, EmailTo, ""]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
                 EmailTo, EmailCC]) ->
-    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
-                    EmailTo, EmailCC, ""]);
-'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+    'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo,
+                    SMSMsg, EmailTo, EmailCC, ""]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
                 EmailTo, EmailCC, EmailFrom]) ->
-    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
-                    EmailTo, EmailCC, EmailFrom, ""]);
-'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+    'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo,
+                    SMSMsg, EmailTo, EmailCC, EmailFrom, ""]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
                 EmailTo, EmailCC, EmailFrom, EmailSubject]) ->
-    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
-                    EmailTo, EmailCC, EmailFrom, EmailSubject, ""]);
-'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+    'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo,
+                    SMSMsg, EmailTo, EmailCC, EmailFrom, EmailSubject, ""]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
                 EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody]) ->
-    'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
-                    EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody, ""]);
-'create.phone'([Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+    'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo,
+                    SMSMsg, EmailTo, EmailCC, EmailFrom, EmailSubject,
+                    EmailBody, ""]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
                 EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody,
                 EmailSig]) ->
-    create_p2(Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
-              EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody, EmailSig).
+    'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo,
+                    SMSMsg, EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody,
+                    EmailSig, 0]);
+'create.phone'([Title, Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+                EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody,
+                EmailSig, Colour]) ->
+    create_p2(Title, Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+              EmailTo, EmailCC, EmailFrom, EmailSubject, EmailBody, EmailSig,
+              Colour).
 
-create_p2(Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
-          ETo, ECC, EFrom, ESubject, EBody, ESig) ->
+create_p2(Title, Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+          ETo, ECC, EFrom, ESubject, EBody, ESig, Colour) ->
+    [Title2] = ?t:std_strs([Title]),
     [Type2] = ?t:std_ints([Type]),
     Check = case type(Type2) of
                 'in/out' -> outbound;
@@ -255,16 +268,15 @@ create_p2(Type, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
                 none     -> none
             end,
     ?check_paid(fun create_p3/2,
-                [Type2, Groups, Extension, DiallingCode, PhoneNo,
-                 SMSMsg, ETo, ECC, EFrom, ESubject, EBody, ESig],
+                [Title2, Type2, Groups, Extension, DiallingCode, PhoneNo,
+                 SMSMsg, ETo, ECC, EFrom, ESubject, EBody, ESig, Colour],
                 Check).
-create_p3([Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
-          ETo, ECC, EFrom, ESubject, EBody, ESig], AC) ->
+create_p3([Title, Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
+          ETo, ECC, EFrom, ESubject, EBody, ESig, Colour], AC) ->
     % this is a self referencing formula that needs to rewrite if the
     % cell moves
     put(selfreference, true),
     [G2] = ?t:throw_std_strs([Groups]),
-    io:format("Extension is ~p~n", [Extension]),
     [Ext2] = case Extension of
                  false -> [false];
                  []    -> [false];
@@ -274,10 +286,11 @@ create_p3([Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
     [D3, P2] = ?t:throw_std_phone_no(D2, PhoneNo),
     [SMS2, To2, CC2] = ?t:throw_std_strs([SMSMsg, ETo, ECC]),
     From2 = valid_from_email(EFrom),
-    [Sbj2, B2, Sg2] = ?t:throw_std_strs([ESubject,EBody, ESig]),
+    [Sbj2, B2, Sg2] = ?t:throw_std_strs([ESubject, EBody, ESig]),
+    [C2] = typechecks:throw_std_ints([Colour]),
+    C3 = bootstrap_utils:get_colour(C2),
     Type3 = make_type(type(Type2)),
     % Got all our parameters - need to validate them for the phone type
-    io:format("Ext2 is ~p~n", [Ext2]),
     case is_valid(Type2, P2, SMS2, To2, Sbj2, B2) of
         false ->
             ?ERR_VAL;
@@ -295,9 +308,7 @@ create_p3([Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
             Phone = #phone{twiml = TwiML, capability = Capability,
                            log = Log, softphone_type = Type3,
                            softphone_config = Config},
-            Headline = "Make Phone Call",
-            ButtonTxt = "Open Phone",
-            phone(Phone, "Phone Out: ", Headline, ButtonTxt)
+            phone2(Phone, "Phone Out: ", Title, C3)
     end.
 
 make_twiml(none, _, _, _) ->
@@ -477,6 +488,25 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
     Resize = #resize{width = 2, height = 4},
     #spec_val{val = HTML, preview = PreV, resize = Resize,
               sp_phone = Payload}.
+
+phone2(Payload, Preview, ButtonTxt, Colour) ->
+    Site = get(site),
+    Path = get(path),
+    X = get(mx),
+    Y = get(my),
+    URL = hn_util:refX_to_url(#refX{site = Site, path = Path,
+                                    obj = {cell, {X, Y}}}),
+    HTML = "<a class='btn btn-large hn-btn-large "  ++ Colour ++ "' href='"
+        ++ URL ++ "?view=phone' target='hnsoftphone'>"
+        ++ ButtonTxt ++ "</a>",
+    PreV = Preview ++ ButtonTxt,
+    Resize = #resize{width = 2, height = 2},
+    JS = ["/bootstrap/js/bootstrap.js", "/bootstrap/js/helper.js"],
+    Reload = ["HN.BootstrapHelper.reload();"],
+    CSS = ["/bootstrap/css/bootstrap.css", "/bootstrap/css/helper.css"],
+    Incs = #incs{js = JS, js_reload = Reload, css = CSS},
+    #spec_val{val = HTML, preview = PreV, resize = Resize, sp_phone = Payload,
+             sp_incs = Incs}.
 
 % exemption for testing domain
 is_valid_email(_List, "hypernumbers.dev") ->
