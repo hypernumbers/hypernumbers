@@ -38,6 +38,9 @@
    {should_start_sites, true},
    {startup_debug, false},
 
+   % feature flag for new version of the phone
+   {phone_debug, false},
+
    % Determines if the server is to running in site-cache mode
    {site_cache_mode, false}
   ]},
