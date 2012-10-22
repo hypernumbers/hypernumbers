@@ -213,9 +213,8 @@ handle_call(dump_phones, _From, State) ->
     print_phones(State#state.softphones),
     {reply, ok, State};
 handle_call({get_twiml, Path, Obj}, _From, State) ->
-    io:format("in get_twiml for ~p ~p~n", [Path, Obj]),
     Key = {Path, Obj},
-    #phone_status{numbers = N} = lists:keyfind(Key, 2, State#state.softphones),
+    #phone_status{numbers = N} = lists:keyfind(Key, 3, State#state.softphones),
     Reply = make_dial(N),
     {reply, Reply, State};
 handle_call({reg_dial, Path, Obj, Uid, Numbers}, _From, State) ->
@@ -429,7 +428,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-get_perms({"permissions", {struct, List}}, Key) ->
+get_perms({"config", {struct, List}}, Key) ->
     case proplists:lookup(Key, List) of
         none       -> none;
         {Key, Val} -> Val

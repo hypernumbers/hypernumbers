@@ -122,10 +122,15 @@ run_actions(#refX{} = RefX, #env{mochi = Mochi} = _Env,
                     % now keep the socket alive
                     receive
                         {tcp_closed, Socket} ->
-                            ok = softphone_srv:unreg_phone(RefX, Uid);
+                            io:format("TCP closed on socket~n"),
+                            ok = softphone_srv:unreg_phone(RefX, Uid),
+                            {ok, died};
                         {error, timeout}->
-                            ok = softphone_srv:unreg_phone(RefX, Uid);
+                            io:format("First timeout of phone~n"),
+                            ok = softphone_srv:unreg_phone(RefX, Uid),
+                            {ok, died};
                         {msg, is_available} ->
+                            io:format("Phone available~n"),
                             {"phone available", PhId2}
                     after
                         2000 ->
@@ -243,21 +248,16 @@ replace_user([H | T], EM, Groups)       -> replace_user(T, EM, [H | Groups]).
 numbers_match(Phone, {struct, [{"numbers", {array, L}}]}) ->
     N = get_config(Phone, "phone_no"),
     D = get_config(Phone, "default_dialling_code"),
-    io:format("N is ~p D is ~p L is ~p~n", [N, D, L]),
     case length(L) of
-        1 -> [N2] = L,
-             io:format("N2 is ~p~n", [N2]),
-             true;
+        1 -> true;
         _ -> false
     end.
 
 get_config(#phone{softphone_config = {"config", {struct, L}}}, Key) ->
-    io:format("in get_config L is ~p~n", [L]),
     {Key, P} = lists:keyfind(Key, 1, L),
     P.
 
 get_type(#phone{softphone_type = {"capabilities", {struct, L}}}, Key) ->
-    io:format("in get_type L is ~p~n", [L]),
     {Key, P} = lists:keyfind(Key, 1, L),
     P.
 

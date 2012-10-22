@@ -263,11 +263,13 @@ create_p3([Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
     % this is a self referencing formula that needs to rewrite if the
     % cell moves
     put(selfreference, true),
-    [G2, Ext2] = ?t:throw_std_strs([Groups, Extension]),
-    Ext3 = case Ext2 of
-               "" -> name_not_set;
-               _  -> Ext2
-           end,
+    [G2] = ?t:throw_std_strs([Groups]),
+    io:format("Extension is ~p~n", [Extension]),
+    [Ext2] = case Extension of
+                 false -> [false];
+                 []    -> [false];
+                 _     -> ?t:throw_std_strs([Groups, Extension])
+             end,
     [D2] = ?t:throw_std_diallingcode(DiallingCode),
     [D3, P2] = ?t:throw_std_phone_no(D2, PhoneNo),
     [SMS2, To2, CC2] = ?t:throw_std_strs([SMSMsg, ETo, ECC]),
@@ -275,15 +277,19 @@ create_p3([Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
     [Sbj2, B2, Sg2] = ?t:throw_std_strs([ESubject,EBody, ESig]),
     Type3 = make_type(type(Type2)),
     % Got all our parameters - need to validate them for the phone type
+    io:format("Ext2 is ~p~n", [Ext2]),
     case is_valid(Type2, P2, SMS2, To2, Sbj2, B2) of
         false ->
             ?ERR_VAL;
         true  ->
             #twilio_account{application_sid = AppSID,
                             site_phone_no = SitePhone} = AC,
-            Capability = [{client_outgoing, AppSID, []},
-                          {client_incoming, Ext3}],
-            Config = make_config(Type2, G2, Ext3, D3, P2, SMS2, To2,
+            Capability = case Ext2 of
+                             false -> [{client_outgoing, AppSID, []}];
+                             _     -> [{client_outgoing, AppSID, []},
+                                       {client_incoming, Ext2}]
+                         end,
+            Config = make_config(Type2, G2, Ext2, D3, P2, SMS2, To2,
                                  CC2, From2, Sbj2, B2, Sg2),
             {TwiML, Log} = make_twiml(Type2, D3, P2, SitePhone),
             Phone = #phone{twiml = TwiML, capability = Capability,

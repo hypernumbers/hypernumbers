@@ -1199,7 +1199,8 @@ ipost(Ref = #refX{obj = {cell, _}}, _Qry,
         401                    -> respond(401, Env);
         403                    -> respond(403, Env);
         404                    -> respond(404, Env);
-        500                    -> '500'(Env)
+        500                    -> '500'(Env);
+        {ok, died}             -> ok % phone connection has timeout
     end;
 
 % revert a cell to an old value
