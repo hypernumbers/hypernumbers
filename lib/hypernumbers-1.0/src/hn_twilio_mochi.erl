@@ -132,7 +132,14 @@ handle_webcontrol_post(#refX{site = S} = Ref, Phone, Payload, Uid) ->
             ok = handle_email(Phone, Args),
             {ok, Email} = passport:uid_to_email(Uid),
             Log = Phone#phone.log,
-            log(S, Log#contact_log{from = Email}),
+            {_, To} = lists:keyfind("email_to", 1, Args),
+            {_, CC} = lists:keyfind("email_cc", 1, Args),
+            {_, Sb} = lists:keyfind("email_subject", 1, Args),
+            {_, Cn} = lists:keyfind("email_body", 1, Args),
+            Log2 = Log#contact_log{to = To, from = Email, cc = CC,
+                                   subject = Sb, contents = Cn,
+                                   type = "outbound email"},
+            log(S, Log2),
             {ok, 200};
         _  -> {error, 401}
     end.
