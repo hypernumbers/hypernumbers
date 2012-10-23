@@ -248,10 +248,13 @@ replace_user([H | T], EM, Groups)       -> replace_user(T, EM, [H | Groups]).
 numbers_match(Phone, {struct, [{"numbers", {array, L}}]}) ->
     N = get_config(Phone, "phone_no"),
     D = get_config(Phone, "default_dialling_code"),
-    io:format("for some reason not checking that numbers match...~n"),
-    exit(banjo),
+    % hmm, sometimes I might get multiple numbers in here and
+    % might need to check them. Tad hooky, auld fella
     case length(L) of
-        1 -> true;
+        1 -> case D ++ N of
+                 L -> true;
+                 _ -> false
+             end;
         _ -> false
     end.
 
