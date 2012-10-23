@@ -280,7 +280,7 @@ create_p3([Title, Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
     [Ext2] = case Extension of
                  false -> [false];
                  []    -> [false];
-                 _     -> ?t:throw_std_strs([Groups, Extension])
+                 _     -> ?t:throw_std_strs([Extension])
              end,
     [D2] = ?t:throw_std_diallingcode(DiallingCode),
     [D3, P2] = ?t:throw_std_phone_no(D2, PhoneNo),
