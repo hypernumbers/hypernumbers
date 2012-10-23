@@ -70,13 +70,14 @@
 -define(SERVER, ?MODULE).
 -define(EXPIRETIMEOUT,  3000).
 -define(WAITINGTIMEOUT, 4000).
+-include("errvals.hrl").
 
 -include("spriki.hrl").
 -include("twilio.hrl").
 -include("phonecall_srv.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
--record(state, {site, softphones = []}).
+-record(state, {site, softphones = [], twilio_acc = []}).
 -record(phone_status, {uid = "", key = none, break = false, away = false,
                        busy = false, registered_pid = none,
                        waiting_pid = none, numbers = [], id = [],
@@ -192,7 +193,10 @@ make_free_dial_call(State) ->
 %% @end
 %%--------------------------------------------------------------------
 init([Site]) ->
-    {ok, #state{site = Site}}.
+    case contact_utils:get_twilio_account(Site) of
+        ?ERRVAL_PAYONLY -> {ok, #state{site = Site}};
+        AC              -> {ok, #state{site = Site, twilio_acc = AC}}
+end.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -215,7 +219,9 @@ handle_call(dump_phones, _From, State) ->
 handle_call({get_twiml, Path, Obj}, _From, State) ->
     Key = {Path, Obj},
     #phone_status{numbers = N} = lists:keyfind(Key, 3, State#state.softphones),
-    Reply = make_dial(N),
+    #state{twilio_acc = AC} = State,
+    #twilio_account{site_phone_no = SitePhone} = AC,
+    Reply = make_dial(N, SitePhone),
     {reply, Reply, State};
 handle_call({reg_dial, Path, Obj, Uid, Numbers}, _From, State) ->
     Softphones = State#state.softphones,
@@ -434,11 +440,12 @@ get_perms({"config", {struct, List}}, Key) ->
         {Key, Val} -> Val
     end.
 
-make_dial(Numbers) -> make_d2(Numbers, []).
+make_dial(Numbers, SitePhone) -> make_d2(Numbers, SitePhone, []).
 
-make_d2([], Acc)      -> #dial{body = lists:reverse(Acc)};
-make_d2([H | T], Acc) -> NewAcc = #number{number = H},
-                         make_d2(T, [NewAcc | Acc]).
+make_d2([], SitePhone, Acc)      -> [#dial{callerId = SitePhone,
+                                           body = lists:reverse(Acc)}];
+make_d2([H | T], SitePhone, Acc) -> NewAcc = #number{number = H},
+                                    make_d2(T, SitePhone, [NewAcc | Acc]).
 
 print_phones(SoftPhones) ->
     Fun = fun(#phone_status{uid = U, key = K, busy = B, break = Bk, away = A,
