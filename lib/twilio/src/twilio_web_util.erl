@@ -60,8 +60,9 @@ prefix_to_country_code(Prefix) ->
 get_recording(#twilio{recording = R}) -> R#twilio_recording.recording_url.
 
 % this is the start of an outbound call from a client with outgoing only
-get_type(#twilio{called = null, caller = null, from = null,
+get_type(#twilio{direction = D, call_status = C, called = null, caller = null, from = null,
                  to = null, call_duration = null}) ->
+    io:format("D is ~p C is ~p~n", [D, C]),
     "start outbound";
 % this is the start of an outbound call from a client with both
 % outgoing and incoming capabilities
