@@ -149,3 +149,9 @@ iframe
 {
     box-shadow: 2px 2px 4px orange !important;
 }
+
+#hn-phone-response, #hn-email-response
+{
+    font-size : 80%;
+    color     : dark-orange !important;
+}
