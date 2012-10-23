@@ -64,8 +64,6 @@ say_subbies(Domain) ->
     Subbies = string:tokens(Domain, "."),
     string:join(Subbies, " dot ").
 
-check_if_paid(Fun, Args, none) ->
-    Fun(Args, #twilio_account{});
 check_if_paid(Fun, Args, Type) ->
     Site = get(site),
     case get_twilio_account(Site) of
@@ -73,7 +71,7 @@ check_if_paid(Fun, Args, Type) ->
             ?ERRVAL_PAYONLY;
         AC ->
             case Type of
-                outbound ->
+                Ty when Ty == outbound orelse Ty == none ->
                     Fun(Args, AC);
                 inbound ->
                     case AC#twilio_account.type of
