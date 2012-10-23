@@ -251,6 +251,7 @@ handle_call(#refX{} = Ref, #env{} = Env) ->
 % this function head is for an outbound call
 % twilio is calling back to get the details that the user has enabled
 handle_c2(#refX{site = S, path = P}, "start outbound" = Type, Body) ->
+    io:format("> STARTING OUTBOUND...~n"),
     AC = contact_utils:get_twilio_account(S),
     #twilio_account{application_sid = LocalAppSID} = AC,
     #twilio{application_sid = AppSID, custom_params = CP} = Body,
