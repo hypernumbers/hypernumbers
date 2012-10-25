@@ -280,14 +280,14 @@ handle_c2(#refX{site = S, path = P}, "start outbound" = Type, Body) ->
     Link = "<a href='" ++ Url ++ "?view=recording&play="
         ++ RecHyperTag ++ "' target='recording'>Recording</a>",
     Log2 = Log#contact_log{reference = Link, from = OrigEmail},
+    Cbs = get_callbacks(S, Type),
     case AppSID of
         LocalAppSID ->
             log(S, Log2),
-            phonecall_sup:init_call(S, Type, Body, Phone#phone.twiml, []);
+            phonecall_sup:init_call(S, Type, Body, Phone#phone.twiml, [Cbs]);
         _Other ->
             error
     end;
-
 % handle inbound calls coming in from cold
 handle_c2(#refX{site = S}, "start inbound" = Type, Recs) ->
     io:format("> CALL STATUS: phone ringing...~n"),
