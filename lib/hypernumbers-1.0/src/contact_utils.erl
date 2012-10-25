@@ -42,7 +42,6 @@ get_lang(4) -> "de";
 get_lang(_) -> ?ERR_VAL.
 
 get_phone_menu(S) ->
-    io:format("S is ~p~n", [S]),
     case new_db_api:read_kv(S, site_phone_menu) of
         [] ->
             [_Proto, "//" ++ Domain, Port] = string:tokens(S, ":"),
@@ -82,18 +81,6 @@ check_if_paid(Fun, Args, Type) ->
                     end
             end
     end.
-
-robocall(AC, Number, Msg) when is_integer(Number) ->
-    robocall(AC, integer_to_list(Number), Msg);
-robocall(AC, Number, Msg) ->
-    Path = "/Accounts/" ++ AC#twilio_account.account_sid
-        ++ "/SMS/Messages.Xml",
-    Params = [{"From", AC#twilio_account.site_phone_no},
-              {"To", Number},
-              {"Body", Msg}],
-    twilio:request(AC#twilio_account.account_sid,
-                   AC#twilio_account.auth_token,
-                   post, Path, Params).
 
 get_recording_details(AC, Call_Sid) ->
     Path = "/Accounts/" ++ AC#twilio_account.account_sid

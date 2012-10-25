@@ -14,14 +14,17 @@
 -export([
          'display.phone.nos'/1,
          'text.answerphone'/1,
-         'manual.email'/1,
          'auto.email'/1,
-         'manual.sms.out'/1,
          'auto.sms.out'/1,
-         'auto.robocall'/1,
-         'phone.out'/1,
-         'phone.in'/1,
          'create.phone'/1
+        ]).
+
+% Deprecated
+-export([
+         'manual.sms.out'/1,
+         'manual.email'/1,
+         'phone.out'/1,
+         'phone.in'/1
         ]).
 
 -include("spriki.hrl").
@@ -130,11 +133,6 @@ check(To, Su, Cn, CC, Reply) ->
         true  -> [string:join(To3, ";"), Su2, Cn2, string:join(CC3, ";"), Fr]
     end.
 
-'auto.robocall'([Cond, PhNo, Msg, Prefix]) ->
-    ?check_paid(fun 'auto.robocall2'/2, [Cond, PhNo, Msg, Prefix], outbound);
-'auto.robocall'([Cond, PhNo, Msg]) ->
-    ?check_paid(fun 'auto.robocall2'/2, [Cond, PhNo, Msg, ""], outbound).
-
 'manual.sms.out'([PhNo, Msg, Prefix]) ->
     ?check_paid(fun 'manual.sms.out2'/2, [PhNo, Msg, Prefix], outbound);
 'manual.sms.out'([PhNo, Msg]) ->
@@ -161,23 +159,6 @@ check(To, Su, Cn, CC, Reply) ->
     ?check_paid(fun 'auto.sms.out2'/2, [Cond, PhNo, Msg, Prefix], outbound);
 'auto.sms.out'([Cond, PhNo, Msg]) ->
     ?check_paid(fun 'auto.sms.out2'/2, [Cond, PhNo, Msg, ""], outbound).
-
-'auto.robocall2'([Cond, PhNo, Msg, Prefix], AC) ->
-    [Cond] = ?t:std_bools([Cond]),
-    [PhNo2] = ?t:std_strs([PhNo]),
-    {Prefix2, PhNo3} = ?t:std_phone_no(Prefix, PhNo2),
-    [Msg2] = ?t:std_strs([Msg]),
-    case Cond of
-        true ->
-            case contact_utils:robocall(AC, "+" ++ Prefix2 ++ PhNo2, Msg2) of
-                {ok, ok} -> "Robocal: " ++ Msg2 ++ " made to phone (+"
-                                ++ Prefix ++ ") " ++ PhNo3;
-                _        -> ?ERRVAL_ERR
-            end;
-        false ->
-            "Robocall: " ++ Msg2 ++ " to be sent to phone (+" ++ Prefix2
-                ++ ") " ++ PhNo3
-    end.
 
 'auto.sms.out2'([Cond, PhNo, Msg, Prefix], AC) ->
     [Cond] = ?t:std_bools([Cond]),
