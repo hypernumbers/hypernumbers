@@ -166,7 +166,7 @@ make_free_dial_call(State) ->
     HT = passport:open_hypertag(S, P, HyperTag),
     {ok, _Uid, _EMail, [Idx, _OrigEmail], _, _} = HT,
     XRefX = new_db_api:idx_to_xrefX(S, Idx),
-    #xrefX{path = OrigP, obj = OrigCell} = XRefX,
+    #xrefX{idx = Idx, site = S, path = OrigP, obj = OrigCell} = XRefX,
     OrigRef = hn_util:xrefX_to_refX(XRefX),
     [Phone] = new_db_api:get_phone(OrigRef),
     Config = Phone#phone.softphone_config,
@@ -174,8 +174,21 @@ make_free_dial_call(State) ->
     % and should wig out
     "free dial" = get_perms(Config, "phone_out_permissions"),
     Id = hn_util:site_to_atom(S, "_softphone"),
-    TwiML = gen_server:call({global, Id}, {get_twiml, OrigP, OrigCell}),
-    {TwiML, []}.
+    {Numbers, SitePhone} = gen_server:call({global, Id},
+                                           {get_numbers, OrigP, OrigCell}),
+    N2 = string:join(Numbers, ","),
+    TwiML = make_dial(Numbers, SitePhone),
+    Callback = fun(_Rec, St) ->
+                       Log = phonecall_srv:get_log(St),
+                       Log2 = Log#contact_log{type = "free dial outbound call",
+                                             to = N2, idx = Idx},
+                       LP = hn_twilio_mochi:get_audit_page("start outbound"),
+                       RefX = #refX{site = S, path = LP, obj = {page, "/"}},
+                       % a tad cludgy, I know :(
+                       hn_twilio_mochi:write_log(RefX, Log2),
+                       hn_twilio_mochi:log(S, Log2)
+               end,
+    {TwiML, [{completion, Callback}]}.
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -216,13 +229,12 @@ handle_call(dump_phones, _From, State) ->
     io:format("about to dump softphones for ~p~n", [State#state.site]),
     print_phones(State#state.softphones),
     {reply, ok, State};
-handle_call({get_twiml, Path, Obj}, _From, State) ->
+handle_call({get_numbers, Path, Obj}, _From, State) ->
     Key = {Path, Obj},
     #phone_status{numbers = N} = lists:keyfind(Key, 3, State#state.softphones),
     #state{twilio_acc = AC} = State,
     #twilio_account{site_phone_no = SitePhone} = AC,
-    Reply = make_dial(N, SitePhone),
-    {reply, Reply, State};
+    {reply, {N, SitePhone}, State};
 handle_call({reg_dial, Path, Obj, Uid, Numbers}, _From, State) ->
     Softphones = State#state.softphones,
     Key = {Path, Obj},
@@ -443,6 +455,7 @@ get_perms({"config", {struct, List}}, Key) ->
 make_dial(Numbers, SitePhone) -> make_d2(Numbers, SitePhone, []).
 
 make_d2([], SitePhone, Acc)      -> [#dial{callerId = SitePhone,
+                                           record = true,
                                            body = lists:reverse(Acc)}];
 make_d2([H | T], SitePhone, Acc) -> NewAcc = #number{number = H},
                                     make_d2(T, SitePhone, [NewAcc | Acc]).
