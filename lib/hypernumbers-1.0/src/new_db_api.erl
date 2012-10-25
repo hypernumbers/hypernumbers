@@ -543,7 +543,15 @@ handle_form_post(#refX{site = S, path = P,
                   OldLabs = [?wu:read_ref_field(X, "__rawvalue", read)
                              || X <- LabXs],
                   OldLabs2 = lists:flatten(OldLabs),
-
+                  % if this is the first time that a form post is
+                  % occurring then set the default view to 'table'
+                  % basically if there ain't no lables its a first post
+                  if
+                      OldLabs2 ==  [] ->
+                          auth_srv:set_champion(S, P, "table");
+                      OldLabs2 =/= [] ->
+                          ok
+                  end,
                   Values = [ {"submitted", dh_date:format("d/m/Y h:i:s")} |
                              lists:reverse(lists:foldl(fun generate_labels/2,
                                                        [], Array)) ],
