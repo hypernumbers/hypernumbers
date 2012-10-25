@@ -14,7 +14,6 @@
          get_phone_menu/1,
          check_if_paid/3,
          get_recording_details/2,
-         robocall/3,
          post_sms/3,
          get_twilio_account/1
          ]).
