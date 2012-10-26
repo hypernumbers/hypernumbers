@@ -286,10 +286,10 @@
         {
           idx,
           twiml,
-          capability,
+          capability = none,
           log,
-          softphone_type,
-          softphone_config
+          softphone_type = none,
+          softphone_config = none
          }).
 
 -record(webcontrol,

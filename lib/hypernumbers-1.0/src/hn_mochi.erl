@@ -11,7 +11,6 @@
 -include("syslib.hrl").
 
 -define(E,        error_logger:error_msg).
--define(LOAD,     hn_templates:load_template_if_no_page).
 -define(SORT,     lists:sort).
 -define(NO_STAMP, undefined).
 -define(DAY_S,    86400). % a day's worth of seconds
@@ -96,14 +95,14 @@ handle(MochiReq) ->
 
 -spec handle_(#refX{}, #env{}, #qry{}) -> ok.
 
-handle_(#refX{site="http://www."++Site}, E = #env{mochi=Mochi}, _Qry) ->
+handle_(#refX{site = "http://www."++Site}, E = #env{mochi = Mochi}, _Qry) ->
     Redir = "http://" ++ hn_util:strip80(Site) ++ Mochi:get(raw_path),
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-% the documentation needs to get a cookie stamp to identify users
+% the documentation/blog needs to get a cookie stamp to identify users
 % this function just handles that...
-handle_(#refX{site = _S, path = ["_sync", "externalcookie"]}, Env, Qry) ->
+handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]}, Env, Qry) ->
     #env{mochi = Mochi} = Env,
     Auth = Mochi:get_cookie_value("auth"),
     Cookie = case Auth of
@@ -216,7 +215,7 @@ handle_resource(Ref, Qry, Env = #env{method = 'GET'}) ->
     ObjType = element(1, Ref#refX.obj),
     iget(Ref, ObjType, Qry, Env);
 
-handle_resource(Ref, _Qry, Env=#env{method = 'POST', body = multipart,
+handle_resource(Ref, _Qry, Env = #env{method = 'POST', body = multipart,
                                     mochi = Mochi, uid = Uid}) ->
     {ok, UserName} = passport:uid_to_email(Uid),
     {ok, File, Name, Data} = hn_file_upload:handle_upload(Mochi, Ref,
@@ -369,7 +368,7 @@ authorize_get(#refX{site = Site, path = Path},
 
 %% Authorize access to the challenger view.
 authorize_get(#refX{site = Site, path = Path},
-              #qry{challenger=[]},
+              #qry{challenger = []},
               #env{accept = html, uid = Uid}) ->
     auth_srv:check_get_challenger(Site, Path, Uid);
 
@@ -663,9 +662,9 @@ iget(#refX{site = S, path = ["_site"]}, page, _Qry, Env) ->
     Return    = {struct, [Groups, Templates, Maps, Admin, Lang]},
     json(Env, Return);
 
-iget(#refX{path=["_pages"]} = Ref, page, _Qry, Env) ->
-    Pages     = {"pages", pages(Ref#refX{path=[]})},
-    Return    = {struct, [Pages]},
+iget(#refX{path = ["_pages"]} = Ref, page, _Qry, Env) ->
+    Pages       = {"pages", pages(Ref#refX{path = []})},
+    Return      = {struct, [Pages]},
     json(Env, Return);
 
 iget(#refX{site = S, path = ["_statistics"]}, page, _Qry, Env) ->
@@ -674,12 +673,12 @@ iget(#refX{site = S, path = ["_statistics"]}, page, _Qry, Env) ->
         false -> serve_html(401, Env, [hn_util:viewroot(S), "/401.html"])
     end;
 
-iget(#refX{site=S, path=["_logout"]}, page,
-     #qry{return=QReturn}, Env) when QReturn /= undefined ->
+iget(#refX{site = S, path = ["_logout"]}, page,
+     #qry{return = QReturn}, Env) when QReturn /= undefined ->
     Return = mochiweb_util:unquote(QReturn),
     cleanup(S, Return, Env);
 
-iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
+iget(#refX{site = Site, path = [X, _| Rest] = Path}, page, #qry{hypertag = HT}, Env)
   when X == "_mynewsite" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, Data, Stamp, Age} ->
@@ -693,7 +692,7 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
                 ++ Param,
 
             {Env2, Redir} = post_login(Site, Uid, Stamp, Age, Env, Return),
-            Env3 = Env2#env{headers=[{"location",Redir}|Env2#env.headers]},
+            Env3 = Env2#env{headers = [{"location",Redir}|Env2#env.headers]},
             respond(303, Env3),
             throw(ok);
         {error, E} ->
@@ -701,12 +700,12 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
             throw(E)
     end;
 
-iget(#refX{site=Site, path=[X | _Vanity]}, page, _Qry, Env)
+iget(#refX{site = Site, path = [X | _Vanity]}, page, _Qry, Env)
   when X == "_forgotten_password" ->
     serve_html(404, Env, [hn_util:viewroot(Site), "/forgotten_password.html"]);
 
-iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
-     #qry{hypertag=HT}, Env) when X == "_authorize" ->
+iget(#refX{site = Site, path = [X, _Vanity] = Path}, page,
+     #qry{hypertag = HT}, Env) when X == "_authorize" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, _Uid, _Email, Data, _Stamp, _Age} ->
             case proplists:get_value(emailed, Data) of
@@ -729,8 +728,8 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
             end
     end;
 
-iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
-     #qry{hypertag=HT}, Env)
+iget(#refX{site = Site, path = [X, _Vanity] = Path}, page,
+     #qry{hypertag = HT}, Env)
   when X == "_invite"; X == "_validate" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, Data, Stamp, Age} ->
@@ -770,7 +769,7 @@ iget(#refX{site = Site} = Ref, cell, #qry{view = ?PHONE},
                     serve_html(200, Env, [Dir, File])
     end;
 
-iget(Ref, cell,  #qry{view=?PHONE}, #env{accept = json, uid = Uid} = Env) ->
+iget(Ref, cell,  #qry{view = ?PHONE}, #env{accept = json, uid = Uid} = Env) ->
     case new_db_api:get_phone(Ref) of
         []      -> json(Env, {struct, [{"error", "no phone at this url"}]});
         [Phone] -> JSON = hn_twilio_mochi:get_phone(Ref, Phone, Uid),
@@ -809,16 +808,16 @@ iget(#refX{path = P} = Ref, Obj, #qry{view = ?WIKI},
     Page = hn_render:wrap_page(Html, P, Width, Height, Addons, "wikipage"),
     text_html_nocache(Env, Page);
 
-iget(#refX{path = P} = Ref, Obj, #qry{view=?WEBPAGE},
-     Env=#env{accept=html,uid=Uid})
+iget(#refX{path = P} = Ref, Obj, #qry{view = ?WEBPAGE},
+     Env = #env{accept = html, uid = Uid})
   when Obj == page orelse Obj == range ->
     ok = status_srv:update_status(Uid, Ref, "view webpage"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, webpage),
     Page = hn_render:wrap_page(Html, P, Width, Height, Addons, "webpage"),
     text_html_nocache(Env, Page);
 
-iget(Ref=#refX{site=S}, page, #qry{view=FName},
-     Env=#env{accept=html, uid=Uid})
+iget(Ref = #refX{site = S}, page, #qry{view = FName},
+     Env = #env{accept = html, uid = Uid})
   when FName /= undefined ->
     ok = status_srv:update_status(Uid, Ref, "viewed webpage"),
     Html = [hn_util:viewroot(S), "/", FName, ".html"],
@@ -828,7 +827,7 @@ iget(Ref=#refX{site=S}, page, #qry{view=FName},
     end;
 
 iget(#refX{site = Site, path = Path}, page,
-     #qry{updates = Time, paths = More}, Env=#env{accept = json})
+     #qry{updates = Time, paths = More}, Env = #env{accept = json})
   when Time /= undefined, More /= undefined ->
     Paths = [Path | [ string:tokens(X, "/") || X <- string:tokens(More, ",")]],
     remoting_request(Env, Site, Paths, Time);
@@ -842,13 +841,13 @@ iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
 iget(Ref, page, #qry{pages = []}, Env = #env{accept = json}) ->
     json(Env, pages(Ref));
 
-iget(Ref, page, _Qry, Env=#env{accept = json}) ->
+iget(Ref, page, _Qry, Env = #env{accept = json}) ->
     json(Env, page_attributes(Ref, Env));
 
-iget(Ref, cell, #qry{view = ?LOGVIEW}, Env=#env{accept = html}) ->
+iget(Ref, cell, #qry{view = ?LOGVIEW}, Env = #env{accept = html}) ->
     text_html(Env, hn_logs:get_logs(Ref));
 
-iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
+iget(Ref, cell, _Qry, Env = #env{accept = json}) ->
     V = case new_db_api:read_attribute(Ref,"value") of
             [{_Ref, Val}] when is_atom(Val) ->
                 atom_to_list(Val);
@@ -885,7 +884,7 @@ ipost(#refX{obj = {cell, _}} = Ref, #qry{view = ?PHONE},
             end
     end;
 
-ipost(Ref=#refX{path=["_parse_expression"]}=Ref, _Qry, Env) ->
+ipost(Ref = #refX{path = ["_parse_expression"]} = Ref, _Qry, Env) ->
     [{"expression", Expr}] = Env#env.body,
     % this expr is not going to be run, but you
     % need to compile it in a cell context
@@ -893,8 +892,8 @@ ipost(Ref=#refX{path=["_parse_expression"]}=Ref, _Qry, Env) ->
     Expr2 = muin:parse_expr_for_gui(Expr),
     json(Env, {struct, [{"expression", Expr2}]});
 
-ipost(Ref=#refX{path = ["_forgotten_password"]} = Ref, _Qry,
-      Env=#env{uid = Uid}) ->
+ipost(Ref = #refX{path = ["_forgotten_password"]} = Ref, _Qry,
+      Env = #env{uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "forgot password"),
     case passport_running() of
         false -> '404'(Ref, Env);
@@ -912,7 +911,7 @@ ipost(Ref=#refX{path = ["_forgotten_password"]} = Ref, _Qry,
             json(Env,{struct,[{"status",S}, {"response",R}]})
     end;
 
-ipost(#refX{site=S, path=["_login"]}, Qry, E) ->
+ipost(#refX{site = S, path = ["_login"]}, Qry, E) ->
     [{"email", Email0},{"pass", Pass}, {"remember", _R}] = ?SORT(E#env.body),
     Email = string:to_lower(Email0),
     case passport:authenticate(Email, Pass, true) of
@@ -929,62 +928,62 @@ ipost(#refX{site=S, path=["_login"]}, Qry, E) ->
 
 %% the purpose of this message is to mark the mochilog so we don't
 %% need to do nothing with anything...
-ipost(_Ref, _Qry, Env=#env{body = [{"mark", _Msg}]}) ->
+ipost(_Ref, _Qry, Env = #env{body = [{"mark", _Msg}]}) ->
     json(Env, "success");
 
 %% the purpose of this message is to log javascript errors into mochilog
 %% so we don't need to do anything with anything
 ipost(_Ref, #qry{jserr = []},
-      Env=#env{body = [{"set",{struct, [{"jserr", _Msg}]}}]}) ->
+      Env = #env{body = [{"set",{struct, [{"jserr", _Msg}]}}]}) ->
     json(Env, "success");
 
-ipost(Ref, _Qry, Env=#env{body = [{"load_template", {_, [{"name", Name}]}}],
-                          uid = Uid}) ->
+ipost(Ref, _Qry, Env = #env{body = [{"load_template", {_, [{"name", Name}]}}],
+                            uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "created page from template "++Name),
     ok = hn_templates:load_template(Ref, Name, Uid),
     json(Env, "success");
 
-ipost(Ref, _Qry, Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
-                          uid = Uid}) ->
+ipost(Ref, _Qry, Env = #env{body = [{"drag", {_, [{"range", Rng}]}}],
+                            uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:drag_n_drop(Ref,
                                 Ref#refX{obj = hn_util:parse_attr(range,Rng)},
                                 Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry,
-      Env=#env{body=[{"insert", "before"}], uid = Uid})
+ipost(Ref = #refX{obj = {O, _}}, _Qry,
+      Env = #env{body = [{"insert", "before"}], uid = Uid})
   when O == row orelse O == column ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:insert(Ref, Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry,
-      Env=#env{body=[{"insert", "after"}], uid = Uid})
+ipost(Ref = #refX{obj = {O, _}}, _Qry,
+      Env = #env{body = [{"insert", "after"}], uid = Uid})
   when O == row orelse O == column ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:insert(make_after(Ref), Uid),
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
-ipost(Ref=#refX{obj = {O, _}}, _Qry,
-      Env=#env{body=[{"insert", "before"}], uid = Uid})
+ipost(Ref = #refX{obj = {O, _}}, _Qry,
+      Env = #env{body = [{"insert", "before"}], uid = Uid})
   when O == cell orelse O == range ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:insert(Ref, vertical, Uid),
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
-ipost(Ref=#refX{obj = {O, _}}, _Qry,
-      Env=#env{body=[{"insert", "after"}], uid = Uid})
+ipost(Ref = #refX{obj = {O, _}}, _Qry,
+      Env = #env{body = [{"insert", "after"}], uid = Uid})
   when O == cell orelse O == range ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:insert(Ref, vertical, Uid),
     json(Env, "success");
 
 %% but you can specify the displacement explicitly
-ipost(Ref=#refX{obj = {O, _}}, _Qry,
-      Env=#env{body=[{"insert", "before"}, {"displacement", D}],
+ipost(Ref = #refX{obj = {O, _}}, _Qry,
+      Env = #env{body = [{"insert", "before"}, {"displacement", D}],
                uid = Uid})
   when (O == cell orelse O == range),
        (D == "horizontal" orelse D == "vertical") ->
@@ -992,8 +991,8 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     ok = new_db_api:insert(Ref, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry,
-      Env=#env{body=[{"insert", "after"}, {"displacement", D}],
+ipost(Ref = #refX{obj = {O, _}}, _Qry,
+      Env = #env{body = [{"insert", "after"}, {"displacement", D}],
                uid = Uid})
   when (O == cell orelse O == range),
        (D == "horizontal" orelse D == "vertical") ->
@@ -1002,20 +1001,20 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     ok = new_db_api:insert(RefX2, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry,
-      Env=#env{body=[{"delete", "all"}], uid = Uid})
+ipost(Ref = #refX{obj = {O, _}}, _Qry,
+      Env = #env{body = [{"delete", "all"}], uid = Uid})
   when O == page ->
     ok = status_srv:update_status(Uid, Ref, "deleted page"),
     ok = new_db_api:delete(Ref, Uid),
     json(Env, "success");
 
-ipost(Ref, _Qry, Env=#env{body=[{"delete", "all"}],uid=Uid}) ->
+ipost(Ref, _Qry, Env = #env{body = [{"delete", "all"}], uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "deleted page"),
     ok = new_db_api:delete(Ref, Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry,
-      Env=#env{body=[{"delete", Direction}],
+ipost(Ref = #refX{obj = {O, _}}, _Qry,
+      Env = #env{body = [{"delete", Direction}],
                uid = Uid})
   when (O == cell orelse O == range),
        (Direction == "horizontal" orelse Direction == "vertical") ->
@@ -1023,8 +1022,8 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     ok = new_db_api:delete(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry,
-      Env=#env{body=[{"insert", Direction}],
+ipost(Ref = #refX{obj = {O, _}}, _Qry,
+      Env = #env{body = [{"insert", Direction}],
                uid = Uid})
   when (O == cell orelse O == range),
        (Direction == "horizontal" orelse Direction == "vertical") ->
@@ -1035,28 +1034,28 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
 %% These three cases could be collapsed into one...
 ipost(Ref,
       _Qry,
-      Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
+      Env=#env{body = [{"copy", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, all, Uid),
     json(Env, "success");
 ipost(Ref,
       _Qry,
-      Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
+      Env = #env{body = [{"copystyle", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, style, Uid),
     json(Env, "success");
 ipost(Ref,
       _Qry,
-      Env=#env{body=[{"copyvalue", {struct, [{"src", Src}]}}],
+      Env = #env{body = [{"copyvalue", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, value, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry,
-      Env=#env{body=[{"borders", {struct, Attrs}}], uid=Uid})
+      Env = #env{body = [{"borders", {struct, Attrs}}], uid = Uid})
   when O == cell orelse O == range ->
     Where = from("where", Attrs),
     Border = from("border", Attrs),
@@ -1067,13 +1066,13 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
     json(Env, "success");
 
 %% ipost(_Ref, _Qry,
-%%       Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}],
+%%       Env = #env{body = [{"set", {struct, [{"language", _Lang}]}}],
 %%                uid = "anonymous"}) ->
 %%     S = {struct, [{"error", "cant set language for anonymous users"}]},
 %%     json(Env, S);
 
-ipost(Ref=#refX{path=["_user"]}, _Qry,
-      _Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}],
+ipost(Ref = #refX{path = ["_user"]}, _Qry,
+      _Env = #env{body = [{"set", {struct, [{"language", _Lang}]}}],
                 uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "changed language"),
     throw("can't set language right now");
@@ -1123,15 +1122,15 @@ ipost(#refX{obj = {cell, _}} = Ref, _Qry,
             respond(403, Env)
     end;
 
-ipost(Ref=#refX{obj = {cell, _}}, _Qry,
-      Env=#env{body = [{"postinline", {struct, [{"clear","contents"}]}}],
+ipost(Ref = #refX{obj = {cell, _}}, _Qry,
+      Env = #env{body = [{"postinline", {struct, [{"clear","contents"}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:clear(Ref, contents, Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{site = S, path = P} = Ref, _Qry,
-      Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
+ipost(Ref = #refX{site = S, path = P} = Ref, _Qry,
+      Env = #env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
     [{"results", ResPath}, {"values", {array, Array}}] = Vals,
     ok = status_srv:update_status(PosterUid, Ref, "edited page"),
     Transaction = common,
@@ -1189,7 +1188,20 @@ ipost(Ref = #refX{obj = {cell, _}}, _Qry,
     {struct, Act} = Actions,
     Status = element(1, hd(Act)),
     ok = status_srv:update_status(Uid, Ref, Status),
-    run_actions(Ref, Env, Act, Uid);
+    case hn_actions:run_actions(Ref, Env, Act, Uid) of
+        "success"              -> json(Env, "success");
+        {"successresp", Resp1} -> json(Env, {struct, Resp1});
+        {"error",       Error} -> json(Env, {struct, [{"error", Error}]});
+        {"errorresp",   Resp2} -> json(Env, {struct, Resp2});
+        {"failure",     R}     -> ?E("invalid invite_user request ~p~n", [R]),
+                                  json(Env, {struct, [{"failure", R}]});
+        {"phone available", P} -> json(Env, {struct, [P]});
+        401                    -> respond(401, Env);
+        403                    -> respond(403, Env);
+        404                    -> respond(404, Env);
+        500                    -> '500'(Env);
+        {ok, died}             -> ok % phone connection has timeout
+    end;
 
 % revert a cell to an old value
 ipost(Ref = #refX{obj = {cell, _}} = Ref, _Qry,
@@ -1222,20 +1234,20 @@ ipost(Ref, _Qry, Env = #env{body = [{"set", {struct, Attr}}], uid = Uid})
     end,
     json(Env, "success");
 
-ipost(Ref, _Qry, Env=#env{body = [{"set", {array, Array}}], uid = Uid})
+ipost(Ref, _Qry, Env = #env{body = [{"set", {array, Array}}], uid = Uid})
   when Array =/= [] ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     List = [X || {struct, [X]} <- Array],
     ok = new_db_api:write_attributes([{Ref, List}], Uid, Uid),
     json(Env, "success");
 
-ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid})
+ipost(Ref, _Qry, Env = #env{body = [{"clear", What}], uid = Uid})
   when What == "contents"; What == "style"; What == "all" ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:clear(Ref, list_to_atom(What), Uid),
     json(Env, "success");
 
-ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
+ipost(Ref, _Qry, Env = #env{body = [{"clear", What}], uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:clear(Ref, {attributes, [What]}, Uid),
     json(Env, "success");
@@ -1246,7 +1258,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ipost(Ref, _Qry,
-%%       Env=#env{body = [{"action", "notify_back_create"}|T]}) ->
+%%       Env = #env{body = [{"action", "notify_back_create"}|T]}) ->
 
 %%     %% WARNING this assumes that the list is provided in strict order - should
 %%     %% really sort the list before testing for "action"
@@ -1290,7 +1302,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ipost(Ref, _Qry,
-%%       Env=#env{body = [{"action", "notify_back"} |T] = _Json}) ->
+%%       Env = #env{body = [{"action", "notify_back"} |T] = _Json}) ->
 %%     Biccie    = from("biccie",     T),
 %%     ChildUrl  = from("child_url",  T),
 %%     ParentUrl = from("parent_url", T),
@@ -1334,7 +1346,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ipost(Ref, _Qry,
-%%       Env=#env{body = [{"action", "notify"} | T] = _Json}) ->
+%%       Env = #env{body = [{"action", "notify"} | T] = _Json}) ->
 %%     Biccie    = from("biccie",     T),
 %%     ParentUrl = from("parent_url", T),
 %%     Type      = from("type",       T),
@@ -1385,7 +1397,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%     json(Env, S);
 
 ipost(#refX{site = Site, path = _P}, _Qry,
-      Env=#env{body = [{"admin", Json}], uid = Uid}) ->
+      Env = #env{body = [{"admin", Json}], uid = Uid}) ->
     {struct,[{Fun, {struct, Args}}]} = Json,
     case hn_web_admin:rpc(Uid, Site, Fun, Args) of
         ok              -> json(Env, {struct, [{"result", "success"}]});
@@ -1394,7 +1406,7 @@ ipost(#refX{site = Site, path = _P}, _Qry,
     end;
 
 ipost(#refX{site = Site, path = _P}, _Qry,
-      Env=#env{body = [{"read_user_fn", Entry}], uid = Uid}) ->
+      Env = #env{body = [{"read_user_fn", Entry}], uid = Uid}) ->
     {struct, Args} = Entry,
     case hn_web_admin:rpc(Uid, Site, "read_user_fn", Args) of
         {ok, Return}	-> json(Env, Return);
@@ -1404,7 +1416,7 @@ ipost(#refX{site = Site, path = _P}, _Qry,
 
 
 ipost(#refX{site = Site, path = _P}, _Qry,
-      Env=#env{body = [{"delete_user_fn", Entry}], uid = Uid}) ->
+      Env = #env{body = [{"delete_user_fn", Entry}], uid = Uid}) ->
     {struct, Args} = Entry,
     case hn_web_admin:rpc(Uid, Site, "delete_user_fn", Args) of
         {ok, Return}	-> json(Env, Return);
@@ -1414,7 +1426,7 @@ ipost(#refX{site = Site, path = _P}, _Qry,
 
 
 ipost(#refX{site = Site, path = _P}, _Qry,
-      Env=#env{body = [{"write_user_fn", Entry}], uid = Uid}) ->
+      Env = #env{body = [{"write_user_fn", Entry}], uid = Uid}) ->
     {struct, Args} = Entry,
     case hn_web_admin:rpc(Uid, Site, "write_user_fn", Args) of
         {ok, Return}	-> json(Env, Return);
@@ -1422,12 +1434,12 @@ ipost(#refX{site = Site, path = _P}, _Qry,
                            json(Env, {struct, [{"failure", Reason}]})
     end;
 
-%~ ipost(_Ref, _Qry, Env=#env{body= [{"type", "user_defined_read"} | _T] = Json_Entry}) ->
+%~ ipost(_Ref, _Qry, Env = #env{body= [{"type", "user_defined_read"} | _T] = Json_Entry}) ->
 %~ Return = curie:read_user_fn(Json_Entry),
 %~ json(Env, Return);
 %~
 %~
-%~ ipost(_Ref, _Qry, Env=#env{body= [{"type", "user_defined_delete"} | _T] = Json_Entry}) ->
+%~ ipost(_Ref, _Qry, Env = #env{body= [{"type", "user_defined_delete"} | _T] = Json_Entry}) ->
 %~ Return = curie:delete_user_fn(Json_Entry),
 %~ json(Env, Return);
 
@@ -1563,7 +1575,7 @@ dict_to_struct(X, Dict) ->
 -spec extract_styles(string()) -> [#style{}].
 extract_styles(Site) ->
     [style_to_css(S) ||
-        S <- new_db_api:read_styles_IMPORT(#refX{site=Site}) ].
+        S <- new_db_api:read_styles_IMPORT(#refX{site = Site}) ].
 
 style_to_css(#style{magic_style = Style, idx = I}) ->
     Num = ms_util2:no_of_fields(magic_style),
@@ -1592,7 +1604,7 @@ post_range_values(Ref, Values, PAr, VAr) ->
     lists:foldl(F, 0, Values).
 
 post_column_values(Ref, Values, PAr, VAr, Offset) ->
-    #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
+    #refX{obj = {range,{X1, Y1, _X2, _Y2}}} = Ref,
     F = fun(Val, Acc) ->
                 % if you paste in a range with blank cells from excel you
                 % don't want values of "" stuck in because they count as not blank
@@ -1781,12 +1793,12 @@ process_environment(Mochi) ->
 
 -spec process_user(string(), #env{}) -> #env{} | no_return().
 % for twilio api calls we spoof the username
-process_user(#refX{path = ["_services", SubPath]}, E=#env{})
+process_user(#refX{path = ["_services", SubPath]}, E = #env{})
   when SubPath == "phone" orelse SubPath == "phoneredirect" ->
     Email = "api@twilio.com",
     {ok, _, Uid} = passport:get_or_create_user(Email),
     E#env{uid = Uid, email = Email};
-process_user(#refX{site = Site}, E=#env{mochi = Mochi}) ->
+process_user(#refX{site = Site}, E = #env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
@@ -1832,7 +1844,7 @@ cleanup(Site, Return, E) ->
 
 %% Returns the url representing the current location.
 -spec cur_url(string(), #env{}) -> string().
-cur_url(Site, #env{mochi=Mochi}) ->
+cur_url(Site, #env{mochi = Mochi}) ->
     hn_util:strip80(Site) ++ Mochi:get(raw_path).
 
 -spec try_sync([string()], string(), string(), string())
@@ -1882,7 +1894,7 @@ process_sync(["tell"], E, QReturn, QStamp) ->
     %                    [QReturn, QStamp, Cookie, Return]),
     %syslib:log(Msg, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
+process_sync(["seek"], E = #env{mochi = Mochi}, QReturn, undefined) ->
     Stamp = case Mochi:get_cookie_value("auth") of
                 undefined -> passport:temp_stamp();
                 S         -> S
@@ -1966,7 +1978,7 @@ serve_html(Env, File) ->
     serve_html(200, Env, File).
 
 -spec serve_html(integer(), #env{}, iolist()) -> any().
-serve_html(Status, Env=#env{uid = Uid}, File) ->
+serve_html(Status, Env = #env{uid = Uid}, File) ->
     F = fun() -> hn_util:compile_html(File, get_lang(Uid)) end,
     Response = cache(File, File++"."++get_lang(Uid), F),
     serve_file(Status, Env, Response),
@@ -2060,194 +2072,6 @@ reset_password(Email, Password, Hash) ->
                      ++ Msg}
             end
     end.
-run_actions(#refX{site = S} = RefX, Env, [{Act, {struct, L}}], UID)
-  when Act == "invite_user" ->
-    [Expected] = new_db_api:matching_forms(RefX, 'users-and-groups'),
-    case Expected of
-        {form, _, {_, 'invite-user', _}, _, _, _} ->
-            {"groups", {array, Groups}} = lists:keyfind("groups", 1, L),
-            {"user", Email}    = lists:keyfind("user", 1, L),
-            {"msg" , Msg}      = lists:keyfind("msg", 1, L),
-            {"path", GotoPath} = lists:keyfind("path", 1, L),
-            case lists:member("admin", Groups) of
-                true ->
-                    respond(404, Env);
-                false ->
-                    Args = [{"path", GotoPath},
-                            {"email", Email},
-                            {"msg", Msg},
-                            {"groups", {array, Groups}},
-                            {"view", none}],
-                    case hn_web_admin:rpc(UID, S, "invite_user", Args) of
-                        ok ->
-                            json(Env, "success");
-                        {error, Reason} ->
-                            ?E("invalid invite_user request ~p~n", [Reason]),
-                            json(Env, {struct, [{"failure", Reason}]})
-                    end
-            end;
-        Other ->
-            io:format("Other is ~p~n", [Other]),
-            respond(404, Env)
-    end;
-run_actions(#refX{site = S} = RefX, Env, [{Act, {struct, L}}], _Uid)
-  when Act == "add_user" orelse
-       Act == "remove_user" ->
-    [Expected] = new_db_api:matching_forms(RefX, 'users-and-groups'),
-    case Expected of
-        {form, _, {_, 'users-and-groups', _}, _, _, _} ->
-            {"user", Email}  = lists:keyfind("user", 1, L),
-            {"group", Group} = lists:keyfind("group", 1, L),
-            case Group of
-                "admin" ->
-                    respond(404, Env);
-                _ ->
-                    {ok, U} = passport:email_to_uid(Email),
-                    case Act of
-                        "add_user" ->
-                            new_db_api:add_userD(S, U, Group);
-                        "remove_user" ->
-                            new_db_api:rem_userD(S, U, Group)
-                    end,
-                    json(Env, "success")
-            end;
-        _ ->
-            respond(404, Env)
-    end;
-run_actions(#refX{} = RefX, Env, [{"phone", {struct, [{"dial", St}]}}], Uid) ->
-    case  new_db_api:get_phone(RefX) of
-        []      ->
-            json(Env, {struct, [{"error", "no phone at this url"}]});
-        [_Phone] ->
-            io:format("Need to check perms on Phone before allowing...~n"),
-            {struct, [{"numbers", {array, Numbers}}]} = St,
-            ok = status_srv:update_status(Uid, RefX, "made a phone call"),
-            Ret = softphone_srv:reg_dial(RefX, Uid, Numbers),
-            io:format("Ret is ~p~n", [Ret]),
-            json(Env, "success")
-    end;
-run_actions(#refX{} = RefX, Env, [{"phone", Action}], Uid)
-  when Action == "hangup" orelse Action == "away" orelse Action == "back" ->
-    case new_db_api:get_phone(RefX) of
-        []      ->
-            json(Env, {struct, [{"error", "no phone at this url"}]});
-        [_Phone] ->
-            case Action of
-                "hangup" -> ok = softphone_srv:idle(RefX, Uid);
-                "away"   -> ok = softphone_srv:away(RefX, Uid);
-                "back"   -> ok = softphone_srv:back(RefX, Uid)
-            end,
-            json(Env, "success")
-    end;
-% also need to remove direct ipost clause for old email
-run_actions(#refX{} = RefX, #env{mochi = Mochi} = Env,
-            [{"phone", {struct, [{"register", PhoneId},
-                                 {"groups", {array, G}}]}}], Uid) ->
-    % make sure the user isn't being spoofed when registering the phone
-    Socket = Mochi:get(socket),
-    % TODO this code doesn't work - it don't
-    % detect when a socket goes away
-    inet:setopts(Socket, [{active, once}]),
-    case softphone_srv:reg_phone(RefX, self(), PhoneId, G, Uid) of
-        {phoneid, _PhoneId2} = PhId2 ->
-            % now keep the socket alive
-            receive
-                {tcp_closed, Socket} ->
-                    ok = softphone_srv:unreg_phone(RefX, Uid);
-                {error, timeout}->
-                    ok = softphone_srv:unreg_phone(RefX, Uid);
-                {msg, is_available} ->
-                    json(Env, {struct, [PhId2]})
-            after
-                20000 ->
-                    ok = softphone_srv:break_phone(RefX, Uid),
-                    json(Env, {struct, [PhId2]})
-            end;
-        user_already_registered ->
-            json(Env, {struct, [{"error", "user_already_registered"}]})
-    end;
-run_actions(#refX{} = RefX, Env, [{Act, {struct, _L}} = Payload], Uid)
-  when Act == "send_sms" orelse Act == "send_email" ->
-    case  new_db_api:get_phone(RefX) of
-        []      ->
-            json(Env, {struct, [{"error", "no phone at this url"}]});
-        [Phone] ->
-            case hn_twilio_mochi:handle_webcontrol_post(RefX, Phone,
-
-
-                                                        Payload, Uid) of
-                {ok, 200}    -> json(Env, "success");
-                {error, 401} -> respond(401, Env);
-                _            -> '500'(Env)
-            end
-    end;
-run_actions(#refX{site = S, path = P} = RefX, Env, [{_, {array, Json}}], Uid) ->
-    Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
-                   N2 = list_to_integer(N),
-                   {N2, lists:flatten([json_recs:json_to_rec(X)
-                                       || X <- Exprs])}
-           end,
-    Commands = [Fun1(X) || X <- Json],
-    Expected = new_db_api:matching_forms(RefX, 'create-button'),
-    % now check that the commands coming in match those stored
-    case hn_security:validate_create_pages(Expected, Commands) of
-        false ->
-            ?E("invalid submission~n""on:       ~p~n"
-               ++ "Expected: ~p~nGot:      ~p~n",
-               [RefX, Expected, Commands]),
-            respond(403, Env);
-        true ->
-            % check that all the templates exists here!
-            {Templates, Perms, Dest, Actions}
-                = hn_webcontrols:make_actions(S, P, Commands),
-            case templates_exist(S, Templates) of
-                {error, Err} ->
-                    ?E("Templates errors in postcreatepages: ~p~n", [Err]),
-                    json(Env, {struct, [{"status", "err"}, {"response", Err}]});
-                true ->
-                    % create the pages
-                    Fun2 = fun({Template, Path}) ->
-                                   RefX2 = #refX{site = S, path = Path,
-                                                 obj = {page, "/"}},
-                                   ok = ?LOAD(RefX2, Template)
-                           end,
-                    [Fun2(X) || X <- Actions],
-                    % now run the permissions
-                    Fun3 = fun({Path, Ps}) ->
-                                   [ok = process_perms(S, Path, View,
-                                                       Groups, Uid)
-                                    || {View, Groups} <- Ps]
-                           end,
-                    [Fun3(X) || X <- Perms],
-                    json(Env, {struct, [{"status", "ok"}, {"redirect", Dest}]})
-            end
-    end.
-
-process_perms(Site, Path, V, Gs, Uid) ->
-    {ok, Email} = passport:uid_to_email(Uid),
-    Gs2 = replace_user(Gs, Email, []),
-    auth_srv:add_view(Site, Path, Gs2, V).
-
-replace_user([], _EM, Groups)           -> Groups;
-replace_user(["$user" | T], EM, Groups) -> replace_user(T, EM, [EM|  Groups]);
-replace_user([H | T], EM, Groups)       -> replace_user(T, EM, [H | Groups]).
-
-templates_exist(Site, Templates) ->
-    ExistingTemplates = hn_util:get_templates(Site),
-    templates_e2(lists:sort(ExistingTemplates), lists:sort(Templates)).
-
-templates_e2(_List, []) ->
-    true;
-templates_e2([H | T], Templates) ->
-    templates_e2(T, lists:delete(H, Templates));
-templates_e2([], List) ->
-    N = length(List),
-    Formats = lists:duplicate(N, " ~s"),
-    Fmt = string:join(Formats, ","),
-    Msg = lists:flatten(io_lib:format("The following templates "
-                                      ++ "do not exist:~n"
-                                      ++ Fmt ++ "~n", List)),
-    {error, Msg}.
 
 load_file(Ref, Data, File, Name, UserName, Uid) ->
     Type = get_type(Data),
@@ -2435,7 +2259,7 @@ provision_site(RootSite, PrevUid, SiteType, Email, Data, Env) ->
 %% catch script kiddie attempts and write them as info not error logs
 %% makes rb usable
 log_path_errors({path, Path}, Format, Msg) when
-                                               Path == "/phpMyAdmin-2.6.0-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.0-pl1/scripts/setup.php";
 Path == "/phpMyAdmin-2.6.0-pl2/scripts/setup.php";
 Path == "/phpMyAdmin-2.6.0-pl3/scripts/setup.php";
 Path == "/phpMyAdmin-2.6.0-rc1/scripts/setup.php";

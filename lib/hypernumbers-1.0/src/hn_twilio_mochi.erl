@@ -36,7 +36,9 @@
 
 % utilities
 -export([
-         log/2
+         get_audit_page/1,
+         log/2,
+         write_log/2
         ]).
 
 % debug
@@ -64,7 +66,6 @@ get_phone(#refX{site = _S},
                            ])};
 get_phone(#refX{site = S}, #phone{capability = C} = P, Uid) ->
     HyperTag = get_hypertag(S, P, Uid),
-    io:format("HyperTag is ~p~n", [HyperTag]),
     Token = get_phonetoken(S, C, Uid),
     {ok, User} = passport:uid_to_email(Uid),
     IsAlreadyReg = softphone_srv:has_phone(S, Uid),
@@ -119,21 +120,44 @@ handle_phone_post_DEPR(#refX{site = S} = Ref, Phone, #env{body = Body, uid = Uid
 handle_webcontrol_post(#refX{site = S} = Ref, Phone, Payload, Uid) ->
     case Payload of
         {"send_sms", {struct, Args}} ->
+            io:format("Args is ~p~n", [Args]),
+            {_, To} = lists:keyfind("phone_no", 1, Args),
+            {_, Cn} = lists:keyfind("sms_msg", 1, Args),
             Log = Phone#phone.log,
             {ok, Email} = passport:uid_to_email(Uid),
+            Type = "outbound sms",
+            LP = get_audit_page(Type),
+            LRef = #refX{site = S, path = LP, obj = {page, "/"}},
             case handle_sms(Ref, Phone, Args) of
                 {ok, ok}   ->
-                    log(S, Log#contact_log{from = Email, status = "ok"}),
+                    L = Log#contact_log{type = Type, to = To,
+                                        from = Email, contents = Cn,
+                                        status = "ok"},
+                    write_log(LRef, L),
+                    log(S, L),
                     {ok, 200};
                 {error, N} ->
-                    log(S, Log#contact_log{from = Email, status = "failed"}),
+                    L = Log#contact_log{type = Type, from = Email,
+                                        status = "failed"},
+                    write_log(LRef, L),
+                    log(S, L),
                     {error, N}
             end;
         {"send_email", {struct, Args}} ->
             ok = handle_email(Phone, Args),
             {ok, Email} = passport:uid_to_email(Uid),
             Log = Phone#phone.log,
-            log(S, Log#contact_log{from = Email}),
+            {_, To} = lists:keyfind("email_to", 1, Args),
+            {_, CC} = lists:keyfind("email_cc", 1, Args),
+            {_, Sb} = lists:keyfind("email_subject", 1, Args),
+            {_, Cn} = lists:keyfind("email_body", 1, Args),
+            LP = get_audit_page("outbound email"),
+            LRef = #refX{site = S, path = LP, obj = {page, "/"}},
+            Log2 = Log#contact_log{to = To, from = Email, cc = CC,
+                                   subject = Sb, contents = Cn,
+                                   type = "outbound email"},
+            write_log(LRef, Log2),
+            log(S, Log2),
             {ok, 200};
         _  -> {error, 401}
     end.
@@ -146,7 +170,7 @@ handle_sms(Ref, Phone, Args) ->
     %   - fixed all
     %   - free message
     %   - free all
-    SMSConfig = read_config(Cf, "sms_ou_permissions"),
+    SMSConfig = read_config(Cf, "sms_out_permissions"),
     IsValid = case SMSConfig of
                   "free all"     -> true;
                   "free message" -> No = read_config(Cf, "phone_no"),
@@ -251,13 +275,12 @@ handle_call(#refX{} = Ref, #env{} = Env) ->
 
 % this function head is for an outbound call
 % twilio is calling back to get the details that the user has enabled
-handle_c2(#refX{site = S, path = P}, "start outbound" = Type, Body) ->
-    io:format("starting outbound call~n"),
+handle_c2(#refX{site = S, path = P}, "start outbound" = Type, Recs) ->
+    io:format("> STARTING OUTBOUND...~n"),
     AC = contact_utils:get_twilio_account(S),
     #twilio_account{application_sid = LocalAppSID} = AC,
-    #twilio{application_sid = AppSID, custom_params = CP} = Body,
+    #twilio{application_sid = AppSID, custom_params = CP} = Recs,
     {"hypertag", HyperTag} = proplists:lookup("hypertag", CP),
-    io:format("S is ~p P is ~p~n", [S, P]),
     HT = passport:open_hypertag(S, P, HyperTag),
     {ok, Uid, EMail, [Idx, OrigEmail], _, _} = HT,
     XRefX = new_db_api:idx_to_xrefX(S, Idx),
@@ -265,20 +288,30 @@ handle_c2(#refX{site = S, path = P}, "start outbound" = Type, Body) ->
     OrigRef = hn_util:xrefX_to_refX(XRefX),
     [Phone] = new_db_api:get_phone(OrigRef),
     Log = Phone#phone.log,
-    Data = Body#twilio.call_sid,
+    CallSID = Recs#twilio.call_sid,
     % gonnae build the hypertag with the original refX so we can check it
     % for security
     OrigP2 = lists:append(OrigP, ["_contacts"]),
     RecHyperTag = passport:create_hypertag(S, OrigP2, Uid, EMail,
-                                           Data, "never"),
+                                           CallSID, "never"),
     Url = hn_util:refX_to_url(OrigRef#refX{path = OrigP2, obj = {page, "/"}}),
     Link = "<a href='" ++ Url ++ "?view=recording&play="
         ++ RecHyperTag ++ "' target='recording'>Recording</a>",
-    Log2 = Log#contact_log{reference = Link, from = OrigEmail},
+    Log2 = Log#contact_log{type = "recording of outbound call",
+                           call_sid = CallSID,
+                           reference = Link, from = OrigEmail},
+    % there is a double log for this call - one with the
+    % recording information and another with the dialling information
+    Callback = fun(_Rec, _State) ->
+                       log(S, Log2)
+               end,
+    CBs = [{completion, Callback} | get_callbacks(S, Type)],
     case AppSID of
         LocalAppSID ->
-            log(S, Log2),
-            phonecall_sup:init_call(S, Type, Body, Phone#phone.twiml, []);
+            TwiML = phonecall_sup:init_call(S, Type, Recs,
+                                            Phone#phone.twiml, CBs),
+            ok = phonecall_sup:call_complete(S, Recs),
+            TwiML;
         _Other ->
             error
     end;
@@ -340,24 +373,27 @@ validate([{K, V} | T], Args) ->
         {K, _V2} -> false
     end.
 
-get_callbacks(Site, Type) ->
+get_audit_page(Type) ->
     Now = now(),
     YY = dh_date:format("Y", Now),
     MM = dh_date:format("m", Now),
     DD = dh_date:format("d", Now),
-    P = case Type of
-            "start inbound"  -> ["_audit", "calls", "inbound", YY, MM, DD];
-            "start outbound" -> ["_audit", "calls", "outbound", YY, MM, DD]
-        end,
+    case Type of
+        "outbound email" -> ["_audit", "email", "outbound", YY, MM, DD];
+        "outbound sms"   -> ["_audit", "sms",  "outbound", YY, MM, DD];
+        "start inbound"  -> ["_audit", "calls", "inbound", YY, MM, DD];
+        "start outbound" -> ["_audit", "calls", "outbound", YY, MM, DD]
+    end.
+
+get_callbacks(Site, Type) ->
+    P = get_audit_page(Type),
     RefX = #refX{site = Site, path = P, obj = {page, "/"}},
     C = fun(_Rec, State) ->
-                io:format("Log on completion~n"),
                 Log = phonecall_srv:get_log(State),
                 Log2 = Log#contact_log{status = "completed"},
                 write_log(RefX, Log2)
         end,
     R = fun(Rec, State) ->
-                io:format("Log on recording~n"),
                 Log = phonecall_srv:get_log(State),
                 R = twilio_web_util:get_recording(Rec),
                 Log2 = Log#contact_log{status = "recording", reference = R},
@@ -372,7 +408,6 @@ log(Site, #contact_log{} = Log) ->
     write_log(RefX, Log).
 
 write_log(#refX{path = P} = RefX, Log) ->
-    io:format("Logging ~p~n- to ~p~n", [Log, RefX]),
     P2 = lists:append(P, ["_contacts"]),
     RefX2 = RefX#refX{type = gurl, path = P2, obj = {row, {1, 1}}},
     Array = [

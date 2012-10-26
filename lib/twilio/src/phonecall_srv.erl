@@ -33,6 +33,7 @@
          terminate/2, code_change/3]).
 
 -define(SERVER, ?MODULE).
+-define(E, error_logger:error_msg).
 
 -include("twilio.hrl").
 -include("twilio_web.hrl").
@@ -75,16 +76,15 @@ init([Type, Params, TwiML_EXT]) ->
     FSM = case twiml:is_valid(TwiML_EXT) of
               false ->
                   Resp = twiml:validate(TwiML_EXT),
-                  io:format("TwiML_EXT is ~p~n-~p~n", [TwiML_EXT, Resp]),
+                  ?E("Invalid TwiML_EXT in phonecall_srv is ~p~n-~p~n",
+                     [TwiML_EXT, Resp]),
                   Tw = [#say{text = "sorry, this call has been setup "
                                   ++ "incorrectly"}],
                   orddict:from_list(twiml:compile(Tw));
               true ->
                   orddict:from_list(twiml:compile(TwiML_EXT))
           end,
-    io:format("About to make log~n"),
     Log = make_log(Type, Params),
-    io:format("Log is ~p~n", [Log]),
     {ok, #pc_state{twiml_ext = TwiML_EXT, initial_params = Params,
                log = Log, fsm = FSM, history = [{init, now(), Params}]}}.
 

@@ -70,13 +70,14 @@
 -define(SERVER, ?MODULE).
 -define(EXPIRETIMEOUT,  3000).
 -define(WAITINGTIMEOUT, 4000).
+-include("errvals.hrl").
 
 -include("spriki.hrl").
 -include("twilio.hrl").
 -include("phonecall_srv.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
--record(state, {site, softphones = []}).
+-record(state, {site, softphones = [], twilio_acc = []}).
 -record(phone_status, {uid = "", key = none, break = false, away = false,
                        busy = false, registered_pid = none,
                        waiting_pid = none, numbers = [], id = [],
@@ -165,7 +166,7 @@ make_free_dial_call(State) ->
     HT = passport:open_hypertag(S, P, HyperTag),
     {ok, _Uid, _EMail, [Idx, _OrigEmail], _, _} = HT,
     XRefX = new_db_api:idx_to_xrefX(S, Idx),
-    #xrefX{path = OrigP, obj = OrigCell} = XRefX,
+    #xrefX{idx = Idx, site = S, path = OrigP, obj = OrigCell} = XRefX,
     OrigRef = hn_util:xrefX_to_refX(XRefX),
     [Phone] = new_db_api:get_phone(OrigRef),
     Config = Phone#phone.softphone_config,
@@ -173,8 +174,21 @@ make_free_dial_call(State) ->
     % and should wig out
     "free dial" = get_perms(Config, "phone_out_permissions"),
     Id = hn_util:site_to_atom(S, "_softphone"),
-    TwiML = gen_server:call({global, Id}, {get_twiml, OrigP, OrigCell}),
-    {TwiML, []}.
+    {Numbers, SitePhone} = gen_server:call({global, Id},
+                                           {get_numbers, OrigP, OrigCell}),
+    N2 = string:join(Numbers, ","),
+    TwiML = make_dial(Numbers, SitePhone),
+    Callback = fun(_Rec, St) ->
+                       Log = phonecall_srv:get_log(St),
+                       Log2 = Log#contact_log{type = "free dial outbound call",
+                                             to = N2, idx = Idx},
+                       LP = hn_twilio_mochi:get_audit_page("start outbound"),
+                       RefX = #refX{site = S, path = LP, obj = {page, "/"}},
+                       % a tad cludgy, I know :(
+                       hn_twilio_mochi:write_log(RefX, Log2),
+                       hn_twilio_mochi:log(S, Log2)
+               end,
+    {TwiML, [{completion, Callback}]}.
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -192,7 +206,10 @@ make_free_dial_call(State) ->
 %% @end
 %%--------------------------------------------------------------------
 init([Site]) ->
-    {ok, #state{site = Site}}.
+    case contact_utils:get_twilio_account(Site) of
+        ?ERRVAL_PAYONLY -> {ok, #state{site = Site}};
+        AC              -> {ok, #state{site = Site, twilio_acc = AC}}
+end.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -212,18 +229,24 @@ handle_call(dump_phones, _From, State) ->
     io:format("about to dump softphones for ~p~n", [State#state.site]),
     print_phones(State#state.softphones),
     {reply, ok, State};
-handle_call({get_twiml, Path, Obj}, _From, State) ->
-    io:format("in get_twiml for ~p ~p~n", [Path, Obj]),
+handle_call({get_numbers, Path, Obj}, _From, State) ->
     Key = {Path, Obj},
-    #phone_status{numbers = N} = lists:keyfind(Key, 2, State#state.softphones),
-    Reply = make_dial(N),
-    {reply, Reply, State};
+    #phone_status{numbers = N} = lists:keyfind(Key, 3, State#state.softphones),
+    #state{twilio_acc = AC} = State,
+    #twilio_account{site_phone_no = SitePhone} = AC,
+    {reply, {N, SitePhone}, State};
 handle_call({reg_dial, Path, Obj, Uid, Numbers}, _From, State) ->
     Softphones = State#state.softphones,
     Key = {Path, Obj},
-    NewPhone = #phone_status{uid = Uid, busy = true, key = Key,
-                             numbers = Numbers},
-    NewSoftphones = lists:keyreplace(Uid, 2, Softphones, NewPhone),
+    CreateFun = fun() ->
+                        #phone_status{uid = Uid, busy = true, key = Key,
+                                      numbers = Numbers}
+                end,
+    ChangeFun = fun(P) ->
+                        P#phone_status{uid = Uid, busy = true, key = Key,
+                                      numbers = Numbers}
+                end,
+    NewSoftphones = update_state(Softphones, Uid, CreateFun, ChangeFun),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({unreg_phone, Uid}, _From, State) ->
     Softphones = State#state.softphones,
@@ -231,42 +254,33 @@ handle_call({unreg_phone, Uid}, _From, State) ->
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({away, Uid}, _From, State) ->
     Softphones = State#state.softphones,
-    NewSoftphones
-        = case lists:keyfind(Uid, 2, Softphones) of
-              false ->
-                  % create a new phone record
-                  NewP = #phone_status{uid = Uid, busy = false},
-                  lists:keystore(Uid, 2, Softphones, NewP);
-              P ->
-                  NewP = P#phone_status{away = true},
-                  lists:keystore(Uid, 2, Softphones, NewP)
-          end,
+    CreateFun = fun() ->
+                        #phone_status{uid = Uid, busy = false}
+                end,
+    ChangeFun = fun(P) ->
+                        P#phone_status{away = true}
+                end,
+    NewSoftphones = update_state(Softphones, Uid, CreateFun, ChangeFun),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({back, Uid}, _From, State) ->
     Softphones = State#state.softphones,
-    NewSoftphones
-        = case lists:keyfind(Uid, 2, Softphones) of
-              false ->
-                  % create a new phone record
-                  NewP = #phone_status{uid = Uid, busy = false},
-                  lists:keystore(Uid, 2, Softphones, NewP);
-              P ->
-                  NewP = P#phone_status{away = false},
-                  lists:keystore(Uid, 2, Softphones, NewP)
-          end,
+    CreateFun = fun() ->
+                        #phone_status{uid = Uid, busy = false}
+                end,
+    ChangeFun = fun(P) ->
+                        P#phone_status{away = false}
+                end,
+    NewSoftphones = update_state(Softphones, Uid, CreateFun, ChangeFun),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({idle, Uid}, _From, State) ->
     Softphones = State#state.softphones,
-    NewSoftphones
-        = case lists:keyfind(Uid, 2, Softphones) of
-              false ->
-                  % create a new phone record
-                  NewP = #phone_status{uid = Uid, busy = false},
-                  lists:keystore(Uid, 2, Softphones, NewP);
-              P ->
-                  NewP = P#phone_status{busy = false, numbers = []},
-                  lists:keystore(Uid, 2, Softphones, NewP)
-          end,
+    CreateFun = fun() ->
+                        #phone_status{uid = Uid, busy = false}
+                end,
+    ChangeFun = fun(P) ->
+                        P#phone_status{busy = false, numbers = []}
+                end,
+    NewSoftphones = update_state(Softphones, Uid, CreateFun, ChangeFun),
     {reply, ok, State#state{softphones = NewSoftphones}};
 handle_call({reg_phone, RegPid, PhoneId, Groups, Uid}, _From, State) ->
     Softphones = State#state.softphones,
@@ -301,7 +315,6 @@ handle_call({reg_phone, RegPid, PhoneId, Groups, Uid}, _From, State) ->
                           NewS = lists:keystore(Uid, 2, Softphones, NewP),
                           {{phoneid, PhoneId}, NewS};
                       _ ->
-                          % the user has already registered a phone
                           {user_already_registered, Softphones}
                   end
           end,
@@ -433,17 +446,19 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-get_perms({"permissions", {struct, List}}, Key) ->
+get_perms({"config", {struct, List}}, Key) ->
     case proplists:lookup(Key, List) of
         none       -> none;
         {Key, Val} -> Val
     end.
 
-make_dial(Numbers) -> make_d2(Numbers, []).
+make_dial(Numbers, SitePhone) -> make_d2(Numbers, SitePhone, []).
 
-make_d2([], Acc)      -> #dial{body = lists:reverse(Acc)};
-make_d2([H | T], Acc) -> NewAcc = #number{number = H},
-                         make_d2(T, [NewAcc | Acc]).
+make_d2([], SitePhone, Acc)      -> [#dial{callerId = SitePhone,
+                                           record = true,
+                                           body = lists:reverse(Acc)}];
+make_d2([H | T], SitePhone, Acc) -> NewAcc = #number{number = H},
+                                    make_d2(T, SitePhone, [NewAcc | Acc]).
 
 print_phones(SoftPhones) ->
     Fun = fun(#phone_status{uid = U, key = K, busy = B, break = Bk, away = A,
@@ -463,3 +478,12 @@ print_phones(SoftPhones) ->
           end,
     [Fun(X) || X <- SoftPhones],
     ok.
+
+update_state(Softphones, Uid, CreateFun, ChangeFun) ->
+    NewP = case lists:keyfind(Uid, 2, Softphones) of
+        false -> CreateFun();
+        P     -> ChangeFun(P)
+    end,
+    lists:keystore(Uid, 2, Softphones, NewP).
+
+

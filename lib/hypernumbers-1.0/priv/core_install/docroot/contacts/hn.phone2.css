@@ -10,7 +10,7 @@ html,body
     display     : none;
     padding     : 20px;
     font-weight : bold;
-    font-size   : 150%;
+    font-size   : 100%;
 }
 #hn_phone_container
 {
@@ -56,7 +56,7 @@ table
 td
 {
     vertical-align: top;
-    border: 1px solid #f00;
+    /*border: 1px solid #f00;*/
 }
 iframe
 {
@@ -148,4 +148,10 @@ iframe
 .hn_flash_shadow
 {
     box-shadow: 2px 2px 4px orange !important;
+}
+
+#hn-phone-response, #hn-email-response
+{
+    font-size : 80%;
+    color     : dark-orange !important;
 }

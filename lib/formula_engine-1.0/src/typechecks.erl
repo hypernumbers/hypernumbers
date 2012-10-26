@@ -28,6 +28,8 @@
 % schmancies!
 -export([
          html_box_contents/1,
+         throw_std_diallingcode/1,
+         std_diallingcode/1,
          throw_std_phone_no/2,
          std_phone_no/2,
          throw_rgbcolours/1,
@@ -41,7 +43,9 @@
 
 -include("typechecks.hrl").
 
-throw_std_phone_no(X, Y)    -> errthrow(std_phone_no(X, Y)).
+throw_std_phone_no(X, Y)    -> {A, B} = std_phone_no(X, Y),
+                               [errthrow(A), errthrow(B)].
+throw_std_diallingcode(X)   -> errthrow(std_diallingcode(X)).
 throw_rgbcolours(X)         -> errthrow(rgbcolours(X)).
 throw_std_bools(X)          -> errthrow(std_bools(X)).
 throw_std_strs(X)           -> errthrow(std_strs(X)).
@@ -59,6 +63,8 @@ th([H | T], Acc)                      -> th(T, [H | Acc]);
 % might not be a list returned if its an error...
 th(X, []) when ?is_errval(X)          -> throw(X).
 
+std_diallingcode(Code) -> normalise(Code).
+
 std_phone_no(Prefix, blank) ->
     std_phone_no(Prefix, "");
 std_phone_no(Prefix, Number) when is_integer(Number) ->
@@ -73,7 +79,7 @@ std_phone_no("", Number) when is_list(Number) ->
     N2 = compress(Number),
     {"", N2};
 std_phone_no(Prefix, Number) when is_list(Number) ->
-    P2 = normalise(Prefix),
+    [P2] = normalise(Prefix),
     N2 = compress(Number),
     {P2, N2};
 % last chance throw it to integer
@@ -85,13 +91,13 @@ rgbcolours([$#| Rest]) ->
     case length(Rest) of
        6  -> ok;
        3  -> ok;
-       _O -> ?ERR_VAL
+       _  -> ?ERR_VAL % bit fugly to throw the error here
     end,
     [Colours] = std_strs([Rest]),
     Re = "^[a-fA-F0-9]+$", %"
     case re:run(Colours, Re) of
         {match, _} -> [$# | Colours];
-        nomatch    -> ?ERR_VAL
+        nomatch    -> ?ERR_VAL % bit fugly to throw the error here
     end.
 
 std_bools(Vals) ->
@@ -118,7 +124,7 @@ std_pos_ints(Vals) ->
     Ret = std_ints(Vals),
     case is_positive(Ret) of
         true  -> Ret;
-        false -> ?ERR_VAL
+        false -> ?ERRVAL_VAL
     end.
 
 flat_strs(Vals) ->
@@ -180,11 +186,25 @@ is_str_integer(Num) ->
             end
     end.
 
-normalise("+"++Prefix)  -> Prefix;
-normalise("00"++Prefix) -> Prefix;
-normalise(Prefix) ->
+normalise("")           -> [""];
+normalise("+"++Prefix)  -> normalise(Prefix);
+normalise("00"++Prefix) -> normalise(Prefix);
+normalise(Prefix)       ->
     P2 = case tconv:to_num(Prefix) of
-             {error, nan} -> twilio_web_util:country_code_to_prefix(Prefix);
-             Num          -> Num
+             {error, nan} ->
+                 try twilio_web_util:country_code_to_prefix(Prefix)
+                 catch
+                     exit  : _ -> ?ERRVAL_VAL;
+                     error : _ -> ?ERRVAL_VAL;
+                     throw : _ -> ?ERRVAL_VAL
+                 end;
+             Num ->
+                 try twilio_web_util:prefix_to_country_code(Num)
+                 catch
+                     exit  : _ -> ?ERRVAL_VAL;
+                     error : _ -> ?ERRVAL_VAL;
+                     throw : _ -> ?ERRVAL_VAL
+                 end,
+                 Num
          end,
-    integer_to_list(P2).
+    [integer_to_list(P2)].
