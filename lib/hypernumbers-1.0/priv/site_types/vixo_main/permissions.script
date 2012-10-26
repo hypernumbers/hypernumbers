@@ -1,0 +1,201 @@
+%%-*-erlang-*-
+{add_view,[{path,[]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,[]},{perms,["admin",everyone]},{view,"webpage"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,[]},{view,"webpage"}]}.
+{add_view,[{path,["31"]},{perms,["admin",everyone]},{view,"webpage"}]}.
+{set_champion,[{path,["31"]},{view,"webpage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["[**]"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["_sites"]},{perms,["admin"]},{view,"table"}]}.
+{set_champion,[{path,["_sites"]},{view,"table"}]}.
+{add_view,[{path,["contact-us"]},{perms,["admin",everyone]},{view,"webpage"}]}.
+{set_champion,[{path,["contact-us"]},{view,"webpage"}]}.
+{add_view,[{path,["explore","benefits"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["explore","benefits"]},{view,"webpage"}]}.
+{add_view,[{path,["explore","features"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["explore","features"]},{view,"webpage"}]}.
+{add_view,[{path,["explore","how-do-i"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["explore","how-do-i"]},{view,"webpage"}]}.
+{add_view,[{path,["explore","more"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["explore","more"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["explore","more"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["explore","more"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["explore","more"]},{view,"webpage"}]}.
+{add_view,[{path,["explore","show"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["explore","show"]},{view,"webpage"}]}.
+{add_view,[{path,["for","tech-radar"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["for","tech-radar"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["for","tech-radar"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["for","tech-radar"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["for","tech-radar"]},{view,"webpage"}]}.
+{add_view,[{path,["getting-started"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["getting-started"]},{view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson1"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["getting-started","lesson1"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["getting-started","lesson1"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson1"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["getting-started","lesson1"]},{view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson2"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["getting-started","lesson2"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["getting-started","lesson2"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson2"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["getting-started","lesson2"]},{view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson3"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["getting-started","lesson3"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["getting-started","lesson3"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson3"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["getting-started","lesson3"]},{view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson4"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["getting-started","lesson4"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["getting-started","lesson4"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson4"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["getting-started","lesson4"]},{view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson5"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["getting-started","lesson5"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["getting-started","lesson5"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson5"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["getting-started","lesson5"]},{view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson6"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["getting-started","lesson6"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["getting-started","lesson6"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["getting-started","lesson6"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["getting-started","lesson6"]},{view,"webpage"}]}.
+{add_view,[{path,["in","contact-centres"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["in","contact-centres"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["in","contact-centres"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["in","contact-centres"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["in","contact-centres"]},{view,"webpage"}]}.
+{add_view,[{path,["in","customer-discovery"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["in","customer-discovery"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["in","customer-discovery"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["in","customer-discovery"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["in","customer-discovery"]},{view,"webpage"}]}.
+{add_view,[{path,["intro"]},{perms,["admin",everyone]},{view,"webpage"}]}.
+{set_champion,[{path,["intro"]},{view,"webpage"}]}.
+{add_view,[{path,["prices-and-plans"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["prices-and-plans"]},{view,"webpage"}]}.
+{add_view,[{path,["privacy-policy"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["privacy-policy"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["privacy-policy"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["privacy-policy"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["privacy-policy"]},{view,"webpage"}]}.
+{add_view,[{path,["static-data"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["static-data"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["static-data"]},{view,"wikipage"}]}.
+{add_view,[{path,["static-data","factories"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["static-data","factories"]},{view,"wikipage"}]}.
+{add_view,[{path,["static-data","panels"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["static-data","panels"]},{view,"wikipage"}]}.
+{add_view,[{path,["terms-and-conditions"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["terms-and-conditions"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["terms-and-conditions"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["terms-and-conditions"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["terms-and-conditions"]},{view,"webpage"}]}.
+{add_view,[{path,["tmp","newfrontpage"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["tmp","newfrontpage"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["tmp","newfrontpage"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["tmp","newfrontpage"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["tmp","newfrontpage"]},{view,"webpage"}]}.
+{add_view,[{path,["video"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["video"]},{view,"webpage"}]}.
