@@ -12,6 +12,8 @@
 % careful adding 'factory.XXX' fns as factory.WxH will swallow them in muin
 -export([
          'upload.file.'/1,
+         trial/1,
+         'trial.if'/1,
          'factory.'/1,
          'factory.if.'/1,
          'factory.info'/1,
@@ -45,7 +47,7 @@
         W2 >= 5 andalso H2 >= 9 -> ok
     end,
     [Title2, BtnTxt2] = typechecks:std_strs([Title, ButtonText]),
-    Restrictions = get_restrictions(O2),
+    _Restrictions = get_restrictions(O2),
     Files = filelib:wildcard(hn_util:userfilesroot(?msite) ++ "*"),
     HTML = "<div class='hn_site_admin' style='display:none;'>"
         ++ "<div class='hn_site_admin_top'>" ++ Title2 ++ "</div>"
@@ -104,6 +106,67 @@ get_restrictions(_N) -> ?ERR_VAL.
             #spec_val{val = lists:flatten(Msg), sp_site = true}
     end.
 
+trial(Args)      -> trial1([true | Args]).
+'trial.if'(Args) -> trial1(Args).
+
+trial1([Bool]) ->
+    trial1([Bool, "Get A Trial"]);
+trial1([Bool, Text]) ->
+    trial1([Bool, Text, "blank"]);
+trial1([Bool, Text, Type]) ->
+    trial1([Bool, Text, Type, 0]);
+trial1([Bool, Text, Type, Colour]) ->
+    [Bool2] = typechecks:std_bools([Bool]),
+    [Text2, Type2] = typechecks:std_strs([Text, Type]),
+    Valid = is_site_valid(Type2),
+    [Col2] = typechecks:std_ints([Colour]),
+    Col3 = bootstrap_utils:get_colour(Col2),
+    V = new_db_wu:read_kvD(?msite, factory),
+    case {V, Valid} of
+        {[], _} ->
+            #spec_val{val = ?ERRVAL_NOTSETUP, sp_site = true};
+        {_, error} ->
+            #spec_val{val = ?ERRVAL_VAL, sp_site = true};
+        {_, {sitetype, Type3}} ->
+          case V of
+              [{kvstore, factory, all}] ->
+                  trial3(Bool2, Text2, Type2, Col3);
+              [{kvstore, factory, List}] ->
+                  case lists:member(Type3, List) of
+                      true  ->
+                          trial3(Bool2, Text2, Type2, Col3);
+                      false ->
+                          #spec_val{val = ?ERRVAL_VAL, sp_site = true}
+                  end
+          end
+    end.
+
+trial3(false, _, _, _) ->
+    #spec_val{val = "", sp_site = true};
+trial3(true, Text, Type, Colour) ->
+    Id      = "id_" ++ muin_util:create_name(),
+    Payload = "erk",
+    Js      = ["/webcomponents/hn.factory.js"],
+    Reload  = ["HN.Factory.Trial.reload();"],
+    CSS     = ["/bootstrap/css/bootstrap.css",
+               "/bootstrap/css/helper.css",
+               "/webcomponents/hn.siteadmin.css"],
+    Incs    = #incs{js = Js, js_reload = Reload, css= CSS},
+    Form    = #form{id = {factory, Type},
+                    kind = "factory",
+                    restrictions = {"sitetype", Type},
+                    attrs = Payload},
+    HTML = "<div class='hn_trial'>"
+        ++ "<input id='" ++ Id ++ "' class='btn btn-large hn-btn-large "
+        ++ Colour ++ "' "
+        ++ "type='submit' data-type='" ++ Type ++ "' "
+        ++ "value='" ++ Text ++ "' />"
+        ++ "</div>",
+    PreV = "Trial: " ++ Text,
+    Resize = #resize{width = 2, height = 2},
+    #spec_val{val = HTML, sp_webcontrol = Form, sp_incs = Incs,
+              resize = Resize, preview = PreV, sp_site = true}.
+
 'factory.'([W, H | Rest]) -> factoryif([W, H, true | Rest]).
 % syntax heightlighter gets funky on these names
 'factory.if.'(List) -> factoryif(List).
@@ -146,16 +209,7 @@ factory1(W2, H2, Title, Type, Desc, ButtonTxt, Response, Goto, Rest) ->
                         hn_util:refX_to_url(RefX);
              [Other] -> Other
          end,
-    % can't just error because this is a site special formula
-    % so you huftae catch it and pass out an #VALUE! error
-    % manually...
-    Valid = try
-                {sitetype, hn_util:site_type_exists(Type2)}
-            catch
-                error : _ -> error;
-                exit  : _ -> error;
-                throw : _ -> error
-            end,
+    Valid = is_site_valid(Type2),
     case V of
         [] ->
             #spec_val{val = ?ERRVAL_NOTSETUP, sp_site = true};
@@ -448,4 +502,16 @@ create_b2(List) ->
             Resize = #resize{height = 2, width = 2},
             #spec_val{val = HTML, sp_webcontrol = Form,
                       resize = Resize, preview = Preview}
+    end.
+
+is_site_valid(Type) ->
+        % can't just error because this is a site special formula
+    % so you huftae catch it and pass out an #VALUE! error
+    % manually...
+    try
+        {sitetype, hn_util:site_type_exists(Type)}
+    catch
+        error : _ -> error;
+        exit  : _ -> error;
+        throw : _ -> error
     end.

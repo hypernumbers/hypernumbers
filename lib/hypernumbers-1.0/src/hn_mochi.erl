@@ -1154,8 +1154,25 @@ ipost(Ref = #refX{site = S, path = P} = Ref, _Qry,
     end;
 
 %% ipost of factory provisioning - special type of webcontrol
+%% first up is a trial
 ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
-      #env{uid = PrevUid,
+      #env{body = [{"postwebcontrols",
+                    {struct, [{"signup", {struct, [{"sitetype", ST}]}}]}}],
+           uid = PrevUID} = Env) ->
+    io:format("In trial PrevUID is ~p~n", [PrevUID]),
+    SType2 = hn_util:site_type_exists(ST),
+    Transaction = factory,
+    Email = "dummy_" ++ PrevUID ++ "@vixo.com",
+    io:format("Email is ~p~n", [Email]),
+    [Expected] = new_db_api:matching_forms(Ref, Transaction),
+    case hn_security:validate_factory(Expected, SType2, []) of
+        true  -> hn_mochi:provision_site(RootSite, PrevUID, SType2, Email,
+                                         [], Env);
+        false -> json(Env, {struct, [{"result", "error"},
+                                     {"reason", 401}]})
+    end;
+ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
+      #env{uid = PrevUID,
            body = [{"postwebcontrols", {struct, [{"signup", Act}]}}]} = Env) ->
     {struct, List} = Act,
     {"sitetype", SiteType} = lists:keyfind("sitetype", 1, List),
@@ -1173,7 +1190,7 @@ ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
             case hn_security:validate_factory(Expected, SType2, Data) of
                 true ->
                     spawn(hn_mochi, provision_site,
-                          [RootSite, PrevUid, SType2, Email2, Data, Env]),
+                          [RootSite, PrevUID, SType2, Email2, Data, Env]),
                     json(Env, "success");
                 false ->
                     json(Env, {struct, [{"result", "error"},
@@ -2231,7 +2248,7 @@ wrap(Text) ->
         ++ Text
         ++ "</body></html>".
 
-provision_site(RootSite, PrevUid, SiteType, Email, Data, Env) ->
+provision_site(RootSite, PrevUID, SiteType, Email, Data, Env) ->
     Zone = case application:get_env(hypernumbers, environment) of
                {ok, development} -> "hypernumbers.dev";
                {ok, server_dev}  -> "dev.hypernumbers.com";
@@ -2239,7 +2256,7 @@ provision_site(RootSite, PrevUid, SiteType, Email, Data, Env) ->
            end,
     {From, Sig} = emailer:get_details(RootSite),
     case factory:provision_site(Zone, Email, From, Sig, SiteType,
-                                PrevUid, Data) of
+                                PrevUID, Data) of
         {ok, new, Site, Node, Uid, Name, InitialView} ->
             log_signup(Site, SiteType, Node, Uid, Email),
             Opaque = [{param, InitialView}],
