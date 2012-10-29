@@ -20,7 +20,7 @@ validate_factory(Expected, Type, Data) ->
         _Other       -> false
     end.
 
-% needent supply all the attrs, can only supply the listed attrs
+% needn't supply all the attrs, can only supply the listed attrs
 valid_fac_attrs([], _)               -> true;
 valid_fac_attrs([{K, _V} | T], List) -> case lists:member(K, List) of
                                             false -> false;
