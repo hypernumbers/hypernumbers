@@ -1,14 +1,26 @@
-.hn-btn-large
+input.hn-btn-large
 {
-  width  : 126px !important;
-  height : auto !important;
+  width  : 100% !important;
+  height : 100% !important;
   }
 
-.hn-btn-small
+a.hn-btn-large
+{
+  width  : 124px !important;
+  height : 22px !important;
+}
+
+input.hn-btn-small
+{
+  width  : 100% !important;
+  height : 100% !important;
+ }
+
+a.hn-btn-small
 {
   width  : 56px !important;
   height : auto !important;
- }
+}
 
 /*.crumb + span
 {
