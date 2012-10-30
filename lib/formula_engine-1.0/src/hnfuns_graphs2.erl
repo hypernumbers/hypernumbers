@@ -120,7 +120,7 @@
         ++ "style='height:inherit;width:inherit;'>"
         ++ "</div>",
     JS = ["/graphs/hn.graphs.js"],
-    JS_Head = ["https://www.google.com/jsapi"],
+    JS_Head = ["<script src='https://www.google.com/jsapi'></script>"],
     Reload = ["HN.Graphs.reload();"],
     Incs = #incs{js = JS, js_head = JS_Head, js_reload = Reload},
     Preview = "Line Graph",

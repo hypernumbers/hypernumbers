@@ -15,6 +15,7 @@
 % working functions
 -export([
          'generic.integration.'/1,
+         qualaroo/1,
          vimeo/1,
          'facebook.comments'/1,
          'disqus.comments'/1,
@@ -74,6 +75,36 @@
 %%
 %% Exported functions
 %%
+
+qualaroo([Key]) ->
+    % Vixo key 44676/8Mr.js
+    JS = "<script type='text/javascript'>"
+        ++ "var _kiq = _kiq || [];"
+        ++ "</script>"
+        ++ "<script type='text/javascript' src='http://s3.amazonaws.com/ki.js/"
+        ++ Key ++ "' async='true'>"
+        ++ "</script>"
+        ++ "<script type='text/javascript' charset='utf-8'>"
+        ++ "var name, ca, i, c, id;"
+        ++ "name = 'auth=';"
+        ++ "ca   = document.cookie.split(';');"
+        ++ "for (i = 0; i < ca.length; i = i + 1) {"
+        ++ "  c = ca[i];"
+        ++ "  while (c.charAt(0) === ' ') {"
+        ++ "     c = c.substring(1, c.length);"
+        ++ "  }"
+        ++ "  if (c.indexOf(name) === 0) {"
+        ++ "     id = c.substring(name.length + 1, c.length - 1);"
+        ++ "    _kiq.push(['identify', id]);"
+        ++ "    break;"
+        ++ "  }"
+        ++ "};"
+        ++ "</script>",
+    HTML = "",
+    Preview = "Qualaroo",
+    Resize = #resize{width = 2, height = 2},
+    Incs = #incs{js_head = [JS]},
+    #spec_val{val = HTML, sp_incs = Incs, resize = Resize, preview = Preview}.
 
 vimeo([Video, Tag]) ->
     [V2, Tg2] = typechecks:std_strs([Video, Tag]),
