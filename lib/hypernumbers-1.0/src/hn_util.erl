@@ -285,7 +285,7 @@ orelse FN == "PHONE.IN"
 orelse FN == "PHONE.OUT" ->
     mk_f(T, {dirty, [FN | A]});
 
-mk_f([{name, FN, S} | T], {St, A}) ->
+mk_f([{name, _FN, S} | T], {St, A}) ->
     mk_f(T, {St, [S | A]});
 
 mk_f([{H, _} | T], {St, A}) ->
