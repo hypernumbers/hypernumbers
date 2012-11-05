@@ -158,7 +158,7 @@ run_actions(#refX{} = RefX, _Env, [{Act, {struct, _L}} = Payload], Uid)
                                 500
             end
     end;
-run_actions(#refX{site = S, path = P} = RefX, _Env, [{_, {array, Json}}], Uid) ->
+run_actions(#refX{site = S, path = P} = RefX, Env, [{_, {array, Json}}], Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
                    N2 = list_to_integer(N),
                    {N2, lists:flatten([json_recs:json_to_rec(X)
@@ -196,7 +196,7 @@ run_actions(#refX{site = S, path = P} = RefX, _Env, [{_, {array, Json}}], Uid) -
                                     || {View, Groups} <- Ps]
                            end,
                     [Fun3(X) || X <- Perms],
-                    [{"status", "ok"}, {"redirect", Dest}]
+                    {redirect, [{"status", "ok"}, {"redirect", Dest}]}
             end
     end.
 
