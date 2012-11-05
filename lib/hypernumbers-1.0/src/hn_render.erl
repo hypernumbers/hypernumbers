@@ -421,6 +421,8 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
      ++ "" ++ Addons#render.js_reload ++
 "  <script src='/cleditor/jquery.cleditor.js'></script>
    <script src='/hypernumbers/hn.renderpage.js'></script>
+   <script src='/postmessage/jquery.ba-postmessage.js'></script>
+   <script src='/postmessage/hn.postmessage.js'></script>
   </body>
   </html>"].
 
