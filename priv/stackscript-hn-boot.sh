@@ -8,7 +8,7 @@
 #<udf name="hostname" Label="Server hostname", default="setme.hypernumbers.com" >
 #<udf name="erlang_url" Label="Erlang Source", default="http://erlang.org/download/otp_src_R14B01.tar.gz" >
 #<udf name="tarsnap_url" Label="Tarsnap Source", default="https://www.tarsnap.com/download/tarsnap-autoconf-1.0.28.tgz" >
-#<udf name="server_type" Label="Type Of Server [erlang | wordpress]", default="erlang" >
+#<udf name="server_type" Label="Type Of Server", oneof="erlang,wordpress" >
 
 #___  ____ ____ _ ____    ____ ____ ___ _  _ ___
 #|__] |__| [__  | |       [__  |___  |  |  | |__]
