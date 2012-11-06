@@ -25,9 +25,20 @@ server {
    server_name   documentation.vixo.com;
 
    location / {
-       log_format docoformat '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" cookie_auth';
+       log_format docoformat '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $cookie_auth';
        access_log /var/log/nginx/vixodoco.log docoformat;
-       root /hn/files-www/vixo/documentation/;
+       root /hn/files-www/vixo2/documentation/;
+   }
+}
+
+server {
+   listen        80;
+   server_name   blog.vixo.com;
+
+   location / {
+       log_format blogformat '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $cookie_auth';
+       access_log /var/log/nginx/vixoblog.log docoformat;
+       root /hn/files-www/vixo2/blog/;
    }
 }
 
