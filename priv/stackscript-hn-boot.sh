@@ -183,3 +183,6 @@ elif [${server_type} -eq "wordpress"]; then
     add_users()
     setup_partitions()
     setup_wordpress()
+else
+    touch "/root/running.else.log"
+fi
