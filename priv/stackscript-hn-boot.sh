@@ -25,7 +25,7 @@ echo ${HOSTNAME} > /etc/hostname
 sed -i 's/#deb/deb/g' /etc/apt/sources.list
 apt-get -y update
 apt-get -y install emacs22-nox ntp nginx libicu-dev \
-    rake git-core e2fslibs-dev wordpress mysql-server
+    rake git-core e2fslibs-dev wordpress mysql-server lynx-cur
 /etc/init.d/nginx stop
 
 #____ ____ _    ____ _  _ ____
