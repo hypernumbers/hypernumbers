@@ -311,6 +311,7 @@ is_valid(Input) ->
         _                      -> ?ERR_VAL
     end.
 
+% not sure if this works - need to make it work on subpages
 'load.templates.button'(List) -> 'load.templates.buttonif'([true | List]).
 % syntax heightlighter gets funky on these names
 'load.templates.button.if'(List) -> 'load.templates.buttonif'(List).
@@ -345,7 +346,6 @@ is_valid(Input) ->
                                    sp_incs = Incs}
             end
     end.
-
 
 'map.custom.button'(List) -> 'map.custom.buttonif'([true | List]).
 % syntax heightlighter gets funky on these names
