@@ -800,20 +800,28 @@ iget(#refX{site = S} = Ref, page, #qry{view = ?RECORDING, play = Play},
             serve_html(200, Env, [Dir, File])
         end;
 
-iget(#refX{path = P} = Ref, Obj, #qry{view = ?WIKI},
+iget(#refX{path = P} = Ref, Obj, #qry{css = CSS, view = ?WIKI},
      Env=#env{accept = html, uid = Uid})
   when Obj == page orelse Obj == range ->
     ok = status_srv:update_status(Uid, Ref, "view wiki page"),
-    {{Html, Width, Height}, Addons} = hn_render:content(Ref, wikipage),
-    Page = hn_render:wrap_page(Html, P, Width, Height, Addons, "wikipage"),
+    IncCSS = case CSS of
+                 "none" -> "none";
+                 _      -> "all"
+             end,
+    {{Html, W, H}, Addons} = hn_render:content(Ref, wikipage),
+    Page = hn_render:wrap_page(Html, P, W, H, Addons, "wikipage", IncCSS),
     text_html_nocache(Env, Page);
 
-iget(#refX{path = P} = Ref, Obj, #qry{view = ?WEBPAGE},
+iget(#refX{path = P} = Ref, Obj, #qry{css = CSS, view = ?WEBPAGE},
      Env = #env{accept = html, uid = Uid})
   when Obj == page orelse Obj == range ->
     ok = status_srv:update_status(Uid, Ref, "view webpage"),
-    {{Html, Width, Height}, Addons} = hn_render:content(Ref, webpage),
-    Page = hn_render:wrap_page(Html, P, Width, Height, Addons, "webpage"),
+    IncCSS = case CSS of
+                 "none" -> "none";
+                 _      -> "all"
+             end,
+    {{Html, W, H}, Addons} = hn_render:content(Ref, webpage),
+    Page = hn_render:wrap_page(Html, P, W, H, Addons, "webpage", IncCSS),
     text_html_nocache(Env, Page);
 
 iget(Ref = #refX{site = S}, page, #qry{view = FName},

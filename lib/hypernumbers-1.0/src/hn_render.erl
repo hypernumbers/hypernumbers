@@ -4,7 +4,7 @@
 
 -export([content/1,
          content/2,
-         wrap_page/6,
+         wrap_page/7,
          wrap_region/3]).
 
 -include("spriki.hrl").
@@ -339,8 +339,8 @@ pget(K,L) -> proplists:get_value(K,L,undefined).
 pget(K,L,D) -> proplists:get_value(K,L,D).
 
 -spec wrap_page([textdata()], list(), integer(), integer(),
-                #render{}, list()) -> [textdata()].
-wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
+                #render{}, [wikipage | webpage], [all | none] ) -> [textdata()].
+wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType, IncCSS) ->
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'",
                                [TotalWidth, TotalHeight]),
     Title = case Addons#render.title of
@@ -352,14 +352,23 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType) ->
 <html lang='en'>
          <head>
 "     ++ Title ++
-"        <meta charset='utf-8' />
-         <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />
+"        <meta charset='utf-8' />"
+     ++ case IncCSS of
+           "all" ->
+"         <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
          <link rel='stylesheet' href='/webcomponents/webcomponents.css' />
          <link rel='stylesheet' href='/webcomponents/webbasic.css' />
-         <link rel='stylesheet' href='/tblsorter/style.css' />
-         <link rel='stylesheet' href='/cleditor/jquery.cleditor.css' />
-"     ++ Addons#render.css ++ Addons#render.js_head ++
+         <link rel='stylesheet' href='/tblsorter/style.css' />";
+            "none" ->
+                ""
+        end,
+"         <link rel='stylesheet' href='/cleditor/jquery.cleditor.css' />
+"     ++ case IncCSS of
+             "all"  -> Addons#render.css;
+             "none" -> ""
+         end
+     ++ Addons#render.js_head ++
 "         <script src='/hypernumbers/jquery-1.7.1.min.js'></script>
          <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>-->
          <script src='/hypernumbers/err.remoterr.js'></script>

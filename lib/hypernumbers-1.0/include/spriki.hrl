@@ -313,6 +313,7 @@
         {
           callback,
           challenger,
+          css,
           hypertag,
           jserr,
           mark,
