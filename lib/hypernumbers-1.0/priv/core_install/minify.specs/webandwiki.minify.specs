@@ -1,0 +1,51 @@
+%%-*-erlang-*-
+[
+ {head, [
+         {css, [
+                {max, "/hypernumbers/hn.sheet.css"},
+                {max, "/hypernumbers/hn.style.css"},
+                {max, "/webcomponents/webcomponents.css"},
+                {max, "/webcomponents/webbasic.css"},
+                {max, "/tblsorter/style.css"}
+               ]
+         },
+         {js, [
+               {max, "/hypernumbers/jquery-1.7.1.min.js"},
+               {max, "/hypernumbers/err.remoterr.js"}
+              ]
+         }
+        ]
+ },
+ {body1, [
+         {css, [
+               ]
+         },
+         {js, [
+               {max, "/hypernumbers/json2.js"},
+               {max, "/hypernumbers/hn.js"},
+               {max, "/hypernumbers/hn.if.is.ie7.js"},
+               {max, "/hypernumbers/hn.util.js"},
+               {max, "/hypernumbers/hn.sheet.js"},
+               {max, "/hypernumbers/hn.data.js"},
+               {max, "/hypernumbers/hn.sitedata.js"},
+               {max, "/hypernumbers/hn.callbacks.js"}
+              ]
+         }
+         ]
+ },
+ {body2, [
+          {css, [
+                ]
+          },
+          {js, [
+                {max, "/cleditor/jquery.cleditor.js"},
+                {max, "/hypernumbers/hn.renderpage.js"},
+                {max, "/postmessage/jquery.ba-postmessage.js"},
+                {max, "/postmessage/hn.postmessage.js"}
+              ]
+          }
+         ]
+ }
+].
+
+

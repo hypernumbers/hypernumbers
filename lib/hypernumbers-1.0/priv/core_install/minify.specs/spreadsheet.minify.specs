@@ -1,0 +1,63 @@
+%%-*-erlang-*-
+[
+ {head, [
+         {css, [
+                {max, "/webcomponents/webcomponents.css"},
+                {max, "/webcomponents/webbasic.css"},
+                {max, "/hypernumbers/hn.style.css"},
+                {max, "/hypernumbers/hn.sheet.css"},
+                {max, "/hypernumbers/finder.css"},
+                {max, "/tblsorter/style.css"},
+                {max, "/tooltip/jquery.tooltip.css"}
+               ]
+         },
+         {js, [
+               {max, "/hypernumbers/err.remoterr.js"}
+              ]
+         }
+        ]
+ },
+ {body, [
+         {css, [
+               ]
+         },
+         {js, [
+               {max, "/hypernumbers/jquery-1.7.1.js"},
+               {max, "/hypernumbers/jquery-ext.js"},
+               {max, "/hypernumbers/json2.min.js"},
+               {max, "/hypernumbers/ajaxfileupload.js"},
+               {max, "/hypernumbers/hn.js"},
+               {max, "/hypernumbers/hn.util.js"},
+               {max, "/hypernumbers/hn.hashurl.js"},
+               {max, "/hypernumbers/hn.data.js"},
+               {max, "/hypernumbers/hn.ui.js"},
+               {max, "/hypernumbers/hn.sheet.js"},
+               {max, "/hypernumbers/hn.layout.js"},
+               {max, "/hypernumbers/hn.layout.panes.js"},
+               {max, "/hypernumbers/hn.layout.pane.js"},
+               {max, "/hypernumbers/jquery.cookie.min.js"},
+               {max, "/hypernumbers/jquery.jstree.js"},
+               {max, "/hypernumbers/finder.js"},
+               {max, "/hypernumbers/hn.toolbar.js"},
+               {max, "/hypernumbers/hn.callbacks.js"},
+               {max, "/hypernumbers/hn.sitedata.js"},
+               {max, "/hypernumbers/hn.map.js"},
+               {max, "/hypernumbers/hn.selection.js"},
+               {max, "/hypernumbers/hn.logger.js"},
+               {max, "/hypernumbers/jquery.tablesorter.js"},
+               {max, "/jscolor/jscolor.js"},
+               {max, "/hypernumbers/hn.ui.ctrlpanel.js"},
+               {max, "/hypernumbers/hn.ui.pagespanel.js"},
+               {max, "/hypernumbers/hn.site.js"},
+               {max, "/hypernumbers/hn.dialog.js"},
+               {max, "/hypernumbers/hn.userdeffns.js"},
+               {max, "/tooltip/jquery.tooltip.min.js"},
+               {max, "/hypernumbers/jquery.scrollbarWidth.min.js"},
+               {max, "/hypernumbers/hn.main.js"}
+              ]
+         }
+        ]
+ }
+].
+
+
