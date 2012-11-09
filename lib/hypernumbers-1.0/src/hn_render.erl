@@ -19,11 +19,13 @@
 -type rows() :: [intpair()].
 -type textdata() :: string() | [textdata()].
 
--record(rec, {maxwidth = 0,
-              maxmerge_height = 0,
-              colwidths = [],
-              palette,
-              startcol}).
+-record(rec, {
+          maxwidth = 0,
+          maxmerge_height = 0,
+          colwidths = [],
+          palette,
+          startcol
+         }).
 
 content(Ref) -> content(Ref, webpage).
 
@@ -70,7 +72,7 @@ read_data_without_page(Ref) ->
                       Val =/= []].
 
 -spec layout(#xrefX{}, atom(), cells(), cols(), rows(), gb_tree())
-            -> {[textdata()], integer(), integer()}.
+-> {[textdata()], integer(), integer()}.
 layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     PX = 0,
     PY = 0,
@@ -82,14 +84,14 @@ layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     layout2(Cells, Type, Col, Row, PX, PY, H, CWs, RHs2, Rec, GhostWidth, []).
 
 -spec layout2(cells(), atom(),
-             integer(), integer(), integer(), integer(), integer(),
-             cols(), rows(), #rec{}, integer(), [textdata()])
-            -> {[textdata()],integer(), integer()}.
+              integer(), integer(), integer(), integer(), integer(),
+              cols(), rows(), #rec{}, integer(), [textdata()])
+-> {[textdata()],integer(), integer()}.
 
 %% Emergency end of input
 %% End of input
 layout2(L, _Type, Col, Row, PX, PY, H, _CWs, _RHs, Rec, _GW, Acc)
-      when Row > 1000 orelse Col > 1000 ->
+  when Row > 1000 orelse Col > 1000 ->
     io:format("emergency exit from hn_render with head of L of ~p~n", [hd(L)]),
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
@@ -178,10 +180,10 @@ layout2([_L | _T] = Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, GW, Acc) ->
     {H2, RHs2} = row_height(Row2, RHs),
     Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX - GW)},
     layout2(Lst, Type, Col2, Row2, PX2, PY2, H2,
-           Rec#rec.colwidths, RHs2, Rec2, GW, Acc).
+            Rec#rec.colwidths, RHs2, Rec2, GW, Acc).
 
 -spec expunge(cells(), {integer(), integer(), integer(), integer()})
-             -> cells().
+-> cells().
 expunge([], _Rng) ->
     [];
 %% At a row past range, halt.
@@ -189,15 +191,15 @@ expunge([{{_, R}, _} | _] = Lst, {_RC1, _RC2, _RR1, RR2}) when R > RR2 ->
     Lst;
 %% Expunge cell.
 expunge([{{C, R}, _} | Tail], Rng = {RC1, RC2, RR1, RR2}) when
-      RC1 =< C, C =< RC2,
-      RR1 =< R, R =< RR2 ->
+RC1 =< C, C =< RC2,
+RR1 =< R, R =< RR2 ->
     expunge(Tail, Rng);
 %% Keep cell, continue.
 expunge([Cell | Tail], Rng) ->
     [Cell | expunge(Tail, Rng)].
 
 -spec width_across(integer(), integer(), cols(), integer())
-                  -> {integer(), cols()}.
+-> {integer(), cols()}.
 width_across(C, Stop, CWs, Acc) when C > Stop ->
     {Acc, CWs};
 width_across(C, Stop, CWs, Acc) ->
@@ -205,7 +207,7 @@ width_across(C, Stop, CWs, Acc) ->
     width_across(C + 1, Stop, CWs2, W + Acc).
 
 -spec height_below(integer(), integer(), rows(), integer())
-                   -> integer().
+-> integer().
 height_below(R, Stop, _RHs, Acc) when R > Stop ->
     Acc;
 height_below(R, Stop, RHs, Acc) ->
@@ -223,7 +225,7 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
            string(),
            integer(), integer(),
            integer(), integer(), integer(), integer())
-          -> textdata().
+-> textdata().
 % all four inputs need to be drawn even if there is no value
 draw(undefined, Css, "inline", C, R, X, Y, W, H) ->
     draw("", Css, "inline", C, R, X, Y, W, H);
@@ -272,7 +274,7 @@ draw(Value, Css, Inp, C, R, X, Y, W, H) ->
                                   [X, Y, W - 4, H - 2, Css]),
             StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
                                     [W - 8, H - 4]),
-                "<div " ++ Style ++ ">" ++
+            "<div " ++ Style ++ ">" ++
                 "<div class='" ++ Class ++ "' " ++ StyleIn ++
                 " data-ref='" ++ Cell ++ "'>" ++ Val2 ++
                 "</div></div>";
@@ -289,7 +291,7 @@ draw(Value, Css, Inp, C, R, X, Y, W, H) ->
                                   [X, Y, W - 4, H - 2, Css]),
             StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
                                     [W - 8, H - 4]),
-                "<div " ++ Style  ++ ">" ++
+            "<div " ++ Style  ++ ">" ++
                 "<div class='" ++ Class ++ "' "
                 ++ StyleIn ++ " data-ref='" ++ Cell ++ "'>" ++ Val2 ++
                 "</div></div>";
@@ -309,7 +311,7 @@ draw(Value, Css, Inp, C, R, X, Y, W, H) ->
             Style = io_lib:format(St ++ "padding:1px 3px;'",
                                   [X, Y, W - 6, H - 2, Css]),
             "<div data-ref='" ++ Cell ++ "'" ++ Style ++ ">" ++ Val ++ "</div>"
-        end.
+    end.
 
 -spec order_objs({#xrefX{},any()}, {#xrefX{},any()}) -> boolean().
 order_objs({RA, _}, {RB, _}) ->
@@ -350,90 +352,74 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType, IncCSS) ->
 
     ["<!DOCTYPE html>
 <html lang='en'>
-         <head>
-"     ++ Title ++
+     <head>
+     "     ++ Title ++
 "        <meta charset='utf-8' />"
      ++ case IncCSS of
-           "all" ->
-"         <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />
-         <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
-         <link rel='stylesheet' href='/webcomponents/webcomponents.css' />
-         <link rel='stylesheet' href='/webcomponents/webbasic.css' />
-         <link rel='stylesheet' href='/tblsorter/style.css' />";
+            "all" ->
+                "         <link rel='stylesheet' href='webandwiki.head.css' />";
             "none" ->
                 ""
         end,
-"         <link rel='stylesheet' href='/cleditor/jquery.cleditor.css' />
+     "         <link rel='stylesheet' href='/cleditor/jquery.cleditor.css' />
 "     ++ case IncCSS of
              "all"  -> Addons#render.css;
-             "none" -> ""
-         end
+     "none" -> ""
+    end
      ++ Addons#render.js_head ++
-"         <script src='/hypernumbers/jquery-1.7.1.min.js'></script>
-         <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>-->
-         <script src='/hypernumbers/err.remoterr.js'></script>
+     "         <script src='webandwiki.head.js'></script>
         </head>
 
-         <body data-view='" ++ PageType ++ "'>
+     <body data-view='" ++ PageType ++ "'>
 
-          <span id='hidden_input'></span>
+     <span id='hidden_input'></span>
 
-         <div id='outer' ", OuterStyle, ">
-         <textarea id='hn_cleditor'></textarea>
-          <div id='clinput'></div>
-          <div id='inner' class='hn_inner'>", Content, "</div>
-         </div>
-    <span id='hidden_input'></span>
+     <div id='outer' ", OuterStyle, ">
+     <textarea id='hn_cleditor'></textarea>
+     <div id='clinput'></div>
+     <div id='inner' class='hn_inner'>", Content, "</div>
+     </div>
+     <span id='hidden_input'></span>
 
-<div id='editspreadsheet' class='ctrlbox'>
+     <div id='editspreadsheet' class='ctrlbox'>
 
- <div id='powered'>
-   <span class='hyper'>Settings</span>
- </div>
+     <div id='powered'>
+     <span class='hyper'>Settings</span>
+     </div>
 
- <div id='editingmenu' class='ctrlbox'>
-  <div id='editloggedin'>
-   <div id='uname'></div>
-  <div id='allowedviews'></div>
-  <a id='hn_reset_pwd'>Change Password</a> | <a id='logout'>Logout</a>
-        <form id='hn_passwordform'>
-	      <input type='password' id='hn_passwordval'>
-        <input type='submit' value='Set Password' class='button'>
-        <p>Passwords must be more than 8 characters and should
-        include punctuation and numbers</p>
-        <div id='hn_pwd_feedback'></div>
-	    </form>
-  </div>
-  <div id='editanon'>
-   <form action='' method='post' id='login'>
-    <div class='formrow'><label for='email'>Email Address</label>
-    <input type='text' id='email' /></div>
-    <div class='formrow'><label for='pass'>Password</label>
-    <input type='password' id='pass' /></div>
-    <div class='formrow'><input type='submit' id='submit' value='Log in' class='button' /><span id='forgotten_pwd'></span><br /></div>
-   <div id='loginfeedback'></div>
+     <div id='editingmenu' class='ctrlbox'>
+     <div id='editloggedin'>
+     <div id='uname'></div>
+     <div id='allowedviews'></div>
+     <a id='hn_reset_pwd'>Change Password</a> | <a id='logout'>Logout</a>
+     <form id='hn_passwordform'>
+     <input type='password' id='hn_passwordval'>
+     <input type='submit' value='Set Password' class='button'>
+     <p>Passwords must be more than 8 characters and should
+     include punctuation and numbers</p>
+     <div id='hn_pwd_feedback'></div>
+     </form>
+     </div>
+     <div id='editanon'>
+     <form action='' method='post' id='login'>
+     <div class='formrow'><label for='email'>Email Address</label>
+     <input type='text' id='email' /></div>
+     <div class='formrow'><label for='pass'>Password</label>
+     <input type='password' id='pass' /></div>
+     <div class='formrow'><input type='submit' id='submit' value='Log in' class='button' /><span id='forgotten_pwd'></span><br /></div>
+     <div id='loginfeedback'></div>
 
-    or sign up at <a href='http://hypernumbers.com'>hypernumbers.com</a>
-   </form>
-  </div>
- </div>
-</div>
-  <script src='/hypernumbers/json2.js'></script>
-  <script src='/hypernumbers/hn.js'></script>
-  <!--[if IE 7]><script>HN.isIE7 = true;</script><![endif]-->
-  <script src='/hypernumbers/hn.util.js'></script>
-  <script src='/hypernumbers/hn.sheet.js'></script>
-  <script src='/hypernumbers/hn.data.js'></script>
-  <script src='/hypernumbers/hn.sitedata.js'></script>
-  <script src='/hypernumbers/hn.callbacks.js'></script>"
+     or sign up at <a href='http://hypernumbers.com'>hypernumbers.com</a>
+     </form>
+     </div>
+     </div>
+     </div>
+     <script src='webandwiki.body1.js'></script>"
      ++ Addons#render.js
      ++ "" ++ Addons#render.js_reload ++
-"  <script src='/cleditor/jquery.cleditor.js'></script>
-   <script src='/hypernumbers/hn.renderpage.js'></script>
-   <script src='/postmessage/jquery.ba-postmessage.js'></script>
-   <script src='/postmessage/hn.postmessage.js'></script>
+     "       <script src='webandwiki.body2.js'></script>
   </body>
-  </html>"].
+     </html>"].
 
 -spec wrap_region([textdata()], integer(), integer()) -> [textdata()].
 wrap_region(Content, Width, Height) ->
@@ -466,8 +452,8 @@ make_s([H | T], Ref, Val, Acc) ->
 
 simple_test() ->
     Ref = #xrefX{site="http://hypernumbers.dev:9000",
-                path=["web"],
-                obj={page,"/"}},
+                 path=["web"],
+                 obj={page,"/"}},
     Cells = [{{1,1},[{"style",1},{"value","1"}]},
              {{7,1},[{"style",1},{"value","2"}]},
              {{7,2},[{"style",1},{"value","3"}]}],
@@ -479,8 +465,8 @@ simple_test() ->
 
 col_rows_test_() ->
     Ref = #xrefX{site="http://hypernumbers.dev:9000",
-                path=["web"],
-                obj={page,"/"}},
+                 path=["web"],
+                 obj={page,"/"}},
     Cells = [{{1,1},[{"style",1},{"value","1"}]},
              {{7,1},[{"style",1},{"value","2"}]},
              {{7,2},[{"style",1},{"value","3"}]},
@@ -493,8 +479,8 @@ col_rows_test_() ->
 
 merged_col_test_() ->
     Ref = #xrefX{site="http://hypernumbers.dev:9000",
-                path=["web"],
-                obj={page,"/"}},
+                 path=["web"],
+                 obj={page,"/"}},
     Cells = [{{1,1},
               [{"merge",{struct,[{"right",3},{"down",0}]}},
                {"style",1},{"value","1"}]},
@@ -514,8 +500,8 @@ merged_col_test_() ->
 
 merged_row_test_() ->
     Ref = #xrefX{site="http://hypernumbers.dev:9000",
-                path=["web"],
-                obj={page,"/"}},
+                 path=["web"],
+                 obj={page,"/"}},
     Cells = [{{1,1},[{"value","1"},{"style",1}]},
              {{6,1},
               [{"value","goes to 15"},

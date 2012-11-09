@@ -102,6 +102,7 @@ build(Root) ->
     make_lexer_parser(Root),
     io:format("...compiling compile_code.erl~n"),
     compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
+    minify(Root),
     make_ms_util(Root),
     file:set_cwd(Root++"/ebin"),
     io:format("...now compile all the actual code~n"),
@@ -111,13 +112,64 @@ build(Root) ->
 build_lexer_parser(Root) ->
     make_ms_util(Root),
     make_lexer_parser(Root),
+    minify(Root),
     make_quick(Root),
     check_console_log(Root).
 
 build_quick(Root) ->
     make_ms_util(Root),
+    minify(Root),
     make_quick(Root),
     check_console_log(Root).
+
+minify(Root) ->
+    Dir = Root ++ "/lib/hypernumbers-1.0/priv/core_install/minify.specs/",
+    Prefix = Root ++ "/lib/hypernumbers-1.0/priv/core_install/docroot",
+    Files = filelib:wildcard(Dir ++ "*.specs"),
+    min2(Files, Prefix),
+    ok.
+
+min2([], _Prefix) ->
+    ok;
+min2([H | T], Prefix) ->
+    File = filename:basename(H),
+    [View, "minify", "specs"] = string:tokens(File, "."),
+    {ok, [Specs]} = file:consult(H),
+    min3(Specs, View, Prefix),
+    min2(T, Prefix).
+
+min3([], _View, _Prefix) ->
+    ok;
+min3([{Where, What} | T], View, Prefix) ->
+    min4(What, View, Where, Prefix),
+    min3(T, View, Prefix).
+
+min4([], _View, _Where, _Prefix) ->
+    ok;
+min4([{Type, Files} | T], View, Where, Prefix) ->
+    min5(Files, View, Type, Where, Prefix, []),
+    min4(T, View, Where, Prefix).
+
+% fake ending - if the Acc is [] just delete the old version of the file
+% if it exists
+min5([], View, Type, Where, Prefix, []) ->
+    File = string:join([View, atom_to_list(Where), atom_to_list(Type)], "."),
+    % we don't care if the file exists when we delete it so don't check
+    % the return value
+    _ = file:delete(Prefix ++ "/" ++ File);
+min5([], View, Type, Where, Prefix, Acc) ->
+    Contents = lists:reverse(Acc),
+    File = string:join([View, atom_to_list(Where), atom_to_list(Type)], "."),
+    ok = file:write_file(Prefix ++ "/" ++ File, lists:flatten(Contents));
+min5([{Size, File} | T], View, Type, Where, Prefix, Acc) ->
+    {ok, Contents} = file:read_file(Prefix ++ File),
+    NewAcc = min6(File, Contents, Size),
+    min5(T, View, Type, Where, Prefix, [NewAcc | Acc]).
+
+min6(File, Contents, max) ->
+    io_lib:format("/*~n~s~n*/~n~n~s~n", [File, Contents]);
+min6(_File, _Contents, min) ->
+    exit("yeah, not minifying yet...").
 
 make_ms_util(Root) ->
     file:set_cwd(Root),
