@@ -15,16 +15,24 @@
 %% Compile will generate warnings for all files
 %% unless included here
 -define(NO_WARNINGS,
-        ["xfl_lexer.erl", "russian_lexer.erl",
-         "french_lexer.erl", "german_lexer.erl",
-         "italian_lexer.erl", "spanish_lexer.erl",
-         "portuguese_lexer.erl", "superlex.erl",
-         "num_format_lexer.erl","cond_lexer.erl",
-         "url_query_lexer.erl"]).
+        [
+         "xfl_lexer.erl",
+         "russian_lexer.erl",
+         "french_lexer.erl",
+         "german_lexer.erl",
+         "italian_lexer.erl",
+         "spanish_lexer.erl",
+         "portuguese_lexer.erl",
+         "superlex.erl",
+         "num_format_lexer.erl",
+         "cond_lexer.erl",
+         "url_query_lexer.erl"
+        ]).
 
 %% Directories containing source files
 -define(DIRS,
-        ["/lib/sgte/",
+        [
+         "/lib/sgte/",
          "/lib/hypernumbers-1.0/",
          "/lib/formula_engine-1.0/",
          "/lib/read_excel-1.0/",
@@ -124,13 +132,15 @@ build_standard() ->
     add_libs_to_path(),
 
     % First set up the include file
-    Inc_list = [{i, Dir ++ "lib/gettext/include"},
+    Inc_list = [
+                {i, Dir ++ "lib/gettext/include"},
                 {i, Dir ++ "lib/load_testing/include"},
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
                 {i, Dir ++ "lib/sysmon-1.0/include"},
                 {i, Dir ++ "lib/twilio/include"},
-                {i, code:lib_dir(xmerl)++"/include"}],
+                {i, code:lib_dir(xmerl)++"/include"}
+               ],
 
 
     % List of {ErlangFile, OutputDirectory} tuples.
@@ -148,8 +158,8 @@ build_standard() ->
 add_libs_to_path() ->
     Dir = get_root(),
     % Add ebins for everything in /lib/ (eugh)
-    [ code:add_pathz(X ++ "/ebin")
-      || X <- filelib:wildcard(Dir++"/lib/*") ],
+    [code:add_pathz(X ++ "/ebin")
+      || X <- filelib:wildcard(Dir++"/lib/*")],
     ok.
 
 make_release_boot_scripts() ->
@@ -218,8 +228,8 @@ uptodate(File, Dir) ->
             io:format("Beam for ~p doesn't exist - recompile~n", [File]),
             false;
 
-        {ok,{_,[{abstract_code,{_,AC}}]}} ->
-            F = fun({attribute,_Num,file,{Path,_}}) ->
+        {ok, {_, [{abstract_code,{_, AC}}]}} ->
+            F = fun({attribute, _Num, file, {Path, _}}) ->
                         case filename:extension(Path) of
                             ".hrl" -> true;
                             _Else  -> false
@@ -227,12 +237,12 @@ uptodate(File, Dir) ->
                    (_Else) ->
                         false
                 end,
-            G = fun({attribute,_Num,file,{Path,_}}) -> Path end,
+            G = fun({attribute, _Num, file, {Path, _}}) -> Path end,
             H = fun(Path) -> filelib:last_modified(Path) end,
 
-            Includes = lists:map(G,lists:filter(F,AC)),
-            SrcFiles = [File|Includes],
-            Latest = lists:max(lists:map(H,SrcFiles)),
+            Includes = lists:map(G, lists:filter(F, AC)),
+            SrcFiles = [File | Includes],
+            Latest = lists:max(lists:map(H, SrcFiles)),
 
             % if the beam is newer than the last change to any
             % of the source files, don't need to compile
