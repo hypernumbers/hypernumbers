@@ -1,4 +1,4 @@
-*#*#
+n*#*#
 *.#*
 *.beam
 *.dump
@@ -18,6 +18,10 @@ lib/hypernumbers*/src/ms_util2.erl
 lib/starling/ebin/starling_drv
 priv/load_testing/logs
 priv/verification/dets
+lib/hypernumbers*/priv/core_install/docroot/spreadsheet.*.css
+lib/hypernumbers*/priv/core_install/docroot/spreadsheet.*.js
+lib/hypernumbers*/priv/core_install/docroot/webandwiki.*.css
+lib/hypernumbers*/priv/core_install/docroot/webandwiki.*.js
 
 lib/twilio/ebin/twilio.app
 
