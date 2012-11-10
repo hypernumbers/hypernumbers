@@ -469,7 +469,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/text/.html",
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/text/concatenate.html",
         "args": [
             {
                 "name": "Text",
@@ -546,7 +546,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/",
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/statistical/count.html",
         "args": [
             {
                 "name": "Number",
@@ -1378,7 +1378,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.vixo.com/contents/",
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/text/exact.htm",
         "args": [
 
         ]
@@ -2964,7 +2964,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/layout-and-display/lorem.headline.html",
+        "link": "http://documentation.vixo.com/contents/vixo-functions/layout-and-display/lorem-headline.html",
         "args": [
             {
                 "name": "Headline Length",
@@ -2982,7 +2982,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/layout-and-display/lorem.ipsum.html",
+        "link": "http://documentation.vixo.com/contents/vixo-functions/layout-and-display/lorem-ipsum.html",
         "args": [
             {
                 "name": "Text Length",
@@ -5020,7 +5020,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/",
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/text/trim.html",
         "args": [
             {
                 "name": "Text",
@@ -5300,7 +5300,7 @@
         "resize": "column",
         "resize_rows_default": 10,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/layout-and-display/vertical.line.html",
+        "link": "http://documentation.vixo.com/contents/vixo-functions/layout-and-display/vertical-line.html",
         "args": [
             {
                 "name": "Width",
@@ -5597,7 +5597,7 @@
                 "desc": "TRUE or FALSE.",
                 "type": "optional"
             },
-            {
+            {xs
                 "name": "Show link in first column",
                 "desc": "TRUE or FALSE.",
                 "type": "optional"
