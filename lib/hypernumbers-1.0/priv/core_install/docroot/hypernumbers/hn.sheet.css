@@ -412,7 +412,7 @@ table.tablesorter tbody tr.highlight td {
     cursor          : pointer;
 }
 #languages {
-    background : url(down.png) no-repeat right 1px;
+    background : url(/hypernumbers/down.png) no-repeat right 1px;
     display:none;
     cursor     : pointer;
     padding    : 2px 16px 2px 2px;
@@ -449,7 +449,7 @@ table.tablesorter tbody tr.highlight td {
     float            : left;
     width            : 16px;
     height           : 11px;
-    background-image : url(sprite.png);
+    background-image : url(/hypernumbers/sprite.png);
 }
 #languages .flag.en_gb { background-position: -2px -179px; }
 #languages .flag.fr    { background-position: -22px -179px; }
@@ -660,10 +660,10 @@ table.tablesorter tbody tr.highlight td {
   text-align : right;
   }
 
-#right { right  : 0px; background: url(sprite.png) -1px -32px; }
-#left  { left   : 0px; background: url(sprite.png) -1px -47px; }
-#up    { top    : 0px; background: url(sprite.png) -1px -1px; }
-#down  { bottom : 0px; background: url(sprite.png) -1px -16px; }
+#right { right  : 0px; background: url(/hypernumbers/sprite.png) -1px -32px; }
+#left  { left   : 0px; background: url(/hypernumbers/sprite.png) -1px -47px; }
+#up    { top    : 0px; background: url(/hypernumbers/sprite.png) -1px -1px; }
+#down  { bottom : 0px; background: url(/hypernumbers/sprite.png) -1px -16px; }
 
 #scrollbar-right {
     position:absolute;
@@ -686,7 +686,7 @@ table.tablesorter tbody tr.highlight td {
     width        : 100%;
 }
 #right-bar {
-    background    : url(sprite-y.png) 0px 0px;
+    background    : url(/hypernumbers/sprite-y.png) 0px 0px;
     height        : 20px;
     width         : 13px;
     border-top    : 1px solid #81756a;
@@ -717,7 +717,7 @@ table.tablesorter tbody tr.highlight td {
     position:absolute;
 }
 #bottom-bar {
-    background   : url(sprite-x.png) 0px -28px;
+    background   : url(/hypernumbers/sprite-x.png) 0px -28px;
     height       : 13px;
     width        : 20px;
     border-left  : 1px solid #81756a;
@@ -726,19 +726,19 @@ table.tablesorter tbody tr.highlight td {
     left         : 0px;
 }
 
-#right:hover { background: url(sprite.png) -15px -32px; }
-#up:hover    { background: url(sprite.png) -15px -1px; }
-#left:hover  { background: url(sprite.png) -15px -47px; }
-#down:hover  { background: url(sprite.png) -15px -16px; }
-#bottom-bar:hover { background: url(sprite-x.png) 0px -30px; }
-#right-bar:hover  { background: url(sprite-y.png) -28px 0px; }
+#right:hover { background: url(/hypernumbers/sprite.png) -15px -32px; }
+#up:hover    { background: url(/hypernumbers/sprite.png) -15px -1px; }
+#left:hover  { background: url(/hypernumbers/sprite.png) -15px -47px; }
+#down:hover  { background: url(/hypernumbers/sprite.png) -15px -16px; }
+#bottom-bar:hover { background: url(/hypernumbers/sprite-x.png) 0px -30px; }
+#right-bar:hover  { background: url(/hypernumbers/sprite-y.png) -28px 0px; }
 
-#right.active { background: url(sprite.png) -29px -32px; }
-#up.active    { background: url(sprite.png) -29px -1px; }
-#left.active  { background: url(sprite.png) -29px -47px; }
-#down.active  { background: url(sprite.png) -29px -16px; }
-#bottom-bar.active { background: url(sprite-x.png) 0px -30px; }
-#right-bar.active  { background: url(sprite-y.png) -28px 0px; }
+#right.active { background: url(/hypernumbers/sprite.png) -29px -32px; }
+#up.active    { background: url(/hypernumbers/sprite.png) -29px -1px; }
+#left.active  { background: url(/hypernumbers/sprite.png) -29px -47px; }
+#down.active  { background: url(/hypernumbers/sprite.png) -29px -16px; }
+#bottom-bar.active { background: url(/hypernumbers/sprite-x.png) 0px -30px; }
+#right-bar.active  { background: url(/hypernumbers/sprite-y.png) -28px 0px; }
 
 #rowsout {
     position : absolute;
@@ -820,7 +820,7 @@ table.tablesorter tbody tr.highlight td {
 }
 
 .expand, .colormenu {
-    background: url(down.png) no-repeat right 2px;
+    background: url(/hypernumbers/down.png) no-repeat right 2px;
     cursor:     pointer;
     padding:    3px 16px 1px 3px;
     margin:     2px;
@@ -909,7 +909,7 @@ table.tablesorter tbody tr.highlight td {
 .desc { font-size: 9px; position:absolute; right:4px; }
 
 #toolbar .icon {
- background-image: url(sprite.png);
+ background-image: url(/hypernumbers/sprite.png);
  cursor:     pointer;
  display:    block;
  height:     16px;
@@ -917,7 +917,7 @@ table.tablesorter tbody tr.highlight td {
 }
 
 a.toolbar-item {
- background-image: url(sprite.png);
+ background-image: url(/hypernumbers/sprite.png);
  float:   left;
  cursor:  pointer;
  border:  1px solid transparent;
@@ -1001,7 +1001,7 @@ a.toolbar-item {
 /* used in the tour */
 .inlineinput {
                background-position: -205px -104px;
-               background-image: url(sprite.png);
+               background-image: url(/hypernumbers/sprite.png);
                padding: 2px;
                margin:  2px;
                height:  16px;
