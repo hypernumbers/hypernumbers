@@ -318,6 +318,7 @@
           jserr,
           mark,
           map,
+          nonce, % sometimes for debugging you want to be able to tag requests
           pages,
           paths,
           permissions,
