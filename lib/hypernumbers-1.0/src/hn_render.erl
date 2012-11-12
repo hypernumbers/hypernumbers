@@ -357,7 +357,7 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType, IncCSS) ->
 "        <meta charset='utf-8' />"
      ++ case IncCSS of
             "all" ->
-                "         <link rel='stylesheet' href='webandwiki.head.css' />";
+                "         <link rel='stylesheet' href='/webandwiki.head.css' />";
             "none" ->
                 ""
         end,
@@ -367,7 +367,7 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType, IncCSS) ->
      "none" -> ""
     end
      ++ Addons#render.js_head ++
-     "         <script src='webandwiki.head.js'></script>
+     "         <script src='/webandwiki.head.js'></script>
         </head>
 
      <body data-view='" ++ PageType ++ "'>
@@ -414,10 +414,10 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType, IncCSS) ->
      </div>
      </div>
      </div>
-     <script src='webandwiki.body1.js'></script>"
+     <script src='/webandwiki.body1.js'></script>"
      ++ Addons#render.js
      ++ "" ++ Addons#render.js_reload ++
-     "       <script src='webandwiki.body2.js'></script>
+     "       <script src='/webandwiki.body2.js'></script>
   </body>
      </html>"].
 
