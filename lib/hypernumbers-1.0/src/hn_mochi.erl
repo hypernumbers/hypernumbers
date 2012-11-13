@@ -445,6 +445,10 @@ authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
 %               #env{accept = json}) ->
 %    allowed;
 
+% always let jserrs through
+authorize_post(_Ref, #qry{jserr = []}, _Env) ->
+    allowed;
+
 %% Allow a post to occur, if the user has access to a spreadsheet on
 %% the target. But it might be a post from a form or an inline
 %% update so you need to check for them too before allowing
@@ -490,9 +494,9 @@ authorize_p3(Site, Path, Env) ->
         % jakub's clause
         denied           ->
             case Env#env.body of
-                [{"read_user_fn", _Args}]		-> allowed;
-                [{"delete_user_fn", _Args}]	-> allowed;
-                [{"write_user_fn", _Args}]	-> allowed;
+                [{"read_user_fn", _Args}]		-> denied;
+                [{"delete_user_fn", _Args}]	-> denied;
+                [{"write_user_fn", _Args}]	-> denied;
                 _						        				-> denied
             end
     end.
@@ -835,7 +839,8 @@ iget(Ref = #refX{site = S}, page, #qry{view = FName},
     end;
 
 iget(#refX{site = Site, path = Path}, page,
-     #qry{updates = Time, paths = More}, Env = #env{accept = json})
+     #qry{updates = Time, paths = More},
+     Env = #env{accept = json})
   when Time /= undefined, More /= undefined ->
     Paths = [Path | [ string:tokens(X, "/") || X <- string:tokens(More, ",")]],
     remoting_request(Env, Site, Paths, Time);
@@ -1167,11 +1172,9 @@ ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
       #env{body = [{"postwebcontrols",
                     {struct, [{"signup", {struct, [{"sitetype", ST}]}}]}}],
            uid = PrevUID} = Env) ->
-    io:format("In trial PrevUID is ~p~n", [PrevUID]),
     SType2 = hn_util:site_type_exists(ST),
     Transaction = factory,
     Email = "dummy_" ++ PrevUID ++ "@vixo.com",
-    io:format("Email is ~p~n", [Email]),
     [Expected] = new_db_api:matching_forms(Ref, Transaction),
     case hn_security:validate_factory(Expected, SType2, []) of
         true  -> hn_mochi:provision_site(RootSite, PrevUID, SType2, Email,
