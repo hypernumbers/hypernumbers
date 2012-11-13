@@ -61,6 +61,7 @@ dispatch(["clean"])            -> {ok, Root} = file:get_cwd(),
 dispatch(["start" | Args])     -> start(Args);
 dispatch(["debug" | Args])     -> debug(Args);
 dispatch(["buddy" | Args])     -> buddy(Args);
+dispatch(["jslint" | Args])    -> jslint(Args);
 dispatch(["no_mnesia" | Args]) -> no_mnesia(Args);
 dispatch(["stop" | Node])      -> stop(Node);
 dispatch(["call" | Args])      -> call(Args);
@@ -416,6 +417,13 @@ ctrl_node() ->
     {_, {H,M,S}} = calendar:universal_time(),
     Date = io_lib:format(Fmt, [H,M,S]),
     list_to_atom(lists:flatten(["ctrl-", Date, "@", net_adm:localhost()])).
+
+jslint([]) ->
+    ok = file:set_cwd("ebin/"),
+    compile_code:jslint_DEBUG();
+jslint([File]) ->
+    ok = file:set_cwd("ebin/"),
+    compile_code:jslint_DEBUG(File).
 
 usage() ->
     Usage = "Commands to run hypernumbers are:~n"
