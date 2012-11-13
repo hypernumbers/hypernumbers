@@ -5597,7 +5597,7 @@
                 "desc": "TRUE or FALSE.",
                 "type": "optional"
             },
-            {xs
+            {
                 "name": "Show link in first column",
                 "desc": "TRUE or FALSE.",
                 "type": "optional"
