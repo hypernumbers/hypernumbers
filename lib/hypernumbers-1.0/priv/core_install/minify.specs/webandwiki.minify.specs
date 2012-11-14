@@ -40,6 +40,7 @@
           {js, [
                 {max, "/cleditor/jquery.cleditor.js"},
                 {max, "/hypernumbers/hn.renderpage.js"},
+                {max, "/hypernumbers/hn.util.js"},
                 {max, "/postmessage/jquery.ba-postmessage.js"},
                 {max, "/postmessage/hn.postmessage.js"}
               ]
