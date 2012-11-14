@@ -6,6 +6,14 @@
          make_release_boot_scripts/0
         ]).
 
+% exports for compiling
+-export([
+         build/1,
+         build_lexer_parser/1,
+         build_quick/1,
+         clean/1
+        ]).
+
 %% Debuggin
 -export([
          jslint_DEBUG/0,
@@ -51,7 +59,12 @@
 
 %% Directories contain javascript to be linted
 -define(JSDIRS, [
-                 "lib/hypernumbers-1.0/priv/core_install/docroot/hypernumbers"
+                 "lib/hypernumbers-1.0/priv/core_install/docroot/hypernumbers",
+                 "lib/hypernumbers-1.0/priv/core_install/docroot/bootstrap/js/",
+                 "lib/hypernumbers-1.0/priv/core_install/docroot/contacts/",
+                 "lib/hypernumbers-1.0/priv/core_install/docroot/graphs/",
+                 "lib/hypernumbers-1.0/priv/core_install/docroot/postmessage/",
+                 "lib/hypernumbers-1.0/priv/core_install/docroot/webcomponents"
                 ]).
 
 %% Javascript files to be ignored
@@ -65,6 +78,8 @@
                    "jquery-1.4.4.min.js",
                    "jquery-1.5.js",
                    "jquery-1.5.min.js",
+                   "jquery-1.7.1.js",
+                   "jquery-1.7.1.min.js",
                    "jquery.columnmanager.js",
                    "jquery.columnmanager.min.js",
                    "jquery.cookie.js",
@@ -80,12 +95,25 @@
                    "jquery.tablesorter.js",
                    "jquery.tablesorter.min.js",
                    "json2.js",
-                   "json2.min.js"
-                   ]).
+                   "json2.min.js",
+                   "bootstrap.js",
+                   "bootstrap.min.js",
+                   "jquery.cleditor.js",
+                   "jscolor.js",
+                   "jquery.tooltip.js",
+                   "jquery.tooltip.min.js",
+                   "jquery.ui.potato.menu.js",
+                   "jquery.tabs.js",
+                   "fb_lang.js",
+                   "finder.js",
+                   "ba-debug.js",
+                   "ba-postmessage.js",
+                   "froogaloop.js"
+                  ]).
 
 jslint_DEBUG(File) ->
     jslint3([get_root() ++ "lib/hypernumbers-1.0/priv/core_install"
-             ++ "/docroot/hypernumbers/"
+             ++ "/docroot/"
              ++ File],
             get_root() ++ ?JSLINT).
 
@@ -310,3 +338,136 @@ get_ssl_rel_file() ->
 fmt(Str, Args) ->
     lists:flatten(io_lib:format(Str, Args)).
 
+clean(Root) ->
+    Files = filelib:wildcard(Root ++ "lib/*/ebin/*.beam") ++
+        filelib:wildcard("ebin/*.beam"),
+    [file:delete(F) || F <- Files],
+    ok.
+
+build(Root) ->
+    clean(Root),
+    io:format("Compiling Dependencies ...~n"),
+    filelib:ensure_dir("lib/mochiweb/ebin/"),
+    filelib:ensure_dir("lib/hypernumbers-1.0/ebin/"),
+    filelib:ensure_dir("ebin/"),
+    io:format("...building mochiweb~n"),
+    file:set_cwd("lib/mochiweb"),
+    os:cmd("make"),
+    file:set_cwd(Root),
+    file:set_cwd("lib/gettext"),
+    io:format("...building gettext~n"),
+    os:cmd("make"),
+    file:set_cwd(Root),
+    file:set_cwd("lib/starling"),
+    io:format("...building starling~n"),
+    io:format(os:cmd("rake")),
+    file:set_cwd(Root),
+    file:set_cwd("lib/twilio"),
+    io:format("...building twilio~n"),
+    io:format(os:cmd("./rebar compile")),
+    file:set_cwd(Root),
+    file:set_cwd("lib/erlsha2"),
+    io:format("...building erlsha2~n"),
+    io:format(os:cmd("./rebar compile")),
+    file:set_cwd(Root),
+
+    % build the lexer-parsers
+    io:format("...building lexer-parser~n"),
+    make_lexer_parser(Root),
+    minify(Root),
+    make_ms_util(Root),
+    file:set_cwd(Root++"/ebin"),
+    io:format("...now compile all the actual code~n"),
+    compile_code:start(),
+    check_console_log(Root).
+
+build_lexer_parser(Root) ->
+    make_ms_util(Root),
+    make_lexer_parser(Root),
+    minify(Root),
+    make_quick(Root),
+    check_console_log(Root).
+
+build_quick(Root) ->
+    make_ms_util(Root),
+    minify(Root),
+    make_quick(Root),
+    check_console_log(Root).
+
+make_lexer_parser(Root) ->
+    file:set_cwd("lib/formula_engine-1.0/priv/"),
+    os:cmd("./generate.escript"),
+    file:set_cwd(Root).
+
+make_quick(Root) ->
+    file:set_cwd(Root++"/ebin"),
+    compile_code:quick(),
+    file:set_cwd(Root).
+
+minify(Root) ->
+    Dir = Root ++ "/lib/hypernumbers-1.0/priv/core_install/minify.specs/",
+    Prefix = Root ++ "/lib/hypernumbers-1.0/priv/core_install/docroot",
+    Files = filelib:wildcard(Dir ++ "*.specs"),
+    min2(Files, Prefix),
+    ok.
+
+min2([], _Prefix) ->
+    ok;
+min2([H | T], Prefix) ->
+    File = filename:basename(H),
+    [View, "minify", "specs"] = string:tokens(File, "."),
+    {ok, [Specs]} = file:consult(H),
+    min3(Specs, View, Prefix),
+    min2(T, Prefix).
+
+min3([], _View, _Prefix) ->
+    ok;
+min3([{Where, What} | T], View, Prefix) ->
+    min4(What, View, Where, Prefix),
+    min3(T, View, Prefix).
+
+min4([], _View, _Where, _Prefix) ->
+    ok;
+min4([{Type, Files} | T], View, Where, Prefix) ->
+    min5(Files, View, Type, Where, Prefix, []),
+    min4(T, View, Where, Prefix).
+
+% fake ending - if the Acc is [] just delete the old version of the file
+% if it exists
+min5([], View, Type, Where, Prefix, []) ->
+    File = string:join([View, atom_to_list(Where), atom_to_list(Type)], "."),
+    % we don't care if the file exists when we delete it so don't check
+    % the return value
+    _ = file:delete(Prefix ++ "/" ++ File);
+min5([], View, Type, Where, Prefix, Acc) ->
+    Contents = lists:reverse(Acc),
+    File = string:join([View, atom_to_list(Where), atom_to_list(Type)], "."),
+    ok = file:write_file(Prefix ++ "/" ++ File, lists:flatten(Contents));
+min5([{Size, File} | T], View, Type, Where, Prefix, Acc) ->
+    {ok, Contents} = file:read_file(Prefix ++ File),
+    NewAcc = min6(File, Contents, Size),
+    min5(T, View, Type, Where, Prefix, [NewAcc | Acc]).
+
+min6(File, Contents, max) ->
+    io_lib:format("/*~n~s~n*/~n~n~s~n", [File, Contents]);
+min6(_File, _Contents, min) ->
+    exit("yeah, not minifying yet...").
+
+make_ms_util(Root) ->
+    file:set_cwd(Root),
+    compile:file("priv/ms_util/make_ms_util.erl",
+                 [{outdir, "lib/hypernumbers-1.0/ebin"}, debug_info,
+                  {i, "lib/hypernumbers-1.0/include"}]),
+    code:add_path("lib/hypernumbers-1.0/ebin"),
+    make_ms_util:make(),
+    {ok, _Bytes} =
+        file:copy("ms_util2.erl", "lib/hypernumbers-1.0/src/ms_util2.erl"),
+    ok = file:delete("ms_util2.erl").
+
+check_console_log(Root) ->
+    file:set_cwd(Root++"/lib/hypernumbers-1.0/priv/core_install/docroot/"),
+    print_msgs(string:tokens(os:cmd("grep -R -l console.log *"), "\n")).
+
+print_msgs(List) ->
+    io:format("Console.log in:~n"),
+    [io:format("~p~n", [X]) || X <- List].

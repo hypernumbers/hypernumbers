@@ -2,16 +2,27 @@
 
 -export([do/1, migrate/0, migrate/1]).
 
-do(suspend)  -> suspend();
-do(resume)   -> resume();
-do(refresh)  -> refresh();
-do(hotswap)  -> refresh(), hotswap();
-do(restart)  -> refresh(), hotswap(), restart();
-do(migrate)  -> migrate();
-do(git_pull) -> git_pull(), refresh(), hotswap();
-do(Other)    -> io:format("I don't know how to '~s'", [Other]).
+do(suspend)    -> suspend();
+do(resume)     -> resume();
+do(refresh)    -> refresh();
+do(hotswap)    -> refresh(), hotswap();
+do(restart)    -> refresh(), hotswap(), restart();
+do(migrate)    -> migrate();
+do(git_pull)   -> git_pull(), refresh(), hotswap();
+do(full_build) -> full_build(), refresh(), hotswap();
+do(Other)      -> io:format("I don't know how to '~s'", [Other]).
 
-%% Updates with don't need new data and can't crash the system
+%% does a full rebuild of the system
+-spec full_build() -> ok.
+    CWD = filename:absname(""),
+    Dir = code:priv_dir(hypernumbers) ++ "/../../../",
+    ok = file:set_cwd(Dir),
+    _Ret = os:cmd("git pull"),
+    ok = file:set_cwd(Dir ++ "/ebin"),
+    compile_code:build(),
+    ok = file:set_cwd(CWD).
+
+%% Updates which don't need new data and can't crash the system
 -spec git_pull() -> ok.
 git_pull() ->
     CWD = filename:absname(""),
@@ -19,7 +30,7 @@ git_pull() ->
     ok = file:set_cwd(Dir),
     _Ret = os:cmd("git pull"),
     ok = file:set_cwd(Dir ++ "/ebin"),
-    compile_code:quick(),
+    compile_code:build_quick(),
     ok = file:set_cwd(CWD).
 
 %% suspend the node by stopping the Hypernumbers application

@@ -1,0 +1,6 @@
+#! /bin/bash
+./hn do full_build hnlive@hypernumbers.com
+./hn do full_build hnlive@node2.hypernumbers.com
+./hn do full_build hnlive@node3.hypernumbers.com
+./hn do full_build hnlive@node4.hypernumbers.com
+./hn do full_build hnlive@node5.hypernumbers.com
