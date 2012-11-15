@@ -3902,8 +3902,29 @@
             }
         ]
     },
-
-
+    {
+        "fn": "redirect.if",
+        "category": "Social/Web <- new!",
+        "desc": "Redirects a web or wiki page to another URL",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/social-media-and-web-integration/redirect-if.html",
+        "args": [
+            {
+                "name": "Boolean",
+                "desc": "true or false",
+                "type": "finite"
+            },
+            {
+                "name": "URL",
+                "desc": "The URL to redirect to",
+                "type": "finite"
+            }
+        ]
+    },
     {
         "fn": "replace",
         "category": "Text",

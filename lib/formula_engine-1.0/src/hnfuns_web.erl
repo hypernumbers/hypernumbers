@@ -4,6 +4,7 @@
 
 -export([
          redirect/1,
+         'redirect.if'/1,
          blink/1,
          bullets/1,
          'horizontal.line.'/1,
@@ -45,10 +46,16 @@
 -define(lorem4, "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ").
 -define(lorem_length, 447).
 
+'redirect.if'([Bool | Rest]) ->
+    [Bool2] = typechecks:std_bools([Bool]),
+    case Bool2 of
+        false -> "";
+        true  -> redirect(Rest)
+    end.
+
 redirect([URL]) ->
     [URL2] = typechecks:std_strs([URL]),
     JS = "/webcomponents/hn.redirect.js",
-    io:format("URL is ~p~n", [URL]),
     JS_reload = "HN.Redirect.reload('" ++ URL2 ++ "');",
     Incs = #incs{js = [JS], js_reload = [JS_reload]},
     Resize = #resize{width = 2, height = 2},
@@ -306,8 +313,8 @@ link([Src, Text, Type, Option]) ->
     link_(NSrc, NText, NType, NOption);
 link([Src, Text, Type]) ->
     [NSrc, NText] = muin_collect:col([Src, Text],
-                                              [eval_funs, fetch, {cast, str}],
-                                              [return_errors]),
+                                     [eval_funs, fetch, {cast, str}],
+                                     [return_errors]),
     [NType] = typechecks:std_ints([Type]),
     link_(NSrc, NText, NType, 0);
 link([Src, Text]) ->
@@ -391,9 +398,9 @@ img_style(_N) ->  ?ERR_VAL.
     Hds2 = case HasLink of
                true  -> ["Links" | Hds1];
                false -> Hds1
-          end,
+           end,
     ZRef = case Z of
-             List when is_list(List) ->
+               List when is_list(List) ->
                    [Z2] = typechecks:std_strs([Z]),
                    case muin:parse(Z2, {?mx, ?my}) of
                        {ok, AST} ->
@@ -408,7 +415,7 @@ img_style(_N) ->  ?ERR_VAL.
                    ZRange;
                _Else ->
                    ?ERR_VAL
-               end,
+           end,
     put(recompile, true),
     Rules = [fetch_ztable],
     Passes = [],
@@ -440,7 +447,7 @@ fix_upzrange([H | T], HasLink, Acc) ->
                  true  -> ["<a href=\"" ++ Path ++"\">Link</a>" | Vals2];
                  false -> Vals2
              end,
-   fix_upzrange(T, HasLink, [NewAcc | Acc]).
+    fix_upzrange(T, HasLink, [NewAcc | Acc]).
 
 fix_upz2({errval, Err}, Acc) -> [atom_to_list(Err) | Acc];
 fix_upz2(blank, Acc)         -> [""| Acc];
@@ -464,7 +471,7 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
     [Height] = typechecks:throw_std_ints([H]),
     funs_util:check_size(Width, Height),
     % DIRTY HACK. This forces muin to setup dependencies, and checks
-    %% for circ errors.
+%% for circ errors.
     Ret = muin:fetch(Ref, "__rawvalue"), % this can be made to work properly now
     case has_circref(Ret) of
         true  -> {errval, '#CIRCREF'};
@@ -510,8 +517,8 @@ include([RelRan, Title]) when ?is_rangeref(RelRan) ->
     OldPath = RelRan#rangeref.path,
     OrigPath = get(path),
     NewPath = muin_util:walk_path(OrigPath, OldPath),
-    %% DIRTY HACK. This forces muin to setup dependencies, and checks
-    %% for circ errors.
+%% DIRTY HACK. This forces muin to setup dependencies, and checks
+%% for circ errors.
     Ret = muin:fetch(RelRan, "__rawvalue"),
     case has_circref(Ret) of
         true  -> {errval, '#CIRCREF'};
@@ -584,11 +591,11 @@ table_(Title, W, H, [THead | Range], Sort, Dirc) ->
             "</tr></thead>"],
 
     Rows = [ ["<tr>", [ ["<td>", Cell,"</td>"] || Cell <- Row ],"</tr>"]
-              || Row <- Range ],
+             || Row <- Range ],
     Script = if
                  Sort <  0 ->
                      ["$(\"#" ++ Id ++ "\").tablesorter();",
-                     "$(\"#" ++ Id ++ "\").parent().css('overflow', ",
+                      "$(\"#" ++ Id ++ "\").parent().css('overflow', ",
                       "'auto');"];
                  Sort >= 0 ->
                      ["$(\"#" ++ Id ++ "\").tablesorter({ sortList:[[",
