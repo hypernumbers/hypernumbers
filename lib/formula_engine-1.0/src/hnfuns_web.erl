@@ -3,6 +3,7 @@
 -module(hnfuns_web).
 
 -export([
+         redirect/1,
          blink/1,
          bullets/1,
          'horizontal.line.'/1,
@@ -43,6 +44,16 @@
 -define(lorem3, "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ").
 -define(lorem4, "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ").
 -define(lorem_length, 447).
+
+redirect([URL]) ->
+    [URL2] = typechecks:std_strs([URL]),
+    JS = "/webcomponents/hn.redirect.js",
+    io:format("URL is ~p~n", [URL]),
+    JS_reload = "HN.Redirect.reload('" ++ URL2 ++ "');",
+    Incs = #incs{js = [JS], js_reload = [JS_reload]},
+    Resize = #resize{width = 2, height = 2},
+    PreV = "Redirect to " ++ URL2,
+    #spec_val{val = "", resize = Resize, preview = PreV, sp_incs = Incs}.
 
 % ha ha an easter egg
 blink([String]) ->

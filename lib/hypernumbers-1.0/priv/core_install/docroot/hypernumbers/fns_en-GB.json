@@ -3885,6 +3885,26 @@
         ]
     },
     {
+        "fn": "redirect",
+        "category": "Social/Web <- new!",
+        "desc": "Redirects a web or wiki page to another URL",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/excel-compatible-functions/social-media-and-web-integration/redirect.html",
+        "args": [
+            {
+                "name": "URL",
+                "desc": "The URL to redirect to",
+                "type": "finite"
+            }
+        ]
+    },
+
+
+    {
         "fn": "replace",
         "category": "Text",
         "desc": "Replaces part of a text string with the specified characters.",
