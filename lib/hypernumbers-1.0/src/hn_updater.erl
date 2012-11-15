@@ -14,6 +14,7 @@ do(Other)      -> io:format("I don't know how to '~s'", [Other]).
 
 %% does a full rebuild of the system
 -spec full_build() -> ok.
+full_build() ->
     CWD = filename:absname(""),
     Dir = code:priv_dir(hypernumbers) ++ "/../../../",
     ok = file:set_cwd(Dir),

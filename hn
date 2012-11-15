@@ -81,6 +81,7 @@ build_lexer_parser(Root) ->
 build_quick(Root) ->
     ensure_config(),
     ok = compile_compiler(),
+    code:add_patha("./ebin"),
     compile_code:build_quick(Root).
 
 compile_compiler() ->
