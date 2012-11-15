@@ -21,6 +21,11 @@ server {
 }
 
 server {
+       server_name   www.documentation.vixo.com;
+       rewrite ^(.*) http://documentation.vixo.com$1 permanent;
+}
+
+server {
    listen        80;
    server_name   documentation.vixo.com;
 
@@ -31,6 +36,11 @@ server {
 }
 
 server {
+       server_name   www.blog.vixo.com;
+       rewrite ^(.*) http://blog.vixo.com$1 permanent;
+}
+
+server {
    listen        80;
    server_name   blog.vixo.com;
 
@@ -38,6 +48,11 @@ server {
        access_log /var/log/nginx/vixoblog.log docoformat;
        root /hn/files-www/vixo2/blog/;
    }
+}
+
+server {
+       server_name   www.wordpress.vixo.com;
+       rewrite ^(.*) http://wordpress.vixo.com$1 permanent;
 }
 
 server {
