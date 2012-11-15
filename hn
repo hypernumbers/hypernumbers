@@ -71,11 +71,13 @@ dispatch(_BadCommand)          -> usage().
 build(Root) ->
     ensure_config(),
     ok = compile_compiler(),
+    code:add_patha("./ebin"),
     compile_code:build(Root).
 
 build_lexer_parser(Root) ->
     ensure_config(),
     ok = compile_compiler(),
+    code:add_patha("./ebin"),
     compile_code:build_lexer_parser(Root).
 
 build_quick(Root) ->
