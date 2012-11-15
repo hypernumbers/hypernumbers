@@ -19,8 +19,9 @@ full_build() ->
     Dir = code:priv_dir(hypernumbers) ++ "/../../../",
     ok = file:set_cwd(Dir),
     _Ret = os:cmd("git pull"),
-    ok = file:set_cwd(Dir ++ "/ebin"),
-    compile_code:build(CWD),
+    ok = file:set_cwd(Dir ++ "ebin/"),
+    code:load_file(compile_code),
+    compile_code:build(Dir),
     ok = file:set_cwd(CWD).
 
 %% Updates which don't need new data and can't crash the system
@@ -30,8 +31,9 @@ git_pull() ->
     Dir = code:priv_dir(hypernumbers) ++ "/../../../",
     ok = file:set_cwd(Dir),
     _Ret = os:cmd("git pull"),
-    ok = file:set_cwd(Dir ++ "/ebin"),
-    compile_code:build_quick(CWD),
+    ok = file:set_cwd(Dir ++ "ebin/"),
+    code:load_file(compile_code),
+    compile_code:build_quick(Dir),
     ok = file:set_cwd(CWD).
 
 %% suspend the node by stopping the Hypernumbers application
