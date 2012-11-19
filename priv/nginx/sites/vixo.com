@@ -61,10 +61,11 @@ server {
 
    location / {
        access_log /var/log/nginx/vixowordpress.log wordpressformat;
-        proxy_pass              http://127.0.0.1:8765/wordpress/;
+        proxy_pass              http://127.0.0.1:8765/;
         proxy_set_header        X-Forwarded-For      $proxy_add_x_forwarded_for;
         proxy_set_header        HN-Host              $host;
         proxy_set_header        HN-Port              $server_port;
+        proxy_set_header        Host                 wordpress.vixo.com;
         proxy_buffering         off;
         proxy_read_timeout      3600;
    }
