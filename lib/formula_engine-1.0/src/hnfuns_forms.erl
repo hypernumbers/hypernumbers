@@ -178,6 +178,9 @@ button_(Value, Response, ResultsPath, Email) ->
                 none -> [{"dest", Origin}];
                 _    -> [{"dest", Origin}, {"email", Email}]
             end,
+    Resp2 = xmerl_lib:export_text(Response),
+    Resp3 = re:replace(Resp2, "'", "", [{return, list}, global]),
+    Resp4 = re:replace(Resp3, "\"", "", [{return, list}, global]),
     Form = #form{id = {Trans, "_"},
                  kind = button,
                  attrs = Attrs},
@@ -186,7 +189,7 @@ button_(Value, Response, ResultsPath, Email) ->
                          ++ " data-results='" ++ ResultsPath ++ "'"
                          ++ " data-origin='" ++ Origin ++ "?view=webpage'"
                          ++ " data-form-name='default' data-response='"
-                         ++ Response ++ "' />"),
+                         ++ Resp4 ++ "' />"),
     Preview = Value ++ " Submit Button",
     #spec_val{val = Html, preview = Preview,
               rawform = #rawform{form = Form, html = Html}}.
