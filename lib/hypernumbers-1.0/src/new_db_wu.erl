@@ -361,10 +361,20 @@ read_user_fnD(Site, Key) ->
 % clear_uniq needs to preserve the old record whilst making it not
 % functional - need this for things like the function 'configure.email'
 % where the fact that the email has been validated needs to be remembered
+clear_uniq(Site, {_Idx, google_analytics} = Key) ->
+    ok = unset_google_analytics(Site),
+    [{kvstore, Key, {_Idx, Rec}}] = read_kvD(Site, Key),
+    write_kvD(Site, Key, {deleted, Rec});
 clear_uniq(Site, Key) ->
     [{kvstore, Key, {_Idx, Rec}}] = read_kvD(Site, Key),
     write_kvD(Site, Key, {deleted, Rec}).
 
+write_kvD(Site, google_analytics, Value) ->
+    {_Idx, Google} = Value,
+    ok = set_google_analytics(Site, Google),
+    Tbl = trans(Site, kvstore),
+    Rec = #kvstore{key = google_analytics, value = Value},
+    mnesia:write(Tbl, Rec, write);
 write_kvD(Site, Key, Value) ->
     Tbl = trans(Site, kvstore),
     Rec = #kvstore{key = Key, value = Value},
@@ -374,6 +384,10 @@ read_kvD(Site, Key) ->
     Tbl = trans(Site, kvstore),
     mnesia:read(Tbl, Key, read).
 
+delete_kvD(Site, google_analytics) ->
+    ok = unset_google_analytics(Site),
+    Tbl = trans(Site, kvstore),
+    mnesia:delete(Tbl, google_analytics, write);
 delete_kvD(Site, Key) ->
     Tbl = trans(Site, kvstore),
     mnesia:delete(Tbl, Key, write).
@@ -2923,3 +2937,27 @@ split_select(String) ->
 %% writeif(Str, Vals, {cell, {6, 14}}) ->
 %%     io:format(Str, Vals);
 %% writeif(_, _, _) -> ok.
+
+unset_google_analytics(Site) ->
+    JS = "<!-- This file is generated automatically to add in or remove google analytics -->",
+    write_google_analytics_js(Site, JS).
+
+set_google_analytics(Site, Value) ->
+    JS = "<script type='text/javascript'>"
+        ++ "  var _gaq = _gaq || [];"
+        ++ "_gaq.push(['_setAccount', '" ++ Value ++ "']);"
+        ++ "_gaq.push(['_trackPageview']);"
+        ++ "(function() {"
+        ++ "    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;"
+        ++ "    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';"
+        ++ "    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();"
+        ++ "</script>",
+    write_google_analytics_js(Site, JS),
+    ok.
+
+write_google_analytics_js(Site, JS) ->
+    SiteURL = hn_util:site_to_fs(Site),
+    File = code:lib_dir(hypernumbers) ++ "/../../var/sites/" ++ SiteURL
+        ++ "/docroot/google_analytics.js",
+    ok = file:write_file(File, JS).
