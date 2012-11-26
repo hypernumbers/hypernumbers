@@ -1846,6 +1846,24 @@
         ]
     },
     {
+        "fn": "google.analytics",
+        "category": "Site Admin <- new!",
+        "desc": "Sets up Google Analytics",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/site-admin/google-analytics.html",
+        "args": [
+            {
+                "name": "Analytics ID",
+                "desc": "provided to you when you sign up for Google Analytics",
+                "type": "finite"
+            }
+        ]
+    },
+    {
         "fn": "google.buynow",
         "category": "Social/Web <- new!",
         "desc": "Puts a Google Buy Now button on a page.",
