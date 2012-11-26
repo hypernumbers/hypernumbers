@@ -1854,7 +1854,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/site-admin/google-analytics.html",
+        "link": "http://documentation.vixo.com/contents/vixo-functions/site-administration/google-analytics.html",
         "args": [
             {
                 "name": "Analytics ID",
