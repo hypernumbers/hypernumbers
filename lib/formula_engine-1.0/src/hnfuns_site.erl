@@ -34,8 +34,17 @@
          'phone.menu.extension'/1,
          'phone.menu.conference'/1,
          'phone.menu.dial'/1,
-         'phone.menu.sms'/1
+         'phone.menu.sms'/1,
+         'google.analytics'/1
         ]).
+
+'google.analytics'([Code]) ->
+    [C] = typechecks:std_strs([Code]),
+    Site = get(site),
+    Idx = get(idx),
+    ok = new_db_wu:write_kvD(Site, google_analytics, {Idx, C}),
+    Preview = "Google Analytics Code: " ++ C,
+    #spec_val{val = "", preview = Preview, unique = google_analytics}.
 
 'invite.users'([]) ->
     Id     = "id_" ++ muin_util:create_name(),

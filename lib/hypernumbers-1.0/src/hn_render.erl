@@ -368,6 +368,7 @@ wrap_page(Content, Path, TotalWidth, TotalHeight, Addons, PageType, IncCSS) ->
     end
      ++ Addons#render.js_head ++
      "         <script src='/webandwiki.head.js'></script>
+        <script src='/google_analytics.js'></script>
         </head>
 
      <body data-view='" ++ PageType ++ "'>
