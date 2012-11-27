@@ -1,7 +1,7 @@
+{create_group,[{name,"user"}]}.
 {create_group,[{name,"stephen@vixo.com"}]}.
 {create_group,[{name,"lflourno@gmail.com"}]}.
-{create_group,[{name,"guest"}]}.
-{create_group,[{name,"user"}]}.
-{create_group,[{name,"admin"}]}.
 {create_group,[{name,"msksboyd@gmail.com"}]}.
+{create_group,[{name,"guest"}]}.
+{create_group,[{name,"admin"}]}.
 {add_user,[{uid,'$creator'},{group,"admin"}]}.

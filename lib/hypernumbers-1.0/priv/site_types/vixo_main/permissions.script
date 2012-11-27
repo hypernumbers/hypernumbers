@@ -1,7 +1,7 @@
 %%-*-erlang-*-
 {add_view,[{path,[]},{perms,["admin"]},{view,"spreadsheet"}]}.
 {add_view,[{path,[]},{perms,["admin"]},{view,"table"}]}.
-{add_view,[{path,[]},{perms,["admin",everyone]},{view,"webpage"}]}.
+{add_view,[{path,[]},{perms,["admin","guest",everyone]},{view,"webpage"}]}.
 {add_view,[{path,[]},{perms,["admin"]},{view,"wikipage"}]}.
 {set_champion,[{path,[]},{view,"webpage"}]}.
 {add_view,[{path,["31"]},{perms,["admin",everyone]},{view,"webpage"}]}.
@@ -129,6 +129,19 @@
            {perms,["admin"]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["getting-started","lesson6"]},{view,"webpage"}]}.
+{add_view,[{path,["getting-started","wordpress"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["getting-started","wordpress"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["getting-started","wordpress"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["getting-started","wordpress"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["getting-started","wordpress"]},{view,"webpage"}]}.
 {add_view,[{path,["in","contact-centres"]},
            {perms,["admin"]},
            {view,"spreadsheet"}]}.
@@ -153,6 +166,13 @@
            {perms,["admin"]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["in","customer-discovery"]},{view,"webpage"}]}.
+{add_view,[{path,["in","wordpress"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["in","wordpress"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["in","wordpress"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["in","wordpress"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["in","wordpress"]},{view,"webpage"}]}.
 {add_view,[{path,["intro"]},{perms,["admin",everyone]},{view,"webpage"}]}.
 {set_champion,[{path,["intro"]},{view,"webpage"}]}.
 {add_view,[{path,["prices-and-plans"]},
