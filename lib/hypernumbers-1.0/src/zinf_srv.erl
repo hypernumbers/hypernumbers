@@ -715,7 +715,7 @@ sub_dirty_zinf(Site, When) ->
                     % mebbies we are resubscribing...
                     mnesia:subscribe({table, Tbl, simple}),
                     % then check if anything has been written since the
-                    % message was sent telling us to subscrive
+                    % message was sent telling us to subscribe
                     case new_db_api:length_dirty_zinf_q(Site) of
                         0 ->
                             ok;
