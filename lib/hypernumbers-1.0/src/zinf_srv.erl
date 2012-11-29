@@ -21,7 +21,6 @@
 -define(sq_bra, 91).
 -define(sq_ket, 93).
 -define(PROFILE, "profile_zinf_srv").
--compile(export_all).
 
 %% API
 -export([start_link/1]).
