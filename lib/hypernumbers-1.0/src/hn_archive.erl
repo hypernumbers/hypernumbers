@@ -317,6 +317,8 @@ export_as_sitetype(Site, NewType, Group) when is_list(Group) ->
     ok = post_process_groups(?join([Dest, "groups.script"]), Group),
     file:rename(?join([Dest, "permissions.export"]),
                 ?join([Dest, "permissions.script"])),
+    file:rename(?join([Dest, "kvs.export"]),
+                ?join([Dest, "kvs.script"])),
 
     %% Delete backup-centric artifacts.
     io:format("about to clean up and delete views, docroots and etf folders~n"),
@@ -356,6 +358,8 @@ export_site(Dest, Site) ->
     ok = dump_groups(Site, Dest),
     io:format("about to dump perms~n"),
     ok = dump_perms(Site, Dest),
+    io:format("about to dump KVs~n"),
+    ok = dump_kvs(Site, Dest),
     io:format("about to dump views~n"),
     ok = dump_folder(Site, Dest, "views"),
     io:format("about to dump docroot~n"),
@@ -393,8 +397,12 @@ dump_groups(Site, SiteDest) ->
 
 dump_perms(Site, SiteDest) ->
     Perms = auth_srv:dump_script(Site),
-    ok = file:write_file(?join(SiteDest, "permissions.export"),
-                         Perms).
+    ok = file:write_file(?join(SiteDest, "permissions.export"), Perms).
+
+dump_kvs(Site, SiteDest) ->
+    KVs = new_db_api:kvs_exportD(Site),
+    Script = make_script(KVs, []),
+    ok = file:write_file(?join(SiteDest, "kvs.export"), Script).
 
 dump_folder(Site, SiteDest, Folder) ->
     Dest = ?join([SiteDest, Folder]),
@@ -499,3 +507,8 @@ existing_server_root() ->
     Root = code:lib_dir(hypernumbers),
     Root ++ "/../../var/".
 
+make_script([], Acc) ->
+    lists:flatten(["%%-*-erlang-*-\n" | lists:reverse(Acc)]);
+make_script([H | T], Acc) ->
+    NewAcc = io_lib:format("~p.\n", [H]),
+    make_script(T, [NewAcc | Acc]).
