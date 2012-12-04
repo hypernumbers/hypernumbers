@@ -331,7 +331,7 @@ filter([{email, Email} | T], Post, Id) ->
 filter([{ip, all} | T], Post, Id) ->
     filter(T, Post, Id);
 filter([{ip, IP} | T], Post, Id) ->
-    case proplists:get_value(ip, Post) of
+    case proplists:get_value(peer, Post) of
         IP -> filter(T, Post, Id);
         _  -> false
     end;
