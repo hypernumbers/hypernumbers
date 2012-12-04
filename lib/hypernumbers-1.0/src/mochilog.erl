@@ -332,7 +332,7 @@ filter([{ip, all} | T], Post, Id) ->
     filter(T, Post, Id);
 filter([{ip, IP} | T], Post, Id) ->
     case proplists:get_value(ip, Post) of
-        Ip -> filter(T, Post, Id);
+        IP -> filter(T, Post, Id);
         _  -> false
     end;
 
