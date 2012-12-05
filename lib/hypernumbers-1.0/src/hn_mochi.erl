@@ -46,8 +46,8 @@
 -spec start() -> {ok, pid()}.
 start() ->
     case application:get_env(hypernumbers, startup_debug) of
-       {ok, true} -> io:format("...starting mochi~n");
-       _Other     -> ok
+        {ok, true} -> io:format("...starting mochi~n");
+        _Other     -> ok
     end,
     {ok, {Ip, Port}} = application:get_env(hypernumbers, mochi_bind),
     StrIp = inet_parse:ntoa(Ip),
@@ -106,10 +106,10 @@ handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]}, Env, Qry) 
     #env{mochi = Mochi} = Env,
     Auth = Mochi:get_cookie_value("auth"),
     Cookie = case Auth of
-               undefined -> Stamp = passport:temp_stamp(),
-                            hn_net_util:cookie("auth", Stamp, "never");
-               _         -> {"Set-Cookie", Auth}
-           end,
+                 undefined -> Stamp = passport:temp_stamp(),
+                              hn_net_util:cookie("auth", Stamp, "never");
+                 _         -> {"Set-Cookie", Auth}
+             end,
     #qry{callback = Callback} = Qry,
     {"Set-Cookie", C} = Cookie,
     X = {"Access-Control-Allow-Origin", "*"},
@@ -119,10 +119,15 @@ handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]}, Env, Qry) 
 handle_(#refX{site = S, path = ["_sync" | Cmd]}, Env,
         #qry{return = QReturn, stamp = QStamp})
   when QReturn /= undefined ->
-    %Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p"
-    %                    ++ "QStamp of ~p",
-    %                    [S, Cmd, QReturn, QStamp]),
-    %syslib:log(Msg, ?auth),
+    Msg = io_lib:format("~nBorked Sync:~n"
+                        ++ "------------~n"
+                        ++ "on ~p~n"
+                        ++ pretty_print(Env)
+                        ++ "Cmd is ~p~n"
+                        ++ "QReturn is ~p~n"
+                        ++ "QStamp is ~p~n~n",
+                        [S, Cmd, QReturn, QStamp]),
+    syslib:log(Msg, ?auth),
     Env2 = process_sync(Cmd, Env, QReturn, QStamp, S),
     respond(303, Env2),
     throw(ok);
@@ -216,7 +221,7 @@ handle_resource(Ref, Qry, Env = #env{method = 'GET'}) ->
     iget(Ref, ObjType, Qry, Env);
 
 handle_resource(Ref, _Qry, Env = #env{method = 'POST', body = multipart,
-                                    mochi = Mochi, uid = Uid}) ->
+                                      mochi = Mochi, uid = Uid}) ->
     {ok, UserName} = passport:uid_to_email(Uid),
     {ok, File, Name, Data} = hn_file_upload:handle_upload(Mochi, Ref,
                                                           UserName),
@@ -343,21 +348,21 @@ authorize_get(#refX{site = Site, path = Path},
     case auth_srv:check_particular_view(Site, Path, Uid, ?SHEETVIEW) of
         {view, ?SHEETVIEW} ->
             Fun1 = fun(X) ->
-                          Tks = string:tokens(X, "/"),
-                          auth_srv:get_any_main_view(Site, Tks, Uid)
-                  end,
+                           Tks = string:tokens(X, "/"),
+                           auth_srv:get_any_main_view(Site, Tks, Uid)
+                   end,
             MoreViews = [Fun1(P) || P <- string:tokens(More, ",")],
             Fun2 = fun
-                      ({view, _}) -> true;
-                      (_)         -> false
-                  end,
-            case lists:all(Fun2, MoreViews) of
-                true  -> allowed;
-                _Else -> denied
-            end;
-        _Else ->
-            denied
+                       ({view, _}) -> true;
+                (_)         -> false
+                           end,
+    case lists:all(Fun2, MoreViews) of
+        true  -> allowed;
+        _Else -> denied
     end;
+_Else ->
+    denied
+end;
 
 %% Authorize access to the DEFAULT page. Notice that no query
 %% parameters have been set.
@@ -605,7 +610,7 @@ authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
 
 % this is the path that the twilio phone redirect is wired to
 iget(#refX{path = ["_services", "phoneredirect" | []], obj = {page, "/"}},
-      page, _Qry, Env = #env{accept = html}) ->
+     page, _Qry, Env = #env{accept = html}) ->
     Redir = case application:get_env(hypernumbers, environment) of
                 {ok, development} ->
                     true;
@@ -623,7 +628,7 @@ iget(#refX{path = ["_services", "phoneredirect" | []], obj = {page, "/"}},
 
 % this path is hardwired into the module hn_twilio_mochi.erl
 iget(#refX{path = ["_services", "phone" | []], obj = {page, "/"}} = Ref,
-      page, _Qry, Env = #env{accept = html}) ->
+     page, _Qry, Env = #env{accept = html}) ->
     case hn_twilio_mochi:handle_call(Ref, Env) of
         error     -> '500'(Env);
         {ok, 200} -> xml(Env, twiml:encode([])); % empty response
@@ -643,7 +648,7 @@ iget(#refX{path = P, obj = {filename, FileName}} = Ref, filename, Qry, Env) ->
     end;
 
 iget(#refX{site = "http://usability.hypernumbers.com:8080" = Site,
-                    path = ["_reprovision"], obj = {page, "/"}}, page, _Qry, Env) ->
+           path = ["_reprovision"], obj = {page, "/"}}, page, _Qry, Env) ->
     ok = hn_setup:delete_site(Site),
     {initial_view, []} = hn_setup:site(Site, usability, []),
     {ok, _, Uid1} = passport:get_or_create_user("usability@hypernumbers.com"),
@@ -766,7 +771,7 @@ iget(#refX{site = Site} = Ref, cell, #qry{view = ?PHONE},
                {ok, true} -> "softphone2.html";
                _          -> "softphone.html"
            end,
-    %% make sure there is a phone
+%% make sure there is a phone
     case new_db_api:get_phone(Ref) of
         []       -> '404'(Ref, Env);
         [_Phone] -> Dir = hn_util:viewroot(Site) ++ "/",
@@ -802,7 +807,7 @@ iget(#refX{site = S} = Ref, page, #qry{view = ?RECORDING, play = Play},
             Dir = hn_util:viewroot(S) ++ "/",
             File = "no_recording.html",
             serve_html(200, Env, [Dir, File])
-        end;
+    end;
 
 iget(#refX{path = P} = Ref, Obj, #qry{css = CSS, view = ?WIKI},
      Env=#env{accept = html, uid = Uid})
@@ -885,7 +890,7 @@ iget(Ref, _Type, Qry, Env) ->
 % a post to the phone view - need to check there is a control
 %% TODO remove this clause
 ipost(#refX{obj = {cell, _}} = Ref, #qry{view = ?PHONE},
-               #env{accept = json} = Env) ->
+      #env{accept = json} = Env) ->
     case  new_db_api:get_phone(Ref) of
         []      ->
             json(Env, {struct, [{"error", "no phone at this url"}]});
@@ -997,7 +1002,7 @@ ipost(Ref = #refX{obj = {O, _}}, _Qry,
 %% but you can specify the displacement explicitly
 ipost(Ref = #refX{obj = {O, _}}, _Qry,
       Env = #env{body = [{"insert", "before"}, {"displacement", D}],
-               uid = Uid})
+                 uid = Uid})
   when (O == cell orelse O == range),
        (D == "horizontal" orelse D == "vertical") ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
@@ -1006,7 +1011,7 @@ ipost(Ref = #refX{obj = {O, _}}, _Qry,
 
 ipost(Ref = #refX{obj = {O, _}}, _Qry,
       Env = #env{body = [{"insert", "after"}, {"displacement", D}],
-               uid = Uid})
+                 uid = Uid})
   when (O == cell orelse O == range),
        (D == "horizontal" orelse D == "vertical") ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
@@ -1028,7 +1033,7 @@ ipost(Ref, _Qry, Env = #env{body = [{"delete", "all"}], uid = Uid}) ->
 
 ipost(Ref = #refX{obj = {O, _}}, _Qry,
       Env = #env{body = [{"delete", Direction}],
-               uid = Uid})
+                 uid = Uid})
   when (O == cell orelse O == range),
        (Direction == "horizontal" orelse Direction == "vertical") ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
@@ -1037,7 +1042,7 @@ ipost(Ref = #refX{obj = {O, _}}, _Qry,
 
 ipost(Ref = #refX{obj = {O, _}}, _Qry,
       Env = #env{body = [{"insert", Direction}],
-               uid = Uid})
+                 uid = Uid})
   when (O == cell orelse O == range),
        (Direction == "horizontal" orelse Direction == "vertical") ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
@@ -1055,14 +1060,14 @@ ipost(Ref,
 ipost(Ref,
       _Qry,
       Env = #env{body = [{"copystyle", {struct, [{"src", Src}]}}],
-               uid = Uid}) ->
+                 uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, style, Uid),
     json(Env, "success");
 ipost(Ref,
       _Qry,
       Env = #env{body = [{"copyvalue", {struct, [{"src", Src}]}}],
-               uid = Uid}) ->
+                 uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, value, Uid),
     json(Env, "success");
@@ -1086,7 +1091,7 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
 
 ipost(Ref = #refX{path = ["_user"]}, _Qry,
       _Env = #env{body = [{"set", {struct, [{"language", _Lang}]}}],
-                uid = Uid}) ->
+                  uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "changed language"),
     throw("can't set language right now");
 %% ok = hn_users:update(Site, Uid, "language", Lang),
@@ -1095,7 +1100,7 @@ ipost(Ref = #refX{path = ["_user"]}, _Qry,
 %% ipost for inline editable cells
 ipost(#refX{obj = {cell, _}} = Ref, _Qry,
       #env{body = [{"postinline", {struct, [{"formula", Val}]}}],
-               uid = Uid} = Env) ->
+           uid = Uid} = Env) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     case new_db_api:read_attribute(Ref, "input") of
         [{#xrefX{}, "inline"}] ->
@@ -1137,7 +1142,7 @@ ipost(#refX{obj = {cell, _}} = Ref, _Qry,
 
 ipost(Ref = #refX{obj = {cell, _}}, _Qry,
       Env = #env{body = [{"postinline", {struct, [{"clear","contents"}]}}],
-               uid = Uid}) ->
+                 uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = new_db_api:clear(Ref, contents, Uid),
     json(Env, "success");
@@ -1194,7 +1199,7 @@ ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
     case hn_util:valid_email(Email) of
         false ->
             json(Env, {struct, [{"result", "error"},
-                               {"reason", "invalid_email"}]});
+                                {"reason", "invalid_email"}]});
         true ->
             Transaction = factory,
             [Expected] = new_db_api:matching_forms(Ref, Transaction),
@@ -1257,7 +1262,7 @@ ipost(Ref, _Qry, Env = #env{body = [{"set", {struct, Attr}}], uid = Uid})
         [{"height", _}] ->
             ok = expand_height(Ref, Attr, Uid, Uid);
         [{"fixedHeight", _}] ->
-                  ok = expand_height(Ref, Attr, Uid, Uid);
+            ok = expand_height(Ref, Attr, Uid, Uid);
         _Else ->
             ok = new_db_api:write_attributes([{Ref, Attr}], Uid, Uid)
     end,
@@ -1838,19 +1843,35 @@ process_user(#refX{site = Site}, E = #env{mochi = Mochi}) ->
                 on_sync ->
                     Stamp = passport:temp_stamp(),
                     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
+                    Msg = io_lib:format("~nSync OK:~n"
+                                        ++ "--------~n"
+                                        ++ "on ~p~n"
+                                        ++ pretty_print(E)
+                                        ++ "Cookie is ~p~n",
+                                        [Site, Cookie]),
+                    syslib:log(Msg, ?auth),
                     E#env{headers = [Cookie | E#env.headers]};
                 {redir, Redir} ->
-                    % Msg = io_lib:format("~nStarting Sync:~n"
-                    %                    ++ "--------------~n"
-                    %                    ++ "on ~p~n"
-                    %                    ++ "redirecting to ~p~n",
-                    %                    [Site, Redir]),
-                    % syslib:log(Msg, ?auth),
-                    E2 = E#env{headers = [{"location",Redir}|E#env.headers]},
+                    Msg = io_lib:format("~nStarting Sync:~n"
+                                        ++ "--------------~n"
+                                        ++ "on ~p~n"
+                                        ++ pretty_print(E)
+                                        ++ "Env is ~p~n"
+                                        ++ "redirecting to ~p~n",
+                                        [Site, Redir]),
+                    syslib:log(Msg, ?auth),
+                    E2 = E#env{headers = [{"location", Redir}| E#env.headers]},
                     respond(303, E2),
                     throw(ok)
             end;
-        {error, _Reason} ->
+        {error, Reason} ->
+            Msg = io_lib:format("~nSync Failure:~n"
+                                ++ "-------------~n"
+                                ++ "on ~p~n"
+                                ++ pretty_print(E)
+                                ++ "because ~p~n",
+                                [Site, Reason]),
+            syslib:log(Msg, ?auth),
             cleanup(Site, cur_url(Site, E), E)
     catch error:
                 _Other -> cleanup(Site, cur_url(Site, E), E)
@@ -1862,22 +1883,30 @@ cleanup(Site, Return, E) ->
     Cookie = hn_net_util:kill_cookie("auth"),
     E2 = E#env{headers = [Cookie | E#env.headers]},
     Redir = case try_sync(["reset"], Site, Return, ?NO_STAMP) of
-                on_sync    ->
-                    %Msg1 = io_lib:format("~p in cleanup Return with ~p",
-                    %                     [Site, Return]),
-                    %syslib:log(Msg1, ?auth),
+                on_sync ->
+                    Msg1 = io_lib:format("~nSync Cleanup 1:~n"
+                                         ++ "---------------~n"
+                                         ++ "on ~p~n"
+                                         ++ pretty_print(E)
+                                         ++ "Return is ~p~n~n",
+                                         [Site, Return]),
+                    syslib:log(Msg1, ?auth),
                     Return;
                 {redir, R} ->
-                    %Msg2 = io_lib:format("~p in cleanup Redir with ~p",
-                    %                     [Site, R]),
-                    %syslib:log(Msg2, ?auth),
+                    Msg2 = io_lib:format("~nSync Cleanup 2:~n"
+                                         ++ "---------------~n"
+                                         ++ "on ~p~n"
+                                         ++ pretty_print(E)
+                                         ++ "Redir R is ~p~n~n",
+                                         [Site, R]),
+                    syslib:log(Msg2, ?auth),
                     R
             end,
     E3 = E2#env{headers = [{"location", Redir} | E2#env.headers]},
     respond(303, E3),
     throw(ok).
 
-%% Returns the url representing the current location.
+%% Returns the url representing the current location.s
 -spec cur_url(string(), #env{}) -> string().
 cur_url(Site, #env{mochi = Mochi}) ->
     hn_util:strip80(Site) ++ Mochi:get(raw_path).
@@ -1885,9 +1914,6 @@ cur_url(Site, #env{mochi = Mochi}) ->
 -spec try_sync([string()], string(), string(), string())
 -> {redir, string()} | on_sync.
 try_sync(Cmd0, Site, Return, Stamp) ->
-    %Msg = io_lib:format("~p in try_sync for Site of SUrl of ~p~n~n",
-    %                    [Site, application:get_env(hypernumbers, sync_url)]),
-    %syslib:log(Msg, ?auth),
     case application:get_env(hypernumbers, sync_url) of
         {ok, SUrl} when SUrl /= Site ->
             Cmd = string:join(Cmd0, "/"),
@@ -1916,7 +1942,7 @@ post_login(Site, Uid, Stamp, Age, Env, Return) ->
 
 process_sync(["tell"], E, QReturn, undefined, Site) ->
     process_sync(["tell"], E, QReturn, [], Site);
-process_sync(["tell"], E, QReturn, QStamp, _Site) ->
+process_sync(["tell"], E, QReturn, QStamp, Site) ->
     Stamp = case mochiweb_util:unquote(QStamp) of
                 []    -> passport:temp_stamp();
                 Other -> Other
@@ -1924,30 +1950,32 @@ process_sync(["tell"], E, QReturn, QStamp, _Site) ->
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
-    % Msg = io_lib:format("~nSync Stage 2:~n"
-    %                    ++ "-------------~n"
-    %                    ++ "on site ~p~n"
-    %                    ++ "Env is ~p~n"
-    %                    ++ "QReturn is ~p~n"
-    %                    ++ "QStamp is ~p~n "
-    %                    ++ "Cookie is ~p~n"
-    %                    ++ "Return is ~p~n",
-    %                    [Site, E, QReturn, QStamp, Cookie, Return]),
-    % syslib:log(Msg, ?auth),
+    Msg = io_lib:format("~nSync Stage 2:~n"
+                        ++ "-------------~n"
+                        ++ "on site ~p~n"
+                        ++ pretty_print(E)
+                        ++ "QReturn is ~p~n"
+                        ++ "QStamp is ~p~n "
+                        ++ "Cookie is ~p~n"
+                        ++ "Return is ~p~n",
+                        [Site, QReturn, QStamp,
+                         Cookie, Return]),
+    syslib:log(Msg, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-process_sync(["seek"], E = #env{mochi = Mochi}, QReturn, undefined, _Site) ->
+process_sync(["seek"], E = #env{mochi = Mochi}, QReturn, undefined, Site) ->
     Stamp = case Mochi:get_cookie_value("auth") of
                 undefined -> passport:temp_stamp();
                 S         -> S
             end,
-    % Msg1 = io_lib:format("~nSync Stage 1a:~n"
-    %                     ++ "-------------~n"
-    %                     ++ "on ~p~n"
-    %                     ++ "Env is ~p~n"
-    %                     ++ "Stamp is ~p~n"
-    %                     ++ "Incoming Cookie is ~p~n~n",
-    %                     [Site, E, Stamp, Mochi:get_cookie_value("auth")]),
-    % syslib:log(Msg1, ?auth),
+    Msg1 = io_lib:format("~nSync Stage 1a:~n"
+                         ++ "-------------~n"
+                         ++ "on ~p~n"
+                         ++ pretty_print(E)
+                         ++ "Stamp is ~p~n"
+                         ++ "Incoming Cookie is ~p~n~n",
+                         [Site, Stamp,
+                          Mochi:get_cookie_value("auth")]),
+    syslib:log(Msg1, ?auth),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
     #refX{site = OrigSite} = hn_util:url_to_refX(Return),
@@ -1955,27 +1983,27 @@ process_sync(["seek"], E = #env{mochi = Mochi}, QReturn, undefined, _Site) ->
     Redir = hn_util:strip80(OrigSite) ++
         "/_sync/tell/?return="++QReturn++"&stamp="++QStamp,
     Redirect = {"Location", Redir},
-    % Msg2 = io_lib:format("~nSync Stage 1b:~n"
-    %                     ++ "-------------~n"
-    %                     ++ "on ~p~n"
-    %                     ++ "Env is ~p~n"
-    %                     ++ "Redir is ~p~n"
-    %                     ++ "QStamp is ~p~n"
-    %                     ++ "Outgoing Cookie is ~p~n~n",
-    %                     [Site, E, Redir, QStamp, Cookie]),
-    % syslib:log(Msg2, ?auth),
+    Msg2 = io_lib:format("~nSync Stage 1b:~n"
+                         ++ "-------------~n"
+                         ++ "on ~p~n"
+                         ++ pretty_print(E)
+                         ++ "Redir is ~p~n"
+                         ++ "QStamp is ~p~n"
+                         ++ "Outgoing Cookie is ~p~n~n",
+                         [Site, Redir, QStamp, Cookie]),
+    syslib:log(Msg2, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-process_sync(["reset"], E, QReturn, undefined, _Site) ->
+process_sync(["reset"], E, QReturn, undefined, Site) ->
     Cookie = hn_net_util:kill_cookie("auth"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
-    % Msg = io_lib:format("~nSync Reset 2:~n"
-    %                    ++ "------------~n"
-    %                    ++ "on ~p~n"
-    %                    ++ "Env is ~p~n"
-    %                    ++ "Redir is ~p~n",
-    %                    [Site, E, Redirect]),
-    % syslib:log(Msg, ?auth),
+    Msg = io_lib:format("~nSync Reset 2:~n"
+                        ++ "------------~n"
+                        ++ "on ~p~n"
+                        ++ pretty_print(E)
+                        ++ "Redir is ~p~n",
+                        [Site, Redirect]),
+    syslib:log(Msg, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2303,7 +2331,7 @@ provision_site(RootSite, PrevUID, SiteType, Email, Data, Env) ->
             Opaque = [{param, InitialView}],
             Expiry = "never",
             Url = passport:create_hypertag_url(Site, ["_mynewsite", Name],
-                                              Uid, Email, Opaque, Expiry),
+                                               Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
         {ok, existing, Site, Node, Uid, _Name, InitialView} ->
             log_signup(Site, SiteType, Node, Uid, Email),
@@ -2313,6 +2341,23 @@ provision_site(RootSite, PrevUID, SiteType, Email, Data, Env) ->
             Str = "Sorry, the email provided was invalid, please try again.",
             json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
     end.
+
+pretty_print(#env{} = E) ->
+    PP = io_lib:format("Env is:\~n"
+                       ++ "-------\~n"
+                       ++ "   Accept:   ~p\~n"
+                       ++ "   Body:     ~p\~n"
+                       ++ "   Raw Body: ~p\~n"
+                       ++ "   Headers:  ~p\~n"
+                       ++ "   Method:   ~p\~n"
+                       ++ "   Mochi:    ~p\~n"
+                       ++ "   UID:      ~p\~n"
+                       ++ "   Email:    ~p\~n"
+                       ++ "   Auth:     ~p\~n",
+                       [E#env.accept,  E#env.body,   E#env.raw_body,
+                        E#env.headers, E#env.method, E#env.mochi,
+                        E#env.uid,     E#env.email,  E#env.auth]),
+    lists:flatten(PP).
 
 %% catch script kiddie attempts and write them as info not error logs
 %% makes rb usable
