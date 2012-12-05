@@ -116,14 +116,14 @@ handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]}, Env, Qry) 
     E = Env#env{headers = [Cookie, X | Env#env.headers]},
     jsonp(E, {struct, [{"auth", C}]}, Callback);
 
-handle_(#refX{site = _S, path = ["_sync" | Cmd]}, Env,
+handle_(#refX{site = S, path = ["_sync" | Cmd]}, Env,
         #qry{return = QReturn, stamp = QStamp})
   when QReturn /= undefined ->
     %Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p"
     %                    ++ "QStamp of ~p",
     %                    [S, Cmd, QReturn, QStamp]),
     %syslib:log(Msg, ?auth),
-    Env2 = process_sync(Cmd, Env, QReturn, QStamp),
+    Env2 = process_sync(Cmd, Env, QReturn, QStamp, S),
     respond(303, Env2),
     throw(ok);
 
@@ -1840,6 +1840,12 @@ process_user(#refX{site = Site}, E = #env{mochi = Mochi}) ->
                     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
                     E#env{headers = [Cookie | E#env.headers]};
                 {redir, Redir} ->
+                    Msg = io_lib:format("~nStarting Sync:~n"
+                                        ++ "--------------~n"
+                                        ++ "on ~p~n"
+                                        ++ "redirecting to ~p~n",
+                                        [Site, Redir]),
+                    syslib:log(Msg, ?auth),
                     E2 = E#env{headers = [{"location",Redir}|E#env.headers]},
                     respond(303, E2),
                     throw(ok)
@@ -1908,9 +1914,9 @@ post_login(Site, Uid, Stamp, Age, Env, Return) ->
                 {redir, R} -> R end,
     {Env2, Redir}.
 
-process_sync(["tell"], E, QReturn, undefined) ->
-    process_sync(["tell"], E, QReturn, []);
-process_sync(["tell"], E, QReturn, QStamp) ->
+process_sync(["tell"], E, QReturn, undefined, Site) ->
+    process_sync(["tell"], E, QReturn, [], Site);
+process_sync(["tell"], E, QReturn, QStamp, Site) ->
     Stamp = case mochiweb_util:unquote(QStamp) of
                 []    -> passport:temp_stamp();
                 Other -> Other
@@ -1918,19 +1924,30 @@ process_sync(["tell"], E, QReturn, QStamp) ->
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
-    %Msg = io_lib:format("in tell (1) QReturn is ~p QStamp is ~p~n "
-    %                    ++ " - Cookie is ~p Return is ~p~n",
-    %                    [QReturn, QStamp, Cookie, Return]),
-    %syslib:log(Msg, ?auth),
+    Msg = io_lib:format("~nSync Stage 2:~n"
+                        ++ "-------------~n"
+                        ++ "on site ~p~n"
+                        ++ "Env is ~p~n"
+                        ++ "QReturn is ~p~n"
+                        ++ "QStamp is ~p~n "
+                        ++ "Cookie is ~p~n"
+                        ++ "Return is ~p~n",
+                        [Site, E, QReturn, QStamp, Cookie, Return]),
+    syslib:log(Msg, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-process_sync(["seek"], E = #env{mochi = Mochi}, QReturn, undefined) ->
+process_sync(["seek"], E = #env{mochi = Mochi}, QReturn, undefined, Site) ->
     Stamp = case Mochi:get_cookie_value("auth") of
                 undefined -> passport:temp_stamp();
                 S         -> S
             end,
-    %Msg = io_lib:format("in seek (1) Stamp is ~p and Cookie is ~p~n~n",
-    %                    [Stamp, Mochi:get_cookie_value("auth")]),
-    %syslib:log(Msg, ?auth),
+    Msg1 = io_lib:format("~nSync Stage 1a:~n"
+                         ++ "-------------~n"
+                         ++ "on ~p~n"
+                         ++ "Env is ~p~n"
+                         ++ "Stamp is ~p~n"
+                         ++ "Incoming Cookie is ~p~n~n",
+                         [Site, E, Stamp, Mochi:get_cookie_value("auth")]),
+    syslib:log(Msg1, ?auth),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
     #refX{site = OrigSite} = hn_util:url_to_refX(Return),
@@ -1938,15 +1955,27 @@ process_sync(["seek"], E = #env{mochi = Mochi}, QReturn, undefined) ->
     Redir = hn_util:strip80(OrigSite) ++
         "/_sync/tell/?return="++QReturn++"&stamp="++QStamp,
     Redirect = {"Location", Redir},
-    %Msg2 = io_lib:format("leaving seek (2) with Redir of ~p QStamp of ~p "
-    %                     ++ "~n - and Cookie of ~p~n",
-    %                    [Redir, QStamp, Cookie]),
-    %syslib:log(Msg2, ?auth),
+    Msg2 = io_lib:format("~nSync Stage 1b:~n"
+                         ++ "-------------~n"
+                         ++ "on ~p~n"
+                         ++ "Env is ~p~n"
+                         ++ "Redir is ~p~n"
+                         ++ "QStamp is ~p~n"
+                         ++ "Outgoing Cookie is ~p~n~n",
+                         [Site, E, Redir, QStamp, Cookie]),
+    syslib:log(Msg2, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-process_sync(["reset"], E, QReturn, undefined) ->
+process_sync(["reset"], E, QReturn, undefined, Site) ->
     Cookie = hn_net_util:kill_cookie("auth"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
+    Msg = io_lib:format("~nSync Reset 2:~n"
+                        ++ "------------~n"
+                        ++ "on ~p~n"
+                        ++ "Env is ~p~n"
+                        ++ "Redir is ~p~n",
+                        [Site, E, Redirect]),
+    syslib:log(Msg, ?auth),
     E#env{headers = [Cookie, Redirect | E#env.headers]}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
