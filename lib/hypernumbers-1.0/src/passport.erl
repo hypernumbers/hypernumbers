@@ -117,14 +117,14 @@ inspect_stamp(undefined) ->
 inspect_stamp(Stamp) ->
     case string:tokens(Stamp, "|") of
         [EscEmail, Uid, Expiry, Hash] ->
-            case {is_expired(Expiry),
-                  gen_hash([Expiry, Uid, EscEmail]),
+            case {is_expired(Expiry), gen_hash([Expiry, Uid, EscEmail]),
                   Hash} of
-                {false,X,X} -> {ok, Uid, unescape_email(EscEmail)};
-                {true,_,_}  -> {error, bad_stamp}
+                {false, X, X} -> {ok, Uid, unescape_email(EscEmail)};
+                {false, _, _} -> {ok, bad_encryption};
+                {true, _, _}  -> {error, bad_stamp}
             end;
         _Else ->
-            {error, bad_stamp}
+            {error, bad_cookie}
     end.
 
 %%%===================================================================
