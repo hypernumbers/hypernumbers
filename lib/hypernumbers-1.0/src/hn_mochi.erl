@@ -1843,35 +1843,35 @@ process_user(#refX{site = Site}, E = #env{mochi = Mochi}) ->
                 on_sync ->
                     Stamp = passport:temp_stamp(),
                     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
-                    Msg = io_lib:format("~nSync OK:~n"
-                                        ++ "--------~n"
-                                        ++ "on ~p~n"
-                                        ++ pretty_print(E)
-                                        ++ "Cookie is ~p~n",
-                                        [Site, Cookie]),
-                    syslib:log(Msg, ?auth),
+                    Msg1 = io_lib:format("~nSync OK:~n"
+                                         ++ "--------~n"
+                                         ++ "on ~p~n"
+                                         ++ pretty_print(E)
+                                         ++ "Cookie is ~p~n",
+                                         [Site, Cookie]),
+                    syslib:log(Msg1, ?auth),
                     E#env{headers = [Cookie | E#env.headers]};
                 {redir, Redir} ->
-                    Msg = io_lib:format("~nStarting Sync:~n"
-                                        ++ "--------------~n"
-                                        ++ "on ~p~n"
-                                        ++ pretty_print(E)
-                                        ++ "Env is ~p~n"
-                                        ++ "redirecting to ~p~n",
-                                        [Site, Redir]),
-                    syslib:log(Msg, ?auth),
+                    Msg2 = io_lib:format("~nStarting Sync:~n"
+                                         ++ "--------------~n"
+                                         ++ "on ~p~n"
+                                         ++ pretty_print(E)
+                                         ++ "Env is ~p~n"
+                                         ++ "redirecting to ~p~n",
+                                         [Site, Redir]),
+                    syslib:log(Msg2, ?auth),
                     E2 = E#env{headers = [{"location", Redir}| E#env.headers]},
                     respond(303, E2),
                     throw(ok)
             end;
         {error, Reason} ->
-            Msg = io_lib:format("~nSync Failure:~n"
-                                ++ "-------------~n"
-                                ++ "on ~p~n"
-                                ++ pretty_print(E)
-                                ++ "because ~p~n",
-                                [Site, Reason]),
-            syslib:log(Msg, ?auth),
+            Msg3 = io_lib:format("~nSync Failure:~n"
+                                 ++ "-------------~n"
+                                 ++ "on ~p~n"
+                                 ++ pretty_print(E)
+                                 ++ "because ~p~n",
+                                 [Site, Reason]),
+            syslib:log(Msg3, ?auth),
             cleanup(Site, cur_url(Site, E), E)
     catch error:
                 _Other -> cleanup(Site, cur_url(Site, E), E)
