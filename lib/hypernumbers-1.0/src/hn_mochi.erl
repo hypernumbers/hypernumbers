@@ -1856,7 +1856,6 @@ process_user(#refX{site = Site}, E = #env{mochi = Mochi}) ->
                                          ++ "--------------~n"
                                          ++ "on ~p~n"
                                          ++ pretty_print(E)
-                                         ++ "Env is ~p~n"
                                          ++ "redirecting to ~p~n",
                                          [Site, Redir]),
                     syslib:log(Msg2, ?auth),
