@@ -2302,9 +2302,9 @@ get_lines([{struct, [{"label", L}, {"formula", F}]} | T], Acc) ->
 
 get_email([]) ->
     false;
-get_email([{_, _, _, button, none, Attrs}]) ->
+get_email([{_, _, _, button, none, Attrs} | T]) ->
     case lists:keyfind("email", 1, Attrs) of
-        false            -> false;
+        false            -> get_email(T);
         {"email", Email} -> Email
     end;
 get_email([_H | T]) ->
