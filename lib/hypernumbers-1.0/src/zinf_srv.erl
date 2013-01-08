@@ -21,7 +21,6 @@
 -define(sq_bra, 91).
 -define(sq_ket, 93).
 -define(PROFILE, "profile_zinf_srv").
--compile(export_all).
 
 %% API
 -export([start_link/1]).
@@ -716,7 +715,7 @@ sub_dirty_zinf(Site, When) ->
                     % mebbies we are resubscribing...
                     mnesia:subscribe({table, Tbl, simple}),
                     % then check if anything has been written since the
-                    % message was sent telling us to subscrive
+                    % message was sent telling us to subscribe
                     case new_db_api:length_dirty_zinf_q(Site) of
                         0 ->
                             ok;

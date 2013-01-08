@@ -206,7 +206,7 @@ reduce([{Key, Val} | T], User, Acc) ->
 
 default_filter() ->
     [{method, post}, {date, all}, {id, all}, {deep, true}, {path, "/"},
-     {user, all}, {pause, 0}, {body, all}].
+     {user, all}, {email, all}, {ip, all}, {pause, 0}, {body, all}].
 
 -spec info(string(), any()) -> ok.
 %% @doc Dumps the logfile with Name to the shell
@@ -317,7 +317,23 @@ filter([{user, all} | T], Post, Id) ->
 filter([{user, User} | T], Post, Id) ->
     case proplists:get_value(user, Post) of
         User -> filter(T, Post, Id);
-        _ -> false
+        _    -> false
+    end;
+
+filter([{email, all} | T], Post, Id) ->
+    filter(T, Post, Id);
+filter([{email, Email} | T], Post, Id) ->
+    case proplists:get_value(email, Post) of
+        Email -> filter(T, Post, Id);
+        _     -> false
+    end;
+
+filter([{ip, all} | T], Post, Id) ->
+    filter(T, Post, Id);
+filter([{ip, IP} | T], Post, Id) ->
+    case proplists:get_value(peer, Post) of
+        IP -> filter(T, Post, Id);
+        _  -> false
     end;
 
 filter([{body, all} | T], Post, Id) ->

@@ -27,7 +27,7 @@
 -include("hypernumbers.hrl").
 -include("keyvalues.hrl").
 
--define(TO_LOAD, [corefiles, sitefiles, json, groups, permissions, script]).
+-define(TO_LOAD, [corefiles, sitefiles, json, groups, permissions, kvs, script]).
 -define(sitelog, "site.building").
 
 %% copies a site from one domain to another
@@ -237,6 +237,14 @@ setup(Site, _Type, Opts, groups) ->
 setup(Site, _Type, _Opts, permissions) ->
     case file:consult([sitedir(Site),"/","permissions.script"]) of
         {ok, Terms} -> ok = auth_srv:load_script(Site, Terms);
+        % file doesn't exist is an OK error - it is a valid
+        % condition so don't crash - other file opening errors
+        % should fail
+        {error, enoent} -> ok
+    end;
+setup(Site, _Type, _Opts, kvs) ->
+    case file:consult([sitedir(Site),"/","kvs.script"]) of
+        {ok, Terms} -> ok = load_kvs(Terms, Site);
         % file doesn't exist is an OK error - it is a valid
         % condition so don't crash - other file opening errors
         % should fail
@@ -461,3 +469,7 @@ log_til_ended(Site, File, Start) ->
             timer:sleep(10000),
             log_til_ended(Site, File, Start)
     end.
+
+load_kvs([], _Site)           -> ok;
+load_kvs([{K , V} | T], Site) -> new_db_api:write_kv(Site, K, V),
+                                 load_kvs(T, Site).

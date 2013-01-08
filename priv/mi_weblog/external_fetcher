@@ -1,0 +1,11 @@
+# gets todays logfiles
+GrepD=`/bin/date -d "1 day ago" +"%d/%b/%Y"`
+LogD=`/bin/date -d "1 day ago" +"%F"`
+
+# first the blog site
+/bin/grep $GrepD /var/log/nginx/vixoblog.log >> /hn/Dropbox/Logs/vixo-blog-$LogD.log
+/bin/grep $GrepD /var/log/nginx/vixoblog.log.1 >> /hn/Dropbox/Logs/vixo-blog-$LogD.log
+
+# now the documentation
+/bin/grep $GrepD /var/log/nginx/vixodoco.log >> /hn/Dropbox/Logs/vixo-documentation-$LogD.log
+/bin/grep $GrepD /var/log/nginx/vixodoco.log.1 >> /hn/Dropbox/Logs/vixo-documentation-$LogD.log

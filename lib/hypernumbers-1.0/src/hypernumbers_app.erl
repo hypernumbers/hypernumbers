@@ -60,9 +60,10 @@ stop(_State) ->
     ok = mochilog:stop().
 
 ensure_dirs() ->
-    Dirs = [application:get_env(hypernumbers, dets_dir),
+    Dirs = [
             application:get_env(mnesia, dir),
-            application:get_env(sasl, error_logger_mf_dir)],
+            application:get_env(sasl, error_logger_mf_dir)
+           ],
     [ok = filelib:ensure_dir(D++"/") || {ok, D} <- Dirs],
     ok.
 
@@ -74,6 +75,10 @@ load_muin_modules() ->
 
 init_tables() ->
     ok = ensure_schema(),
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("Vixo Debug: schema ensured...~n");
+       _Other     -> ok
+    end,
     Storage = disc_only_copies,
 
     %% Core system tables -- required to operate system
@@ -81,13 +86,26 @@ init_tables() ->
 
     [ok = hn_db_admin:create_table(N, N, F, Storage, T, true, I)
      || {N,F,T,I} <- CoreTbls],
+    case application:get_env(hypernumbers, startup_debug) of
+       {ok, true} -> io:format("Vixo Debug: tables created (if required)...~n");
+       _Other2    -> ok
+    end,
     ok.
 
 ensure_schema() ->
     case mnesia:system_info(tables) of
         [schema] ->
+            case application:get_env(hypernumbers, startup_debug) of
+                {ok, true} -> io:format("Vixo Debug: plain schema~n");
+                _Other     -> ok
+            end,
             build_schema();
         Tables ->
+            case application:get_env(hypernumbers, startup_debug) of
+                {ok, true} -> io:format("Vixo Debug: starting tables~n-~p~n",
+                                       [Tables]);
+                _Other2    -> ok
+            end,
             mnesia:wait_for_tables(Tables, infinity)
     end.
 

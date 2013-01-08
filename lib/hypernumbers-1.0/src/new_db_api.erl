@@ -48,6 +48,7 @@
          read_includes/1,
          write_kv/3,
          read_kv/2,
+         kvs_exportD/1,
          read_pages/1,
          read_page_structure/1,
          read_intersect_ref/1,
@@ -493,6 +494,20 @@ write_user_fn(Site, #user_fns{} = Fn) ->
 read_user_fn(Site, FnName) ->
     Fun = fun() ->
                   ?wu:read_user_fnD(Site, FnName)
+          end,
+    mnesia:activity(transaction, Fun).
+
+kvs_exportD(Site) ->
+    Fun = fun() ->
+                  Tbl = new_db_wu:trans(Site, kvstore),
+                  Keys = mnesia:all_keys(Tbl),
+                  Fun2 = fun(X) ->
+                                 [{kvstore, X, Val}] = mnesia:read(Tbl, X, read),
+                                 {X, Val}
+                         end,
+                  [Fun2(X) || X <- Keys, X =/= auth_srv
+                                     andalso X =/= pages
+                                     andalso X =/= zinf_tree]
           end,
     mnesia:activity(transaction, Fun).
 
