@@ -1,5 +1,14 @@
 server {
     listen       80;
+    server_name  doug.quinquagenarians.com;
+    
+    location / {
+        root /hn/files-www/doug.quinquagenarians.com/;
+    }
+}
+
+server {
+    listen       80;
     server_name  debbie.quinquagenarians.com;
     
     location / {
@@ -23,6 +32,11 @@ server {
     location / {
         root /hn/files-www/gordon.quinquagenarians.com/;
     }
+}
+
+server {
+       server_name   www.doug.quinquagenarians.com;
+       rewrite ^(.*) http://dout.quinquagenarians.com$1 permanent;
 }
 
 server {

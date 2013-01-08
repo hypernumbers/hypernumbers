@@ -16,3 +16,12 @@ server {
     }
 }
 
+server {
+    listen       80;
+    server_name  yuri.revorama.com;
+
+    location / {
+        root /hn/files-www/yuri.revorama.com/priv/www/;
+    }
+}
+
