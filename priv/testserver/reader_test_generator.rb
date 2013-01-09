@@ -12,10 +12,10 @@
 # TODO: Test format strings.
 # TODO: Test names.
 
-$KCODE = 'u'
+#$KCODE = 'u'
 
 require "erb"
-require "ssdoc"
+require "./ssdoc"
 
 def gotfor(cell)
   type = cell.type

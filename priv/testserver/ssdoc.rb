@@ -10,12 +10,12 @@
 # > s.sheets[1].cell_at(1, 1).value
 # > s.sheets[1].cell_at(2, 3).format
 
-require "gen_util.rb"
+require "./gen_util.rb"
 include GenUtil
 
 class Ssdoc
   attr_reader :sheets
-  
+
   def initialize(datfile)
     data = eval(IO.readlines(datfile).join)
 
@@ -29,12 +29,12 @@ class Ssdoc
             if celldata.kind_of?(Array)
               h = celldata[1]
               cells << Cell.new(h[:value], h[:formula], h[:format],
-                                h[:text], rowdata[0], celldata[0])                
+                                h[:text], rowdata[0], celldata[0])
             end
           }
         end
       }
-      
+
       @sheets << Sheet.new(sheetname, cells)
     }
   end
@@ -48,7 +48,7 @@ class Sheet
     @name = name
     @cells = cells
   end
-  
+
   def cell_at(row, col)
     cells = @cells.select { |cell| cell.row == row && cell.col == col }
     cells[0]
@@ -73,7 +73,7 @@ class Cell
     @col = col
     @a1ref = itob26(@col) + @row.to_s # make A1-style name
   end
-  
+
   def type
     if @formula.length > 1 && @formula[0].chr == "="
       :formula
@@ -85,6 +85,6 @@ class Cell
       :boolean
     else
       throw "Unknown type in cell #{@a1ref}"
-    end    
+    end
   end
 end
