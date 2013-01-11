@@ -6,7 +6,7 @@
 # Usage: ruby readexcel.rb "C:\dir\somefile.xls"
 
 require "win32ole"
-load "gen_util.rb"
+load "./gen_util.rb"
 include GenUtil
 
 def is_date?(s)
@@ -16,7 +16,7 @@ end
 def do_file(xlsfile)
 
   WIN32OLE.codepage = WIN32OLE::CP_UTF8
-  
+
   xl = WIN32OLE.new("Excel.Application")
   wb = xl.Workbooks.open(xlsfile)
 
@@ -29,7 +29,7 @@ def do_file(xlsfile)
     firstrow=topleft[2].to_i
     firstcol=topleft[1].to_i+1
     # puts "firstrow is #{firstrow} and firstcol is #{firstcol}"
-    # puts "no of rows is #{sheet.UsedRange.Rows.Count}" 
+    # puts "no of rows is #{sheet.UsedRange.Rows.Count}"
     # puts "no of cols is #{sheet.UsedRange.Columns.Count}"
    (firstrow..sheet.UsedRange.Rows.Count+1).each do |rowidx|
    rowdata = [rowidx]
@@ -38,10 +38,10 @@ def do_file(xlsfile)
           if cell.Value != nil && cell.Formula != ""
           celldata = [colidx, {}]
           celldata[1][:text] = cell.Text # value as it is displayed
-          if (is_date?(cell.Value)) 
+          if (is_date?(cell.Value))
              celldata[1][:value] = cell.Value
              # puts "this is the date #{cell.Value} #{is_date?(cell.Value)}"
-          else   
+          else
              celldata[1][:value] = cell.Value2
           end
           celldata[1][:formula] = cell.Formula
