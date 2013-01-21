@@ -106,6 +106,8 @@ qualaroo([Key]) ->
     Incs = #incs{js_head = [JS]},
     #spec_val{val = HTML, sp_incs = Incs, resize = Resize, preview = Preview}.
 
+vimeo([Video]) ->
+    vimeo([Video, "no tag"]);
 vimeo([Video, Tag]) ->
     [V2, Tg2] = typechecks:std_strs([Video, Tag]),
     Id = "id_" ++ muin_util:create_name(),
