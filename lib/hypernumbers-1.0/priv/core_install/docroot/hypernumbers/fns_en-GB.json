@@ -5379,6 +5379,25 @@
         ]
     },
     {
+        "fn": "vimeo",
+        "category": "Social/Web <- new!",
+        "desc": "Embeds a Vimeo video",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.vixo.com/contents/vixo-functions/social-media-and-web-integration/vimeo.html",
+        "args": [
+
+            {
+                "name": "Vimeo ID",
+                "desc": "Number",
+                "type": "finite"
+            }
+        ]
+    },
+    {
         "fn": "vlookup",
         "category": "Lookup And Reference",
         "desc": "Searches for a value in the leftmost column of an array and returns the value in the column specified to get the value from.",
