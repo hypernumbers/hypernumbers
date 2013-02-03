@@ -641,8 +641,6 @@ decrypt_bin(Key0, CipherT) when is_binary(CipherT) ->
     PlainT.
 
 %% Extend binary to a multiple of 128 bits.
-%% this implements RFC5652 cryptographic message padding
-%% https://tools.ietf.org/html/rfc5652
 -spec extend(binary()) -> binary().
 extend(Bin) ->
     Len = size(Bin),
