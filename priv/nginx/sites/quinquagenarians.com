@@ -36,7 +36,7 @@ server {
 
 server {
        server_name   www.doug.quinquagenarians.com;
-       rewrite ^(.*) http://dout.quinquagenarians.com$1 permanent;
+       rewrite ^(.*) http://doug.quinquagenarians.com$1 permanent;
 }
 
 server {
