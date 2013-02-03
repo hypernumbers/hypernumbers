@@ -35,7 +35,8 @@
          dump_script/0,
          load_script/1,
          issue_pwd_reset/2,
-         reset_pwd/3
+         reset_pwd/3,
+         extend/1
         ]).
 
 %% gen_server callbacks
@@ -640,6 +641,8 @@ decrypt_bin(Key0, CipherT) when is_binary(CipherT) ->
     PlainT.
 
 %% Extend binary to a multiple of 128 bits.
+%% this implements RFC5652 cryptographic message padding
+%% https://tools.ietf.org/html/rfc5652
 -spec extend(binary()) -> binary().
 extend(Bin) ->
     Len = size(Bin),
