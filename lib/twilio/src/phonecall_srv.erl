@@ -37,7 +37,7 @@
 
 -include("twilio.hrl").
 -include("twilio_web.hrl").
--include("spriki.hrl").
+-include("../hypernumbers-1.0/include/spriki.hrl").
 -include("phonecall_srv.hrl").
 
 %%%===================================================================

@@ -88,7 +88,8 @@ build_quick(Root) ->
 
 compile_compiler() ->
     io:format("...compiling compile_code.erl~n"),
-    compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
+    filelib:ensure_dir("./ebin/junk"),
+    {ok, compile_code} = compile:file("./src/compile_code", [{outdir, "./ebin"}]),
     ok.
 
 start(Extra) ->

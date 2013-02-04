@@ -4,7 +4,7 @@
 CC = (`icu-config --cc` + `icu-config --cflags` +
       "-std=c99 -pedantic -Wall").gsub(/\n/, " ")
 
-BLD = "ebin"
+BLD = "priv"
 SRC = "src"
 C_SRC = "c_src"
 ERL_FILES = Dir["#{SRC}/*.erl"].join(" ")
@@ -36,6 +36,6 @@ task(:drv) do
 end
 
 task(:clean) do
-  Dir["ebin/*.beam"].each { |x| rm x rescue nil }
-  rm File.join("ebin", "starling_drv") rescue nil
+  Dir["priv/*.beam"].each { |x| rm x rescue nil }
+  rm File.join("priv", "starling_drv") rescue nil
 end
