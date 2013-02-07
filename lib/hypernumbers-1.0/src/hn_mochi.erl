@@ -102,22 +102,22 @@ handle_(#refX{site = "http://www."++Site}, E = #env{mochi = Mochi}, _Qry) ->
 
 % the documentation/blog needs to get a cookie stamp to identify users
 % this function just handles that...
-handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]}, Env, Qry) ->
+handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]},
+        Env, Qry) ->
     #env{mochi = Mochi} = Env,
     Auth = Mochi:get_cookie_value("auth"),
     Cookie = case Auth of
                  undefined -> Stamp = passport:temp_stamp(),
-                              {_, Cc} = hn_net_util:cookie("auth", Stamp, "never"),
-                              ["auth" | Rest] = string:tokens(Cc, "="),
-                              AuthC = string:join(Rest, "="),
-                              {"Set-Cookie", AuthC};
+                              hn_net_util:cookie("auth", Stamp, "never");
                  _         -> {"Set-Cookie", Auth}
              end,
     #qry{callback = Callback} = Qry,
-    {"Set-Cookie", C} = Cookie,
+    {_, ShortC} = Cookie,
+    [_ | Rest] = string:tokens(ShortC, "="),
+    ShortestC = string:join(Rest, "="),
     X = {"Access-Control-Allow-Origin", "*"},
     E = Env#env{headers = [Cookie, X | Env#env.headers]},
-    jsonp(E, {struct, [{"auth", C}]}, Callback);
+    jsonp(E, {struct, [{"auth", ShortestC}]}, Callback);
 
 handle_(#refX{site = S, path = ["_sync" | Cmd]}, Env,
         #qry{return = QReturn, stamp = QStamp})
