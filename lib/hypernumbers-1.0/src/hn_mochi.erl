@@ -107,7 +107,10 @@ handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]}, Env, Qry) 
     Auth = Mochi:get_cookie_value("auth"),
     Cookie = case Auth of
                  undefined -> Stamp = passport:temp_stamp(),
-                              hn_net_util:cookie("auth", Stamp, "never");
+                              {_, Cc} = hn_net_util:cookie("auth", Stamp, "never"),
+                              ["auth" | Rest] = string:tokens(Cc, "="),
+                              AuthC = string:join(Rest, "="),
+                              {"Set-Cookie", AuthC};
                  _         -> {"Set-Cookie", Auth}
              end,
     #qry{callback = Callback} = Qry,
