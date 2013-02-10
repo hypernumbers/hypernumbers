@@ -112,12 +112,9 @@ handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]},
                  _         -> {"Set-Cookie", Auth}
              end,
     #qry{callback = Callback} = Qry,
-    {_, ShortC} = Cookie,
-    [_ | Rest] = string:tokens(ShortC, "="),
-    ShortestC = string:join(Rest, "="),
     X = {"Access-Control-Allow-Origin", "*"},
     E = Env#env{headers = [Cookie, X | Env#env.headers]},
-    jsonp(E, {struct, [{"auth", ShortestC}]}, Callback);
+    jsonp(E, {struct, [{"auth", Cookie}]}, Callback);
 
 handle_(#refX{site = S, path = ["_sync" | Cmd]}, Env,
         #qry{return = QReturn, stamp = QStamp})
