@@ -1,0 +1,22 @@
+%%-*-erlang-*-
+
+%% special permissions for a WordPress site
+{add_view, [{path, []},       {perms, ["admin"]}, {view, "spreadsheet"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "spreadsheet"} ]}.
+{add_view, [{path, []},       {perms, ["admin", everyone]}, {view, "webpage"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin", everyone]}, {view, "webpage"} ]}.
+{add_view, [{path, []},       {perms, ["admin"]}, {view, "table"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "table"} ]}.
+{add_view, [{path, []},       {perms, ["admin"]}, {view, "wikipage"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "wikipage"} ]}.
+
+{set_champion,
+ [{path, []},
+  {view, "webpage"}
+ ]}.
+
+{set_champion,
+ [{path, ["[**]"]},
+  {view, "webpage"}
+ ]}.
+
