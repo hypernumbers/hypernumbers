@@ -1,0 +1,138 @@
+%%-*-erlang-*-
+{add_view,[{path,[]},{perms,["admin",everyone]},{view,"spreadsheet"}]}.
+{add_view,[{path,[]},{perms,["admin",everyone]},{view,"table"}]}.
+{add_view,[{path,[]},{perms,["admin",everyone]},{view,"webpage"}]}.
+{add_view,[{path,[]},{perms,["admin",everyone]},{view,"wikipage"}]}.
+{set_champion,[{path,[]},{view,"spreadsheet"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["[**]"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","aggie"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","aggie"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","aggie"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","aggie"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["diaries","aggie"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","archie"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","archie"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","archie"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","archie"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["diaries","archie"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","bob"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","bob"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","bob"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","bob"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["diaries","bob"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","bobddd"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","bobddd"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","bobddd"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","bobddd"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["diaries","bobddd"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","dingo"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","dingo"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","dingo"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","dingo"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["diaries","dingo"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","dingo3333"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","dingo3333"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","dingo3333"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","dingo3333"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["diaries","dingo3333"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","dingo33ddd33"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","dingo33ddd33"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["diaries","dingo33ddd33"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["diaries","dingo33ddd33"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["diaries","dingo33ddd33"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","dingoggg"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","dingoggg"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","dingoggg"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","dingoggg"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["diaries","dingoggg"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","gordon"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","gordon"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","gordon"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","gordon"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["diaries","gordon"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","gordon","comms"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","gordon","comms"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["diaries","gordon","comms"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["diaries","gordon","comms"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["diaries","gordon","comms"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","kathleen"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["diaries","kathleen"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","kathleen","comms"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["diaries","kathleen","comms"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","katy","comms"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","katy","comms"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["diaries","katy","comms"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["diaries","katy","comms"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["diaries","katy","comms"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","meldrum"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","meldrum"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","meldrum"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","meldrum"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["diaries","meldrum"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","rabbit"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","rabbit"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["diaries","rabbit"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","rabbit"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["diaries","rabbit"]},{view,"webpage"}]}.
+{add_view,[{path,["diaries","stephen","comms"]},
+           {perms,["admin"]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["diaries","stephen","comms"]},
+           {perms,["admin"]},
+           {view,"table"}]}.
+{add_view,[{path,["diaries","stephen","comms"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["diaries","stephen","comms"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["diaries","stephen","comms"]},{view,"webpage"}]}.
+{add_view,[{path,["patient-watch"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["patient-watch"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["patient-watch"]},{view,"wikipage"}]}.
