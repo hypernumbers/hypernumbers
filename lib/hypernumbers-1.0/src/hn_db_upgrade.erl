@@ -9,6 +9,8 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         write_spoof_hmac_api_keys/1,
+         write_spoof_dev_wordpress/1,
          upgrade_incs_record_2012_07_07/0,
          upgrade_relations_record_2012_06_14/0,
          remove_dirty_q_caches_2012_06_13/0,
@@ -84,6 +86,18 @@
          % upgrade_1743_B/0,
          % upgrade_1776/0
         ]).
+
+write_spoof_hmac_api_keys(Site) ->
+    {{public, PubK}, {private, PrivK}} = hmac_api_lib:get_api_keypair(),
+    API_URLS = #api_urls{path = "/", admin = true, include_subs = true, append_only = false},
+    API = #api{publickey = PubK, privatekey = PrivK, urls = API_URLS},
+    new_db_api:write_api(Site, API).
+
+write_spoof_dev_wordpress(Site) ->
+    URL = "http://localhost/wordpress/",
+    Key = <<"1234567812345678">>, % 16 bytes
+    List = [{url, URL}, {key, Key}],
+    new_db_api:write_kv(Site, wordpress, List).
 
 upgrade_incs_record_2012_07_07() ->
     Sites = hn_setup:get_sites(),
