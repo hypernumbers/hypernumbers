@@ -315,6 +315,7 @@
           challenger,
           css,
           hypertag,
+          ivector,
           jserr,
           mark,
           map,
@@ -415,7 +416,7 @@
         {
           path = undefined,    % unitialised records will cause a crash! Good!
           admin = false,       % by default not admin
-          inclue_subs = false,
+          include_subs = false,
           append_only = true   % by default can only append
          }).
 

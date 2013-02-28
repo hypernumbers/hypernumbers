@@ -3,3 +3,4 @@
 -define(pages, pages).
 -define(auth_srv, auth_srv).
 -define(twilio, twilio).
+-define(wordpress, wordpress).

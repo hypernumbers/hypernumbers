@@ -17,6 +17,7 @@
          set_usersD/3,
          rem_userD/3,
          add_userD/3,
+         get_a_users_groups/2,
          delete_groupD/2,
          create_groupD/2,
          is_memberD/3,
@@ -48,6 +49,7 @@
          read_includes/1,
          write_kv/3,
          read_kv/2,
+         delete_kv/2,
          kvs_exportD/1,
          read_pages/1,
          read_page_structure/1,
@@ -135,7 +137,7 @@ set_usersD(Site, Users, GroupN) ->
                   case mnesia:read(Tbl, GroupN, write) of
                       [G] ->
                           Members = gb_sets:from_list(Users),
-                          G2 = G#group{members=Members},
+                          G2 = G#group{members = Members},
                           mnesia:write(Tbl, G2, write),
                           ?wu:mark_site_dirtyD(Site);
                       _ ->
@@ -146,13 +148,27 @@ set_usersD(Site, Users, GroupN) ->
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
     write_activity(RefX, Fun, "quiet").
 
+get_a_users_groups(Site, Uid) ->
+    Fun1 = fun() ->
+                  ?wu:groupsD(Site)
+          end,
+    {ok, Email} = passport:uid_to_email(Uid),
+    Groups = mnesia:activity(transaction, Fun1),
+    Fun2 = fun({X, List}, Acc) ->
+                  case lists:member(Email, List) of
+                      true  -> [X | Acc];
+                      false -> Acc
+                  end
+          end,
+    lists:foldl(Fun2, [], Groups).
+
 rem_userD(Site, Uid, GroupN) ->
     Tbl = ?wu:trans(Site, group),
     Fun = fun() ->
                   case mnesia:read(Tbl, GroupN, write) of
                       [G] ->
                           Members = gb_sets:delete_any(Uid, G#group.members),
-                          G2 = G#group{members=Members},
+                          G2 = G#group{members = Members},
                           mnesia:write(Tbl, G2, write),
                           ?wu:mark_site_dirtyD(Site);
                       _ ->
@@ -214,7 +230,7 @@ is_memberD(Site, Uid, Groups) ->
     mnesia:activity(transaction, Fun).
 
 is_member1([], _Tbl, _Uid) -> false;
-is_member1([GroupN|Rest], Tbl, Uid) ->
+is_member1([GroupN | Rest], Tbl, Uid) ->
     case mnesia:read(Tbl, GroupN) of
         [G] ->
             case gb_sets:is_member(Uid, G#group.members) of
@@ -520,6 +536,12 @@ write_kv(Site, Key, Value) ->
 read_kv(Site, Key) ->
     Fun = fun() ->
                   ?wu:read_kvD(Site, Key)
+          end,
+    mnesia:activity(transaction, Fun).
+
+delete_kv(Site, Key) ->
+    Fun = fun() ->
+                  ?wu:delete_kvD(Site, Key)
           end,
     mnesia:activity(transaction, Fun).
 

@@ -13,6 +13,7 @@
          add_user/3,
          rem_user/3,
          set_users/3,
+         get_a_users_groups/2,
          any_admin/1,
          is_member/3,
          dump_script/1,
@@ -47,8 +48,13 @@ get_all_groups(Site) -> new_db_api:get_all_groups(Site).
                -> boolean().
 is_member(Uid, Site, Groups) -> new_db_api:is_memberD(Site, Uid, Groups).
 
+% don't let anyone create an administrator group
+% we map the WordPress administrator group to our admin group so
+% letting this happen would be a bad idea
+% also do this in hn_wordpress
 -spec create_group(string(), string()) -> ok.
-create_group(Site, GroupN) -> new_db_api:create_groupD(Site, GroupN).
+create_group(Site, "administrator") -> create_group(Site, "admin");
+create_group(Site, GroupN)          -> new_db_api:create_groupD(Site, GroupN).
 
 -spec delete_group(string(), string()) -> ok.
 delete_group(Site, GroupN) -> new_db_api:delete_groupD(Site, GroupN).
@@ -61,6 +67,9 @@ rem_user(Site, GroupN, Uid) -> new_db_api:rem_userD(Site, Uid, GroupN).
 
 -spec set_users(string(), string(), [auth_srv:uid()]) -> ok | no_group.
 set_users(Site, GroupN, Users) -> new_db_api:set_usersD(Site, Users, GroupN).
+
+-spec get_a_users_groups(string(), auth_srv:uid()) -> list().
+get_a_users_groups(Site, UID) -> new_db_api:get_a_users_groups(Site, UID).
 
 -spec any_admin(string()) -> no_admin | string().
 any_admin(Site) -> new_db_api:any_adminD(Site).

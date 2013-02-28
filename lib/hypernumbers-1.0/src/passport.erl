@@ -36,7 +36,9 @@
          load_script/1,
          issue_pwd_reset/2,
          reset_pwd/3,
-         extend/1
+         extend/1,
+         unpad/1,
+         stamp/3
         ]).
 
 %% gen_server callbacks
@@ -49,7 +51,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -define(WEEK_S, 604800).
--define(DAY_S, 86400).
+-define(DAY_S,  86400).
 
 -record(hypertag, {uid, email, expiry, data}).
 
@@ -70,6 +72,13 @@
 %%%===================================================================
 %%% Local API
 %%%===================================================================
+-spec stamp(auth_srv:uid(), string(), integer() | string()) -> string().
+stamp(Uid, Email, Age) ->
+    Expiry = gen_expiry(Age),
+    EscEmail = escape_email(Email),
+    Hash = gen_hash([Expiry, Uid, EscEmail]),
+    ?FORMAT("~s|~s|~s|~s", [EscEmail, Uid, Expiry, Hash]).
+
 -spec create_hypertag_url(string(),
                       [string()],
                       auth_srv:uid(), string(),
@@ -548,14 +557,6 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
--spec stamp(auth_srv:uid(), string(), integer() | string()) -> string().
-stamp(Uid, Email, Age) ->
-    Expiry = gen_expiry(Age),
-    EscEmail = escape_email(Email),
-    Hash = gen_hash([Expiry, Uid, EscEmail]),
-    ?FORMAT("~s|~s|~s|~s", [EscEmail, Uid, Expiry, Hash]).
-
 -spec escape_email(string()) -> string().
 escape_email(Email) ->
     [case S of
@@ -646,6 +647,11 @@ extend(Bin) ->
     Len = size(Bin),
     Pad = 16 - ((Len+2) rem 16),
     <<Len:16, Bin/binary, 0:Pad/unit:8>>.
+
+% the reverse of extend
+-spec unpad(binary()) -> binary().
+unpad(<<Len:16, Bin2/binary>>) ->
+    binary:part(Bin2, 0, Len).
 
 %% We use a fixed initilization vector, therefore unique keys should
 %% be used per recipient, and message type (varying the plaintext is
