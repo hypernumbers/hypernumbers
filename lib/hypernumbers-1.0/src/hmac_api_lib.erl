@@ -29,7 +29,7 @@
 %%% THIS IMPLEMENTATION DOESN'T
 -export([
          authorize_request/2,
-         sign/5,
+         sign/6,
          get_api_keypair/0
         ]).
 
@@ -47,11 +47,10 @@ authorize_request(Site, Req) ->
     ContentType = get_header(Headers, "content-type"),
     Date        = get_header(Headers, "date"),
     IncAuth     = get_header(Headers, "authorization"),
-    {_Schema, PublicKey, _Sig} = breakout(IncAuth),
-    % normally you would use the public key to look up the private key
+    {Schema, PublicKey, Sig} = breakout(IncAuth),
     case new_db_api:read_api(Site, PublicKey) of
         []    -> "no key";
-        [Rec] -> #api{privatekey = PrivateKey, urls = _URLS} = Rec,
+        [Rec] -> #api{privatekey = PrivateKey} = Rec,
                  Signature = #hmac_signature{method = Method,
                                              contentmd5 = ContentMD5,
                                              contenttype = ContentType,
@@ -59,14 +58,14 @@ authorize_request(Site, Req) ->
                                              headers = Headers,
                                              resource = Path},
                  Signed = sign_data(PrivateKey, Signature),
-                 {_, AuthHeader} = make_HTTPAuth_header(Signed),
+                 {_, AuthHeader} = make_HTTPAuth_header(Signed, PublicKey),
                  case AuthHeader of
                      IncAuth -> {"match", Rec};
                      _       -> "no_match"
                  end
     end.
 
-sign(PrivateKey, Method, URL, Headers, ContentType) ->
+sign(PrivateKey, PublicKey, Method, URL, Headers, ContentType) ->
     Headers2 = normalise(Headers),
     ContentMD5 = get_header(Headers2, "content-md5"),
     Date = get_header(Headers2, "date"),
@@ -77,7 +76,7 @@ sign(PrivateKey, Method, URL, Headers, ContentType) ->
                                 headers = Headers,
                                 resource = URL},
     SignedSig = sign_data(PrivateKey, Signature),
-    make_HTTPAuth_header(SignedSig).
+    make_HTTPAuth_header(SignedSig, PublicKey).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -93,11 +92,11 @@ breakout(Header) ->
 get_api_keypair() ->
     Public  = mochihex:to_hex(binary_to_list(crypto:strong_rand_bytes(16))),
     Private = mochihex:to_hex(binary_to_list(crypto:strong_rand_bytes(16))),
-    {Public, Private}.
+    {{public, Public}, {private, Private}}.
 
-make_HTTPAuth_header(Signature) ->
+make_HTTPAuth_header(Signature, PublicKey) ->
     {"Authorization", ?schema ++ " "
-     ++ ?publickey ++ ":" ++ Signature}.
+     ++ PublicKey ++ ":" ++ Signature}.
 
 make_signature_string(#hmac_signature{} = S) ->
     Date = get_date(S#hmac_signature.headers, S#hmac_signature.date),
