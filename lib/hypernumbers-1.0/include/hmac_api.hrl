@@ -11,8 +11,8 @@
 -define(headerprefix, $x,$-,$m,$o,$c,$h,$i,$a,$p,$i,$-).
 -define(dateheader, "x-mochiapi-date").
 
--define(publickey,  "0PN5J17HBGZHT7JJ3X82").
--define(privatekey, "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o").
+%-define(publickey,  "0PN5J17HBGZHT7JJ3X82").
+%-define(privatekey, "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o").
 
 -record(hmac_signature,
         {
