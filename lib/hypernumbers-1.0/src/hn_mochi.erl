@@ -9,6 +9,7 @@
 -include("hn_mochi.hrl").
 -include("spriki.hrl").
 -include("syslib.hrl").
+-include("keyvalues.hrl").
 
 -define(E,        error_logger:error_msg).
 -define(SORT,     lists:sort).
@@ -26,7 +27,9 @@
          style_to_css/1,
          page_attrs_for_export/2,
          page_attributes/2,
-         get_json_post/1    % Used for mochilog replay rewrites
+         get_json_post/1,    % Used for mochilog replay rewrites
+         get_real_uri/1,
+         get_real_params/1
         ]).
 
 % exports for spawning
@@ -100,6 +103,21 @@ handle_(#refX{site = "http://www."++Site}, E = #env{mochi = Mochi}, _Qry) ->
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
+% this function does single sign on for WordPress
+handle_(#refX{site = S, path = ["_sync", "wordpress", "logon" | _Rest]},
+        Env, #qry{hypertag = Ht, ivector = IV}) ->
+    case is_wordpress(S) of
+        {true, Params} ->
+            {Stamp, URL} = hn_wordpress:do_logon(S, Ht, IV, Params),
+            Cookie = hn_net_util:cookie("auth", Stamp, "never"),
+            Headers = Env#env.headers,
+            Hs2 = [{"location", URL}, Cookie | Headers],
+            Env2 = Env#env{headers = Hs2},
+            respond(302, Env2);
+        false ->
+            exit("invalid attempt to do wordpress single sigon")
+    end;
+
 % the documentation/blog needs to get a cookie stamp to identify users
 % this function just handles that...
 handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]},
@@ -113,6 +131,7 @@ handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]},
              end,
     #qry{callback = Callback} = Qry,
     X = {"Access-Control-Allow-Origin", "*"},
+    E = Env#env{headers = [Cookie, X | Env#env.headers]},
     {"Set-Cookie", ShortC} = Cookie,
     E = Env#env{headers = [Cookie, X | Env#env.headers]},
     jsonp(E, {struct, [{"auth", ShortC}]}, Callback);
@@ -138,12 +157,13 @@ handle_(Ref, Env, Qry) ->
 
 -spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return().
 authorize_resource(Env, Ref, Qry) ->
+    io:format("is hmac_sha? ~p~n", [Env#env.auth]),
     case cluster_up() of
         false -> text_html(Env, "There appears to be a network problem. "++
                            "Please try later");
         true  -> case Env#env.auth of
-                     []   -> authorize_r2(Env, Ref, Qry);
-                     Auth -> authorize_api(Auth, Env, Ref, Qry)
+                     []    -> authorize_r2(Env, Ref, Qry);
+                     _Auth -> authorize_api(Env, Ref, Qry)
                  end
     end.
 
@@ -170,7 +190,10 @@ cluster_up() ->
             end
     end.
 
-authorize_api(_Auth, _Env, _Ref, _Qry) ->
+authorize_api(Env, #refX{site = S}, _Qry) ->
+    io:format("API denied...~n"),
+    IsAuthorized = hmac_api_lib:authorize_request(S, Env#env.mochi),
+    io:format("IsAuthorized is ~p~n", [IsAuthorized]),
     denied.
 
 authorize_r2(Env, Ref, Qry) ->
@@ -1516,6 +1539,10 @@ get_site(Env) ->
     lists:concat(["http://", string:to_lower(Host), ":", Port]).
 
 %% Some clients dont send ip in the host header
+get_real_params(Mochi) ->
+    List = Mochi:parse_qs(),
+    "?" ++ string:join([X ++ "=" ++ Y || {X, Y} <- List], ",").
+
 get_real_uri(Env) ->
     Host = get_host(Env),
     Port = get_port(Env),
@@ -1824,23 +1851,31 @@ process_user(#refX{path = ["_services", SubPath]}, E = #env{})
     Email = "api@twilio.com",
     {ok, _, Uid} = passport:get_or_create_user(Email),
     E#env{uid = Uid, email = Email};
-process_user(#refX{site = Site}, E = #env{mochi = Mochi}) ->
+process_user(#refX{site = Site} = Ref, E = #env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
             E#env{uid = Uid, email = Email};
         {error, no_stamp} ->
-            Return = cur_url(Site, E),
-            case try_sync(["seek"], Site, Return, ?NO_STAMP) of
-                on_sync ->
-                    Stamp = passport:temp_stamp(),
-                    Cookie = hn_net_util:cookie("auth", Stamp, "never"),
-                    E#env{headers = [Cookie | E#env.headers]};
-                {redir, Redir} ->
-                    E2 = E#env{headers = [{"location", Redir}| E#env.headers]},
-                    respond(303, E2),
-                    throw(ok)
-            end;
+            case is_wordpress(Site) of
+                {true, Params} ->
+                    Env2 = hn_wordpress:get_logon(Ref, E, Params),
+                    respond(303, Env2),
+                    throw(ok);
+                false ->
+                    Return = cur_url(Site, E),
+                    case try_sync(["seek"], Site, Return, ?NO_STAMP) of
+                        on_sync ->
+                            Stamp = passport:temp_stamp(),
+                            Cookie = hn_net_util:cookie("auth", Stamp, "never"),
+                            E#env{headers = [Cookie | E#env.headers]};
+                        {redir, Redir} ->
+                            Hs2 = [{"location", Redir}| E#env.headers],
+                            E2 = E#env{headers = Hs2},
+                            respond(303, E2),
+                            throw(ok)
+                    end
+                end;
         {error, _Reason} ->
             cleanup(Site, cur_url(Site, E), E)
     catch error:
@@ -2260,6 +2295,12 @@ provision_site(RootSite, PrevUID, SiteType, Email, Data, Env) ->
         {error, invalid_email} ->
             Str = "Sorry, the email provided was invalid, please try again.",
             json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
+    end.
+
+is_wordpress(Site) ->
+    case new_db_api:read_kv(Site, ?wordpress) of
+        []                          -> false;
+        [{kvstore, wordpress, List}] -> {true, List}
     end.
 
 pretty_print(#env{} = E) ->
