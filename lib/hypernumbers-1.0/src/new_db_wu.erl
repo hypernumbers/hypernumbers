@@ -104,8 +104,8 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-all_groupsD(Site) ->  Tbl = new_db_wu:trans(Site, group),
-                      mnesia:all_keys(Tbl).
+all_groupsD(Site) -> Tbl = new_db_wu:trans(Site, group),
+                     mnesia:all_keys(Tbl).
 
 groupsD(Site) ->
     Tbl = new_db_wu:trans(Site, group),
