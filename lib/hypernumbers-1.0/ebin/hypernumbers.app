@@ -34,6 +34,7 @@
                   hn_util,
                   hn_web_admin,
                   hn_webcontrols,
+                  hn_wordpress,
                   horiz_api,
                   hslists,
                   hypernumbers_app,
