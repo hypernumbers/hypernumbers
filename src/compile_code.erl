@@ -14,7 +14,12 @@
          clean/1
         ]).
 
-%% Debuggin
+% for upgrading ssl
+-export([
+         get_ssl_rel_file/0
+        ]).
+
+%% Debugging
 -export([
          jslint_DEBUG/0,
          jslint_DEBUG/1
