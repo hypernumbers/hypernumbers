@@ -412,13 +412,22 @@
           urls = []
          }).
 
--record(api_urls,
+-record(api_url,
         {
-          path = undefined,    % unitialised records will cause a crash! Good!
-          admin = false,       % by default not admin
+          path         = undefined,    % uninitialised records will crash! Good!
+          admin        = false,       % by default not admin
           include_subs = false,
-          append_only = true   % by default can only append
+          append_only  = true   % by default can only append
          }).
+
+% used once we have got a signed request is
+-record(api_auth,
+        {
+          authorized,
+          admin,
+          append_only
+         }).
+
 
 % records for data upload maps
 -record(head,

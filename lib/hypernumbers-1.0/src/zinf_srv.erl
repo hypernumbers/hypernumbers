@@ -12,14 +12,10 @@
 
 -include("spriki.hrl").
 -include("keyvalues.hrl").
--include("errvals.hrl").
 -include("syslib.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
 -define(maxqueuesize, 250).
--define(E, error_logger:error_msg).
--define(sq_bra, 91).
--define(sq_ket, 93).
 -define(PROFILE, "profile_zinf_srv").
 
 %% API
@@ -627,7 +623,7 @@ match_seg({seg, _S1}, _S2,  _Site, _Htap) -> nomatch;
 match_seg(selector,    _S,  _Site, _Htap) -> nomatch;
 match_seg({zseg, S1},   S,   Site,  Htap) ->
     Path = lists:reverse([S | Htap]),
-    case run_zeval(Site, Path, S1) of
+    case new_db_api:run_zevalD(Site, Path, S1) of
         {_, true}               -> circref;
         {match, false}          -> match;
         {nomatch, false}        -> nomatch;
@@ -636,28 +632,6 @@ match_seg({zseg, S1},   S,   Site,  Htap) ->
         {{error, _}, false}     -> error % Old style errs from fns
                                    % (shouldn't exist!)
     end.
-
-run_zeval(Site, Path, Z) ->
-    Z2 = string:strip(string:strip(Z, right, ?sq_ket), left, ?sq_bra),
-    % this expression is not 'real' so we run it in a non-existent cell
-    % {cell, {0, 0}} is 1 up and 1 left of the cell 'A1'
-    {ok, Toks} = xfl_lexer:lex(Z2, {0, 0}),
-    % need to set up the process dictionary
-    Fun = fun() -> try
-                       muin:zeval_from_zinf(Site, Path, Toks)
-                   catch
-                       error:
-                       Err  -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
-                                  [Toks, Site, Path, Err]),
-                               ?ERRVAL_VAL;
-                       exit:
-                       Exit -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
-                                  [Toks, Site, Path, Exit]),
-                               ?ERRVAL_VAL
-                   end
-          end,
-    {atomic, Ret} = mnesia:transaction(Fun),
-    Ret.
 
 % used in tests - not sure why...
 % it is no longer called from new_db_api

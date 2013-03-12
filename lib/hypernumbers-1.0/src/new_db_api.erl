@@ -11,8 +11,10 @@
 -include("hypernumbers.hrl").
 -include("keyvalues.hrl").
 -include("syslib.hrl").
+-include("errvals.hrl").
 
 -export([
+         run_zevalD/3,
          any_adminD/1,
          set_usersD/3,
          rem_userD/3,
@@ -108,12 +110,37 @@
         ]).
 
 -define(wu, new_db_wu).
+-define(sq_bra, 91).
+-define(sq_ket, 93).
+-define(E, error_logger:error_msg).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+run_zevalD(Site, Path, Z) ->
+    Z2 = string:strip(string:strip(Z, right, ?sq_ket), left, ?sq_bra),
+    % this expression is not 'real' so we run it in a non-existent cell
+    % {cell, {0, 0}} is 1 up and 1 left of the cell 'A1'
+    {ok, Toks} = xfl_lexer:lex(Z2, {0, 0}),
+    % need to set up the process dictionary
+    Fun = fun() -> try
+                       muin:external_zeval(Site, Path, Toks)
+                   catch
+                       error:
+                       Err  -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
+                                  [Toks, Site, Path, Err]),
+                               ?ERRVAL_VAL;
+                       exit:
+                       Exit -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
+                                  [Toks, Site, Path, Exit]),
+                               ?ERRVAL_VAL
+                   end
+          end,
+    {atomic, Ret} = mnesia:transaction(Fun),
+    Ret.
+
 any_adminD(Site) ->
     Tbl = ?wu:trans(Site, group),
     Fun = fun() ->

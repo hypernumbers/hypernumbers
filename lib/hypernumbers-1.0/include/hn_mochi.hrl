@@ -9,3 +9,16 @@
                email = "anonymous" :: string(),
                auth = null
              }).
+
+% useful macros
+
+-define(SHEETVIEW,   "spreadsheet").
+-define(WEBPAGE,     "webpage").
+-define(WIKI,        "wikipage").
+-define(LOGVIEW,     "logs").
+-define(DEBUG,       "debug").
+-define(RECALC,      "recalc").
+-define(PHONE,       "phone").
+-define(RECORDING,   "recording").
+
+-define(NO_STAMP, undefined).

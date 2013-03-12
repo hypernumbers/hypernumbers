@@ -30,7 +30,7 @@
          fetch_for_select/2,
          run_formula/2,
          run_code/2,
-         zeval_from_zinf/3,
+         external_zeval/3,
          parse_expr_for_gui/1,
          context_setting/1,
          col_index/1,
@@ -1043,8 +1043,9 @@ m2(Site,  S, {zseg, Z, _}, Htap) ->
         {error, Val} -> {error,     lists:reverse([S | Htap]), Val}
     end.
 
-%% the zinf server has no context to execute at this stage!
-zeval_from_zinf(Site, Path, Toks) ->
+%% used in the zinf server and the api evaluator.
+% Neither has any context to execute at this stage!
+external_zeval(Site, Path, Toks) ->
     % zeval evaluates an expression in a cell context - but that cell
     % cannot actually exists - so use {0,0} which is the cell 1 up and 1
     % right of A1

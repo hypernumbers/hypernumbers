@@ -17,7 +17,7 @@
 %%% sign/5 is used client-side to sign a request
 %%% - it returns an HTTPAuthorization header
 %%%
-%%% authorize_request/1 takes a mochiweb Request as an arguement
+%%% authorize_request/1 takes a mochiweb Request as an argument
 %%% and checks that the request matches the signature
 %%%
 %%% get_api_keypair/0 creates a pair of public/private keys
@@ -38,16 +38,15 @@
 %%% API                                                                      %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 authorize_request(Site, Req) ->
     Method      = Req:get(method),
-    Path        = Req:get(path),
+    Path        = Req:get(raw_path),
     Headers     = normalise(mochiweb_headers:to_list(Req:get(headers))),
     ContentMD5  = get_header(Headers, "content-md5"),
     ContentType = get_header(Headers, "content-type"),
     Date        = get_header(Headers, "date"),
     IncAuth     = get_header(Headers, "authorization"),
-    {Schema, PublicKey, Sig} = breakout(IncAuth),
+    {_Schema, PublicKey, _Sig} = breakout(IncAuth),
     case new_db_api:read_api(Site, PublicKey) of
         []    -> "no key";
         [Rec] -> #api{privatekey = PrivateKey} = Rec,
@@ -56,12 +55,12 @@ authorize_request(Site, Req) ->
                                              contenttype = ContentType,
                                              date = Date,
                                              headers = Headers,
-                                             resource = Path},
+                                             resource = Site ++ Path},
                  Signed = sign_data(PrivateKey, Signature),
                  {_, AuthHeader} = make_HTTPAuth_header(Signed, PublicKey),
                  case AuthHeader of
                      IncAuth -> {"match", Rec};
-                     _       -> "no_match"
+                     _       -> "no match"
                  end
     end.
 

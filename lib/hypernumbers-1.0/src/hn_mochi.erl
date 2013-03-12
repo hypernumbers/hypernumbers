@@ -8,14 +8,10 @@
 -include("gettext.hrl").
 -include("hn_mochi.hrl").
 -include("spriki.hrl").
--include("syslib.hrl").
 -include("keyvalues.hrl").
 
--define(E,        error_logger:error_msg).
--define(SORT,     lists:sort).
--define(NO_STAMP, undefined).
--define(DAY_S,    86400). % a day's worth of seconds
--define(check_pt_vw(A, B, C, D), auth_srv:check_particular_view(A, B, C, D)).
+-define(E,    error_logger:error_msg).
+-define(SORT, lists:sort).
 
 -export([
          start/0
@@ -29,22 +25,14 @@
          page_attributes/2,
          get_json_post/1,    % Used for mochilog replay rewrites
          get_real_uri/1,
-         get_real_params/1
+         get_real_params/1,
+         cleanup/3
         ]).
 
 % exports for spawning
 -export([
          provision_site/6
         ]).
-
--define(SHEETVIEW,   "spreadsheet").
--define(WEBPAGE,     "webpage").
--define(WIKI,        "wikipage").
--define(LOGVIEW,     "logs").
--define(DEBUG,       "debug").
--define(RECALC,      "recalc").
--define(PHONE,       "phone").
--define(RECORDING,   "recording").
 
 -spec start() -> {ok, pid()}.
 start() ->
@@ -157,14 +145,36 @@ handle_(Ref, Env, Qry) ->
 
 -spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return().
 authorize_resource(Env, Ref, Qry) ->
-    io:format("is hmac_sha? ~p~n", [Env#env.auth]),
-    case cluster_up() of
-        false -> text_html(Env, "There appears to be a network problem. "++
-                           "Please try later");
-        true  -> case Env#env.auth of
-                     []    -> authorize_r2(Env, Ref, Qry);
-                     _Auth -> authorize_api(Env, Ref, Qry)
-                 end
+    {Auth, Env2} = case cluster_up() of
+        false -> {disconnect, Env};
+        true  -> hn_authorize:authorize(Env, Ref, Qry)
+    end,
+    case {Auth, Env2#env.accept} of
+        {disconnect, _} ->
+            text_html(Env, "There appears to be a network problem. "
+                      ++ "Please try later");
+        {allowed, _} ->
+            handle_resource(Ref, Qry, Env2);
+        {{view, View}, _} ->
+            handle_resource(Ref, Qry#qry{view = View}, Env2);
+        {not_found, html} ->
+            ViewRoot = hn_util:viewroot(Ref#refX.site),
+            serve_html(404, Env2, [ViewRoot, "/404.html"]);
+        {not_found, json} ->
+            respond(404, Env2);
+        {303, _} ->
+            respond(303, Env2),
+            throw(ok);
+        {denied, html} ->
+            ViewRoot = hn_util:viewroot(Ref#refX.site),
+            serve_html(401, Env2, [ViewRoot, "/401.html"]);
+        {denied, json} ->
+            respond(401, Env2);
+        {{upload, denied}, html} ->
+            Ret = {struct, [{error, "Permission denied: 401"}]},
+            #env{mochi = Mochi} = Env,
+            Json = (mochijson:encoder([{input_encoding, utf8}]))(Ret),
+            Mochi:ok({"text/html", Json})
     end.
 
 % this function will kinda be kooky in dev if you deregister your globals
@@ -188,46 +198,6 @@ cluster_up() ->
                                                "...reconnection unsucessful"),
                         false % not reconnected, boo!
             end
-    end.
-
-authorize_api(Env, #refX{site = S}, _Qry) ->
-    io:format("API denied...~n"),
-    IsAuthorized = hmac_api_lib:authorize_request(S, Env#env.mochi),
-    io:format("IsAuthorized is ~p~n", [IsAuthorized]),
-    denied.
-
-authorize_r2(Env, Ref, Qry) ->
-    Env2 = process_user(Ref, Env),
-    #env{method = Method, body = Body} = Env,
-    AuthRet = case {Method, Body} of
-                  {Req, _} when Req == 'GET'; Req == 'HEAD' ->
-                      authorize_get(Ref, Qry, Env2);
-                  {'POST', multipart} ->
-                      authorize_upload(Ref, Qry, Env2);
-                  {'POST', _} ->
-                      authorize_post(Ref, Qry, Env2)
-              end,
-    case {AuthRet, Env2#env.accept} of
-        {allowed, _} ->
-            handle_resource(Ref, Qry, Env2);
-        {{view, View}, _} ->
-            handle_resource(Ref, Qry#qry{view = View}, Env2);
-        {not_found, html} ->
-            serve_html(404, Env2,
-                       [hn_util:viewroot(Ref#refX.site), "/404.html"]);
-        {not_found, json} ->
-            respond(404, Env2);
-        {denied, html} ->
-            serve_html(401, Env2,
-                       [hn_util:viewroot(Ref#refX.site), "/401.html"]);
-        {denied, json} ->
-            respond(401, Env2);
-        {{upload, denied}, html} ->
-            Ret = {struct, [{error, "Permission denied: 401"}]},
-            #env{mochi = Mochi} = Env,
-            Mochi:ok({"text/html",
-                      (mochijson:encoder([{input_encoding,
-                                           utf8}]))(Ret)})
     end.
 
 handle_resource(Ref, Qry, Env = #env{method = 'GET'}) ->
@@ -263,359 +233,6 @@ X == ".pdf"; X == ".eot"; X == ".ttf"; X == ".svg" ->
     ok;
 handle_static(_X, Site, Env) ->
     serve_html(404, Env, [hn_util:viewroot(Site), "/404.html"]).
-
--spec authorize_get(#refX{}, #qry{}, #env{})
--> {view, string()} | allowed | denied | not_found.
-
-%% Specifically allow access to the json permissions. Only the permissions,
-%% query may be present.
-%% TODO: Only admins should be able to do this...
-authorize_get(_Ref,
-              #qry{permissions = [], _ = undefined},
-              #env{accept = html}) ->
-    allowed;
-
-%% Authorize access to 'special' commands.
-%% TODO put permissions access on _invite and _logout
-authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
-  when X == "_invite";
-       X == "_mynewsite";
-       X == "_validate";
-       X == "_authorize";
-       X == "_logout" ->
-    allowed;
-
-% deal with the reserved part of the namespace
-% shows sites and pages
-authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json})
-  when X == "_site";
-       X == "_pages" ->
-    allowed;
-
-% we check later on if you have admin permissions
-authorize_get(#refX{path = ["_statistics" | _]}, _Qry, #env{accept = html}) ->
-    allowed;
-
-% enable the _sites page and also _replies and _contacts for phone and form
-% pages on the root page
-%
-% need to do it twice, once for no view set, and once for a specific view
-authorize_get(#refX{site = Site, path = [X | []] = Path},
-              #qry{_ = undefined}, #env{accept = html, uid = Uid})
-  when  X == "_sites";
-        X == "_replies";
-        X == "_contacts" ->
-    auth_srv:check_get_view(Site, Path, Uid);
-
-authorize_get(#refX{path = ["_" ++ X | []]}, _Qry, #env{accept = Accept})
-  when Accept == html;
-       Accept == json
-       andalso X == "sites";
-       X == "replies";
-       X == "contacts" ->
-    allowed;
-
-% _audit is odd - most "_paths" are only allowed one deep - but _audit isn't
-% so it gets its own clauses
-authorize_get(#refX{site = Site, path = ["_audit" | _Rest] = Path},
-              #qry{_ = undefined}, #env{accept = html, uid = Uid}) ->
-    auth_srv:check_get_view(Site, Path, Uid);
-
-authorize_get(#refX{path = ["_audit" | _Rest]}, _Qry, #env{accept = Accept})
-  when Accept == html;
-       Accept == json ->
-    allowed;
-
-% Feature Flag them out
-% this path is hardwired into the module hn_twilio_mochi.erl
-authorize_get(#refX{path = ["_services", "phone" | _], obj = {page, _}},
-              _Qry, #env{accept = html}) ->
-    allowed;
-
-authorize_get(#refX{path = ["_services", "phoneredirect" | _], obj = {page, _}},
-              _Qry, #env{accept = html}) ->
-    allowed;
-
-authorize_get(#refX{site = "http://usability.hypernumbers.com:8080",
-                    path = ["_reprovision"], obj = {page, "/"}}, _Qry, _Env) ->
-    allowed;
-
-%% Only some sites have a forgotten password box
-authorize_get(#refX{path = [X | _Vanity]}, _Qry, #env{accept = html})
-  when X == "_forgotten_password" ->
-    case passport_running() of
-        true  -> allowed;
-        false -> denied
-    end;
-
-authorize_get(#refX{path = ["_" ++ _X | _]}, _Qry, #env{accept = Accept})
-  when Accept == json;
-       Accept == html ->
-    denied;
-
-%% Authorize update requests when the update is targeted towards a
-%% spreadsheet. Since we have no closed security object, we rely on
-%% 'run-time' checks.
-authorize_get(#refX{site = Site, path = Path},
-              #qry{updates = U, view = ?SHEETVIEW, paths = More},
-              #env{accept = json, uid = Uid})
-  when U /= undefined ->
-    case auth_srv:check_particular_view(Site, Path, Uid, ?SHEETVIEW) of
-        {view, ?SHEETVIEW} ->
-            Fun1 = fun(X) ->
-                           Tks = string:tokens(X, "/"),
-                           auth_srv:get_any_main_view(Site, Tks, Uid)
-                   end,
-            MoreViews = [Fun1(P) || P <- string:tokens(More, ",")],
-            Fun2 = fun
-                       ({view, _}) -> true;
-                (_)         -> false
-                           end,
-    case lists:all(Fun2, MoreViews) of
-        true  -> allowed;
-        _Else -> denied
-    end;
-_Else ->
-    denied
-end;
-
-%% Authorize access to the DEFAULT page. Notice that no query
-%% parameters have been set.
-authorize_get(#refX{site = Site, path = Path},
-              #qry{_ = undefined},
-              #env{accept = html, uid = Uid}) ->
-    auth_srv:check_get_view(Site, Path, Uid);
-
-%% Authorize access to the challenger view.
-authorize_get(#refX{site = Site, path = Path},
-              #qry{challenger = []},
-              #env{accept = html, uid = Uid}) ->
-    auth_srv:check_get_challenger(Site, Path, Uid);
-
-% a recording is stored against a link with a hypertag signed with its url
-% so authorise anyone with any view of that page to see it
-authorize_get(#refX{site = Site, path = Path}, #qry{view = ?RECORDING}, Env) ->
-    case auth_srv:get_any_main_view(Site, Path, Env#env.uid) of
-        {view, _} -> allowed;
-        _Else     -> denied
-    end;
-
-% allow all DEBUG views - we will check the user is admin later on
-authorize_get(_Ref, #qry{view = ?DEBUG}, _Env) -> allowed;
-
-% you can only see the logs if you have the spreadsheet view
-authorize_get(R, #qry{view = ?LOGVIEW} = Q, E) ->
-    case authorize_get(R, Q#qry{view = ?SHEETVIEW}, E) of
-        {view, ?SHEETVIEW} -> {view, ?LOGVIEW};
-        Other              -> Other
-    end;
-
-% you can only force a recalc if you have the spreadsheet view
-authorize_get(R, #qry{view = ?RECALC} = Q, E) ->
-    case authorize_get(R, Q#qry{view = ?SHEETVIEW}, E) of
-        {view, ?SHEETVIEW} -> {view, ?RECALC};
-        Other              -> Other
-    end;
-
-%% Allow the softphone if there is a softphone control on the cell
-%% for both html and json
-authorize_get(#refX{site = S, path = P, obj = {cell, _}} = R,
-              #qry{view = ?PHONE}, Env) ->
-    case new_db_api:get_phone(R) of
-        []       -> denied;
-        [_Phone] -> case auth_srv:get_any_main_view(S, P, Env#env.uid) of
-                        denied -> denied;
-                        _Other -> allowed
-                    end
-    end;
-
-%% Authorize access to one particular view.
-authorize_get(#refX{site = Site, path = Path},
-              #qry{view = View},
-              #env{uid = Uid})
-  when View /= undefined ->
-    auth_srv:check_particular_view(Site, Path, Uid, View);
-
-%% As a last resort, we will authorize a GET request to a location
-%% from which we have a view.
-authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
-    case auth_srv:get_any_main_view(Site, Path, Env#env.uid) of
-        {view, _} -> allowed;
-        _Else     -> denied
-    end.
-
--spec authorize_post(#refX{}, #qry{}, #env{}) -> allowed | denied | not_found.
-
-%% Allow special posts to occur
-authorize_post(#refX{path = [X]}, _Qry, #env{accept = json})
-  when X == "_login";
-       X == "_forgotten_password";
-       X == "_parse_expression" ->
-    allowed;
-
-authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
-               #env{accept = json, uid = Uid} = Env) ->
-    case hn_groups:is_member(Uid, Site, ["admin"]) of
-        true  -> allowed;
-        false -> authorize_admin(Site, Env#env.body, Uid)
-    end;
-
-% allow a post to a phone view for a cell - gonnae check it later
-% authorize_post(#refX{obj = {cell, _}}, #qry{view = ?PHONE},
-%               #env{accept = json}) ->
-%    allowed;
-
-% always let jserrs through
-authorize_post(_Ref, #qry{jserr = []}, _Env) ->
-    allowed;
-
-%% Allow a post to occur, if the user has access to a spreadsheet on
-%% the target. But it might be a post from a form or an inline
-%% update so you need to check for them too before allowing
-%% the post to continue...
-authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
-    case ?check_pt_vw(Site, Path, Env#env.uid, ?SHEETVIEW) of
-        {view, ?SHEETVIEW} -> allowed;
-        not_found          -> not_found;
-        denied             -> authorize_p2(Site, Path, Env)
-    end.
-
-% WIKI's can take both 'postform' and 'postinline'
-% 'mark's always get through
-authorize_p2(Site, Path, Env) ->
-    case ?check_pt_vw(Site, Path, Env#env.uid, ?WIKI) of
-        not_found ->
-            not_found;
-        {view, ?WIKI} ->
-            case Env#env.body of
-                [{"mark",   _}]          -> allowed;
-                [{"postform",   _}]      -> allowed;
-                [{"postinline", _}]      -> allowed;
-                [{"postrichinline", _}]  -> allowed;
-                [{"postwebcontrols", _}] -> allowed;
-                _                        -> denied
-            end;
-        denied ->
-            authorize_p3(Site, Path, Env)
-    end.
-
-% WEBPAGE's can only do 'postform'
-% 'mark's always get through
-authorize_p3(Site, Path, Env) ->
-    case ?check_pt_vw(Site, Path, Env#env.uid, ?WEBPAGE) of
-        not_found        -> not_found;
-        {view, ?WEBPAGE} ->
-            case Env#env.body of
-                [{"mark",   _}]          -> allowed;
-                [{"postform",   _}]      -> allowed;
-                [{"postwebcontrols", _}] -> allowed;
-                _                        -> denied
-            end;
-        % jakub's clause
-        denied           ->
-            case Env#env.body of
-                [{"read_user_fn", _Args}]		-> denied;
-                [{"delete_user_fn", _Args}]	-> denied;
-                [{"write_user_fn", _Args}]	-> denied;
-                _						        				-> denied
-            end
-    end.
-
-authorize_upload(#refX{site = S, path = P}, _Qry,  #env{uid = Uid}) ->
-    Views = auth_srv:get_views(S, P, Uid),
-    case has_appropriate_view(Views) of
-        false -> {upload, denied};
-        true  -> allowed
-    end.
-
-authorize_upload_again(#refX{site = S, path = P}, file, Uid) ->
-    Views = auth_srv:get_views(S, P, Uid),
-    lists:member(?SHEETVIEW, Views);
-authorize_upload_again(#refX{site = _S, path = _P} = RefX,
-                       {load_templates, Template}, _Uid) ->
-    Expected = new_db_api:matching_forms(RefX, 'load-template-button'),
-    has_load_templates(Expected, Template);
-authorize_upload_again(#refX{site = _S, path = _P} = RefX,
-                       {row, Map}, _Uid) ->
-    Expected = new_db_api:matching_forms(RefX, 'map-rows-button'),
-    has_map_row(Expected, Map);
-authorize_upload_again(#refX{site = _S, path = _P} = RefX,
-                       {sheet, Map, Page}, _Uid) ->
-    Expected = new_db_api:matching_forms(RefX, 'map-sheet-button'),
-    has_map_sheet(Expected, Map, Page);
-authorize_upload_again(#refX{site = _S, path = _P} = RefX,
-                       {custom, Map}, _Uid) ->
-    Expected = new_db_api:matching_forms(RefX, 'map-custom-button'),
-    has_map_custom(Expected, Map).
-
-has_load_templates([], _Template) -> false;
-has_load_templates([H | T], Template) ->
-    case H of
-        {form, _, {_, 'load-template-button', _}, _, _,
-         {struct, [{"load_templates", Template}]}} ->
-            true;
-        _ ->
-            has_load_templates(T, Template)
-    end.
-
-has_map_sheet([], _Map, _Page) -> false;
-has_map_sheet([H | T], Map, Page) ->
-    case H of
-        {form, _, {_, 'map-sheet-button', _}, _, _,
-         {struct, [{"map", Map}, {"page", Page}]}} ->
-            true;
-        _ ->
-            has_map_sheet(T, Map, Page)
-    end.
-
-has_map_row([], _Map) -> false;
-has_map_row([H | T], Map) ->
-    case H of
-        {form, _, {_, 'map-rows-button', _}, _, _,
-         {struct, [{"map", Map}]}} ->
-            true;
-        _ ->
-            has_map_row(T, Map)
-    end.
-
-has_map_custom([], _Map) -> false;
-has_map_custom([H | T], Map) ->
-    case H of
-        {form, _, {_, 'map-custom-button', _}, _, _,
-         {struct, [{"map", Map}]}} ->
-            true;
-        _ ->
-            has_map_custom(T, Map)
-    end.
-
-has_appropriate_view([])                -> false;
-has_appropriate_view([?SHEETVIEW | _T]) -> true;
-has_appropriate_view([?WEBPAGE | _T])   -> true;
-has_appropriate_view([?WIKI | _T])      -> true;
-has_appropriate_view([_H | T])          -> has_appropriate_view(T).
-
-authorize_admin(_Site, [{"admin", {_, [{"set_password", _}]}}], Uid) ->
-    case passport:uid_to_email(Uid) of
-        {ok, "anonymous"} -> denied;
-        _                 -> allowed
-    end;
-
-authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
-  when (Request == "set_view")
-       orelse (Request == "set_champion")
-       orelse (Request == "invite_user") ->
-    case passport:uid_to_email(Uid) of
-        {ok, "anonymous"} -> denied;
-        _                 ->
-            case lists:keyfind("path", 1, List) of
-                false       -> denied;
-                {"path", P} -> P2 = string:tokens(P, "/"),
-                               case ?check_pt_vw(Site, P2, Uid, ?SHEETVIEW) of
-                                   {view, ?SHEETVIEW} -> allowed;
-                                   denied             -> denied
-                               end
-            end
-    end.
 
 -spec iget(#refX{},
            page | cell | row | column | range,
@@ -691,16 +308,16 @@ iget(#refX{path = ["_pages"]} = Ref, page, _Qry, Env) ->
     Return      = {struct, [Pages]},
     json(Env, Return);
 
+% allready checked you are an admin
 iget(#refX{site = S, path = ["_statistics"]}, page, _Qry, Env) ->
-    case hn_groups:is_member(Env#env.uid, S, ["admin"]) of
-        true  -> text_html(Env, syslib:make_stats_page(S));
-        false -> serve_html(401, Env, [hn_util:viewroot(S), "/401.html"])
-    end;
+    text_html(Env, syslib:make_stats_page(S));
 
 iget(#refX{site = S, path = ["_logout"]}, page,
      #qry{return = QReturn}, Env) when QReturn /= undefined ->
     Return = mochiweb_util:unquote(QReturn),
-    cleanup(S, Return, Env);
+    {303, Env2} = cleanup(S, Return, Env),
+    respond(303, Env2),
+    throw(ok);
 
 iget(#refX{site = Site, path = [X, _| Rest] = Path}, page, #qry{hypertag = HT}, Env)
   when X == "_mynewsite" ->
@@ -800,12 +417,9 @@ iget(Ref, cell,  #qry{view = ?PHONE}, #env{accept = json, uid = Uid} = Env) ->
                    json(Env, JSON)
     end;
 
-iget(#refX{site = S} = Ref, cell, #qry{view = ?DEBUG}, Env) ->
-    case hn_groups:is_member(Env#env.uid, S, ["admin"]) of
-        true  -> Url = hn_util:refX_to_url(Ref),
-                 text_html(Env, wrap(new_db_DEBUG:url(Url, verbose)));
-        false -> serve_html(401, Env, [hn_util:viewroot(S), "/401.html"])
-    end;
+iget(#refX{} = Ref, cell, #qry{view = ?DEBUG}, Env) ->
+    Url = hn_util:refX_to_url(Ref),
+    text_html(Env, wrap(new_db_DEBUG:url(Url, verbose)));
 
 iget(Ref, page, #qry{view = ?LOGVIEW}, Env) ->
     text_html(Env, hn_logs:get_logs(Ref));
@@ -881,7 +495,7 @@ iget(Ref, cell, #qry{view = ?LOGVIEW}, Env = #env{accept = html}) ->
     text_html(Env, hn_logs:get_logs(Ref));
 
 iget(Ref, cell, _Qry, Env = #env{accept = json}) ->
-    V = case new_db_api:read_attribute(Ref,"value") of
+    V = case new_db_api:read_attribute(Ref, "value") of
             [{_Ref, Val}] when is_atom(Val) ->
                 atom_to_list(Val);
             [{_Ref, {datetime, D, T}}] ->
@@ -890,9 +504,11 @@ iget(Ref, cell, _Qry, Env = #env{accept = json}) ->
                 atom_to_list(Val);
             [{_Ref, Val}] ->
                 Val;
+            [] ->
+                [];
             _Else ->
                 ?E("unmatched ~p~n", [_Else]),
-                ""
+                exit(unmatched_error)
         end,
     json(Env, V);
 
@@ -1844,43 +1460,12 @@ process_environment(Mochi) ->
          body     = Body,
          auth     = Auth}.
 
--spec process_user(string(), #env{}) -> #env{} | no_return().
-% for twilio api calls we spoof the username
-process_user(#refX{path = ["_services", SubPath]}, E = #env{})
-  when SubPath == "phone" orelse SubPath == "phoneredirect" ->
-    Email = "api@twilio.com",
-    {ok, _, Uid} = passport:get_or_create_user(Email),
-    E#env{uid = Uid, email = Email};
-process_user(#refX{site = Site} = Ref, E = #env{mochi = Mochi}) ->
-    Auth = Mochi:get_cookie_value("auth"),
-    try passport:inspect_stamp(Auth) of
-        {ok, Uid, Email} ->
-            E#env{uid = Uid, email = Email};
-        {error, no_stamp} ->
-            case is_wordpress(Site) of
-                {true, Params} ->
-                    Env2 = hn_wordpress:get_logon(Ref, E, Params),
-                    respond(303, Env2),
-                    throw(ok);
-                false ->
-                    Return = cur_url(Site, E),
-                    case try_sync(["seek"], Site, Return, ?NO_STAMP) of
-                        on_sync ->
-                            Stamp = passport:temp_stamp(),
-                            Cookie = hn_net_util:cookie("auth", Stamp, "never"),
-                            E#env{headers = [Cookie | E#env.headers]};
-                        {redir, Redir} ->
-                            Hs2 = [{"location", Redir}| E#env.headers],
-                            E2 = E#env{headers = Hs2},
-                            respond(303, E2),
-                            throw(ok)
-                    end
-                end;
-        {error, _Reason} ->
-            cleanup(Site, cur_url(Site, E), E)
-    catch error:
-                _Other -> cleanup(Site, cur_url(Site, E), E)
-                        end.
+passport_running() ->
+    {ok, Services} = application:get_env(hypernumbers, services),
+    case lists:keysearch(passport, 1, Services) of
+        {value, {passport, false}} -> false;
+        {value, {passport, true}}  -> true
+    end.
 
 %% Clears out auth cookie on current and main server.
 -spec cleanup(string(), string(), #env{}) -> no_return().
@@ -1894,13 +1479,7 @@ cleanup(Site, Return, E) ->
                     R
             end,
     E3 = E2#env{headers = [{"location", Redir} | E2#env.headers]},
-    respond(303, E3),
-    throw(ok).
-
-%% Returns the url representing the current location.s
--spec cur_url(string(), #env{}) -> string().
-cur_url(Site, #env{mochi = Mochi}) ->
-    hn_util:strip80(Site) ++ Mochi:get(raw_path).
+    {303, E3}.
 
 -spec try_sync([string()], string(), string(), string())
 -> {redir, string()} | on_sync.
@@ -2063,13 +1642,6 @@ nocache() ->
      {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
      {"Pragma",       "no-cache"}].
 
-passport_running() ->
-    {ok, Services} = application:get_env(hypernumbers, services),
-    case lists:keysearch(passport, 1, Services) of
-        {value, {passport, false}} -> false;
-        {value, {passport, true}}  -> true
-    end.
-
 request_pwd_reset(Email, Site) ->
     case hn_util:valid_email(Email) of
         false ->
@@ -2118,7 +1690,7 @@ load_file(Ref, Data, File, Name, UserName, Uid) ->
     Type = get_type(Data),
     Ext = filename:extension(Name),
     % need to reauthorize
-    case authorize_upload_again(Ref, Type, Uid) of
+    case hn_authorize:authorize_upload_again(Ref, Type, Uid) of
         true  -> load_file2(Ref, File, Name, UserName, Uid, Type, Ext);
         false -> Msg = "Permission denied: 401",
                  {rejected, {{struct, [{error, Msg}]}, nothing}}
