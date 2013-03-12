@@ -11,15 +11,26 @@
          excel/2 ,
          security/0,
          security/1,
+         authorization/0,
+         authorization/1,
+         get_logged_in_json_TEST/1,
+         get_logged_in_json_notadmin_TEST/1,
+         get_logged_out_json_TEST/1,
+         get_logged_in_html_TEST/1,
+         get_logged_in_html_notadmin_TEST/1,
+         get_logged_out_html_TEST/1,
+         get_api_TEST/3,
          post_logged_out_TEST/2,
          post_login_TEST/4,
          post_TEST_DEBUG/0
-          ]).
+        ]).
 
 % debugging
 -export([
          generate_fuzz_tests/0
         ]).
+
+-include("spriki.hrl").
 
 -define(LOG_DIR,     "var/tests/").
 -define(TEST_DIR,    "tests/").
@@ -30,6 +41,17 @@
 -define(COVER_DATA, "tests/cover.data").
 
 -define(SITE, "http://tests.hypernumbers.dev:9000").
+
+-define(PL, proplists:lookup).
+
+-define(PUBLIC,            "12345678123456781234567812345678").
+-define(PRIVATE,           "ABCDEFGHABCDEFGHABCDEFGHABCDEFGH").
+-define(PUBLICADMIN,       "X2345678123456781234567812345678").
+-define(PRIVATEADMIN,      "XBCDEFGHABCDEFGHABCDEFGHABCDEFGH").
+-define(PUBLICSUBDIRS,     "Y2345678123456781234567812345678").
+-define(PRIVATESUBDIRS,    "YBCDEFGHABCDEFGHABCDEFGHABCDEFGH").
+-define(PUBLICAPPENDONLY,  "Z2345678123456781234567812345678").
+-define(PRIVATEAPPENDONLY, "ZBCDEFGHABCDEFGHABCDEFGHABCDEFGH").
 
 init() -> setup(blank, []).
 
@@ -45,6 +67,32 @@ init_sec() ->
     passport:set_password(Uid, "i!am!secure"),
     setup(security_test, [{creator, Uid}]).
 
+init_auth() ->
+    {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
+    passport:validate_uid(Uid),
+    passport:set_password(Uid, "i!am!secure"),
+    setup(authorization_test, [{creator, Uid}]),
+    {ok, _, Uid2} = passport:get_or_create_user("nonadmin@hypernumbers.com"),
+    passport:validate_uid(Uid2),
+    passport:set_password(Uid2, "i!am!secure"),
+    hn_groups:add_user(?SITE, "user", Uid2),
+    API_URLs1 = [#api_url{path = "/", admin = false, include_subs = false,
+                         append_only = false}],
+    API1 = #api{publickey = ?PUBLIC, privatekey = ?PRIVATE, urls = API_URLs1},
+    new_db_api:write_api(?SITE, API1),
+    API_URLs2 = [#api_url{path = "/", admin = true, include_subs = false,
+                         append_only = false}],
+    API2 = #api{publickey = ?PUBLICADMIN, privatekey = ?PRIVATEADMIN, urls = API_URLs2},
+    new_db_api:write_api(?SITE, API2),
+    API_URLs3 = [#api_url{path = "/", admin = false, include_subs = true,
+                         append_only = false}],
+    API3 = #api{publickey = ?PUBLICSUBDIRS, privatekey = ?PRIVATESUBDIRS, urls = API_URLs3},
+    new_db_api:write_api(?SITE, API3),
+    API_URLs4 = [#api_url{path = "/", admin = false, include_subs = false,
+                         append_only = true}],
+    API4 = #api{publickey = ?PUBLICAPPENDONLY, privatekey = ?PRIVATEAPPENDONLY, urls = API_URLs4},
+    new_db_api:write_api(?SITE, API4).
+
 setup(Type, Opts) when is_list(Opts) ->
     case hn_setup:site_exists(?SITE) of
         true  -> hn_setup:delete_site(?SITE);
@@ -52,7 +100,7 @@ setup(Type, Opts) when is_list(Opts) ->
     end,
     catch hn_setup:site(?SITE, Type, Opts).
 
-all() -> excel(), sys(), security(), fuzz(), auth(), ztest().
+all() -> excel(), sys(), security(), fuzz(), auth(), ztest(), authorization().
 
 fuzz() ->
     init_fuzz(),
@@ -66,7 +114,16 @@ fuzz() ->
 
 security() ->
     init_sec(),
-    WC = filename:absname(?TEST_DIR)++"/security_test",
+    WC = filename:absname(?TEST_DIR) ++ "/security_test",
+    io:format("WC is ~p~n", [WC]),
+    Tests = filelib:wildcard(WC),
+    Opts = [ {dir, Tests} ],
+    io:format("Tests is ~p~n", [Tests]),
+    do_test(Opts).
+
+authorization() ->
+    init_auth(),
+    WC = filename:absname(?TEST_DIR) ++ "/authorization_test",
     io:format("WC is ~p~n", [WC]),
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
@@ -76,9 +133,20 @@ security() ->
 security(S) ->
     io:format("Security running with ~p~n", [S]),
     init_sec(),
-    WC = filename:absname(?TEST_DIR)++"/security_test",
+    WC = filename:absname(?TEST_DIR) ++ "/security_test",
     Tests = filelib:wildcard(WC),
-    %[compile(X) || X <- Tests],
+    [compile(X) || X <- Tests],
+    Suite = S ++ "_SUITE",
+    Opts = [ {dir, Tests},
+             {suite, [Suite]} ],
+    do_test(Opts).
+
+authorization(S) ->
+    io:format("Authorization running with ~p~n", [S]),
+    init_auth(),
+    WC = filename:absname(?TEST_DIR) ++ "/authorization_test",
+    Tests = filelib:wildcard(WC),
+    [compile(X) || X <- Tests],
     Suite = S ++ "_SUITE",
     Opts = [ {dir, Tests},
              {suite, [Suite]} ],
@@ -103,22 +171,22 @@ sys() ->
 
 sys(Suites) ->
     init(),
-    %% Copy source files
+%% Copy source files
     SrcDir = code:lib_dir(hypernumbers)++"/src/",
     EbinDir = code:lib_dir(hypernumbers)++"/ebin/",
     file:write_file(?COVER_DATA, []),
     [file:copy(S, EbinDir++filename:basename(S))
      || S <- filelib:wildcard(SrcDir++"*.erl")],
 
-    %% Setup Options
+%% Setup Options
     SOpt = if Suites == [] -> [];
               true         -> [{suite, [S++"_SUITE" || S <- Suites]}] end,
     Opts = [ {dir, [filename:absname(?SYSTEST_DIR)]}
-             ],
+            ],
 
     do_test(SOpt ++ Opts),
 
-    %% Cleanup
+%% Cleanup
     [file:delete(S) || S <- filelib:wildcard(EbinDir++"*.erl")],
     ok.
 
@@ -168,16 +236,17 @@ post_login_TEST(User, Password, URL, Data) ->
     Type = "application/json",
     Accept = [{"Accept", "application/json"}],
     Login = "{\"email\":\""++User++"\", \"pass\":\""++Password
-        ++"\",\"remember\":\"false\"}",
-    R = httpc:request(post,{URL2, Accept, Type, Login}, [], []),
+        ++"\",\"remember\":false}",
+    ok = httpc:reset_cookies(),
+    R = httpc:request(post, {URL2, Accept, Type, Login}, [], []),
     Ret = case R of
               {ok, {{_, 200, _}, Headers, _}} ->
                   CookieList = proplists:get_all_values("set-cookie",
-                                                                  Headers),
+                                                        Headers),
                   Cookie = get_right_cookie(CookieList),
                   A2 = [{"cookie", Cookie} | Accept],
                   io:format("logged in, going in with ~p~n~p~n", [URL, Data]),
-                  httpc:request(post,{URL, A2, Type, Data}, [], []);
+                  httpc:request(post, {URL, A2, Type, Data}, [], []);
               {ok, {{_, _Other, _}, _, _}} ->
                   exit("invalid return from login - wig out!")
           end,
@@ -187,24 +256,95 @@ post_login_TEST(User, Password, URL, Data) ->
 get_right_cookie(["auth=test!hypernumbers.com"++_R = H | _T]) -> H;
 get_right_cookie([_H | T]) -> get_right_cookie(T).
 
-post_logged_out_TEST(URL, Data) ->
-    Type = "application/json",
-    Accept = [{"Accept", "application/json"}],
-    R = httpc:request(post,{URL, Accept, Type, Data}, [], []),
+get_api_TEST(URL, Type, Accept) ->
+    {PubK, PrivK} = case Type of
+                        api ->            {?PUBLIC,           ?PRIVATE};
+                        api_admin ->      {?PUBLICADMIN,      ?PRIVATEADMIN};
+                        api_subdirs ->    {?PUBLICSUBDIRS,    ?PRIVATESUBDIRS};
+                        api_appendonly -> {?PUBLICAPPENDONLY, ?PRIVATEAPPENDONLY}
+                    end,
+    Accept2 = case Accept of
+                 html -> [{"Accept", "html"}];
+                 json -> [{"Accept", "application/json"}]
+             end,
+    Signature = hmac_api_lib:sign(PrivK, PubK, get, URL, Accept2, []),
+    Headers = [Signature | Accept2],
+    ok = httpc:reset_cookies(),
+    R = httpc:request(get, {URL, Headers}, [], []),
+    {ok, {{_, Code, _}, _, _}} = R,
+    Code.
+
+get_logged_out_json_TEST(URL) ->
+    get_logged_out(URL, "application/json").
+
+get_logged_out_html_TEST(URL) ->
+    get_logged_out(URL, "html").
+
+get_logged_out(URL, Accept) ->
+    AcceptHdr = [{"Accept", Accept}],
+    ok = httpc:reset_cookies(),
+    R = httpc:request(get, {URL, AcceptHdr}, [], []),
     R2 = case R of
              {ok, {{_, 303, _}, Headers, _}}   ->
                  {"location", Loc} = proplists:lookup("location", Headers),
-                 Pong = httpc:request(post,{Loc, Accept, Type, Data}, [], []),
+                 Pong = httpc:request(get, {Loc, AcceptHdr}, [], []),
+                 {ok, {{_, 303, _}, Headers2, _}} = Pong,
+                 {"location", Loc2} = proplists:lookup("location", Headers2),
+                 {"set-cookie", C2} = proplists:lookup("set-cookie", Headers2),
+                 A2 = [{"cookie", C2} | AcceptHdr],
+                 Pung = httpc:request(get, {Loc2, A2}, [], []),
+                 {ok, {{_, 303, _}, Headers3, _}} = Pung,
+                 {"location", Loc3} = proplists:lookup("location", Headers3),
+                 {"set-cookie", C3} = proplists:lookup("set-cookie", Headers3),
+                 A3 = [{"cookie", C3} | AcceptHdr],
+                 httpc:request(get, {Loc3, A3}, [], []);
+             {ok, {{_, _Other, _}, _, _}} ->
+                 io:format("Got to 4~n"),
+                 R
+         end,
+    {ok, {{_, Code, _}, _, _}} = R2,
+    Code.
+
+get_logged_in_json_TEST(URL) ->
+    get_logged_in(URL, "application/json", admin).
+
+get_logged_in_json_notadmin_TEST(URL) ->
+    get_logged_in(URL, "application/json", notadmin).
+
+get_logged_in_html_TEST(URL) ->
+    get_logged_in(URL, "html", admin).
+
+get_logged_in_html_notadmin_TEST(URL) ->
+    get_logged_in(URL, "html", notadmin).
+
+get_logged_in(URL, Accept, UserType) ->
+    Cookie = login(URL, UserType),
+    Accept2 = [{"Accept", Accept}],
+    Hdrs = [{"cookie", Cookie} | Accept2],
+    ok = httpc:reset_cookies(),
+    R2 = httpc:request(get, {URL, Hdrs}, [], []),
+    {ok, {{_, Code, _}, _, _}} = R2,
+    Code.
+
+post_logged_out_TEST(URL, Data) ->
+    Type = "application/json",
+    Accept = [{"Accept", "application/json"}],
+    ok = httpc:reset_cookies(),
+    R = httpc:request(post,{URL, Accept, Type, Data}, [], []),
+    R2 = case R of
+             {ok, {{_, 303, _}, Headers, _}} ->
+                 {"location", Loc} = proplists:lookup("location", Headers),
+                 Pong = httpc:request(post, {Loc, Accept, Type, Data}, [], []),
                  {ok, {{_, 303, _}, Headers2, _}} = Pong,
                  {"location", Loc2} = proplists:lookup("location", Headers2),
                  {"set-cookie", C2} = proplists:lookup("set-cookie", Headers2),
                  A2 = [{"cookie", C2} | Accept],
-                 Pung = httpc:request(post,{Loc2, A2, Type, Data}, [], []),
+                 Pung = httpc:request(post, {Loc2, A2, Type, Data}, [], []),
                  {ok, {{_, 303, _}, Headers3, _}} = Pung,
                  {"location", Loc3} = proplists:lookup("location", Headers3),
                  {"set-cookie", C3} = proplists:lookup("set-cookie", Headers3),
                  A3 = [{"cookie", C3} | Accept],
-                 httpc:request(post,{Loc3, A3, Type, Data}, [], []);
+                 httpc:request(post, {Loc3, A3, Type, Data}, [], []);
              {ok, {{_, _Other, _}, _, _}} ->
                  R
          end,
@@ -214,7 +354,6 @@ post_logged_out_TEST(URL, Data) ->
 %%% Internal functions
 
 do_test(Opts) ->
-    io:format("Opts is ~p~n", [Opts]),
     application:unset_env(hypernumbers, sync_url),
     filelib:ensure_dir(filename:absname(?LOG_DIR)++"/"),
     DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
@@ -241,7 +380,7 @@ gen2([{struct, H} | T]) ->
                        {"resize", "row"}    -> {Name ++ ".", 1};
                        {"resize", "column"} -> {Name ++ ".", 1};
                        {"resize", "range"}  -> {Name ++ ".", 2}
-            end,
+                   end,
     Module = find_module(Name2),
     Bounds = get_bounds(Args, Min),
     ok = gen_fuzz_tests(Module, Name2, Bounds),
@@ -264,27 +403,27 @@ gen_fuzz_tests(Module, Name, {Min, Max}) ->
         Min =< Max -> write_test(Module, Name, Min),
                       gen_fuzz_tests(Module, Name,
                                      {Min + 1, Max});
-         Min > Max -> ok
+        Min > Max -> ok
     end.
 
 write_test(Module, Name, Min) ->
     NewName = "fuzz_" ++ Name ++ "_args_"
         ++ integer_to_list(Min) ++ "_SUITE",
     NewName2 = [case X of $. -> $_; X -> X end || X <- NewName],
-    NewName3 = case NewName2 of
+NewName3 = case NewName2 of
                "and" -> "special_and";
                "if" -> "special_if";
                "or" -> "special_or";
                _     -> NewName2
            end,
-    File = "-module(" ++ NewName3 ++ ").\n\n"
-        ++ "-define(MODULENAME, '" ++ atom_to_list(Module) ++ "')." ++ "\n"
-        ++ "-define(FN, '" ++ Name ++ "').\n"
-        ++ "-define(NOOFPARAMS, " ++ integer_to_list(Min) ++ ").\n\n"
-        ++ "-include(\"fuzz_include.irl\")." ++ "\n",
-    Dir = code:lib_dir(hypernumbers)++"/../../tests/funs_fuzz_test/",
-    file:write_file(Dir ++ NewName3 ++ ".erl", File),
-    ok.
+File = "-module(" ++ NewName3 ++ ").\n\n"
+++ "-define(MODULENAME, '" ++ atom_to_list(Module) ++ "')." ++ "\n"
+++ "-define(FN, '" ++ Name ++ "').\n"
+++ "-define(NOOFPARAMS, " ++ integer_to_list(Min) ++ ").\n\n"
+++ "-include(\"fuzz_include.irl\")." ++ "\n",
+Dir = code:lib_dir(hypernumbers)++"/../../tests/funs_fuzz_test/",
+file:write_file(Dir ++ NewName3 ++ ".erl", File),
+ok.
 
 find_module(Name) ->
     Modules = muin:get_modules(),
@@ -299,3 +438,32 @@ find_m([H | T], Name) ->
         false -> find_m(T, Name);
         _     -> H
     end.
+
+login(URL, UserType) ->
+    User = case UserType of
+               admin    -> "test@hypernumbers.com";
+               notadmin -> "nonadmin@hypernumbers.com"
+           end,
+    Password = "i!am!secure",
+    [Proto, Root | _Rest] = string:tokens(URL, "/"),
+    URL2 = Proto ++ "//" ++ Root ++ "/_login/?return=" ++ Proto ++ "//" ++ Root,
+    Type = "application/json",
+    Hdr = [{"Accept", "application/json"}],
+    Login = "{\"email\":\"" ++ User ++ "\", \"pass\":\"" ++ Password
+        ++ "\",\"remember\":false}",
+    ok = httpc:reset_cookies(),
+    R = httpc:request(post, {URL2, Hdr, Type, Login}, [], []),
+    Cookie = case R of
+                 {ok, {{_, 303, _}, Headers, _}} ->
+                     {"location", Lc} = ?PL("location", Headers),
+                     Pong = httpc:request(post, {Lc, Hdr, Type, Login}, [], []),
+                     {ok, {{_, 303, _}, Headers2, _}} = Pong,
+                     {"set-cookie", C2} = ?PL("set-cookie", Headers2),
+                     C2;
+                 {ok, {{_, _Code, _}, Headers4, _}} ->
+                     CookieList = proplists:get_all_values("set-cookie",
+                                                           Headers4),
+                     C4 = get_right_cookie(CookieList),
+                     C4
+             end,
+    Cookie.
