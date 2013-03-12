@@ -1,9 +1,3 @@
-%%-*-erlang-*-
-%% this is a permissions script for creating and adding users to groups.
-%%
-
-{create_group, [{name, "admin"}]}.
-{create_group, [{name, "user"}]}.
-
-{add_user, [{uid, '$creator'},
-            {group, "admin"}]}.
+{create_group,[{name,"user"}]}.
+{create_group,[{name,"admin"}]}.
+{add_user,[{uid,'$creator'},{group,"admin"}]}.
