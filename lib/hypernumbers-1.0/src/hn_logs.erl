@@ -50,7 +50,10 @@ make_row(#logging{idx = _I, timestamp = Tm, uid = U, action = A,
                   log = Msg}) ->
     Date = dh_date:format("d/m/y h:m:s", util2:timestamp_to_date(Tm)),
     Date2 = io_lib:format("~s", [Date]),
-    {ok, Email} = passport:uid_to_email(U),
+    {ok, Email} = case U of
+                      [] -> {ok, ""};
+                      _  -> passport:uid_to_email(U)
+                  end,
     Ref = hn_util:obj_to_ref(O),
     A2 = format_actions_and_type(A),
     AT2 = format_actions_and_type(AT),
