@@ -112,7 +112,7 @@ handle_(#refX{site = _S, path = ["_sync", "singlecookie" | _Rest]},
         Env, #qry{return = Return}) ->
     {_, Auth} = hn_net_util:cookie("auth", passport:temp_stamp(), "never"),
     Return2 = Return ++ "?" ++ mochiweb_util:quote_plus(Auth),
-    Headers = [{"location", Return2} | Env#env.headers],
+    Headers = [{"Set-Cookie", Auth}, {"location", Return2} | Env#env.headers],
     Env2 = Env#env{headers = Headers},
     respond(303, Env2);
 
