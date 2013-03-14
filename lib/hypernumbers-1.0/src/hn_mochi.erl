@@ -53,7 +53,6 @@ handle(MochiReq) ->
     Site = get_site(MochiReq),
     try
         Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
-        put(now, util2:get_timestamp()),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
         handle_(Ref, Env, Qry)
@@ -90,6 +89,19 @@ handle_(#refX{site = "http://www."++Site}, E = #env{mochi = Mochi}, _Qry) ->
     Redir = "http://" ++ hn_util:strip80(Site) ++ Mochi:get(raw_path),
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
+
+% single signon stuff
+handle_(#refX{path = [], type = url, obj = {filename, "vixo.commoncookie.js"}},
+        #env{mochi = Mochi} = Env, _Qry) ->
+    Auth = Mochi:get_cookie_value("auth"),
+    {_, Cookie} = case Auth of
+                      undefined -> Stamp = passport:temp_stamp(),
+                                   hn_net_util:cookie("auth", Stamp, "never");
+                      _         -> hn_net_util:cookie("auth", Auth,  "never")
+             end,
+    JS = io_lib:format("document.cookie=~p", [Cookie]),
+    Headers = [{"Set-Cookie", Cookie} | Env#env.headers],
+    javascript_nocache(Env#env{headers = Headers}, JS);
 
 % this function does single sign on for WordPress
 handle_(#refX{site = S, path = ["_sync", "wordpress", "logon" | _Rest]},
@@ -1566,6 +1578,11 @@ process_sync(["reset"], E, QReturn, undefined, _Site) ->
 respond(Code, #env{mochi = Mochi, headers = Headers}) ->
     Mochi:respond({Code, Headers, []}),
     ok.
+
+javascript_nocache(#env{mochi = Mochi, headers = Headers}, Text) ->
+    Mochi:ok({"text/html", Headers ++ nocache(), Text}),
+    ok.
+
 
 text_html_nocache(#env{mochi = Mochi, headers = Headers}, Text) ->
     Mochi:ok({"text/html", Headers ++ nocache(), Text}),
