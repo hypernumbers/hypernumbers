@@ -108,6 +108,17 @@ handle_(#refX{site = S, path = ["_sync", "wordpress", "logon" | _Rest]},
 
 % the documentation/blog needs to get a cookie stamp to identify users
 % this function just handles that...
+handle_(#refX{site = _S, path = ["_sync", "singlecookie" | _Rest]},
+        Env, #qry{return = Return}) ->
+    {_, Auth} = hn_net_util:cookie("auth", passport:temp_stamp(), "never"),
+    Return2 = Return ++ "?" ++ mochiweb_util:quote_plus(Auth),
+    Headers = [{"location", Return2} | Env#env.headers],
+    Env2 = Env#env{headers = Headers},
+    respond(303, Env2);
+
+% the documentation/blog needs to get a cookie stamp to identify users
+% this function just handles that...
+% this is the old version
 handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]},
         Env, Qry) ->
     #env{mochi = Mochi} = Env,
