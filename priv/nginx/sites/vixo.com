@@ -28,6 +28,12 @@ server {
    listen        80;
    server_name   documentation.vixo.com;
 
+   userid         on;
+   userid_name    uid;
+   userid_domain  documentation.vixo.com;
+   userid_path    /;
+   userid_expires 365d;
+
    location / {
        access_log /var/log/nginx/vixodoco.log docoformat;
        root /hn/files-www/vixo2/documentation/;
@@ -42,6 +48,12 @@ server {
 server {
    listen        80;
    server_name   wordpress.vixo.com;
+
+   userid         on;
+   userid_name    uid;
+   userid_domain  wordpress.vixo.com;
+   userid_path    /;
+   userid_expires 365d;
 
    location / {
        access_log /var/log/nginx/vixowordpress.log wordpressformat;
@@ -63,6 +75,12 @@ server {
 server {
    listen        80;
    server_name   blog.vixo.com;
+
+   userid         on;
+   userid_name    uid;
+   userid_domain  blog.vixo.com;
+   userid_path    /;
+   userid_expires 365d;
 
    location / {
         proxy_pass              http://127.0.0.1:8765/;
