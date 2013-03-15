@@ -1315,7 +1315,7 @@ page_attrs_for_export(Ref, Env) ->
 page_attributes(Ref, Env) ->
     page_a2(Ref, Env, full).
 
-page_a2(#refX{site = S, path = P} = Ref, Env, Type) ->
+page_a2(#refX{site = S, path = P, obj = O} = Ref, Env, Type) ->
     #env{uid = UID} = Env,
     Content = new_db_api:read_intersect_ref(Ref),
     Content2 = case Type of
@@ -1331,9 +1331,15 @@ page_a2(#refX{site = S, path = P} = Ref, Env, Type) ->
     Time    = {"time", remoting_reg:timestamp()},
     Usr     = {"user", Env#env.email},
     Host    = {"host", S},
+    Ob = case O of
+             {page, "/"} -> "page";
+             _           -> hn_util:obj_to_ref(O)
+         end,
+    Object  = {"object", Ob},
+    Path    = {"path", hn_util:list_to_path(P)},
     Views   = {"views", {array, auth_srv:get_views(S, P, UID)}},
     Perms   = {"permissions", auth_srv:get_as_json(S, P)},
-    {struct, [Time, Usr, Host, Perms, Views | dict_to_struct(Dict)]}.
+    {struct, [Time, Usr, Host, Path, Object, Perms, Views | dict_to_struct(Dict)]}.
 
 clean_up_dyn_sel([], Acc) -> Acc;
 clean_up_dyn_sel([{XRefX, Attrs} | T], Acc) ->
@@ -1570,11 +1576,11 @@ xml(#env{mochi = Mochi, headers = Headers}, Data) ->
               Data}),
     ok.
 
--spec jsonp(#env{}, any(), any()) -> any().
-jsonp(#env{mochi = Mochi, headers = Headers}, Data, CallbackFn) ->
-    JsonP = CallbackFn ++ "(" ++
-        (mochijson:encoder([{input_encoding, utf8}]))(Data) ++ ");",
-    Mochi:ok({"application/json", Headers ++ nocache(), JsonP}).
+%% -spec jsonp(#env{}, any(), any()) -> any().
+%% jsonp(#env{mochi = Mochi, headers = Headers}, Data, CallbackFn) ->
+%%     JsonP = CallbackFn ++ "(" ++
+%%         (mochijson:encoder([{input_encoding, utf8}]))(Data) ++ ");",
+%%     Mochi:ok({"application/json", Headers ++ nocache(), JsonP}).
 
 -spec json(#env{}, any()) -> any().
 json(#env{mochi = Mochi, headers = Headers}, Data) ->
