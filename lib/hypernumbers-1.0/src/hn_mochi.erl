@@ -118,35 +118,6 @@ handle_(#refX{site = S, path = ["_sync", "wordpress", "logon" | _Rest]},
             exit("invalid attempt to do wordpress single sigon")
     end;
 
-% the documentation/blog needs to get a cookie stamp to identify users
-% this function just handles that...
-handle_(#refX{site = _S, path = ["_sync", "singlecookie" | _Rest]},
-        Env, #qry{return = Return}) ->
-    {_, Auth} = hn_net_util:cookie("auth", passport:temp_stamp(), "never"),
-    Return2 = Return ++ "?" ++ mochiweb_util:quote_plus(Auth),
-    Headers = [{"Set-Cookie", Auth}, {"location", Return2} | Env#env.headers],
-    Env2 = Env#env{headers = Headers},
-    respond(303, Env2);
-
-% the documentation/blog needs to get a cookie stamp to identify users
-% this function just handles that...
-% this is the old version
-handle_(#refX{site = _S, path = ["_sync", "externalcookie" | _Rest]},
-        Env, Qry) ->
-    #env{mochi = Mochi} = Env,
-    Auth = Mochi:get_cookie_value("auth"),
-    Cookie = case Auth of
-                 undefined -> Stamp = passport:temp_stamp(),
-                              hn_net_util:cookie("auth", Stamp, "never");
-                 _         -> {"Set-Cookie", Auth}
-             end,
-    #qry{callback = Callback} = Qry,
-    X = {"Access-Control-Allow-Origin", "*"},
-    E = Env#env{headers = [Cookie, X | Env#env.headers]},
-    {"Set-Cookie", ShortC} = Cookie,
-    E = Env#env{headers = [Cookie, X | Env#env.headers]},
-    jsonp(E, {struct, [{"auth", ShortC}]}, Callback);
-
 handle_(#refX{site = S, path = ["_sync" | Cmd]}, Env,
         #qry{return = QReturn, stamp = QStamp})
   when QReturn /= undefined ->
