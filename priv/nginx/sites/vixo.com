@@ -29,7 +29,7 @@ server {
    server_name   documentation.vixo.com;
 
    userid         on;
-   userid_name    uid;
+   userid_name    docouid;
    userid_domain  documentation.vixo.com;
    userid_path    /;
    userid_expires 365d;
@@ -50,7 +50,7 @@ server {
    server_name   wordpress.vixo.com;
 
    userid         on;
-   userid_name    uid;
+   userid_name    wpuid;
    userid_domain  wordpress.vixo.com;
    userid_path    /;
    userid_expires 365d;
@@ -77,7 +77,7 @@ server {
    server_name   blog.vixo.com;
 
    userid         on;
-   userid_name    uid;
+   userid_name    bloguid;
    userid_domain  blog.vixo.com;
    userid_path    /;
    userid_expires 365d;
