@@ -53,6 +53,7 @@ handle(MochiReq) ->
     Site = get_site(MochiReq),
     try
         Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
+        io:format("Ref is ~p~n", [Ref]),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
         handle_(Ref, Env, Qry)
@@ -481,6 +482,18 @@ iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
 
 iget(Ref, page, #qry{pages = []}, Env = #env{accept = json}) ->
     json(Env, pages(Ref));
+
+iget(Ref, cell, _Qry, Env = #env{accept = json}) ->
+    json(Env, page_attributes(Ref, Env));
+
+iget(Ref, column, _Qry, Env = #env{accept = json}) ->
+    json(Env, page_attributes(Ref, Env));
+
+iget(Ref, row, _Qry, Env = #env{accept = json}) ->
+    json(Env, page_attributes(Ref, Env));
+
+iget(Ref, range, _Qry, Env = #env{accept = json}) ->
+    json(Env, page_attributes(Ref, Env));
 
 iget(Ref, page, _Qry, Env = #env{accept = json}) ->
     json(Env, page_attributes(Ref, Env));
@@ -1201,7 +1214,10 @@ to_dict([{Ref, KVs} | T], JSON) ->
 
 add_ref(_Ref, [], JSON) ->
     JSON;
-add_ref(Ref, [{"__"++_Hidden, _}|Tail], JSON) ->
+add_ref(Ref, [{"__rawvalue", _} = KV | Tail], JSON) ->
+    JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
+    add_ref(Ref, Tail, JSON2);
+add_ref(Ref, [{"__"++_Hidden, _} | Tail], JSON) ->
     add_ref(Ref, Tail, JSON);
 add_ref(Ref, [KV | Tail], JSON) ->
     JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),

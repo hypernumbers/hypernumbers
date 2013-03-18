@@ -14,32 +14,6 @@
 
 -define(SITE, "http://tests.hypernumbers.dev:9000").
 
--define(test(Name, Path, Expected, Status),
-        Name(_Config) ->
-               URL  = ?SITE ++ Path,
-               Fn = case Status of
-                        loggedinjson          ->
-                            get_logged_in_json_TEST;
-                        loggedinjsonnotadmin  ->
-                            get_logged_in_json_notadmin_TEST;
-                        loggedoutjson         ->
-                            get_logged_out_json_TEST;
-                        loggedinhtml          ->
-                            get_logged_in_html_TEST;
-                        loggedinhtmlnotadmin  ->
-                            get_logged_in_notadmin_html_TEST;
-                        loggedouthtml         ->
-                            get_logged_out_html_TEST
-                    end,
-               Got = test:Fn(URL),
-               case Expected of
-                   Got    -> {test, ok};
-                   _Other -> io:format("EXPECTED:~n    ~p~nGOT:~n    ~p~n",
-                                       [Expected, Got]),
-                             exit("FAIL: Mismatch in " ++ atom_to_list(Name)
-                                  ++ " of " ++ atom_to_list(?MODULE))
-               end).
-
 -define(tapi(Name, Path, Expected, Status, Accept),
         Name(_Config) ->
                URL  = ?SITE ++ Path,
@@ -76,4 +50,4 @@ all() ->
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
 %% The special pages tests
-?test(get_json_page, "/some/page/",  200, api).  % can't see that page
+?tapi(get_json_page, "/some/page/",  200, api).

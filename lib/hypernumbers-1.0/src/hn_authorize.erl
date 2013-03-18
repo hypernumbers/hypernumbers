@@ -20,25 +20,35 @@
         ]).
 
 authorize(Env, #refX{} = Ref, Qry) ->
-    PU = process_user(Ref, Env),
     API = process_api(Ref, Env),
-    case PU of
+    io:format("API is ~p~n", [API]),
+    Auth = case API of
+               ?ANYAPI -> EMail = "api public key: " ++ API#api_auth.publickey,
+                          {user, Env#env{email = EMail}};
+               _       -> process_user(Ref, Env)
+           end,
+    case  Auth of
         {user, Env2} ->
+            Email = case API of
+                        ?ANYAPI -> "api public key: " ++ API#api_auth.publickey;
+                        _       -> Env2#env.email
+                    end,
             #env{method = Method, body = Body} = Env,
+            Env3 = Env2#env{email = Email},
             Return = case {Method, Body} of
                          {Req, _} when Req == 'GET'; Req == 'HEAD' ->
-                             authorize_get(Ref, Qry, Env2, API);
+                             authorize_get(Ref, Qry, Env3, API);
                          {'POST', multipart} ->
-                             authorize_upload(Ref, Qry, Env2, API);
+                             authorize_upload(Ref, Qry, Env3, API);
                   {'POST', _} ->
-                             authorize_post(Ref, Qry, Env2, API)
+                             authorize_post(Ref, Qry, Env3, API)
                      end,
-            {Return, Env2};
+            {Return, Env3};
         {303, Env2} ->
             {303, Env2}
     end.
 
-%% Specifically allow access to the json permissions. Only the permissions,
+%% Specifically allow access to the json permissions. Only the permissions
 %% query may be present.
 %% TODO: Only admins should be able to do this...
 -spec authorize_get(#refX{}, #qry{}, #env{}, [#api_auth{} | not_api])
@@ -392,7 +402,9 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env, not_api) ->
     end;
 % api can get an authorised page
 authorize_get(#refX{}, #qry{}, #env{}, ?ISAUTH) ->
-    allowed.
+    allowed;
+authorize_get(#refX{}, #qry{}, #env{}, ?ISNOTAUTH) ->
+    denied.
 
 -spec authorize_post(#refX{}, #qry{}, #env{}, [#api_auth{} | not_api])
     -> allowed | denied | not_found.
@@ -521,19 +533,20 @@ process_api(#refX{site = S, path = P}, #env{mochi = Mochi} = Env) ->
             not_api;
         {value, {'Authorization', _Auth}} ->
             case hmac_api_lib:authorize_request(S, Env#env.mochi) of
-                {"match", #api{urls = API_URLs}} ->
-                    check_validity(S, P, API_URLs);
-                "no match" ->
-                    #api_auth{authorized = false};
-                "no key" ->
-                    #api_auth{authorized = false}
+                {"match", #api{urls = API_URLs}, PublicKey} ->
+                    check_validity(S, P, API_URLs, PublicKey);
+                {"no match", PublicKey} ->
+                    #api_auth{publickey = PublicKey, authorized = false};
+                {"no key", PublicKey} ->
+                    #api_auth{publickey = PublicKey, authorized = false}
             end
     end.
 
-check_validity(Site, Path, URLs) ->
+check_validity(Site, Path, URLs, PublicKey) ->
     Admin = is_admin(URLs),
     {Auth, Append} = check_path(URLs, Site, Path),
-    #api_auth{authorized = Auth, admin = Admin, append_only = Append}.
+    #api_auth{publickey = PublicKey, authorized = Auth,
+              admin = Admin, append_only = Append}.
 
 check_path([], _S, _P) ->
     {false, false};

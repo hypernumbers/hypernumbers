@@ -22,7 +22,9 @@
          get_api_TEST/3,
          post_logged_out_TEST/2,
          post_login_TEST/4,
-         post_TEST_DEBUG/0
+         post_TEST_DEBUG/0,
+         post_api_TEST/4
+
         ]).
 
 % debugging
@@ -256,6 +258,32 @@ post_login_TEST(User, Password, URL, Data) ->
 get_right_cookie(["auth=test!hypernumbers.com"++_R = H | _T]) -> H;
 get_right_cookie([_H | T]) -> get_right_cookie(T).
 
+post_api_TEST(URL, Body, Type, Accept) ->
+    {PubK, PrivK} = case Type of
+                        api ->            {?PUBLIC,           ?PRIVATE};
+                        api_admin ->      {?PUBLICADMIN,      ?PRIVATEADMIN};
+                        api_subdirs ->    {?PUBLICSUBDIRS,    ?PRIVATESUBDIRS};
+                        api_appendonly -> {?PUBLICAPPENDONLY, ?PRIVATEAPPENDONLY}
+                    end,
+    Accept2 = case Accept of
+                 html -> [{"Accept", "html"}];
+                 json -> [{"Accept", "application/json"}]
+             end,
+    Signature = hmac_api_lib:sign(PrivK, PubK, get, URL, Accept2, []),
+    Headers = [Signature | Accept2],
+    ok = httpc:reset_cookies(),
+    R = httpc:request(post, {URL, Headers, "application/json", Body}, [], []),
+    {ok, {{_, Code, _}, _, Body}} = R,
+    Dir = code:priv_dir(hypernumbers) ++ "../../../../var/api-logs/",
+    #refX{path = P, obj = O} = hn_util:url_to_refX(URL),
+    Ob = case O of
+             {page, "/"} -> "page";
+             _           -> hn_util:obj_to_ref(O)
+           end,
+    File = Dir ++ hn_util:path_to_json_path(lists:append([P ,["type-" ++ Ob]])),
+    log(Body, File),
+    Code.
+
 get_api_TEST(URL, Type, Accept) ->
     {PubK, PrivK} = case Type of
                         api ->            {?PUBLIC,           ?PRIVATE};
@@ -271,7 +299,15 @@ get_api_TEST(URL, Type, Accept) ->
     Headers = [Signature | Accept2],
     ok = httpc:reset_cookies(),
     R = httpc:request(get, {URL, Headers}, [], []),
-    {ok, {{_, Code, _}, _, _}} = R,
+    {ok, {{_, Code, _}, _, Body}} = R,
+    Dir = code:priv_dir(hypernumbers) ++ "../../../../var/api-logs/",
+    #refX{path = P, obj = O} = hn_util:url_to_refX(URL),
+    Ob = case O of
+             {page, "/"} -> "page";
+             _           -> hn_util:obj_to_ref(O)
+           end,
+    File = Dir ++ hn_util:path_to_json_path(lists:append([P ,["type-" ++ Ob]])),
+    log(Body, File),
     Code.
 
 get_logged_out_json_TEST(URL) ->
@@ -467,3 +503,13 @@ login(URL, UserType) ->
                      C4
              end,
     Cookie.
+
+log(String, File) ->
+    _Return = filelib:ensure_dir(File),
+    case file:open(File, [write]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [String]),
+            file:close(Id);
+        _ ->
+            error
+    end.

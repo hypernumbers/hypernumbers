@@ -48,7 +48,7 @@ authorize_request(Site, Req) ->
     IncAuth     = get_header(Headers, "authorization"),
     {_Schema, PublicKey, _Sig} = breakout(IncAuth),
     case new_db_api:read_api(Site, PublicKey) of
-        []    -> "no key";
+        []    -> {"no key", PublicKey};
         [Rec] -> #api{privatekey = PrivateKey} = Rec,
                  Signature = #hmac_signature{method = Method,
                                              contentmd5 = ContentMD5,
@@ -59,8 +59,8 @@ authorize_request(Site, Req) ->
                  Signed = sign_data(PrivateKey, Signature),
                  {_, AuthHeader} = make_HTTPAuth_header(Signed, PublicKey),
                  case AuthHeader of
-                     IncAuth -> {"match", Rec};
-                     _       -> "no match"
+                     IncAuth -> {"match", Rec, PublicKey};
+                     _       -> {"no match", PublicKey}
                  end
     end.
 

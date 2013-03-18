@@ -423,6 +423,7 @@
 % used once we have got a signed request is
 -record(api_auth,
         {
+          publickey,
           authorized,
           admin,
           append_only
