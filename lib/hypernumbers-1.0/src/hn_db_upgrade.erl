@@ -89,7 +89,8 @@
 
 write_spoof_hmac_api_keys(Site) ->
     {{public, PubK}, {private, PrivK}} = hmac_api_lib:get_api_keypair(),
-    API_URLS = [#api_url{path = "/", admin = true, include_subs = true, append_only = false}],
+    API_URLS = [#api_url{path = "/", admin = true, include_subs = true,
+                         append_only = false}],
     API = #api{publickey = PubK, privatekey = PrivK, urls = API_URLS},
     new_db_api:write_api(Site, API).
 
