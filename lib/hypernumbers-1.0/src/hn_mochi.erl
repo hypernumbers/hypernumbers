@@ -53,7 +53,6 @@ handle(MochiReq) ->
     Site = get_site(MochiReq),
     try
         Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
-        io:format("Ref is ~p~n", [Ref]),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
         handle_(Ref, Env, Qry)

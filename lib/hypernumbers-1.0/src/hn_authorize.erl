@@ -21,7 +21,6 @@
 
 authorize(Env, #refX{} = Ref, Qry) ->
     API = process_api(Ref, Env),
-    io:format("API is ~p~n", [API]),
     Auth = case API of
                ?ANYAPI -> EMail = "api public key: " ++ API#api_auth.publickey,
                           {user, Env#env{email = EMail}};
