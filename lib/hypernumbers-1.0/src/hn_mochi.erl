@@ -810,7 +810,7 @@ ipost(Ref = #refX{site = S, path = P} = Ref, _Qry,
 
 %% ipost of factory provisioning - special type of webcontrol
 %% first up is a trial
-ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
+ipost(#refX{obj = {cell, _}} = Ref, _Qry,
       #env{body = [{"postwebcontrols",
                     {struct, [{"signup", {struct, [{"sitetype", ST}]}}]}}],
            uid = PrevUID} = Env) ->
@@ -819,12 +819,12 @@ ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
     Email = "dummy_" ++ PrevUID ++ "@vixo.com",
     [Expected] = new_db_api:matching_forms(Ref, Transaction),
     case hn_security:validate_factory(Expected, SType2, []) of
-        true  -> hn_mochi:provision_site(RootSite, PrevUID, SType2, Email,
+        true  -> hn_mochi:provision_site(Ref, PrevUID, SType2, Email,
                                          [], Env);
         false -> json(Env, {struct, [{"result", "error"},
                                      {"reason", 401}]})
     end;
-ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
+ipost(#refX{obj = {cell, _}} = Ref, _Qry,
       #env{uid = PrevUID,
            body = [{"postwebcontrols", {struct, [{"signup", Act}]}}]} = Env) ->
     {struct, List} = Act,
@@ -843,7 +843,7 @@ ipost(#refX{site = RootSite, obj = {cell, _}} = Ref, _Qry,
             case hn_security:validate_factory(Expected, SType2, Data) of
                 true ->
                     spawn(hn_mochi, provision_site,
-                          [RootSite, PrevUID, SType2, Email2, Data, Env]),
+                          [Ref, PrevUID, SType2, Email2, Data, Env]),
                     json(Env, "success");
                 false ->
                     json(Env, {struct, [{"result", "error"},
@@ -1123,8 +1123,12 @@ ipost(Ref, Qry, Env) ->
 %%% Helpers
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
--spec log_signup(string(), string(), atom(), auth_srv:uid(), string()) -> ok.
-log_signup(NewSite, SiteType, Node, Uid, Email) ->
+-spec log_signup(#refX{}, string(), string(), atom(), auth_srv:uid(),
+                 string(), string()) -> ok.
+log_signup(RefX, NewSite, SiteType, Node, Uid, Email, Zone) ->
+    % write the signup to the new commision table
+    ok = new_db_api:write_commission_logD(RefX, NewSite, SiteType, Uid,
+                                          Email, Zone, false),
     LogS = case application:get_env(hypernumbers, environment) of
                {ok, development} -> "http://hypernumbers.dev:9000";
                {ok, server_dev}  -> "http://dev.hypernumbers.com:8080";
@@ -1864,7 +1868,8 @@ wrap(Text) ->
         ++ Text
         ++ "</body></html>".
 
-provision_site(RootSite, PrevUID, SiteType, Email, Data, Env) ->
+provision_site(#refX{site = RootSite} = RefX, PrevUID, SiteType,
+               Email, Data, Env) ->
     Zone = case application:get_env(hypernumbers, environment) of
                {ok, development} -> "hypernumbers.dev";
                {ok, server_dev}  -> "dev.hypernumbers.com";
@@ -1874,14 +1879,14 @@ provision_site(RootSite, PrevUID, SiteType, Email, Data, Env) ->
     case factory:provision_site(Zone, Email, From, Sig, SiteType,
                                 PrevUID, Data) of
         {ok, new, Site, Node, Uid, Name, InitialView} ->
-            log_signup(Site, SiteType, Node, Uid, Email),
+            log_signup(RefX, Site, SiteType, Node, Uid, Email, Zone),
             Opaque = [{param, InitialView}],
             Expiry = "never",
             Url = passport:create_hypertag_url(Site, ["_mynewsite", Name],
                                                Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
         {ok, existing, Site, Node, Uid, _Name, InitialView} ->
-            log_signup(Site, SiteType, Node, Uid, Email),
+            log_signup(RefX, Site, SiteType, Node, Uid, Email, Zone),
             json(Env, {struct, [{"result", "success"},
                                 {"url", Site ++ InitialView}]});
         {error, invalid_email} ->

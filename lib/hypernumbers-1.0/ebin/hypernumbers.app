@@ -1,5 +1,5 @@
 {application, hypernumbers,
- [{description,  "The engine application"},
+ [{description,  "The main hypernumbers application"},
   {vsn,          "1.0"},
   {modules,      [
                   auth_srv,
@@ -14,8 +14,10 @@
                   format_util,
                   generate_help,
                   gui_generator_sup,
+                  highrise_srv,
                   hmac_api_lib,
                   hn_archive,
+                  hn_authorize,
                   hn_db_admin,
                   hn_db_upgrade,
                   hn_file_upload,

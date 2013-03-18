@@ -63,7 +63,12 @@ init([]) ->
             {ok, false} -> []
         end,
 
-    S2 = lists:merge(Services, P),
+    HighRise = case application:get_env(hypernumbers, environment) of
+                   {ok, development} -> [{highrise_srv, true}];
+                   _                 -> []
+               end,
+
+    S2 = lists:merge([Services, P, HighRise]),
 
     ChildSpecs = [gen_child_spec(S) || {S,X} <- S2, (IsDev or X)],
 

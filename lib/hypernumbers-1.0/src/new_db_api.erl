@@ -14,6 +14,9 @@
 -include("errvals.hrl").
 
 -export([
+         write_commission_logD/7,
+         read_commission_logD/1,
+         get_unprocessed_commissionsD/0,
          run_zevalD/3,
          any_adminD/1,
          set_usersD/3,
@@ -119,6 +122,32 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+write_commission_logD(RefX, NewSite, SiteType, Uid, Email, Zone, InHR) ->
+    #refX{site = S, path = P, obj = O} = RefX,
+    Commission = #commission{uid = Uid, email = Email, site = NewSite,
+                             sitetype = SiteType, zone = Zone,
+                             commissioning_site = S, commissioning_path = P,
+                             commissioning_cell = O, in_highrise = InHR},
+    Table = commission,
+    Fun = fun() ->
+                  ok = mnesia:write(Table, Commission, write)
+          end,
+    mnesia:activity(transaction, Fun).
+
+read_commission_logD(Uid) ->
+    Table = commission,
+    Fun = fun() ->
+                  mnesia:index_read(Table, Uid, uid)
+          end,
+    mnesia:activity(transaction, Fun).
+
+get_unprocessed_commissionsD() ->
+    Table = commission,
+    Fun = fun() ->
+                  mnesia:index_read(Table, false, in_highrise)
+          end,
+    mnesia:activity(transaction, Fun).
+
 run_zevalD(Site, Path, Z) ->
     Z2 = string:strip(string:strip(Z, right, ?sq_ket), left, ?sq_bra),
     % this expression is not 'real' so we run it in a non-existent cell

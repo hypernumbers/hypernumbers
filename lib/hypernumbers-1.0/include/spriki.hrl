@@ -1,3 +1,4 @@
+
 -define(EXPIRY,    259200). % 3 days in seconds = 3*24*60*60
 
 -type now() :: {integer(),integer(),integer()}.
@@ -467,6 +468,21 @@
           email           :: string(),
           email_validated :: boolean(),
           signature       :: string()
+         }).
+
+% a record for notifying the CRM system of a site commission
+-record(commission,
+        {
+          timestamp             = util2:get_timestamp(),
+          uid,
+          email,
+          site,
+          sitetype,
+          zone,
+          commissioning_site,
+          commissioning_path,
+          commissioning_cell,
+          in_highrise           = false
          }).
 
 % these records are for specifiying special returns from fns
