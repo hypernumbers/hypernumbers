@@ -1,9 +1,9 @@
 %%%-----------------------------------------------------------------------------
-%%% File        : webpage_test_suite.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@backawinner.gg>
-%%% Description : tests security for a webpage view
+%%% File        : http_get_spec_test_suite.erl
+%%% Author      : Gordon Guthrie gordon@vixo.com
+%%% Description : http GET authorization tests
 %%%
-%%% Created     : 30 August 2010 by Gordon Guthrie
+%%% Created     : 10th March 2013 by Gordon Guthrie
 %%%-----------------------------------------------------------------------------
 -module(http_get_spec_test_SUITE).
 

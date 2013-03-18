@@ -14,10 +14,10 @@
 
 -define(SITE, "http://tests.hypernumbers.dev:9000").
 
--define(tapi(Name, Path, Expected, Status, Accept),
+-define(tapi(Name, Path, Body, Expected, Status, Accept),
         Name(_Config) ->
                URL  = ?SITE ++ Path,
-               Got = test:get_api_TEST(URL, Status, Accept),
+               Got = test:get_api_TEST(URL, Body, Status, Accept),
                case Expected of
                    Got    -> {test, ok};
                    _Other -> io:format("EXPECTED:~n    ~p~nGOT:~n    ~p~n",
@@ -43,11 +43,10 @@ read_config(Key) ->
 all() ->
     [
      % special pages
-     get_json_page,
-
+     get_json_page
     ].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
 %% The special pages tests
-?tapi(get_json_page, "/some/page/",  200, api).
+?tapi(get_json_page, "/some/page/", "erk", "ok",  200, api).
