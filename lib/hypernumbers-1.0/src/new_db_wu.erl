@@ -75,6 +75,7 @@
          shift_cellsD/5,
          shift_rows_and_columnsD/4,
          clear_cells/2, clear_cells/3,
+         clear_rows_and_colsD/2,
          copy_cell/5
         ]).
 
@@ -502,6 +503,27 @@ copy_c2(#xrefX{obj = {cell, {FX, FY}}},
     write_attrs(To, Attrs3, Uid),
     ok.
 
+%% @doc deletes all rows and cols
+clear_rows_and_colsD(#refX{site = S, path = P, obj = {page, "/"}}, _Uid) ->
+    Table = trans(S, local_obj),
+    Fields = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
+    Fun = fun(#local_obj{idx = Idx, obj = O}, {A1, A2, A3}) ->
+                  case O of
+                      {row,    _} -> {[Idx | A1],        A2,  [Idx | A3]};
+                      {column, _} -> {       A1,  [Idx | A2], [Idx | A3]};
+                      _           -> {       A1,         A2,         A3 }
+                  end
+          end,
+    {Rows, Cols, Dels} = lists:foldl(Fun, {[], [], []}, Fields),
+    Table2 = trans(S, item),
+    [ok = mnesia:delete(Table2, X, write) || X <- Dels],
+    % now tell the front end
+    [ok = tell_front_end_delete_attrs(idx_to_xrefXD(S, X), ["height"])
+     || X <- Rows],
+    [ok = tell_front_end_delete_attrs(idx_to_xrefXD(S, X), ["width"])
+     || X <- Cols],
+    ok.
+
 %% @doc deletes the contents (formula/value) and the formats
 %% of a cell (but doesn't delete the cell itself).
 -spec clear_cells(#refX{}, auth_srv:uid()) -> ok.
@@ -623,11 +645,9 @@ refX_to_xrefXD(#refX{site = S, path = P, obj = O}) ->
     case mnesia:index_match_object(Table, Pattern, 6, read) of
         [I]  -> #xrefX{idx = I#local_obj.idx, site = S, path = P, obj = O};
         []   -> false;
-        List -> %error_logger:error_msg("local_obj table screwed up for ~p:~n~p",
-            %                    [RefX, List]),
-            L2 = lists:reverse(lists:sort(List)),
-            [I2 | _] = L2,
-            #xrefX{idx = I2#local_obj.idx, site = S, path = P, obj = O}
+        List -> L2 = lists:reverse(lists:sort(List)),
+                [I2 | _] = L2,
+                #xrefX{idx = I2#local_obj.idx, site = S, path = P, obj = O}
     end.
 
 -spec refX_to_xrefX_createD(#refX{}) -> #xrefX{}.

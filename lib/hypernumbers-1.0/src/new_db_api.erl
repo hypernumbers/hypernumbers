@@ -855,7 +855,13 @@ clear(#refX{obj = {page, "/"}} = RefX, Type, Ar) ->
                    ?wu:get_last_row(RefX)
            end,
     NoOfRows = mnesia:activity(transaction, Fun1),
-    clear_by_rows(NoOfRows, 0, RefX, Type, Ar);
+    ok = clear_by_rows(NoOfRows, 0, RefX, Type, Ar),
+    % finally clear the page to get rid of rows and columns
+    Fun2 = fun() ->
+                   ok = init_front_end_notify(),
+                   ok = ?wu:clear_rows_and_colsD(RefX, Ar)
+           end,
+    write_activity(RefX, Fun2, "clear");
 clear(#refX{} = RefX, Type, Ar) ->
     Fun =
         fun() ->
@@ -1290,13 +1296,13 @@ tell_front_end(Type, #refX{path = P} = RefX)
     tell_front_end(extras, RefX);
 tell_front_end(_FnName, _RefX) ->
     List = lists:reverse(get('front_end_notify')),
-    Fun = fun({change, #xrefX{site=S, path=P, obj={page, "/"}}, _Attrs}) ->
+    Fun = fun({change, #xrefX{site = S, path = P, obj = {page, "/"}}, _Attrs}) ->
                   remoting_reg:notify_refresh(S, P);
-             ({change, #xrefX{site=S, path=P, obj=O}, Attrs}) ->
+             ({change, #xrefX{site = S, path = P, obj = O}, Attrs}) ->
                   remoting_reg:notify_change(S, P, O, Attrs);
-             ({style, #xrefX{site=S, path=P}, Style}) ->
+             ({style, #xrefX{site = S, path = P}, Style}) ->
                   remoting_reg:notify_style(S, P, Style);
-             ({delete_attrs, #xrefX{site=S, path=P, obj=O}, Attrs}) ->
+             ({delete_attrs, #xrefX{site = S, path = P, obj = O}, Attrs}) ->
                   remoting_reg:notify_delete_attrs(S, P, O, Attrs)
           end,
     [ok = Fun(X) || X <- List],
