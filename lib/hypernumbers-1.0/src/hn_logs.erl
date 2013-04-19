@@ -8,14 +8,39 @@
 -module(hn_logs).
 
 -export([
-         get_logs/1
+         get_logs/1,
+         get_json_logs/1
         ]).
 
 -include("spriki.hrl").
 
 -define(DOUBLEQUOTES, 34).
 
-get_logs(RefX) when is_record(RefX, refX)->
+get_json_logs(RefX) when is_record(RefX, refX) ->
+    Fun = fun(#logging{timestamp = Tm1}, #logging{timestamp = Tm2}) ->
+                  if
+                      Tm1 >  Tm2 -> false;
+                      Tm1 =< Tm2 -> true
+                  end
+          end,
+    Logs = lists:sort(Fun, new_db_api:get_logs(RefX)),
+    io:format("Logs is ~p~n", [Logs]),
+    FilteredLogs = [{Ts, {struct, [{action, Act},
+                                   {actiontype, AT},
+                                   {ref, hn_util:obj_to_ref(Obj)},
+                                   {user, to_email(Uid)},
+                                   {oldformula, SubLog#sublog.oldformula}]}}
+                    || #logging{timestamp = Ts, uid = Uid, log = SubLog,
+                                action = Act, actiontype = AT,
+                                obj = Obj} <- Logs],
+    {struct, FilteredLogs}.
+
+to_email([])  -> [];
+to_email(Uid) -> io:format("Uid is ~p~n", [Uid]),
+                 {ok, Email} = passport:uid_to_email(Uid),
+                 Email.
+
+get_logs(RefX) when is_record(RefX, refX) ->
     Fun = fun(#logging{timestamp = Tm1}, #logging{timestamp = Tm2}) ->
                   if
                       Tm1 >  Tm2 -> false;
