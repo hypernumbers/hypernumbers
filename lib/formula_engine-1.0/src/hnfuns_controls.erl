@@ -168,7 +168,7 @@ trial3(true, Text, Type, Colour) ->
               resize = Resize, preview = PreV, sp_site = true}.
 
 'factory.'([W, H | Rest]) -> factoryif([W, H, true | Rest]).
-% syntax heightlighter gets funky on these names
+% syntax highlighter gets funky on these names
 'factory.if.'(List) -> factoryif(List).
 
 factoryif([W, H]) ->
