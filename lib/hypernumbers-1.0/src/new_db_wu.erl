@@ -124,21 +124,21 @@ revertD(#refX{site = S, path = P, obj = {cell, _} = O} = RefX, Rev, UID) ->
     Table = trans(S, logging),
     case mnesia:index_read(Table, P2, #logging.path) of
         [] ->
-            ok;
+            {error, no_revision};
         Recs ->
             % although you read all the revisions off the page
             % you should check that the revision being read is actually
             % from the same cell as in the ref
-            [R] = [X#logging.log || X <- Recs,
+            R = [X#logging.log || X <- Recs,
                                     integer_to_list(X#logging.timestamp) == Rev,
                                     X#logging.obj == O],
             case R of
-                #sublog{oldformula = OF} ->
+                [#sublog{oldformula = OF}] ->
                     XRefX = refX_to_xrefXD(RefX),
                     _ = write_attrs(XRefX, [{"formula", OF}], UID),
-                    ok;
+                    {ok, ok};
                 _ ->
-                    ok
+                    {error, no_old_value}
             end
     end.
 
@@ -332,9 +332,18 @@ load_dirty_sinceD(Site, Since) ->
 
 delete_apiD(Site, PublicKey) ->
     Tbl = trans(Site, api),
+    [API] = mnesia:read(Tbl, PublicKey, write),
+    Email = make_api_email(Site, API#api.publickey),
+    URLs = API#api.urls,
+    [ok = remove_api_permissions(Site, Email, P, IncS)
+     || #api_url{path = P, include_subs = IncS} <- URLs],
     mnesia:delete(Tbl, PublicKey, write).
 
 write_apiD(Site, API) ->
+    Email = make_api_email(Site, API#api.publickey),
+    URLs = API#api.urls,
+    [ok = add_api_permissions(Site, Email, P, IncS)
+     || #api_url{path = P, include_subs = IncS} <- URLs],
     Tbl = trans(Site, api),
     mnesia:write(Tbl, API, write).
 
@@ -2867,7 +2876,9 @@ get_page_l([#logging{obj = {cell, _}} | T], Acc) -> get_page_l(T, Acc);
 get_page_l([H | T], Acc)                         -> get_page_l(T, [H | Acc]).
 
 make_blank(#refX{obj = O}, Idx) ->
-    [#logging{idx = Idx, obj = O, log = term_to_binary("This cell is blank")}].
+    Msg = term_to_binary("This cell is blank"),
+    SubLog = #sublog{msg = Msg, oldformula = [], newformula = []},
+    [#logging{idx = Idx, obj = O, log = SubLog}].
 
 %% merge_incs([], Incs) ->
 %%     Incs;
@@ -2979,3 +2990,43 @@ write_google_analytics_js(Site, JS) ->
     File = code:lib_dir(hypernumbers) ++ "/../../var/sites/" ++ SiteURL
         ++ "/docroot/google_analytics.js",
     ok = file:write_file(File, JS).
+
+add_api_permissions(Site, Email, Path, IncludeSubs) ->
+    {ok, _, User} = passport:get_or_create_user(Email),
+    ok = passport:validate_uid(User),
+    ok = hn_groups:set_users(Site, Email, [User]),
+    URL = Site ++ hn_util:list_to_path(Path),
+    RefX = hn_util:url_to_refX(URL),
+    #refX{path = P, obj = {page, "/"}} = RefX,
+    ok = auth_srv:add_view(Site, P, [Email], "spreadsheet"),
+    case IncludeSubs of
+        true  -> NewP = lists:append(P, ["[**]"]),
+                 ok = auth_srv:add_view(Site, NewP, [Email], "spreadsheet");
+        false -> ok
+    end.
+
+%% this works by reading the old permissions, removing the one we want to edit
+%% and then saving the new version
+remove_api_permissions(Site, Email, Path, IncludeSubs) ->
+    URL = Site ++ hn_util:list_to_path(Path),
+    RefX = hn_util:url_to_refX(URL),
+    #refX{path = P, obj = {page, "/"}} = RefX,
+    Views = auth_srv:get_view(Site, P),
+    {_, SpreadsheetView} = lists:keyfind({"view", "spreadsheet"}, 1, Views),
+    {"groups", Groups} = lists:keyfind("groups", 1, SpreadsheetView),
+    {"everyone", Ev}   = lists:keyfind("everyone", 1, SpreadsheetView),
+    NewG = lists:delete(Email, Groups),
+    AuthSpec = case Ev of
+                   true  -> [everyone | NewG];
+                   false -> NewG
+               end,
+    ok = auth_srv:set_view(Site, Path, AuthSpec, "spreadsheet"),
+    case IncludeSubs of
+        true  -> NewP = lists:append(P, ["[**]"]),
+                 ok = auth_srv:set_view(Site, NewP, AuthSpec, "spreadsheet");
+        false -> ok
+    end.
+
+make_api_email(Site, PublicKey) ->
+    {_, S, Port} = hn_util:split_site(Site),
+    _Email = PublicKey ++ "." ++ S ++ "." ++ Port ++ "@" ++ ?APIEMAIL.

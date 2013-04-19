@@ -122,12 +122,12 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-write_commission_logD(RefX, NewSite, SiteType, Uid, Email, Zone, InHR) ->
+write_commission_logD(RefX, NewSite, SiteType, Uid, Email, Zone, Synched) ->
     #refX{site = S, path = P, obj = O} = RefX,
     Commission = #commission{uid = Uid, email = Email, site = NewSite,
                              sitetype = SiteType, zone = Zone,
                              commissioning_site = S, commissioning_path = P,
-                             commissioning_cell = O, in_highrise = InHR},
+                             commissioning_cell = O, synched = Synched},
     Table = commission,
     Fun = fun() ->
                   ok = mnesia:write(Table, Commission, write)
@@ -144,7 +144,7 @@ read_commission_logD(Uid) ->
 get_unprocessed_commissionsD() ->
     Table = commission,
     Fun = fun() ->
-                  mnesia:index_read(Table, false, in_highrise)
+                  mnesia:index_read(Table, false, synched)
           end,
     mnesia:activity(transaction, Fun).
 
