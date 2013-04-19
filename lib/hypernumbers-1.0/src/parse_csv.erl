@@ -74,8 +74,8 @@ do_parse(<<$",Rest/binary>>,S = #ecsv{state=field_start})-> %>>) ->
 do_parse(Rest,S#ecsv{state=quoted,current_field=[]});
 
 %%anything else, is a unquoted field
-          do_parse(Bin,S = #ecsv{state=field_start})->
-                 do_parse(Bin,S#ecsv{state=normal});
+do_parse(Bin,S = #ecsv{state=field_start})->
+    do_parse(Bin,S#ecsv{state=normal});
 
 %% ——— Quoted state ———————
 %%Escaped quote inside a quoted field
