@@ -34,7 +34,7 @@ make_admin(Site, Email) when is_list(Site) andalso is_list(Email) ->
     case hn_util:valid_email(Email) of
         false -> {error, "invalid email"};
         true  -> {ok, _, User} = passport:get_or_create_user(Email),
-                 passport:validate_uid(User),
+                 ok = passport:validate_uid(User),
                  add_user(Site, "admin", User)
     end.
 
@@ -48,7 +48,7 @@ get_all_groups(Site) -> new_db_api:get_all_groups(Site).
                -> boolean().
 is_member(Uid, Site, Groups) -> new_db_api:is_memberD(Site, Uid, Groups).
 
-% don't let anyone create an administrator group
+% don't let anyone create an 'administrator' group
 % we map the WordPress administrator group to our admin group so
 % letting this happen would be a bad idea
 % also do this in hn_wordpress
@@ -79,7 +79,7 @@ list_users_DEBUG(Site) ->
     Tbl = new_db_wu:trans(Site, group),
     Terms = mnesia:activity(transaction, fun mnesia:foldl/3,
                             [fun list_u2/2, [], Tbl]),
-    Terms.
+    hslists:uniq(Terms).
 
 list_u2(#group{members = M}, Acc) ->
     NewAcc = [passport:uid_to_email(X) || X <- gb_sets:to_list(M)],
