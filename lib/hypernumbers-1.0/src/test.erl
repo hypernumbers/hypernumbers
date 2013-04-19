@@ -1,6 +1,7 @@
 -module(test).
 
--export([all/0,
+-export([
+         all/0,
          fuzz/0,
          sys/0,
          sys/1,
@@ -20,11 +21,12 @@
          get_logged_in_html_notadmin_TEST/1,
          get_logged_out_html_TEST/1,
          get_api_TEST/3,
+         post_logged_in_TEST/2,
+         post_logged_in_notadmin_TEST/2,
          post_logged_out_TEST/2,
          post_login_TEST/4,
          post_TEST_DEBUG/0,
-         post_api_TEST/4
-
+         post_api_TEST/3
         ]).
 
 % debugging
@@ -70,14 +72,15 @@ init_sec() ->
     setup(security_test, [{creator, Uid}]).
 
 init_auth() ->
-    {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
+    Email = "test@hypernumbers.com",
+    {ok, _, Uid} = passport:get_or_create_user(Email),
     passport:validate_uid(Uid),
     passport:set_password(Uid, "i!am!secure"),
     setup(authorization_test, [{creator, Uid}]),
     {ok, _, Uid2} = passport:get_or_create_user("nonadmin@hypernumbers.com"),
     passport:validate_uid(Uid2),
     passport:set_password(Uid2, "i!am!secure"),
-    hn_groups:add_user(?SITE, "user", Uid2),
+    ok = hn_groups:add_user(?SITE, "user", Uid2),
     API_URLs1 = [#api_url{path = "/", admin = false, include_subs = false,
                          append_only = false}],
     API1 = #api{publickey = ?PUBLIC, privatekey = ?PRIVATE, urls = API_URLs1},
@@ -100,7 +103,9 @@ setup(Type, Opts) when is_list(Opts) ->
         true  -> hn_setup:delete_site(?SITE);
         false -> ok
     end,
-    catch hn_setup:site(?SITE, Type, Opts).
+    Ret = hn_setup:site(?SITE, Type, Opts),
+    io:format("Ret is ~p~n", [Ret]),
+    Ret.
 
 all() -> excel(), sys(), security(), fuzz(), auth(), ztest(), authorization().
 
@@ -232,17 +237,31 @@ post_TEST_DEBUG() ->
     Data = "{\"postinline\":{\"formula\":\"bleh\"}}",
     post_logged_out_TEST(URL, Data).
 
+post_logged_in_TEST(URL, Data) ->
+    post_logged_in2(URL, Data, admin).
+
+post_logged_in_notadmin_TEST(URL, Data) ->
+    post_logged_in2(URL, Data, notadmin).
+
+post_logged_in2(URL, Data, UserType) ->
+    User = case UserType of
+               admin    -> "test@hypernumbers.com";
+               notadmin -> "nonadmin@hypernumbers.com"
+           end,
+    Password = "i!am!secure",
+    post_login_TEST(User, Password, URL, Data).
+
 post_login_TEST(User, Password, URL, Data) ->
     [Proto, Root | _Rest] = string:tokens(URL, "/"),
-    URL2=Proto ++"//"++Root++"/_login/?return="++URL,
+    URL2=Proto ++ "//" ++ Root ++ "/_login/?return=" ++ URL,
     Type = "application/json",
     Accept = [{"Accept", "application/json"}],
-    Login = "{\"email\":\""++User++"\", \"pass\":\""++Password
-        ++"\",\"remember\":false}",
+    Login = "{\"email\":\"" ++ User ++ "\", \"pass\":\"" ++ Password
+        ++ "\",\"remember\":false}",
     ok = httpc:reset_cookies(),
     R = httpc:request(post, {URL2, Accept, Type, Login}, [], []),
     Ret = case R of
-              {ok, {{_, 200, _}, Headers, _}} ->
+              {ok, {{_, 200, _Body}, Headers, _}} ->
                   CookieList = proplists:get_all_values("set-cookie",
                                                         Headers),
                   Cookie = get_right_cookie(CookieList),
@@ -255,33 +274,28 @@ post_login_TEST(User, Password, URL, Data) ->
     {ok, {{_, Code, _}, _, _}} = Ret,
     Code.
 
+get_right_cookie(["auth=nonadmin!hypernumbers.com"++_R = H | _T]) -> H;
 get_right_cookie(["auth=test!hypernumbers.com"++_R = H | _T]) -> H;
 get_right_cookie([_H | T]) -> get_right_cookie(T).
 
-post_api_TEST(URL, Body, Type, Accept) ->
+post_api_TEST(URL, Body, Type) ->
+    io:format("in post_api_TEST Body is ~p~n", [Body]),
     {PubK, PrivK} = case Type of
                         api ->            {?PUBLIC,           ?PRIVATE};
                         api_admin ->      {?PUBLICADMIN,      ?PRIVATEADMIN};
                         api_subdirs ->    {?PUBLICSUBDIRS,    ?PRIVATESUBDIRS};
                         api_appendonly -> {?PUBLICAPPENDONLY, ?PRIVATEAPPENDONLY}
                     end,
-    Accept2 = case Accept of
-                 html -> [{"Accept", "html"}];
-                 json -> [{"Accept", "application/json"}]
-             end,
-    Signature = hmac_api_lib:sign(PrivK, PubK, get, URL, Accept2, []),
-    Headers = [Signature | Accept2],
+    MD5 = binary_to_list(crypto:md5(Body)),
+    ContentMD5 = {"Content-MD5", MD5},
+    Accept = {"Accept", "application/json"},
+    Signature = hmac_api_lib:sign(PrivK, PubK, get, URL, [Accept, ContentMD5], []),
+    Headers = [Signature, Accept, ContentMD5],
+    io:format("Headers is ~p~n", [Headers]),
     ok = httpc:reset_cookies(),
     R = httpc:request(post, {URL, Headers, "application/json", Body}, [], []),
-    {ok, {{_, Code, _}, _, Body}} = R,
-    Dir = code:priv_dir(hypernumbers) ++ "../../../../var/api-logs/",
-    #refX{path = P, obj = O} = hn_util:url_to_refX(URL),
-    Ob = case O of
-             {page, "/"} -> "page";
-             _           -> hn_util:obj_to_ref(O)
-           end,
-    File = Dir ++ hn_util:path_to_json_path(lists:append([P ,["type-" ++ Ob]])),
-    log(Body, File),
+    io:format("R is ~p~n", [R]),
+    {ok, {{_, Code, _}, _, _ReturnedBody}} = R,
     Code.
 
 get_api_TEST(URL, Type, Accept) ->
@@ -335,7 +349,6 @@ get_logged_out(URL, Accept) ->
                  A3 = [{"cookie", C3} | AcceptHdr],
                  httpc:request(get, {Loc3, A3}, [], []);
              {ok, {{_, _Other, _}, _, _}} ->
-                 io:format("Got to 4~n"),
                  R
          end,
     {ok, {{_, Code, _}, _, _}} = R2,
