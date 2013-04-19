@@ -14,6 +14,7 @@
 -export([
          bin_to_hexstr/1,
          hexstr_to_bin/1,
+         split_site/1,
          is_site_valid/1,
          site_type_exists/1,
          split_emails/1,
@@ -34,10 +35,6 @@
          valid_email/1,
          extract_name_from_email/1,
          capitalize_name/1,
-
-         transform_site/1,
-         transform_perms/1,
-         add_views/0,
 
          esc_regex/1,
          recursive_copy/2,
@@ -339,7 +336,7 @@ site_to_atom(Site, PostFix) when is_list(Site) andalso is_list(PostFix) ->
     "http://" ++ S = Site,
     list_to_atom([case X of $: -> $&; X -> X end || X <- S ++ PostFix]).
 
-site_to_fs("http://"++Site) ->
+site_to_fs("http://" ++ Site) ->
     [case S of $: -> $&; S  -> S end
      || S <- Site].
 
@@ -470,11 +467,6 @@ is_older(File1, File2) ->
     {ok, Info1} = file:read_file_info(File1),
     {ok, Info2} = file:read_file_info(File2),
     Info2#file_info.mtime > Info1#file_info.mtime.
-
-%% generate_po_CHEATING(Ref) ->
-%%     Needs a user object....
-%%     Body = hn_mochi:page_attributes(make_refX(Ref)),
-%%     generate_po1(Body).
 
 generate_po(Url) ->
     delete_gen_html(),
@@ -765,25 +757,27 @@ parse_ref(Ref) ->
     {RefType, RefVal}.
 
 undollar(A) ->
-    re:replace(A, "\\$", "", [{return, list}, global]). %"
+    re:replace(A, "\\$", "", [{return, list}, global]). %".
 
 %%--------------------------------------------------------------------
 %% Function:    text/1
 %% Description: Returns a string representation of the parameter
 %%--------------------------------------------------------------------
-               text(X) when is_integer(X) -> integer_to_list(X);
-               text(X) when is_float(X)   -> float_to_list(X);
-               text(X) when is_list(X)    -> lists:flatten(X);
-               text({errval, Errval})     -> atom_to_list(Errval);
-               text(X) when is_boolean(X) -> atom_to_list(X);
-               text(Dt) when is_record(Dt, datetime) -> muin_date:to_rfc1123_string(Dt);
-               text(_X) -> "". %% quick fix for the "plain" api
+text(X) when is_integer(X)            -> integer_to_list(X);
+text(X) when is_float(X)              -> float_to_list(X);
+text(X) when is_list(X)               -> lists:flatten(X);
+text({errval, Errval})                -> atom_to_list(Errval);
+text(X) when is_boolean(X)            -> atom_to_list(X);
+text(Dt) when is_record(Dt, datetime) -> muin_date:to_rfc1123_string(Dt);
+text(_X)                              -> "". %% quick fix for the "plain" api
 
-js_to_utf8({struct, Val}) -> {struct, lists:map(fun js_to_utf8/1, Val)};
-js_to_utf8({array, Val})  -> {array,  lists:map(fun js_to_utf8/1, Val)};
-js_to_utf8({Key, Val})    -> {xmerl_ucs:to_utf8(Key), js_to_utf8(Val)};
-js_to_utf8(X) when is_integer(X); is_float(X); is_atom(X) -> X;
-js_to_utf8(X)             -> xmerl_ucs:to_utf8(X).
+js_to_utf8({struct, Val})         -> {struct, lists:map(fun js_to_utf8/1, Val)};
+js_to_utf8({array, Val})          -> {array,  lists:map(fun js_to_utf8/1, Val)};
+js_to_utf8({Key, Val})            -> {xmerl_ucs:to_utf8(Key), js_to_utf8(Val)};
+js_to_utf8(X) when is_integer(X);
+                   is_float(X);
+                   is_atom(X)     -> X;
+js_to_utf8(X)                     -> xmerl_ucs:to_utf8(X).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -877,51 +871,6 @@ type_r4(Row) ->
 pget(Key, List) ->
     proplists:get_value(Key, List, undefined).
 
-transform_site(Dest) ->
-    MigrateDir = code:lib_dir(hypernumbers) ++ "/../../"++Dest++"/",
-    Sites      = filelib:wildcard(MigrateDir ++ "*"),
-    [ transform_perms(Site) || Site <- Sites ],
-    ok.
-
-transform_perms(Path) ->
-
-    file:copy(Path ++ "/permissions.export",
-              Path ++ "/permissions.export.bak"),
-
-    {ok, Terms} = file:consult(Path ++ "/permissions.export"),
-
-    NTerms = [ tmptr(Term) || Term <- Terms ],
-    Perms    = make_script_terms(NTerms,[]),
-
-    ok = file:write_file(Path ++ "/permissions.export", Perms).
-
-tmptr({add_view,[{path,Path}, {perms, Perms},
-                 {view,"_g/core/spreadsheet"}]}) ->
-    tmptr({add_view,[{path,Path}, {perms, Perms}, {view,"spreadsheet"}]});
-tmptr({add_view,[{path,Path}, {perms, Perms}, {view,"_g/core/webpage"}]}) ->
-    {add_view,[{path,Path}, {perms, Perms}, {view,"webpage"}]};
-tmptr({set_champion,[{path,Path},{view,"_g/core/spreadsheet"}]}) ->
-    {set_champion,[{path,Path},{view,"spreadsheet"}]};
-tmptr({set_champion,[{path,Path},{view,"_g/core/webpage"}]}) ->
-    {set_champion,[{path,Path},{view,"webpage"}]};
-tmptr(Tmp) ->
-    Tmp.
-
-make_script_terms([], Acc) ->
-    FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
-    lists:flatten([FirstLine | lists:reverse(Acc)]);
-make_script_terms([H | T], Acc) ->
-    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
-    make_script_terms(T, [NewAcc | Acc]).
-
-add_views() ->
-    [ begin
-          auth_srv:add_view(Site, [], ["admin"], "table"),
-          auth_srv:add_view(Site, ["[**]"], ["admin"], "table"),
-          auth_srv:add_view(Site, [], ["admin"], "webpage"),
-          auth_srv:add_view(Site, ["[**]"], ["admin"], "webpage")
-      end || Site <- hn_setup:get_sites()].
-
 is_site_valid(Site) ->
     case string:tokens(Site, ":") of
         ["http", "//" ++ Domain, Port] ->
@@ -957,6 +906,11 @@ site_type_exists(Type) ->
         true  -> list_to_atom(Type);
         false -> exit("invalid type being commissioned....")
     end.
+
+split_site(Site) ->
+    [Proto, SiteAndPort] = string:tokens(Site, "/"),
+    [S, Port] = string:tokens(SiteAndPort, ":"),
+    {Proto, S, Port}.
 
 split_emails(List) ->
     List2 = split_emails([List], " ", []),
