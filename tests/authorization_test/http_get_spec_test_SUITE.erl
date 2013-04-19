@@ -65,8 +65,12 @@ read_config(Key) ->
     {Key, Val}             = lists:keyfind(Key, 1, HNConf),
     Val.
 
-%% tests to run
 all() ->
+    [
+    ].
+
+%% tests to run
+all2() ->
     [
      % special pages
      get_invite2,
@@ -159,6 +163,7 @@ all() ->
      get_reprovision2,
      get_reprovision2a,
      get_reprovision3,
+     get_reprovision3a,
 
      % forgotten password
      get_forgotten_pwd_root1,
@@ -166,6 +171,7 @@ all() ->
      get_forgotten_pwd_root2,
      get_forgotten_pwd_root2a,
      get_forgotten_pwd_root3,
+     get_forgotten_pwd_root3a,
 
      get_forgotten_pwd1,
      get_forgotten_pwd1a,
@@ -196,88 +202,94 @@ all() ->
      get_debug2a,
      get_debug3,
 
-     % logs stuff
-     get_logs1,
-     get_logs1x,
-     get_logs1a,
-     get_logs2,
-     get_logs2a,
-     get_logs3,
-
      % recalc stuff
-     get_recalc1a,
+     get_recalc1,
      get_recalc2,
      get_recalc2a,
-     get_recalc3
+     get_recalc3,
 
+     % parse expressions
+     get_parse_expression1,
+     get_parse_expression1a,
+     get_parse_expression2,
+     get_parse_expression2a,
+     get_parse_expression3,
+     get_parse_expression3a,
+
+     get_login1,
+     get_login1a,
+     get_login2,
+     get_login2a,
+     get_login3,
+     get_login3a
     ].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
 %% The special pages tests
-?test(get_invite_root1, "/_invite/",  404, loggedinhtml).  % can't see that page
+?test(get_invite_root1, "/_invite/",  401, loggedinhtml).  % can't see that page
 ?test(get_invite1, "/_invite/bingo/", 500, loggedinhtml). % no valid hypertag will cause it to crash (but it has been allowed...)
 
-?test(get_invite_root2, "/_invite/",  404, loggedouthtml).  % can't see that page
+?test(get_invite_root2, "/_invite/",  401, loggedouthtml).  % can't see that page
 ?test(get_invite2, "/_invite/bingo/", 500, loggedouthtml). % no valid hypertag will cause it to crash (but it has been allowed...)
 
-?tapi(get_invite_root3, "/_invite/",  404, api, html).  % can't see that page
+?tapi(get_invite_root3, "/_invite/",  401, api, html).  % can't see that page
 ?tapi(get_invite3, "/_invite/bingo/", 401, api, html). % no valid hypertag will cause it to crash (but it has been allowed...)
 
-?test(get_mynewsite_root1, "/_mynewsite/",  404, loggedinhtml).  % can't see that page
+?test(get_mynewsite_root1, "/_mynewsite/",  401, loggedinhtml).  % can't see that page
 ?test(get_mynewsite1, "/_mynewsite/bingo/", 500, loggedinhtml). % no valid hypertag will cause it to
 
-?test(get_mynewsite_root2, "/_mynewsite/",  404, loggedouthtml).  % can't see that page
+?test(get_mynewsite_root2, "/_mynewsite/",  401, loggedouthtml).  % can't see that page
 ?test(get_mynewsite2, "/_mynewsite/bingo/", 500, loggedouthtml). % no valid hypertag will cause it to
 
-?tapi(get_mynewsite_root3, "/_mynewsite/",  404, api, html).  % can't see that page
+?tapi(get_mynewsite_root3, "/_mynewsite/",  401, api, html).  % can't see that page
 ?tapi(get_mynewsite3, "/_mynewsite/bingo/", 401, api, html). % no valid hypertag will cause it to
 
-?test(get_validate_root1, "/_validate/",  404, loggedinhtml).  % can't see that page
+?test(get_validate_root1, "/_validate/",  401, loggedinhtml).  % can't see that page
 ?test(get_validate1, "/_validate/bingo/", 500, loggedinhtml). % no valid hypertag will cause it to
 
-?test(get_validate_root2, "/_validate/",  404, loggedouthtml).  % can't see that page
+?test(get_validate_root2, "/_validate/",  401, loggedouthtml).  % can't see that page
 ?test(get_validate2, "/_validate/bingo/", 500, loggedouthtml). % no valid hypertag will cause it to
 
-?tapi(get_validate_root3, "/_validate/",  404, api, html).  % can't see that page
+?tapi(get_validate_root3, "/_validate/",  401, api, html).  % can't see that page
 ?tapi(get_validate3, "/_validate/bingo/", 401, api, html). % no valid hypertag will cause it to
 
-?test(get_authorize_root1, "/_authorize/",  404, loggedinhtml).  % can't see that page
+?test(get_authorize_root1, "/_authorize/",  401, loggedinhtml).  % can't see that page
 ?test(get_authorize1, "/_authorize/bingo/", 500, loggedinhtml). % no valid hypertag will cause it to
 
-?test(get_authorize_root2, "/_authorize/",  404, loggedouthtml).  % can't see that page
+?test(get_authorize_root2, "/_authorize/",  401, loggedouthtml).  % can't see that page
 ?test(get_authorize2, "/_authorize/bingo/", 500, loggedouthtml). % no valid hypertag will cause it to
 
-?tapi(get_authorize_root3, "/_authorize/",  404, api, html).  % can't see that page
+?tapi(get_authorize_root3, "/_authorize/",  401, api, html).  % can't see that page
 ?tapi(get_authorize3, "/_authorize/bingo/", 401, api, html). % no valid hypertag will cause it to
 
 ?test(get_logout_root1, "/_logout/?return=" ++ ?SITE, 200, loggedinhtml).  % can see this page
-?test(get_logout1, "/_logout/bingo/", 404, loggedinhtml). % no valid subpage
+?test(get_logout1, "/_logout/bingo/", 401, loggedinhtml). % no valid subpage
 
 ?test(get_logout_root2, "/_logout/?return=" ++ ?SITE, 200, loggedouthtml).  % can see this page
-?test(get_logout2, "/_logout/bingo/", 404, loggedouthtml). % no valid subpage
+?test(get_logout2, "/_logout/bingo/", 401, loggedouthtml). % no valid subpage
 
 ?tapi(get_logout_root3, "/_logout/?return=" ++ ?SITE, 401, api, html).  % can see this page
-?tapi(get_logout3, "/_logout/bingo/", 404, api, html). % no valid subpage
+?tapi(get_logout3, "/_logout/bingo/", 401, api, html). % no valid subpage
 
 %% the generic site and pages stuff
 ?test(get_site_root1,  "/_site/", 200, loggedinjson).
-?test(get_site_root1a, "/_site/", 404, loggedinhtml).
+?test(get_site_root1a, "/_site/", 401, loggedinhtml).
 ?test(get_site_root2,  "/_site/", 200, loggedoutjson).
-?test(get_site_root2a, "/_site/", 404, loggedouthtml).
-?tapi(get_site_root3,  "/_site/", 404, api, json).
-?tapi(get_site_root3a, "/_site/", 404, api_subdirs, html).
-?tapi(get_site_root3b, "/_site/", 404, api, json).
+?test(get_site_root2a, "/_site/", 401, loggedouthtml).
+?tapi(get_site_root3,  "/_site/", 401, api, json).
+?tapi(get_site_root3a, "/_site/", 401, api_subdirs, html).
+?tapi(get_site_root3b, "/_site/", 401, api, json).
 ?tapi(get_site_root3c, "/_site/", 200, api_subdirs, json).
 
 % same code as _site so don't bother to write lots of tests
 ?test(get_pages_root1,  "/_pages/", 200, loggedinjson).
 ?test(get_pages_root2,  "/_pages/", 200, loggedoutjson).
-?tapi(get_pages_root3,  "/_pages/", 404, api, json).
+?tapi(get_pages_root3,  "/_pages/", 401, api, json).
 ?tapi(get_pages_root3a, "/_pages/", 200, api_subdirs, json).
 
 %% statistics - only logged in admins should be able to see it
-%% can't be arsed to right a special I am logged in as admin
+%% can't be arsed to write a special I am logged in as admin
 %% test - that works, I know...
 ?test(get_statistics_root1,  "/_statistics/", 200, loggedinhtml).
 ?test(get_statistics_root2,  "/_statistics/", 401, loggedouthtml).
@@ -316,10 +328,10 @@ all() ->
 ?tapi(get_underscore_audit3a, "/_audit/bluh/", 200, api_subdirs, json).
 
 ?test(get_services_phone1,  "/_services/phone/", 200, loggedinhtml).
-?test(get_services_phone1a, "/_services/phone/", 404, loggedinjson).
+?test(get_services_phone1a, "/_services/phone/", 401, loggedinjson).
 ?test(get_services_phone2,  "/_services/phone/", 200, loggedouthtml).
-?test(get_services_phone2a, "/_services/phone/", 404, loggedoutjson).
-?tapi(get_services_phone3,  "/_services/phone/", 404, api_subdirs, json).
+?test(get_services_phone2a, "/_services/phone/", 401, loggedoutjson).
+?tapi(get_services_phone3,  "/_services/phone/", 401, api_subdirs, json).
 
 %% ?test(get_services_phoneredirect1,  "/_services/phoneredirect/", 200, loggedinhtml).
 %% ?test(get_services_phoneredirect1a, "/_services/phoneredirect/", 404, loggedinjson).
@@ -328,24 +340,26 @@ all() ->
 %% ?tapi(get_services_phoneredirect3,  "/_services/phoneredirect/", 401, api_subdirs, json).
 
 % reprovision only works on usability site
-?test(get_reprovision1,  "/_reprovision/", 404, loggedinhtml).
-?test(get_reprovision1a, "/_reprovision/", 404, loggedinjson).
-?test(get_reprovision2,  "/_reprovision/", 404, loggedouthtml).
-?test(get_reprovision2a, "/_reprovision/", 404, loggedoutjson).
-?tapi(get_reprovision3,  "/_reprovision/", 404, api_subdirs, json).
+?test(get_reprovision1,  "/_reprovision/", 401, loggedinhtml).
+?test(get_reprovision1a, "/_reprovision/", 401, loggedinjson).
+?test(get_reprovision2,  "/_reprovision/", 401, loggedouthtml).
+?test(get_reprovision2a, "/_reprovision/", 401, loggedoutjson).
+?tapi(get_reprovision3,  "/_reprovision/", 401, api, json).
+?tapi(get_reprovision3a, "/_reprovision/", 401, api_subdirs, json).
 
 % forgotten passport only works on some sites
-?test(get_forgotten_pwd_root1,  "/_forgotten_password/", 404, loggedinhtml).
-?test(get_forgotten_pwd_root1a, "/_forgotten_password/", 404, loggedinjson).
-?test(get_forgotten_pwd_root2,  "/_forgotten_password/", 404, loggedouthtml).
-?test(get_forgotten_pwd_root2a, "/_forgotten_password/", 404, loggedoutjson).
-?tapi(get_forgotten_pwd_root3,  "/_forgotten_password/", 404, api_subdirs, json).
+?test(get_forgotten_pwd_root1,  "/_forgotten_password/", 200, loggedinhtml).
+?test(get_forgotten_pwd_root1a, "/_forgotten_password/", 401, loggedinjson).
+?test(get_forgotten_pwd_root2,  "/_forgotten_password/", 200, loggedouthtml).
+?test(get_forgotten_pwd_root2a, "/_forgotten_password/", 401, loggedoutjson).
+?tapi(get_forgotten_pwd_root3,  "/_forgotten_password/", 401, api, json).
+?tapi(get_forgotten_pwd_root3a, "/_forgotten_password/", 401, api_subdirs, json).
 
-?test(get_forgotten_pwd1,  "/_forgotten_password/blah/", 404, loggedinhtml).
-?test(get_forgotten_pwd1a, "/_forgotten_password/blah/", 404, loggedinjson).
-?test(get_forgotten_pwd2,  "/_forgotten_password/blah/", 404, loggedouthtml).
-?test(get_forgotten_pwd2a, "/_forgotten_password/blah/", 404, loggedoutjson).
-?tapi(get_forgotten_pwd3,  "/_forgotten_password/blah/", 404, api_subdirs, json).
+?test(get_forgotten_pwd1,  "/_forgotten_password/blah/", 200, loggedinhtml).
+?test(get_forgotten_pwd1a, "/_forgotten_password/blah/", 401, loggedinjson).
+?test(get_forgotten_pwd2,  "/_forgotten_password/blah/", 200, loggedouthtml).
+?test(get_forgotten_pwd2a, "/_forgotten_password/blah/", 401, loggedoutjson).
+?tapi(get_forgotten_pwd3,  "/_forgotten_password/blah/", 401, api_subdirs, json).
 
 %% Proper tests - at last - updates
 ?test(get_update1,  "/some/page/?updates=23213132&paths=%2Ferkle%2F&view=spreadsheet", 404, loggedinhtml).
@@ -371,18 +385,62 @@ all() ->
 ?test(get_debug2a, "/some/page/a1?view=debug", 401, loggedoutjson).
 ?tapi(get_debug3,  "/some/page/a1?view=debug", 401, api_subdirs, json).
 
-% log view
-?test(get_logs1,  "/some/page/a1?view=logs", 200, loggedinhtml).
-?test(get_logs1x, "/some/page/?view=logs",   200, loggedinhtml).
-?test(get_logs1a, "/some/page/a1?view=logs", 200, loggedinjson).
-?test(get_logs2,  "/some/page/a1?view=logs", 401, loggedouthtml).
-?test(get_logs2a, "/some/page/a1?view=logs", 401, loggedoutjson).
-?tapi(get_logs3,  "/some/page/a1?view=logs", 200, api_subdirs, json).
-
 % recalc
 % some recalcs can wedget the server in the test suite
 % not sure how...
-?test(get_recalc1a, "/some/page/a1?view=recalc", 401, loggedinjson).
+?test(get_recalc1,  "/some/page/a1?view=recalc", 401, loggedinjson).
 ?test(get_recalc2,  "/some/page/a1?view=recalc", 401, loggedouthtml).
 ?test(get_recalc2a, "/some/page/a1?view=recalc", 401, loggedoutjson).
 ?tapi(get_recalc3,  "/some/page/a1?view=recalc", 401, api_subdirs, json).
+
+% parse expresssions
+?test(get_parse_expression1,  "/_parse_expression/", 401, loggedinhtml).
+?test(get_parse_expression1a, "/_parse_expression/", 401, loggedinjson).
+?test(get_parse_expression2,  "/_parse_expression/", 401, loggedouthtml).
+?test(get_parse_expression2a, "/_parse_expression/", 401, loggedoutjson).
+?tapi(get_parse_expression3,  "/_parse_expression/", 401, api, json).
+?tapi(get_parse_expression3a, "/_parse_expression/", 401, api_subdirs, json).
+
+% login
+?test(get_login1,  "/_login/", 401, loggedinhtml).
+?test(get_login1a, "/_login/", 401, loggedinjson).
+?test(get_login2,  "/_login/", 401, loggedouthtml).
+?test(get_login2a, "/_login/", 401, loggedoutjson).
+?tapi(get_login3,  "/_login/", 401, api, json).
+?tapi(get_login3a, "/_login/", 401, api_subdirs, json).
+
+% logs
+?test(get_logs1,  "/some/page/?view=logs", 200, loggedinhtml).
+?test(get_logs1a, "/some/page/?view=logs", 401, loggedinjson).
+?test(get_logs2,  "/some/page/?view=logs", 401, loggedouthtml).
+?test(get_logs2a, "/some/page/?view=logs", 401, loggedoutjson).
+?tapi(get_logs3,  "/some/page/?view=logs", 401, api, json).
+?tapi(get_logs3a, "/some/page/?view=logs", 401, api_subdirs, json).
+
+?test(get_logs4,  "/some/page/a1?view=logs", 200, loggedinhtml).
+?test(get_logs4a, "/some/page/a1?view=logs", 200, loggedinjson).
+?test(get_logs5,  "/some/page/a1?view=logs", 401, loggedouthtml).
+?test(get_logs5a, "/some/page/a1?view=logs", 401, loggedoutjson).
+?tapi(get_logs6,  "/some/page/a1?view=logs", 401, api, json).
+?tapi(get_logs6a, "/some/page/a1?view=logs", 200, api_subdirs, json).
+
+?test(get_logs7,  "/some/page/a1:b2?view=logs", 401, loggedinhtml).
+?test(get_logs7a, "/some/page/a1:b2?view=logs", 401, loggedinjson).
+?test(get_logs8,  "/some/page/a1:b2?view=logs", 401, loggedouthtml).
+?test(get_logs8a, "/some/page/a1:b2?view=logs", 401, loggedoutjson).
+?tapi(get_logs9,  "/some/page/a1:b2?view=logs", 401, api, json).
+?tapi(get_logs9a, "/some/page/a1:b2?view=logs", 401, api_subdirs, json).
+
+?test(get_logs10,  "/some/page/b:c?view=logs", 401, loggedinhtml).
+?test(get_logs10a, "/some/page/b:c?view=logs", 401, loggedinjson).
+?test(get_logs11,  "/some/page/b:c?view=logs", 401, loggedouthtml).
+?test(get_logs11a, "/some/page/b:c?view=logs", 401, loggedoutjson).
+?tapi(get_logs12,  "/some/page/b:c?view=logs", 401, api, json).
+?tapi(get_logs12a, "/some/page/b:c?view=logs", 401, api_subdirs, json).
+
+?test(get_logs13,  "/some/page/10:11?view=logs", 401, loggedinhtml).
+?test(get_logs13a, "/some/page/10:11?view=logs", 401, loggedinjson).
+?test(get_logs14,  "/some/page/10:11?view=logs", 401, loggedouthtml).
+?test(get_logs14a, "/some/page/10:11?view=logs", 401, loggedoutjson).
+?tapi(get_logs15,  "/some/page/10:11?view=logs", 401, api, json).
+?tapi(get_logs15a, "/some/page/10:11?view=logs", 401, api_subdirs, json).
