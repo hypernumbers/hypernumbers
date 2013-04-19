@@ -19,6 +19,7 @@
          get_views/3,
          get_any_main_view/3,
          add_view/4,
+         get_view/2,
          set_view/4,
          set_champion/3,
          set_challenger/3,
@@ -128,6 +129,11 @@ set_view(Site, Path, AuthSpec, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:cast({global, Id}, {set_view, Path, AuthSpec, View}).
 
+-spec get_view(string(), [string()]) -> ok.
+get_view(Site, Path) ->
+    Id = hn_util:site_to_atom(Site, "_auth"),
+    gen_server:call({global, Id}, {get_view, Path}).
+
 -spec set_champion(string(), [string()], string()) -> ok.
 set_champion(Site, Path, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
@@ -212,6 +218,8 @@ handle_call(Request, _From, State) ->
                       {check_particular_view1(Site, Tr, P, U, V), false};
                   {get_views, P, U} ->
                       {get_views1(Site, Tr, P, U), false};
+                  {get_view, Pg} ->
+                      {get_view1(Tr, Pg), false};
                   {get_as_json, P} ->
                       {get_as_json1(Tr, P), false};
                   dump_script ->
@@ -311,7 +319,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 check_get_view1(Site, Tree, Path, Uid, Type) ->
-    Fun = fun(C) -> get_view(C, Site, Uid, Type) end,
+    Fun = fun(C) -> get_vw(C, Site, Uid, Type) end,
     run_ctl(Tree, Path, Fun).
 
 check_particular_view1(Site, Tree, Path, Uid, Type) ->
@@ -329,13 +337,28 @@ add_view1(Tree, Path, AuthSpec, V) ->
     Fun = fun(C) ->
                   CurViews = C#control.views,
                   View1 = case gb_trees:lookup(V, CurViews) of
-                             none -> #view{};
+                             none         -> #view{};
                              {value, Val} -> Val end,
                   View2 = apply_authspec(View1, AuthSpec),
                   NewViews = gb_trees:enter(V, View2, CurViews),
                   C#control{views = NewViews}
           end,
     alter_tree(Tree, Path, Fun).
+
+get_view1(Tree, Path) ->
+    run_ctl(Tree, Path, fun plain_view/1).
+
+plain_view(C) ->
+    ViewIter = gb_trees:iterator(C#control.views),
+    Views = gb_trees:next(ViewIter),
+    _Struct = view_to_struct(Views).
+
+view_to_struct(none) -> [];
+view_to_struct({V, View, Iter}) ->
+    Groups = [G || G <- ordsets:to_list(View#view.groups)],
+    S = {{"view", V}, [{"everyone", View#view.everyone},
+                       {"groups", Groups}]},
+    [S | view_to_struct(gb_trees:next(Iter))].
 
 set_view1(Tree, Path, AuthSpec, V) ->
     Fun = fun(C) ->
@@ -390,19 +413,19 @@ apply_authspec(V, [Group | Rest]) ->
 %% of view is returned providing the necessary credentials are met.
 %% For requests of type 'any', the first view which can be satisifed by
 %% the user's credentials will be returned.
--spec get_view(#control{}, string(), uid(), champion | challenger)
+-spec get_vw(#control{}, string(), uid(), champion | challenger)
               -> {view, string()} | not_found | denied.
-get_view(#control{views = ?EMPTY_TREE}, _S, _U, _T) ->
+get_vw(#control{views = ?EMPTY_TREE}, _S, _U, _T) ->
     not_found;
-get_view(#control{champion = [], challenger = []}, _S, _U, _T) ->
+get_vw(#control{champion = [], challenger = []}, _S, _U, _T) ->
     not_found;
-get_view(#control{champion = V}=C, Site, Uid, champion) ->
+get_vw(#control{champion = V}=C, Site, Uid, champion) ->
     View = gb_trees:get(V, C#control.views),
     case can_view(Site, Uid, View) of
         true  -> {view, V};
         false -> denied
     end;
-get_view(#control{challenger = V}=C, Site, Uid, challenger) when V /= [] ->
+get_vw(#control{challenger = V}=C, Site, Uid, challenger) when V /= [] ->
     View = gb_trees:get(V, C#control.views),
     case can_view(Site, Uid, View) of
         true  -> {view, V};
