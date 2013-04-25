@@ -186,12 +186,11 @@ all2() ->
 %%------------------------------------------------------------------------------
 %% The special pages tests
 ?test(post_invite_root1, "/_invite/",  ?SOMEJSON, 401, loggedinjson).  % can't see that page
-?test(post_invite1, "/_invite/bingo/", ?SOMEJSON, 401, loggedinjson). % no valid hypertag will cause it to crash (but it has been allowed...)
-
 ?test(post_invite_root2, "/_invite/",  ?SOMEJSON, 401, loggedoutjson).  % can't see that page
-?test(post_invite2, "/_invite/bingo/", ?SOMEJSON, 401, loggedoutjson). % no valid hypertag will cause it to crash (but it has been allowed...)
-
 ?tapi(post_invite_root3, "/_invite/",  ?SOMEJSON, 401, api).  % can't see that page
+
+?test(post_invite1, "/_invite/bingo/", ?SOMEJSON, 401, loggedinjson). % no valid hypertag will cause it to crash (but it has been allowed...)
+?test(post_invite2, "/_invite/bingo/", ?SOMEJSON, 401, loggedoutjson). % no valid hypertag will cause it to crash (but it has been allowed...)
 ?tapi(post_invite3, "/_invite/bingo/", ?SOMEJSON, 401, api). % no valid hypertag will cause it to crash (but it has been allowed...)
 
 ?test(post_mynewsite_root1, "/_mynewsite/",  ?SOMEJSON, 401, loggedinjson).  % can't see that page
@@ -251,7 +250,7 @@ all2() ->
 ?test(post_underscore_sites_root1,  "/_sites/",                   ?SOMEJSON, 401, loggedinjson).
 ?test(post_underscore_sites_root2,  "/_sites/",                   ?SOMEJSON, 401, loggedoutjson).
 ?tapi(post_underscore_sites_root3,  "/_sites/",                   ?SOMEJSON, 401, api).
-?tapi(post_underscore_sites_root3a, "/_sites/",                   ?SOMEJSON, 200, api_subdirs).
+?tapi(post_underscore_sites_root3a, "/_sites/",                   ?SOMEJSON, 401, api_subdirs).
 
 ?test(post_underscore_sites1,  "/_sites/blen/", ?SOMEJSON, 401, loggedinjson).
 ?test(post_underscore_sites2,  "/_sites/blon/", ?SOMEJSON, 401, loggedoutjson).
@@ -295,19 +294,27 @@ all2() ->
 ?tapi(post_forgotten_pwd3,   "/_forgotten_password/blah/", ?SOMEJSON, 401, api_subdirs).
 ?tapi(post_forgotten_pwd3a,  "/_forgotten_password/blah/", ?SOMEJSON, 401, api).
 
-?test(post_root_parse_expression1,   "/_parse_expression/", ?SOMEJSON, 401, loggedinjson).
+?test(post_root_parse_expression1,   "/_parse_expression/", ?SOMEJSON, 500, loggedinjson).
 ?test(post_root_parse_expression2,   "/_parse_expression/", ?SOMEJSON, 401, loggedoutjson).
 ?tapi(post_root_parse_expression3,   "/_parse_expression/", ?SOMEJSON, 401, api_subdirs).
 ?tapi(post_root_parse_expression3a,  "/_parse_expression/", ?SOMEJSON, 401, api).
+?tapi(post_root_parse_expression4a,  "/_parse_expression/a1", ?SOMEJSON, 401, api).
+?tapi(post_root_parse_expression4b,  "/_parse_expression/a1:b4", ?SOMEJSON, 401, api).
+?tapi(post_root_parse_expression4c,  "/_parse_expression/a:c", ?SOMEJSON, 401, api).
+?tapi(post_root_parse_expression4d,  "/_parse_expression/1:2", ?SOMEJSON, 401, api).
 
 ?test(post_parse_expression1,   "/_parse_expression/blah/", ?SOMEJSON, 401, loggedinjson).
 ?test(post_parse_expression2,   "/_parse_expression/blah/", ?SOMEJSON, 401, loggedoutjson).
 ?tapi(post_parse_expression3,   "/_parse_expression/blah/", ?SOMEJSON, 401, api_subdirs).
 ?tapi(post_parse_expression3a,  "/_parse_expression/blah/", ?SOMEJSON, 401, api).
+?tapi(post_parse_expression4a,  "/_parse_expression/blah/a1", ?SOMEJSON, 401, api).
+?tapi(post_parse_expression4b,  "/_parse_expression/blah/a1:b4", ?SOMEJSON, 401, api).
+?tapi(post_parse_expression4c,  "/_parse_expression/blah/a:c", ?SOMEJSON, 401, api).
+?tapi(post_parse_expression4d,  "/_parse_expression/blah/1:2", ?SOMEJSON, 401, api).
 
 % login
-?test(post_root_login1,   "/_login/", ?SOMEJSON, 401, loggedinjson).
-?test(post_root_login2,   "/_login/", ?SOMEJSON, 401, loggedoutjson).
+?test(post_root_login1,   "/_login/", ?SOMEJSON, 500, loggedinjson).
+?test(post_root_login2,   "/_login/", ?SOMEJSON, 500, loggedoutjson).
 ?tapi(post_root_login3,   "/_login/", ?SOMEJSON, 401, api_subdirs).
 ?tapi(post_root_login3a,  "/_login/", ?SOMEJSON, 401, api).
 
