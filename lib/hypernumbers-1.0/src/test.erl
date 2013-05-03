@@ -85,7 +85,7 @@ init_auth() ->
                          append_only = false}],
     API1 = #api{publickey = ?PUBLIC, privatekey = ?PRIVATE, urls = API_URLs1},
     new_db_api:write_api(?SITE, API1),
-    API_URLs2 = [#api_url{path = "/", admin = true, include_subs = false,
+    API_URLs2 = [#api_url{path = "/", admin = true, include_subs = true,
                          append_only = false}],
     API2 = #api{publickey = ?PUBLICADMIN, privatekey = ?PRIVATEADMIN, urls = API_URLs2},
     new_db_api:write_api(?SITE, API2),
@@ -93,7 +93,7 @@ init_auth() ->
                          append_only = false}],
     API3 = #api{publickey = ?PUBLICSUBDIRS, privatekey = ?PRIVATESUBDIRS, urls = API_URLs3},
     new_db_api:write_api(?SITE, API3),
-    API_URLs4 = [#api_url{path = "/", admin = false, include_subs = false,
+    API_URLs4 = [#api_url{path = "/", admin = false, include_subs = true,
                          append_only = true}],
     API4 = #api{publickey = ?PUBLICAPPENDONLY, privatekey = ?PRIVATEAPPENDONLY, urls = API_URLs4},
     new_db_api:write_api(?SITE, API4).
@@ -103,9 +103,7 @@ setup(Type, Opts) when is_list(Opts) ->
         true  -> hn_setup:delete_site(?SITE);
         false -> ok
     end,
-    Ret = hn_setup:site(?SITE, Type, Opts),
-    io:format("Ret is ~p~n", [Ret]),
-    Ret.
+    hn_setup:site(?SITE, Type, Opts).
 
 all() -> excel(), sys(), security(), fuzz(), auth(), ztest(), authorization().
 
@@ -268,8 +266,11 @@ post_login_TEST(User, Password, URL, Data) ->
                   A2 = [{"cookie", Cookie} | Accept],
                   io:format("logged in, going in with ~p~n~p~n", [URL, Data]),
                   httpc:request(post, {URL, A2, Type, Data}, [], []);
-              {ok, {{_, _Other, _}, _, _}} ->
-                  exit("invalid return from login - wig out!")
+              {ok, {{_, Other, _}, _, _}} ->
+                  Msg = io_lib:format("in test.erl: invalid return "
+                                      ++ " from login ~p - wig out!",
+                                      [Other]),
+                  exit(lists:flatten(Msg))
           end,
     {ok, {{_, Code, _}, _, _}} = Ret,
     Code.
@@ -279,7 +280,6 @@ get_right_cookie(["auth=test!hypernumbers.com"++_R = H | _T]) -> H;
 get_right_cookie([_H | T]) -> get_right_cookie(T).
 
 post_api_TEST(URL, Body, Type) ->
-    io:format("in post_api_TEST Body is ~p~n", [Body]),
     {PubK, PrivK} = case Type of
                         api ->            {?PUBLIC,           ?PRIVATE};
                         api_admin ->      {?PUBLICADMIN,      ?PRIVATEADMIN};
@@ -287,14 +287,13 @@ post_api_TEST(URL, Body, Type) ->
                         api_appendonly -> {?PUBLICAPPENDONLY, ?PRIVATEAPPENDONLY}
                     end,
     MD5 = binary_to_list(crypto:md5(Body)),
-    ContentMD5 = {"Content-MD5", MD5},
+    ContentMD5 = {"content-md5", MD5},
     Accept = {"Accept", "application/json"},
-    Signature = hmac_api_lib:sign(PrivK, PubK, get, URL, [Accept, ContentMD5], []),
-    Headers = [Signature, Accept, ContentMD5],
-    io:format("Headers is ~p~n", [Headers]),
+    Headers = [Accept, ContentMD5],
+    Signature = hmac_api_lib:sign(PrivK, PubK, post, URL, Headers, "application/json"),
+    Headers2 = [Signature | Headers],
     ok = httpc:reset_cookies(),
-    R = httpc:request(post, {URL, Headers, "application/json", Body}, [], []),
-    io:format("R is ~p~n", [R]),
+    R = httpc:request(post, {URL, Headers2, "application/json", Body}, [], []),
     {ok, {{_, Code, _}, _, _ReturnedBody}} = R,
     Code.
 
@@ -313,15 +312,15 @@ get_api_TEST(URL, Type, Accept) ->
     Headers = [Signature | Accept2],
     ok = httpc:reset_cookies(),
     R = httpc:request(get, {URL, Headers}, [], []),
-    {ok, {{_, Code, _}, _, Body}} = R,
+    {ok, {{_, Code, _}, _, _Body}} = R,
     Dir = code:priv_dir(hypernumbers) ++ "../../../../var/api-logs/",
     #refX{path = P, obj = O} = hn_util:url_to_refX(URL),
     Ob = case O of
              {page, "/"} -> "page";
              _           -> hn_util:obj_to_ref(O)
            end,
-    File = Dir ++ hn_util:path_to_json_path(lists:append([P ,["type-" ++ Ob]])),
-    log(Body, File),
+    _File = Dir ++ hn_util:path_to_json_path(lists:append([P ,["type-" ++ Ob]])),
+    % log(Body, File),
     Code.
 
 get_logged_out_json_TEST(URL) ->
