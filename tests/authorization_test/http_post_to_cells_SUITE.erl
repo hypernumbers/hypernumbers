@@ -50,7 +50,6 @@ read_config(Key) ->
 %% tests to run
 all2()->
     [
-     post_range2c
     ].
 
 all() ->
@@ -78,6 +77,28 @@ all() ->
      post_range4b,
      post_range5a,
      post_range5b,
+
+     post_none1a,
+     post_none1b,
+     post_none2a,
+     post_none2b,
+     post_none3a,
+     post_none3b,
+     post_none4a,
+     post_none4b,
+     post_none5a,
+     post_none5b,
+
+     post_inline1a,
+     post_inline1b,
+     post_inline2a,
+     post_inline2b,
+     post_inline3a,
+     post_inline3b,
+     post_inline4a,
+     post_inline4b,
+     post_inline5a,
+     post_inline5b,
 
      post_select1a,
      post_select1b,
@@ -143,7 +164,62 @@ all() ->
      post_ghost4a,
      post_ghost4b,
      post_ghost5a,
-     post_ghost5b
+     post_ghost5b,
+
+     post_clearmerge1a,
+     post_clearmerge1b,
+     post_clearmerge2a,
+     post_clearmerge2b,
+     post_clearmerge3a,
+     post_clearmerge3b,
+     post_clearmerge4a,
+     post_clearmerge4b,
+     post_clearmerge5a,
+     post_clearmerge5b,
+
+     post_clearstyle1a,
+     post_clearstyle1b,
+     post_clearstyle2a,
+     post_clearstyle2b,
+     post_clearstyle3a,
+     post_clearstyle3b,
+     post_clearstyle4a,
+     post_clearstyle4b,
+     post_clearstyle5a,
+     post_clearstyle5b,
+
+     post_clearcontents1a,
+     post_clearcontents1b,
+     post_clearcontents2a,
+     post_clearcontents2b,
+     post_clearcontents3a,
+     post_clearcontents3b,
+     post_clearcontents4a,
+     post_clearcontents4b,
+     post_clearcontents5a,
+     post_clearcontents5b,
+
+     post_clearall1a,
+     post_clearall1b,
+     post_clearall2a,
+     post_clearall2b,
+     post_clearall3a,
+     post_clearall3b,
+     post_clearall4a,
+     post_clearall4b,
+     post_clearall5a,
+     post_clearall5b,
+
+     post_clearfail1a,
+     post_clearfail1b,
+     post_clearfail2a,
+     post_clearfail2b,
+     post_clearfail3a,
+     post_clearfail3b,
+     post_clearfail4a,
+     post_clearfail4b,
+     post_clearfail5a,
+     post_clearfail5b
 
     ].
 
@@ -184,6 +260,40 @@ all() ->
 
 ?test(post_range5a, "/a/different/page/", ?RANGE, 401, loggedinjson).
 ?test(post_range5b, "/a/different/page/", ?RANGE, 401, loggedoutjson).
+
+% switching inline editable off
+-define(NONE, "{\"set\":{\"input\":\"none\"}}").
+?test(post_none1a, "/some/page/a1", ?NONE, 200, loggedinjson).
+?test(post_none1b, "/some/page/a1", ?NONE, 401, loggedoutjson).
+
+?test(post_none2a, "/some/page/a1:b5", ?NONE, 200, loggedinjson).
+?test(post_none2b, "/some/page/a1:b5", ?NONE, 401, loggedoutjson).
+
+?test(post_none3a, "/some/page/a:b", ?NONE, 401, loggedinjson).
+?test(post_none3b, "/some/page/a:b", ?NONE, 401, loggedoutjson).
+
+?test(post_none4a, "/some/page/1:2", ?NONE, 401, loggedinjson).
+?test(post_none4b, "/some/page/1:2", ?NONE, 401, loggedoutjson).
+
+?test(post_none5a, "/some/page/", ?NONE, 401, loggedinjson).
+?test(post_none5b, "/some/page/", ?NONE, 401, loggedoutjson).
+
+% inline editable
+-define(INLINE, "{\"set\":{\"input\":\"inline\"}}").
+?test(post_inline1a, "/some/page/a1", ?INLINE, 200, loggedinjson).
+?test(post_inline1b, "/some/page/a1", ?INLINE, 401, loggedoutjson).
+
+?test(post_inline2a, "/some/page/a1:b5", ?INLINE, 200, loggedinjson).
+?test(post_inline2b, "/some/page/a1:b5", ?INLINE, 401, loggedoutjson).
+
+?test(post_inline3a, "/some/page/a:b", ?INLINE, 401, loggedinjson).
+?test(post_inline3b, "/some/page/a:b", ?INLINE, 401, loggedoutjson).
+
+?test(post_inline4a, "/some/page/1:2", ?INLINE, 401, loggedinjson).
+?test(post_inline4b, "/some/page/1:2", ?INLINE, 401, loggedoutjson).
+
+?test(post_inline5a, "/some/page/", ?INLINE, 401, loggedinjson).
+?test(post_inline5b, "/some/page/", ?INLINE, 401, loggedoutjson).
 
 % select inputs
 -define(SELECT, "{\"set\":{\"input\":{\"select\":[\"1\",\"2\",\"3\"]}}}").
@@ -292,7 +402,7 @@ all() ->
 ?test(post_merge5a, "/some/page/", ?MERGE, 401, loggedinjson).
 ?test(post_merge5b, "/some/page/", ?MERGE, 401, loggedoutjson).
 
--define(GHOST, "{\"set\":{\"ghost\":true}}").
+-define(GHOST, "{\"set\":{\"ghost\": true}}").
 ?test(post_ghost1a, "/some/page/a1", ?GHOST, 200, loggedinjson).
 ?test(post_ghost1b, "/some/page/a1", ?GHOST, 401, loggedoutjson).
 
@@ -307,3 +417,83 @@ all() ->
 
 ?test(post_ghost5a, "/some/page/", ?GHOST, 401, loggedinjson).
 ?test(post_ghost5b, "/some/page/", ?GHOST, 401, loggedoutjson).
+
+-define(CLEARMERGE, "{\"clear\": \"merge\"}").
+?test(post_clearmerge1a, "/some/page/a1", ?CLEARMERGE, 200, loggedinjson).
+?test(post_clearmerge1b, "/some/page/a1", ?CLEARMERGE, 401, loggedoutjson).
+
+?test(post_clearmerge2a, "/some/page/a1:b5", ?CLEARMERGE, 200, loggedinjson).
+?test(post_clearmerge2b, "/some/page/a1:b5", ?CLEARMERGE, 401, loggedoutjson).
+
+?test(post_clearmerge3a, "/some/page/a:b", ?CLEARMERGE, 200, loggedinjson).
+?test(post_clearmerge3b, "/some/page/a:b", ?CLEARMERGE, 401, loggedoutjson).
+
+?test(post_clearmerge4a, "/some/page/1:2", ?CLEARMERGE, 200, loggedinjson).
+?test(post_clearmerge4b, "/some/page/1:2", ?CLEARMERGE, 401, loggedoutjson).
+
+?test(post_clearmerge5a, "/some/page/", ?CLEARMERGE, 200, loggedinjson).
+?test(post_clearmerge5b, "/some/page/", ?CLEARMERGE, 401, loggedoutjson).
+
+-define(CLEARSTYLE, "{\"clear\": \"style\"}").
+?test(post_clearstyle1a, "/some/page/a1", ?CLEARSTYLE, 200, loggedinjson).
+?test(post_clearstyle1b, "/some/page/a1", ?CLEARSTYLE, 401, loggedoutjson).
+
+?test(post_clearstyle2a, "/some/page/a1:b5", ?CLEARSTYLE, 200, loggedinjson).
+?test(post_clearstyle2b, "/some/page/a1:b5", ?CLEARSTYLE, 401, loggedoutjson).
+
+?test(post_clearstyle3a, "/some/page/a:b", ?CLEARSTYLE, 200, loggedinjson).
+?test(post_clearstyle3b, "/some/page/a:b", ?CLEARSTYLE, 401, loggedoutjson).
+
+?test(post_clearstyle4a, "/some/page/1:2", ?CLEARSTYLE, 200, loggedinjson).
+?test(post_clearstyle4b, "/some/page/1:2", ?CLEARSTYLE, 401, loggedoutjson).
+
+?test(post_clearstyle5a, "/some/page/", ?CLEARSTYLE, 200, loggedinjson).
+?test(post_clearstyle5b, "/some/page/", ?CLEARSTYLE, 401, loggedoutjson).
+
+-define(CLEARCONTENTS, "{\"clear\": \"contents\"}").
+?test(post_clearcontents1a, "/some/page/a1", ?CLEARCONTENTS, 200, loggedinjson).
+?test(post_clearcontents1b, "/some/page/a1", ?CLEARCONTENTS, 401, loggedoutjson).
+
+?test(post_clearcontents2a, "/some/page/a1:b5", ?CLEARCONTENTS, 200, loggedinjson).
+?test(post_clearcontents2b, "/some/page/a1:b5", ?CLEARCONTENTS, 401, loggedoutjson).
+
+?test(post_clearcontents3a, "/some/page/a:b", ?CLEARCONTENTS, 200, loggedinjson).
+?test(post_clearcontents3b, "/some/page/a:b", ?CLEARCONTENTS, 401, loggedoutjson).
+
+?test(post_clearcontents4a, "/some/page/1:2", ?CLEARCONTENTS, 200, loggedinjson).
+?test(post_clearcontents4b, "/some/page/1:2", ?CLEARCONTENTS, 401, loggedoutjson).
+
+?test(post_clearcontents5a, "/some/page/", ?CLEARCONTENTS, 200, loggedinjson).
+?test(post_clearcontents5b, "/some/page/", ?CLEARCONTENTS, 401, loggedoutjson).
+
+-define(CLEARALL, "{\"clear\": \"all\"}").
+?test(post_clearall1a, "/some/page/a1", ?CLEARALL, 200, loggedinjson).
+?test(post_clearall1b, "/some/page/a1", ?CLEARALL, 401, loggedoutjson).
+
+?test(post_clearall2a, "/some/page/a1:b5", ?CLEARALL, 200, loggedinjson).
+?test(post_clearall2b, "/some/page/a1:b5", ?CLEARALL, 401, loggedoutjson).
+
+?test(post_clearall3a, "/some/page/a:b", ?CLEARALL, 200, loggedinjson).
+?test(post_clearall3b, "/some/page/a:b", ?CLEARALL, 401, loggedoutjson).
+
+?test(post_clearall4a, "/some/page/1:2", ?CLEARALL, 200, loggedinjson).
+?test(post_clearall4b, "/some/page/1:2", ?CLEARALL, 401, loggedoutjson).
+
+?test(post_clearall5a, "/some/page/", ?CLEARALL, 200, loggedinjson).
+?test(post_clearall5b, "/some/page/", ?CLEARALL, 401, loggedoutjson).
+
+-define(CLEARFAIL, "{\"clear\": \"fail\"}").
+?test(post_clearfail1a, "/some/page/a1", ?CLEARFAIL, 401, loggedinjson).
+?test(post_clearfail1b, "/some/page/a1", ?CLEARFAIL, 401, loggedoutjson).
+
+?test(post_clearfail2a, "/some/page/a1:b5", ?CLEARFAIL, 401, loggedinjson).
+?test(post_clearfail2b, "/some/page/a1:b5", ?CLEARFAIL, 401, loggedoutjson).
+
+?test(post_clearfail3a, "/some/page/a:b", ?CLEARFAIL, 401, loggedinjson).
+?test(post_clearfail3b, "/some/page/a:b", ?CLEARFAIL, 401, loggedoutjson).
+
+?test(post_clearfail4a, "/some/page/1:2", ?CLEARFAIL, 401, loggedinjson).
+?test(post_clearfail4b, "/some/page/1:2", ?CLEARFAIL, 401, loggedoutjson).
+
+?test(post_clearfail5a, "/some/page/", ?CLEARFAIL, 401, loggedinjson).
+?test(post_clearfail5b, "/some/page/", ?CLEARFAIL, 401, loggedoutjson).

@@ -61,11 +61,11 @@ read_config(Key) ->
     Val.
 
 %% tests to run
-all() ->
+all2() ->
     [
     ].
 
-all2() ->
+all() ->
     [
      % special pages
      post_invite_root1,

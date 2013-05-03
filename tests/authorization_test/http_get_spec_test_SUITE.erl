@@ -65,12 +65,12 @@ read_config(Key) ->
     {Key, Val}             = lists:keyfind(Key, 1, HNConf),
     Val.
 
-all() ->
+all2() ->
     [
     ].
 
 %% tests to run
-all2() ->
+all() ->
     [
      % special pages
      get_invite2,
