@@ -126,7 +126,7 @@ format_num(X,Format)->
            true  -> X * 100;
            false -> X
        end,
-    % we need to know the length of the format incluse of the decimal place
+    % we need to know the length of the format inclusive of the decimal place
     % (if any) but exclusive of any commas. The reason for this is you
     % might have a number like '1234' and a format like 'x0.00'
     % This will give a format of '0.00' and an insert point of '{4,x}'
