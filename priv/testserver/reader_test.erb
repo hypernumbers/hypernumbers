@@ -36,7 +36,8 @@ read_from_excel_data(Config, {Sheet, Row, Col}) ->
     test_util:read_from_excel_data(Config, <%= @basename + "_SUITE" %>, {Sheet, Row, Col}).
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<%= @testcasedata.map { |rec| "?test(#{rec[0]}, #{rec[1]}, #{rec[2]}).\n" } %>
+<%= @testcasedata.map { |rec| "?test(#{rec[0]}, #{rec[1]}, #{rec[2]})" }.join(".\n") %>
+.
 %%% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 all() ->

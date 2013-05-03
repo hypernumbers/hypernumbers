@@ -7,7 +7,9 @@
 
 # Will generate test cases for all cells with formulas on all sheets.
 
-$KCODE = 'u'
+#$KCODE = 'u'
+
+$:.unshift File.dirname(__FILE__)
 
 require "erb"
 require "ssdoc"

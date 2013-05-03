@@ -31,7 +31,8 @@
                ?print_error_or_return(Res, Func)).
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<%= @testcasedata.map { |rec| "?test(#{rec[0]}, \"#{rec[1]}\", \"#{rec[2]}\", #{rec[3]}).\n" } %>
+<%= @testcasedata.map { |rec| "?test(#{rec[0]}, \"#{rec[1]}\", \"#{rec[2]}\", #{rec[3]})"}.join(".\n") %>
+.
 %%% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 init_per_suite(Config) ->
