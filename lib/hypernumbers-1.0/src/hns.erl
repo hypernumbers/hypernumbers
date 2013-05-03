@@ -26,7 +26,7 @@
          terminate/2, code_change/3]).
 
 -define(API_KEY,
-        "C7ozR9fh4apHmfEwkWS7FrItSHDqGq9J3UTxm9JQrEEHnka3qA7wSHJYJM1kHVfs").
+        "KYHSie3W1ibqkPSf8Pl1U3UwjtdUlUrvCdTfI1Wp5pwuL1yWbYvnhaGrmMLHqvM3").
 
 -include("hypernumbers.hrl").
 -include("spriki.hrl").

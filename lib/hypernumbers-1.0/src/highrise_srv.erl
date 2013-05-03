@@ -153,7 +153,7 @@ push_to_highrise() ->
     [ok = ?WRITELOG(#refX{site = CS, path = CP, obj = CO}, NewS, STy, U, E, Z)
      || #commission{uid = U, email = E, site = NewS, sitetype = STy, zone = Z,
                     commissioning_site = CS, commissioning_path = CP,
-                    commissioning_cell = CO, in_highrise = true} <- Comms],
+                    commissioning_cell = CO, synched = true} <- Comms],
     ok.
 
 write_to_highrise(X) ->
