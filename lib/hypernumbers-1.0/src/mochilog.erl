@@ -47,7 +47,7 @@ log(#env{mochi = Mochi,uid = Uid,
     {"pass",     _P} = lists:keyfind("pass",     1, Body#env.body),
     {"remember", R}  = lists:keyfind("remember", 1, Body#env.body),
     NewBody = "{\"email\":\"" ++ E ++ "\",\"pass\":\"***\",\"remember\":"
-        ++ atom_to_list(R) ++ "}",
+        ++ R ++ "}",
     NewBody2 = list_to_binary(NewBody),
     log1(Mochi, Uid, NewBody2, Email, Ref);
 log(#env{mochi=Mochi, uid=Uid, raw_body=Body, email=Email}, Ref) ->
