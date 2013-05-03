@@ -131,13 +131,11 @@ Token -> ampm       : lit('$1').
 %% And text token
 Token -> at         : lit('$1').
 
-
 Tokens -> Escaped        : '$1'.
 Tokens -> Tokens Token   : ['$1','$2'].
 Tokens -> Token          : '$1'.
 
 Erlang code.
-
 
 lit({Cat, _LineNumber, Sym}) ->
     {Cat, Sym}.
