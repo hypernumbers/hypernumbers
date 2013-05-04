@@ -5,6 +5,8 @@
 {add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "spreadsheet"}]}.
 {add_view, [{path, []}, {perms, ["admin"]}, {view, "webpage"}]}.
 {add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "webpage"}]}.
+{add_view, [{path, []},       {perms, ["admin"]}, {view, "wikipage"}]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "wikipage"}]}.
 {add_view, [{path, []},       {perms, ["admin"]}, {view, "table"}]}.
 {add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "table"}]}.
 
@@ -31,8 +33,8 @@
   {view, "webpage"}
  ]}.
 
-{add_view, [{path, ["test4"]}, {perms, [everyone]}, {view, "webpage"}]}.
+{add_view, [{path, ["test4"]}, {perms, [everyone]}, {view, "wikipage"}]}.
 {set_champion,
  [{path, ["test4"]},
-  {view, "webpage"}
+  {view, "wikipage"}
  ]}.

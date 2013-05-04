@@ -12,7 +12,7 @@
 
 -include("test_server.hrl").
 
--define(SITE, "http://tests.hypernumbers.dev:9000").
+-define(SITE, "http://security.hypernumbers.dev:9000").
 
 -define(test(Name, Path, Input, Expected),
         Name(_Config) ->
@@ -29,7 +29,7 @@
 %% callbacks
 init_per_suite(Config) ->
     Path = ["wp_test1"],
-    Group = "admin", 
+    Group = "admin",
     View = "webpage",
     Node = list_to_atom(atom_to_list(read_config(nodename))
                         ++"@"++net_adm:localhost()),
@@ -51,7 +51,7 @@ read_config(Key) ->
     Val.
 
 %% tests to run
-all() -> 
+all() ->
     [
      wp_test1,
      wp_test2,

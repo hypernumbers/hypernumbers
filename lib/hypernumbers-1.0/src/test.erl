@@ -45,6 +45,8 @@
 -define(COVER_DATA, "tests/cover.data").
 
 -define(SITE, "http://tests.hypernumbers.dev:9000").
+-define(SYSSITE, "http://sys.hypernumbers.dev:9000").
+-define(SECSITE, "http://security.hypernumbers.dev:9000").
 
 -define(PL, proplists:lookup).
 
@@ -59,17 +61,23 @@
 
 init() -> setup(blank, []).
 
+init_sys() ->
+    {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
+    passport:validate_uid(Uid),
+    passport:set_password(Uid, "i!am!secure"),
+    setup(?SYSSITE, blank, [{creator, Uid}]).
+
 init_fuzz() ->
     {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
     passport:validate_uid(Uid),
     passport:set_password(Uid, "i!am!secure"),
-    setup:site(blank, [{creator, Uid}]).
+    setup(blank, [{creator, Uid}]).
 
 init_sec() ->
     {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
     passport:validate_uid(Uid),
     passport:set_password(Uid, "i!am!secure"),
-    setup(security_test, [{creator, Uid}]).
+    setup(?SECSITE, security_test, [{creator, Uid}]).
 
 init_auth() ->
     Email = "test@hypernumbers.com",
@@ -99,11 +107,14 @@ init_auth() ->
     new_db_api:write_api(?SITE, API4).
 
 setup(Type, Opts) when is_list(Opts) ->
-    case hn_setup:site_exists(?SITE) of
-        true  -> hn_setup:delete_site(?SITE);
+    setup(?SITE, Type, Opts).
+
+setup(Site, Type, Opts) ->
+    case hn_setup:site_exists(Site) of
+        true  -> hn_setup:delete_site(Site);
         false -> ok
     end,
-    hn_setup:site(?SITE, Type, Opts).
+    hn_setup:site(Site, Type, Opts).
 
 all() -> excel(), sys(), security(), fuzz(), auth(), ztest(), authorization().
 
@@ -111,32 +122,25 @@ fuzz() ->
     init_fuzz(),
     ok = generate_fuzz_tests(),
     WC = filename:absname(?TEST_DIR)++"/funs_fuzz_test",
-    io:format("WC is ~p~n", [WC]),
     Tests = filelib:wildcard(WC),
-    io:format("Tests is ~p~n", [Tests]),
     Opts = [ {dir, Tests} ],
     do_test(Opts).
 
 security() ->
     init_sec(),
     WC = filename:absname(?TEST_DIR) ++ "/security_test",
-    io:format("WC is ~p~n", [WC]),
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
-    io:format("Tests is ~p~n", [Tests]),
     do_test(Opts).
 
 authorization() ->
     init_auth(),
     WC = filename:absname(?TEST_DIR) ++ "/authorization_test",
-    io:format("WC is ~p~n", [WC]),
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
-    io:format("Tests is ~p~n", [Tests]),
     do_test(Opts).
 
 security(S) ->
-    io:format("Security running with ~p~n", [S]),
     init_sec(),
     WC = filename:absname(?TEST_DIR) ++ "/security_test",
     Tests = filelib:wildcard(WC),
@@ -147,7 +151,6 @@ security(S) ->
     do_test(Opts).
 
 authorization(S) ->
-    io:format("Authorization running with ~p~n", [S]),
     init_auth(),
     WC = filename:absname(?TEST_DIR) ++ "/authorization_test",
     Tests = filelib:wildcard(WC),
@@ -158,7 +161,6 @@ authorization(S) ->
     do_test(Opts).
 
 compile(File) ->
-    io:format("Compiling ~p~n", [File]),
     case compile:file(File, [return_errors]) of
         {ok, FileName} ->
             io:fwrite("OK: ~s~n", [File]),
@@ -175,15 +177,15 @@ sys() ->
     sys([]).
 
 sys(Suites) ->
-    init(),
-%% Copy source files
+    init_sys(),
+    % Copy source files
     SrcDir = code:lib_dir(hypernumbers)++"/src/",
     EbinDir = code:lib_dir(hypernumbers)++"/ebin/",
     file:write_file(?COVER_DATA, []),
     [file:copy(S, EbinDir++filename:basename(S))
      || S <- filelib:wildcard(SrcDir++"*.erl")],
 
-%% Setup Options
+    % Setup Options
     SOpt = if Suites == [] -> [];
               true         -> [{suite, [S++"_SUITE" || S <- Suites]}] end,
     Opts = [ {dir, [filename:absname(?SYSTEST_DIR)]}
@@ -199,14 +201,12 @@ ztest() ->
     WC = filename:absname(?TEST_DIR)++"/ztest",
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
-    io:format("Tests is ~p~n", [Tests]),
     do_test(Opts).
 
 auth() ->
     WC = filename:absname(?TEST_DIR)++"/auth_test",
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
-    io:format("Tests is ~p~n", [Tests]),
     do_test(Opts).
 
 excel() ->
@@ -231,9 +231,9 @@ excel(T, S) ->
 post_TEST_DEBUG() ->
     % User = "test@hypernumbers.com",
     % Password = "i!am!secure",
-    URL  = "http://tests.hypernumbers.dev:9000/test4/a1",
-    Data = "{\"postinline\":{\"formula\":\"bleh\"}}",
-    post_logged_out_TEST(URL, Data).
+    URL  = "http://security.hypernumbers.dev:9000/test1/a1",
+    Data = "{\"delete\":\"all\"}",
+    post_logged_in_TEST(URL, Data).
 
 post_logged_in_TEST(URL, Data) ->
     post_logged_in2(URL, Data, admin).
@@ -313,14 +313,14 @@ get_api_TEST(URL, Type, Accept) ->
     ok = httpc:reset_cookies(),
     R = httpc:request(get, {URL, Headers}, [], []),
     {ok, {{_, Code, _}, _, _Body}} = R,
-    Dir = code:priv_dir(hypernumbers) ++ "../../../../var/api-logs/",
-    #refX{path = P, obj = O} = hn_util:url_to_refX(URL),
-    Ob = case O of
-             {page, "/"} -> "page";
-             _           -> hn_util:obj_to_ref(O)
-           end,
-    _File = Dir ++ hn_util:path_to_json_path(lists:append([P ,["type-" ++ Ob]])),
-    % log(Body, File),
+    %% Dir = code:priv_dir(hypernumbers) ++ "../../../../var/api-logs/",
+    %% #refX{path = P, obj = O} = hn_util:url_to_refX(URL),
+    %% Ob = case O of
+    %%         {page, "/"} -> "page";
+    %%         _           -> hn_util:obj_to_ref(O)
+    %%       end,
+    %% File = Dir ++ hn_util:path_to_json_path(lists:append([P ,["type-" ++ Ob]])),
+    %% log(Body, File),
     Code.
 
 get_logged_out_json_TEST(URL) ->
@@ -405,10 +405,8 @@ do_test(Opts) ->
     application:unset_env(hypernumbers, sync_url),
     filelib:ensure_dir(filename:absname(?LOG_DIR)++"/"),
     DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
-    ct:run_test(
-      lists:ukeymerge(1,
-                      lists:keysort(1, Opts),
-                      lists:keysort(1, DefaultOps))),
+    Tests = lists:ukeymerge(1,lists:keysort(1, Opts), lists:keysort(1, DefaultOps)),
+    ct:run_test(Tests),
     ok.
 
 generate_fuzz_tests() ->
@@ -516,12 +514,12 @@ login(URL, UserType) ->
              end,
     Cookie.
 
-log(String, File) ->
-    _Return = filelib:ensure_dir(File),
-    case file:open(File, [write]) of
-        {ok, Id} ->
-            io:fwrite(Id, "~s~n", [String]),
-            file:close(Id);
-        _ ->
-            error
-    end.
+%% log(String, File) ->
+%%     _Return = filelib:ensure_dir(File),
+%%     case file:open(File, [write]) of
+%%         {ok, Id} ->
+%%             io:fwrite(Id, "~s~n", [String]),
+%%             file:close(Id);
+%%         _ ->
+%%             error
+%%     end.

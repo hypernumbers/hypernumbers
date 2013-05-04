@@ -356,7 +356,7 @@ login(User, Site, Cookies) ->
     URL = Site ++ "/_login/",
     CHeaders = lists:merge([{"Accept", "application/json"}], Cookies),
     Login = "{\"email\":\"" ++ User ++ "\", \"pass\":\"" ++ ?PASSWORD
-        ++ "\",\"remember\":\"false\"}",
+        ++ "\",\"remember\":false}",
     io:format("Logging in with headers of ~p~n", [CHeaders]),
     case httpc:request(post, {URL, CHeaders, "application/json", Login}, [], []) of
         {ok, {{_, 200, _}, Headers, Resp}} ->

@@ -12,7 +12,7 @@
 
 -include("test_server.hrl").
 
--define(SITE, "http://tests.hypernumbers.dev:9000").
+-define(SITE, "http://security.hypernumbers.dev:9000").
 
 -define(test(Name, Path, Input, Expected),
         Name(_Config) ->
@@ -30,7 +30,7 @@
 %% callbacks
 init_per_suite(Config) ->
     Path = ["wp_test1"],
-    Group = "admin", 
+    Group = "admin",
     View = "webpage",
     Node = list_to_atom(atom_to_list(read_config(nodename))
                         ++"@"++net_adm:localhost()),
@@ -52,7 +52,7 @@ read_config(Key) ->
     Val.
 
 %% tests to run
-all() -> 
+all() ->
     [
      wp_test1,
      wp_test2,
@@ -65,27 +65,27 @@ all() ->
     ].
 
 %% Test cases starts here.
-%%------------------------------------------------------------------------------ 
+%%------------------------------------------------------------------------------
 %% the passing test - the form is taken straight of the page being tested...
-?test(wp_test1, "/test2/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 200).
+?test(wp_test1, "/test2/", "{\"postform\":{\"results\":\"./_replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 200).
 
 %% the failing tests - one field removed
-?test(wp_test2, "/test2/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
+?test(wp_test2, "/test2/", "{\"postform\":{\"results\":\"./_replies/\",\"values\":[{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
 
 %% the failing tests - one field added
-?test(wp_test3, "/test2/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"},{\"label\":\"new Question:\",\"formula\":\"howdy!\"}]}}", 403).
+?test(wp_test3, "/test2/", "{\"postform\":{\"results\":\"./_replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"},{\"label\":\"new Question:\",\"formula\":\"howdy!\"}]}}", 403).
 
 %% change value in drop down (values specified inline)
-?test(wp_test4, "/test2/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"changed on ya man!\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
+?test(wp_test4, "/test2/", "{\"postform\":{\"results\":\"./_replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"changed on ya man!\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
 
 %% changed value in radio box (values specified inline)
-?test(wp_test5, "/test2/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"changed on ya man!\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
+?test(wp_test5, "/test2/", "{\"postform\":{\"results\":\"./_replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"changed on ya man!\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
 
 %% change value in drop down (values specified in a lookup)
-?test(wp_test6, "/test2/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Changed here\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
+?test(wp_test6, "/test2/", "{\"postform\":{\"results\":\"./_replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Changed here\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
 
 %% changed value in radio box (values specified a lookup)
-?test(wp_test7, "/test2/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"Changed here\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
+?test(wp_test7, "/test2/", "{\"postform\":{\"results\":\"./_replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"Changed here\"},{\"label\":\"Question 4:\",\"formula\":\"blah\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
 
 %% blank radio box
-?test(wp_test8, "/test2/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).
+?test(wp_test8, "/test2/", "{\"postform\":{\"results\":\"./_replies/\",\"values\":[{\"label\":\"Question 3:\",\"formula\":\"hey\"},{\"label\":\"Question 11:\",\"formula\":\"\"},{\"label\":\"Question 7:\",\"formula\":\"Hip\"},{\"label\":\"Question 8:\",\"formula\":\"One for the money\"},{\"label\":\"Question 4:\",\"formula\":\"\"},{\"label\":\"Question 1:\",\"formula\":\"\"},{\"label\":\"Question 9:\",\"formula\":\"\"},{\"label\":\"Question 5:\",\"formula\":\"\"},{\"label\":\"Question 2:\",\"formula\":\"\"},{\"label\":\"Question 10:\",\"formula\":\"\"},{\"label\":\"Question 6:\",\"formula\":\"\"}]}}", 403).

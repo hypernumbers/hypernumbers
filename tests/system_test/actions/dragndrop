@@ -1,10 +1,10 @@
 %% -*- mode: erlang -*-
 
 %% Targeted Sites
-sites() -> ["http://hypernumbers.dev:9000"].
+sites() -> ["http://sys.hypernumbers.dev:9000"].
 
 actions() ->
-    Url  = "http://hypernumbers.dev:9000/dragndrop/",
+    Url  = "http://sys.hypernumbers.dev:9000/dragndrop/",
     Type = "application/json",
     Accept = [{"Accept", "application/json"}],
     Data1 = "{\"drag\":{\"range\":\"E4:E7\"}}",
