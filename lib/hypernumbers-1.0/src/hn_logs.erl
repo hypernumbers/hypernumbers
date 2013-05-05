@@ -24,7 +24,6 @@ get_json_logs(RefX) when is_record(RefX, refX) ->
                   end
           end,
     Logs = lists:sort(Fun, new_db_api:get_logs(RefX)),
-    io:format("Logs is ~p~n", [Logs]),
     FilteredLogs = [{Ts, {struct, [{action, Act},
                                    {actiontype, AT},
                                    {ref, hn_util:obj_to_ref(Obj)},
@@ -36,8 +35,7 @@ get_json_logs(RefX) when is_record(RefX, refX) ->
     {struct, FilteredLogs}.
 
 to_email([])  -> [];
-to_email(Uid) -> io:format("Uid is ~p~n", [Uid]),
-                 {ok, Email} = passport:uid_to_email(Uid),
+to_email(Uid) -> {ok, Email} = passport:uid_to_email(Uid),
                  Email.
 
 get_logs(RefX) when is_record(RefX, refX) ->
