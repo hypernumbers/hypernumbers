@@ -79,6 +79,11 @@
          copy_cell/5
         ]).
 
+%% export for treating API calls as user calls with a non-contactable email
+-export([
+         make_api_email/2
+        ]).
+
 % fns for logging
 -export([
          log_page/3,
@@ -542,8 +547,9 @@ clear_cells(RefX, Uid) -> clear_cells(RefX, contents, Uid).
 clear_cells(Ref, contents, Uid) ->
     do_clear_cells(Ref, content_attrs(), clear, Uid);
 clear_cells(Ref, all, Uid) ->
-    do_clear_cells(Ref, ["style", "merge", "input", "ghost"
-                         | content_attrs()], clear, Uid);
+    do_clear_cells(Ref, ["style", "merge", "input", "ghost" | content_attrs()], clear, Uid);
+clear_cells(Ref, merge, Uid) ->
+    do_clear_cells(Ref, ["merge"], clear, Uid);
 clear_cells(Ref, style, Uid) ->
     do_clear_cells(Ref, ["style", "merge", "input", "ghost"], ignore, Uid);
 clear_cells(Ref, {attributes, DelAttrs}, Uid) ->
@@ -1432,7 +1438,7 @@ post_process_format(Raw, Attrs) ->
                  _       -> "General"
              end,
     case format:get_src(Format) of
-        {erlang, {_Type, Output}} ->
+        {erlang, {Type, Output}} ->
             % Y'all hear, this is how America does color. I tell you what.
             case format:run_format(Raw, Output) of
                 {Color, Val1} ->
@@ -1446,10 +1452,10 @@ post_process_format(Raw, Attrs) ->
                     add_attributes(Attrs,
                                    [{"value", Val2},
                                     {"overwrite-color", atom_to_list(Color)}]);
-                _ ->
+                _Other ->
                     Attrs
             end;
-        _ ->
+        _Other2 ->
             Attrs
     end.
 
@@ -2995,7 +3001,7 @@ add_api_permissions(Site, Email, Path, IncludeSubs) ->
     {ok, _, User} = passport:get_or_create_user(Email),
     ok = passport:validate_uid(User),
     ok = hn_groups:set_users(Site, Email, [User]),
-    URL = Site ++ hn_util:list_to_path(Path),
+    URL = Site ++ Path,
     RefX = hn_util:url_to_refX(URL),
     #refX{path = P, obj = {page, "/"}} = RefX,
     ok = auth_srv:add_view(Site, P, [Email], "spreadsheet"),
@@ -3008,7 +3014,7 @@ add_api_permissions(Site, Email, Path, IncludeSubs) ->
 %% this works by reading the old permissions, removing the one we want to edit
 %% and then saving the new version
 remove_api_permissions(Site, Email, Path, IncludeSubs) ->
-    URL = Site ++ hn_util:list_to_path(Path),
+    URL = Site ++ Path,
     RefX = hn_util:url_to_refX(URL),
     #refX{path = P, obj = {page, "/"}} = RefX,
     Views = auth_srv:get_view(Site, P),

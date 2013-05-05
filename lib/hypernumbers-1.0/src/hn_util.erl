@@ -21,6 +21,7 @@
          read_lines/1,
          esc/1,
          log/2,
+         plain_log/2,
          log_terms/2,
          get_templates/1,
          get_maps/1,
@@ -134,6 +135,17 @@ log_terms(Terms, File) ->
     case file:open(File, [append]) of
         {ok, Id} ->
             io:fwrite(Id, "~s~n", [Str]),
+            file:close(Id);
+        _ ->
+            error
+    end.
+
+plain_log(String, File) ->
+    _Return = filelib:ensure_dir(File),
+
+    case file:open(File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [String]),
             file:close(Id);
         _ ->
             error
@@ -636,19 +648,19 @@ path_to_json_path(P) when is_list(P) -> "path." ++ string:join(P, ".")
 
 obj_to_change_msg({page,Path}) ->
     Path;
-obj_to_change_msg({cell,{X,Y}}) ->
-    tconv:to_b26(X)++text(Y);
+obj_to_change_msg({cell,{X, Y}}) ->
+    tconv:to_b26(X) ++ text(Y);
 % file import seems to create old-fashioned rows
-obj_to_change_msg({row, {Y, Y}}) ->
+obj_to_change_msg({row, {Y, _Y}}) ->
     text(Y); % change msgs only get a singleton ref
 obj_to_change_msg({row, {range, {zero, Y, inf, Y}}}) ->
     text(Y); % change msgs only get a singleton ref
 obj_to_change_msg({column, {range, {X, zero, X, inf}}}) ->
     tconv:to_b26(X); % change msgs only get a singleton ref
 % file import seems to create old-fashioned columns
-obj_to_change_msg({column, {X, X}}) ->
+obj_to_change_msg({column, {X, _X}}) ->
     tconv:to_b26(X); % change msgs only get a singleton ref
-obj_to_change_msg({range,{X1,Y1,X2,Y2}}) ->
+obj_to_change_msg({range,{X1, Y1, X2, Y2}}) ->
     tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
 
 in_range({range,{X1,Y1,X2,Y2}}, {cell,{X,Y}}) ->

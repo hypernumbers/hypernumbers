@@ -180,6 +180,8 @@ normalise(List) -> norm2(List, []).
 norm2([], Acc) -> Acc;
 norm2([{K, V} | T], Acc) when is_atom(K) ->
     norm2(T, [{string:to_lower(atom_to_list(K)), V} | Acc]);
+norm2([{K, V} | T], Acc) when is_list(K) ->
+    norm2(T, [{string:to_lower(K), V} | Acc]);
 norm2([H | T], Acc) -> norm2(T, [H | Acc]).
 
 get_header(Headers, Type) ->

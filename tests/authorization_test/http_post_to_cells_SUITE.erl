@@ -210,16 +210,16 @@ all() ->
      post_clearall5a,
      post_clearall5b,
 
-     post_clearfail1a,
-     post_clearfail1b,
-     post_clearfail2a,
-     post_clearfail2b,
-     post_clearfail3a,
-     post_clearfail3b,
-     post_clearfail4a,
-     post_clearfail4b,
-     post_clearfail5a,
-     post_clearfail5b
+     post_clearrandom1a,
+     post_clearrandom1b,
+     post_clearrandom2a,
+     post_clearrandom2b,
+     post_clearrandom3a,
+     post_clearrandom3b,
+     post_clearrandom4a,
+     post_clearrandom4b,
+     post_clearrandom5a,
+     post_clearrandom5b
 
     ].
 
@@ -482,18 +482,18 @@ all() ->
 ?test(post_clearall5a, "/some/page/", ?CLEARALL, 200, loggedinjson).
 ?test(post_clearall5b, "/some/page/", ?CLEARALL, 401, loggedoutjson).
 
--define(CLEARFAIL, "{\"clear\": \"fail\"}").
-?test(post_clearfail1a, "/some/page/a1", ?CLEARFAIL, 401, loggedinjson).
-?test(post_clearfail1b, "/some/page/a1", ?CLEARFAIL, 401, loggedoutjson).
+-define(CLEARRANDOM, "{\"clear\": \"random\"}").
+?test(post_clearrandom1a, "/some/page/a1", ?CLEARRANDOM, 200, loggedinjson).
+?test(post_clearrandom1b, "/some/page/a1", ?CLEARRANDOM, 401, loggedoutjson).
 
-?test(post_clearfail2a, "/some/page/a1:b5", ?CLEARFAIL, 401, loggedinjson).
-?test(post_clearfail2b, "/some/page/a1:b5", ?CLEARFAIL, 401, loggedoutjson).
+?test(post_clearrandom2a, "/some/page/a1:b5", ?CLEARRANDOM, 200, loggedinjson).
+?test(post_clearrandom2b, "/some/page/a1:b5", ?CLEARRANDOM, 401, loggedoutjson).
 
-?test(post_clearfail3a, "/some/page/a:b", ?CLEARFAIL, 401, loggedinjson).
-?test(post_clearfail3b, "/some/page/a:b", ?CLEARFAIL, 401, loggedoutjson).
+?test(post_clearrandom3a, "/some/page/a:b", ?CLEARRANDOM, 200, loggedinjson).
+?test(post_clearrandom3b, "/some/page/a:b", ?CLEARRANDOM, 401, loggedoutjson).
 
-?test(post_clearfail4a, "/some/page/1:2", ?CLEARFAIL, 401, loggedinjson).
-?test(post_clearfail4b, "/some/page/1:2", ?CLEARFAIL, 401, loggedoutjson).
+?test(post_clearrandom4a, "/some/page/1:2", ?CLEARRANDOM, 200, loggedinjson).
+?test(post_clearrandom4b, "/some/page/1:2", ?CLEARRANDOM, 401, loggedoutjson).
 
-?test(post_clearfail5a, "/some/page/", ?CLEARFAIL, 401, loggedinjson).
-?test(post_clearfail5b, "/some/page/", ?CLEARFAIL, 401, loggedoutjson).
+?test(post_clearrandom5a, "/some/page/", ?CLEARRANDOM, 200, loggedinjson).
+?test(post_clearrandom5b, "/some/page/", ?CLEARRANDOM, 401, loggedoutjson).

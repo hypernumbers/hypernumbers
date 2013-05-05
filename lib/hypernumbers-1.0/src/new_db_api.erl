@@ -1,6 +1,6 @@
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2011, Hypernumbers Ltd
-%%% @doc       new db work unites
+%%% @doc       new db work rewrites
 %%%            old hn_db_api.erl poured in and rewritten
 %%% @end
 %%% Created :  5 Apr 2011 by gordon@hypernumbers.com
@@ -279,22 +279,29 @@ create_groupD(Site, GroupN) ->
     write_activity(RefX, Fun, "quiet").
 
 is_memberD(Site, Uid, Groups) ->
+    {ok, Email} = passport:uid_to_email(Uid),
     Tbl = ?wu:trans(Site, group),
     Fun = fun() ->
-                  is_member1(Groups, Tbl, Uid)
+                  is_member1(Groups, Tbl, Email, Uid)
           end,
     mnesia:activity(transaction, Fun).
 
-is_member1([], _Tbl, _Uid) -> false;
-is_member1([GroupN | Rest], Tbl, Uid) ->
-    case mnesia:read(Tbl, GroupN) of
-        [G] ->
-            case gb_sets:is_member(Uid, G#group.members) of
-                true  -> true;
-                false -> is_member1(Rest, Tbl, Uid)
-            end;
+is_member1([], _Tbl, _Email, _Uid) -> false;
+is_member1([GroupN | Rest], Tbl, Email, Uid) ->
+    % check if the Group is the Email first
+    case GroupN of
+        Email ->
+            true;
         _ ->
-            is_member1(Rest, Tbl, Uid)
+            case mnesia:read(Tbl, GroupN) of
+                [G] ->
+                    case gb_sets:is_member(Uid, G#group.members) of
+                        true  -> true;
+                        false -> is_member1(Rest, Tbl, Email, Uid)
+                    end;
+                _ ->
+                    is_member1(Rest, Tbl, Email, Uid)
+            end
     end.
 
 get_all_groups(Site) ->
@@ -1400,9 +1407,10 @@ copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
             XTo = ?wu:refX_to_xrefX_createD(To),
             ok = ?wu:copy_cell(XFrom, XTo, Incr, What, Ar),
             ok = ?wu:mark_these_dirtyD([XTo], Ar);
-        _ ->
-            throw(auth_error)
-    end.
+        denied ->
+            % if they haven't got permssion we just silently ignore them
+            ok
+end.
 
 copy_n_paste2(From, To, What, Ar) ->
     case is_valid_c_n_p(From, To) of

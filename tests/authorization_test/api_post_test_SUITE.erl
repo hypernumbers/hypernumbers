@@ -42,7 +42,6 @@ read_config(Key) ->
 %% tests to run
 all2()->
     [
-
     ].
 
 all() ->
@@ -586,7 +585,7 @@ all() ->
      post_default_view3e,
      post_default_view4e,
 
-      post_set_view1a,
+     post_set_view1a,
      post_set_view2a,
      post_set_view3a,
      post_set_view4a,
@@ -750,7 +749,7 @@ all() ->
             \"lineno\": \"1234\",
             \"errorfileurl\": \"http://example.com/javascript.js\"
         }
-    }").
+}").
 % jserror
 ?tapi(post_jserr1a, "/some/page/a1", ?JSERR, 401, api_subdirs).
 ?tapi(post_jserr2a, "/some/page/a1", ?JSERR, 401, api).
@@ -799,7 +798,7 @@ all() ->
 ?tapi(post_loadtemplate3d, "/some/page/10:11", ?LOADTEMPLATE, 401, api_admin).
 ?tapi(post_loadtemplate4d, "/some/page/10:11", ?LOADTEMPLATE, 401, api_appendonly).
 
-?tapi(post_loadtemplate1e, "/some/page/", ?LOADTEMPLATE, 401, api_subdirs).
+?tapi(post_loadtemplate1e, "/some/page/", ?LOADTEMPLATE, 200, api_subdirs).
 ?tapi(post_loadtemplate2e, "/some/page/", ?LOADTEMPLATE, 401, api).
 ?tapi(post_loadtemplate3e, "/some/page/", ?LOADTEMPLATE, 200, api_admin).
 ?tapi(post_loadtemplate4e, "/some/page/", ?LOADTEMPLATE, 401, api_appendonly).
@@ -919,7 +918,7 @@ all() ->
 ?tapi(post_insert1p, "/some/page/6:8", ?INSERTd, 401, api_subdirs).
 ?tapi(post_insert2p, "/some/page/6:8", ?INSERTd, 401, api).
 ?tapi(post_insert3p, "/some/page/6:8", ?INSERTd, 401, api_admin).
-?tapi(post_insert4p, "/some/page/6:8", ?INSERTd, 401, api_appendlonly).
+?tapi(post_insert4p, "/some/page/6:8", ?INSERTd, 401, api_appendonly).
 
 % try page inserts
 ?tapi(post_insert1q, "/some/page/", ?INSERTd, 401, api_subdirs).
@@ -933,9 +932,9 @@ all() ->
 -define(DELETEc, "{\"delete\":\"vertical\"}").
 
 % cells
-?tapi(post_delete1a, "/some/page/a5", ?DELETEa, 401, api_subdirs).
+?tapi(post_delete1a, "/some/page/a5", ?DELETEa, 200, api_subdirs).
 ?tapi(post_delete2a, "/some/page/a5", ?DELETEa, 401, api).
-?tapi(post_delete3a, "/some/page/a5", ?DELETEa, 401, api_admin).
+?tapi(post_delete3a, "/some/page/a5", ?DELETEa, 200, api_admin).
 ?tapi(post_delete4a, "/some/page/a5", ?DELETEa, 401, api_appendonly).
 
 ?tapi(post_delete1b, "/some/page/a5", ?DELETEb, 200, api_subdirs).
@@ -949,9 +948,9 @@ all() ->
 ?tapi(post_delete4c, "/some/page/a5", ?DELETEc, 401, api_appendonly).
 
 % ranges
-?tapi(post_delete1d, "/some/page/a5:b6", ?DELETEa, 401, api_subdirs).
+?tapi(post_delete1d, "/some/page/a5:b6", ?DELETEa, 200, api_subdirs).
 ?tapi(post_delete2d, "/some/page/a5:b6", ?DELETEa, 401, api).
-?tapi(post_delete3d, "/some/page/a5:b6", ?DELETEa, 401, api_admin).
+?tapi(post_delete3d, "/some/page/a5:b6", ?DELETEa, 200, api_admin).
 ?tapi(post_delete4d, "/some/page/a5:b6", ?DELETEa, 401, api_appendonly).
 
 ?tapi(post_delete1e, "/some/page/a5:b6", ?DELETEb, 200, api_subdirs).
@@ -1415,10 +1414,12 @@ all() ->
 ?tapi(post_webcontrol3e, "/some/page/", ?POSTWEBCONTROL, 401, api_admin).
 ?tapi(post_webcontrol4e, "/some/page/", ?POSTWEBCONTROL, 401, api_appendonly).
 
+%% this revert won't work because we don't know the reversion index
+%% so test for a 500
 -define(POSTREVERT, "{\"revert_to\": \"yardle\"}").
-?tapi(post_revert1a, "/some/page/B4", ?POSTREVERT, 200, api_subdirs).
+?tapi(post_revert1a, "/some/page/B4", ?POSTREVERT, 500, api_subdirs).
 ?tapi(post_revert2a, "/some/page/B4", ?POSTREVERT, 401, api).
-?tapi(post_revert3a, "/some/page/B4", ?POSTREVERT, 200, api_admin).
+?tapi(post_revert3a, "/some/page/B4", ?POSTREVERT, 500, api_admin).
 ?tapi(post_revert4a, "/some/page/B4", ?POSTREVERT, 401, api_appendonly).
 
 ?tapi(post_revert1b, "/some/page/B4:b5", ?POSTREVERT, 401, api_subdirs).
@@ -1463,9 +1464,9 @@ all() ->
 ?tapi(post_default_view3d, "/some/page/3:4", ?POSTDEFAULT_VIEW, 401, api_admin).
 ?tapi(post_default_view4d, "/some/page/3:4", ?POSTDEFAULT_VIEW, 401, api_appendonly).
 
-?tapi(post_default_view1e, "/some/page/", ?POSTDEFAULT_VIEW, 401, api_subdirs).
+?tapi(post_default_view1e, "/some/page/", ?POSTDEFAULT_VIEW, 200, api_subdirs).
 ?tapi(post_default_view2e, "/some/page/", ?POSTDEFAULT_VIEW, 401, api).
-?tapi(post_default_view3e, "/some/page/", ?POSTDEFAULT_VIEW, 401, api_admin).
+?tapi(post_default_view3e, "/some/page/", ?POSTDEFAULT_VIEW, 200, api_admin).
 ?tapi(post_default_view4e, "/some/page/", ?POSTDEFAULT_VIEW, 401, api_appendonly).
 
 %% set_view
@@ -1496,7 +1497,7 @@ all() ->
 ?tapi(post_set_view4e, "/some/page/", ?POSTSET_VIEW, 401, api_appendonly).
 
 %% save_template
--define(POSTSAVE_TEMPLATE, "{\"save_template\": {\"template\": \"banjolele\"}}").
+-define(POSTSAVE_TEMPLATE, "{\"save_template\": {\"name\": \"banjolele\"}}").
 ?tapi(post_save_template1a, "/some/page/B4", ?POSTSAVE_TEMPLATE, 401, api_subdirs).
 ?tapi(post_save_template2a, "/some/page/B4", ?POSTSAVE_TEMPLATE, 401, api).
 ?tapi(post_save_template3a, "/some/page/B4", ?POSTSAVE_TEMPLATE, 401, api_admin).

@@ -273,11 +273,10 @@ json_file(Url, FileName, Uid) ->
     {struct, Views} = ?pget("views", Perms),
 
     % set the champion
-    Path = hn_util:list_to_path(P),
     ok = hn_web_admin:rpc(not_used, S, "set_champion",
-                          [{"path", Path},
+                          [{"path", P},
                            {"view", Champion}]),
-    [ok = set_view(S, Path, X) || X <- Views],
+    [ok = set_view(S, P, X) || X <- Views],
 
     Styles = make_styles(StyleStrs, []),
 

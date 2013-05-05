@@ -12,7 +12,7 @@
 -module(hn_templates).
 
 -export([
-         save_template/2,
+         save_template/3,
          load_template/3,
          load_template/2,
          load_template_if_no_page/2
@@ -38,11 +38,11 @@
 %% External API
 %%
 
-save_template(#refX{site = S}=RefX, Name)  ->
+save_template(#refX{site = S} = RefX, Name, UID)  ->
     TemplatesDir = hn_util:templateroot(S),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     FileName = filename:join(TemplatesDir, Name++".json"),
-    Page = Encoder(hn_mochi:page_attrs_for_export(RefX, #env{})),
+    Page = Encoder(hn_mochi:page_attrs_for_export(RefX, #env{uid = UID})),
     Data = io_lib:format("~s", [lists:flatten(Page)]),
     ok = filelib:ensure_dir(FileName),
     ok = file:write_file(FileName, Data),

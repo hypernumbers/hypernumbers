@@ -29,17 +29,17 @@
 % hn_mochi                                    %
 %                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-rpc(User, Site, Fn, Args) when is_list(Args) ->
+rpc(UID, Site, Fn, Args) when is_list(Args) ->
 
     case Fn of
 
         "save_template" ->
             Path  = kfind("path", Args),
-            Name  = ustring:pr(ustring:to_lower(ustring:new(kfind("name", Args)))),
-            NPath = string:tokens(Path, "/"),
-            RefX  = #refX{site = Site, type = url, path = NPath,
+            Template = kfind("name", Args),
+            Name  = ustring:pr(ustring:to_lower(ustring:new(Template))),
+            RefX  = #refX{site = Site, type = url, path = Path,
                           obj= {page, "/"}},
-            hn_templates:save_template(RefX, Name);
+            hn_templates:save_template(RefX, Name, UID);
 
         "set_view" ->
             Path            = kfind("path", Args),
@@ -51,13 +51,12 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
                            false -> Groups
                        end,
 
-            NPath = string:tokens(Path, "/"),
-            auth_srv:set_view(Site, NPath, AuthSpec, View),
-            ok = remoting_reg:notify_refresh(Site, NPath);
+            ok = auth_srv:set_view(Site, Path, AuthSpec, View),
+            ok = remoting_reg:notify_refresh(Site, Path);
 
         "set_password" ->
             Password = kfind("password", Args),
-            case passport:set_password(User, Password) of
+            case passport:set_password(UID, Password) of
                 ok              -> ok;
                 {error, Reason} ->
                     Msg = io_lib:format("Error setting password ~p : ~p~n",
@@ -69,30 +68,33 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
         "set_champion" ->
             Path            = kfind("path", Args),
             View            = kfind("view", Args),
-            NPath           = string:tokens(Path, "/"),
-            %% TODO : shouldnt hardcode
-            auth_srv:add_view(Site, NPath, ["admin"], View),
-            auth_srv:set_champion(Site, NPath, View);
+            %% TODO : shouldn't hardcode
+            auth_srv:add_view(Site, Path, ["admin"], View),
+            auth_srv:set_champion(Site, Path, View);
 
-        "invite_user" -> add_user2(User, Site, Args, invite);
+        % you invite a user as a member of their personal group
+        "invite_user" ->
+            Email = kfind("email", Args),
+            Args2 = [{"groups", {array, [Email]}} | Args],
+            add_user2(UID, Site, Args2, invite);
 
-        "add_user"    -> add_user2(User, Site, Args, add);
+        "add_user"    ->
+            add_user2(UID, Site, Args, add);
 
         %"delete" ->
         %    [Site, Name] = Args,
         %    hn_users:delete(Site, Name);
 
-        "add_groups" ->
-            Path           = kfind("path", Args),
-            Name           = kfind("name", Args),
+        "add_group" ->
+            Path           = kfind("path",  Args),
+            Name           = kfind("group", Args),
             {array, Views} = kfind("views", Args),
-            NPath = string:tokens(Path, "/"),
             ok = hn_groups:create_group(Site, Name),
             % now fire off the permissions stuff...
-            [ok = auth_srv:add_view(Site, NPath, [Name], X) || X <- Views],
+            [ok = auth_srv:add_view(Site, Path, [Name], X) || X <- Views],
             % now tell the front end to update
             % twice - both the site and page!
-            ok = remoting_reg:notify_refresh(Site, NPath),
+            ok = remoting_reg:notify_refresh(Site, Path),
             ok = remoting_reg:notify_site(Site);
 
         % "remove_groups" ->
@@ -111,27 +113,27 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
             hn_import:save_map(Site, Name, H2, V2, M2),
             ok;
 
-        %~ curie's cases
-        "read_user_fn" ->
-            Name = kfind("name", Args),
-            Site = kfind("site", Args),
-            curie:read_user_fn(Site, Name);
+        % curie's cases
+        %% "read_user_fn" ->
+        %%     Name = kfind("name", Args),
+        %%     Site = kfind("site", Args),
+        %%     curie:read_user_fn(Site, Name);
 
-        "delete_user_fn" ->
-            Name = kfind("name", Args),
-            Site = kfind("site", Args),
-            curie:delete_user_fn(Site, Name);
+        %% "delete_user_fn" ->
+        %%     Name = kfind("name", Args),
+        %%     Site = kfind("site", Args),
+        %%     curie:delete_user_fn(Site, Name);
 
-        "write_user_fn"	->
-            Site					= kfind("site", Args),
-            Function_Name	= kfind("name", Args),
-            Page					= kfind("page", Args),
-            Function_Desc	= kfind("description", Args),
-            Output_Value	= kfind("output_value", Args),
-            Parameters		= kfind("parameters", Args),
-            curie:create_user_fn(Site, Function_Name, Page,
-                                 Function_Desc, Output_Value,
-                                 Parameters);
+        %% "write_user_fn"	->
+        %%     Site					= kfind("site", Args),
+        %%     Function_Name	= kfind("name", Args),
+        %%     Page					= kfind("page", Args),
+        %%     Function_Desc	= kfind("description", Args),
+        %%     Output_Value	= kfind("output_value", Args),
+        %%     Parameters		= kfind("parameters", Args),
+        %%     curie:create_user_fn(Site, Function_Name, Page,
+        %%                          Function_Desc, Output_Value,
+        %%                          Parameters);
 
         Other ->
             {error, Other ++ " is not a valid administrative task"}
@@ -157,14 +159,13 @@ flist([], Acc)       -> lists:flatten(Acc);
 flist([H | []], Acc) -> flist([], [H | Acc]);
 flist([H | T], Acc)  -> flist(T, [", ", H | Acc]).
 
-add_user2(User, Site, Args, Type) ->
-    P          = kfind("path", Args),
-    E          = kfind("email", Args),
-    M          = kfind("msg", Args),
-    {array, G} = kfind("groups", Args),
-    {ok, I}    = passport:uid_to_email(User),
+add_user2(UID, Site, Args, Type) ->
+    P           = kfind("path",   Args),
+    E           = kfind("email",  Args),
+    M           = kfind("msg",    Args),
+    {array, G}  = kfind("groups", Args),
+    {ok, I}     = passport:uid_to_email(UID),
     {From, Sig} = emailer:get_details(Site),
-    NPath = string:tokens(P, "/"),
     case hn_util:valid_email(E) of
         false ->
             Dets =[{person, E},
@@ -174,33 +175,36 @@ add_user2(User, Site, Args, Type) ->
                    {sig, Sig}],
             emailer:send(invalid_invite, I, "", From, Site, Dets);
         true ->
-            {ok, NE, UID} = passport:get_or_create_user(E),
+            {ok, NE, InvitedUID} = passport:get_or_create_user(E),
             % now add the users to the groups
-            ok = add_user_to_groups(Site, UID, G),
+            ok = add_user_to_groups(Site, InvitedUID, G),
             % only add a view if it is an invite
             if (Type == invite) ->
                     case kfind("view", Args) of
                         none -> ok;
-                        V    -> ok = auth_srv:add_view(Site, NPath, G, V)
+                        V    -> ok = auth_srv:add_view(Site, P, G, V)
                     end;
                (Type == add ) ->
                     ok % do nothing
             end,
-            case {NE, passport:is_valid_uid(UID)} of
+            case {NE, passport:is_valid_uid(InvitedUID)} of
                 {existing, true} ->
                     Dets = [{invitee, I}, {path, P}, {msg, M}, {sig, Sig}],
                     emailer:send(invite_existing, E, I, From, Site, Dets);
                 {_, _} ->
                     Vanity = hn_util:extract_name_from_email(E),
                     HtP = ["_validate", Vanity],
-                    Data = [{emailed, true},{redirect, P}],
-                    HT = passport:create_hypertag_url(Site, HtP, UID, E,
+                    P2 = hn_util:list_to_path(P),
+                    Data = [{emailed, true}, {redirect, P2}],
+                    HT = passport:create_hypertag_url(Site, HtP, InvitedUID, E,
                                                       Data, "never"),
                     Dets = [{invitee, I}, {msg, M},
                             {hypertag, HT}, {sig, Sig}],
                     emailer:send(invite_new, E, I, From, Site, Dets)
             end,
-            ok = remoting_reg:notify_refresh(Site, NPath)
+            % tell the front end to update both site and page
+            ok = remoting_reg:notify_refresh(Site, P),
+            ok = remoting_reg:notify_site(Site)
     end.
 
 clean_up(List, Name) -> cl2(List, Name, []).

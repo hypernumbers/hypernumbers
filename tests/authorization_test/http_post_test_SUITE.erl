@@ -580,7 +580,7 @@ all() ->
 -define(DELETEc, "{\"delete\":\"vertical\"}").
 
 % cells
-?test(post_delete1a, "/some/page/a5", ?DELETEa, 401, loggedinjson).
+?test(post_delete1a, "/some/page/a5", ?DELETEa, 200, loggedinjson).
 ?test(post_delete2a, "/some/page/a5", ?DELETEa, 401, loggedoutjson).
 
 ?test(post_delete1b, "/some/page/a5", ?DELETEb, 200, loggedinjson).
@@ -590,7 +590,7 @@ all() ->
 ?test(post_delete2c, "/some/page/a5", ?DELETEc, 401, loggedoutjson).
 
 % ranges
-?test(post_delete1d, "/some/page/a5:b6", ?DELETEa, 401, loggedinjson).
+?test(post_delete1d, "/some/page/a5:b6", ?DELETEa, 200, loggedinjson).
 ?test(post_delete2d, "/some/page/a5:b6", ?DELETEa, 401, loggedoutjson).
 
 ?test(post_delete1e, "/some/page/a5:b6", ?DELETEb, 200, loggedinjson).
@@ -879,7 +879,7 @@ all() ->
 ?test(post_webcontrol2e, "/some/page/", ?POSTWEBCONTROL, 401, loggedoutjson).
 
 -define(POSTREVERT, "{\"revert_to\": \"yardle\"}").
-?test(post_revert1a, "/some/page/B4", ?POSTREVERT, 403, loggedinjson).
+?test(post_revert1a, "/some/page/B4", ?POSTREVERT, 500, loggedinjson).
 ?test(post_revert2a, "/some/page/B4", ?POSTREVERT, 401, loggedoutjson).
 
 ?test(post_revert1b, "/some/page/B4:b5", ?POSTREVERT, 401, loggedinjson).
@@ -926,7 +926,7 @@ all() ->
 ?test(post_set_view1e, "/some/page/", ?POSTSET_VIEW, 200, loggedinjson).
 ?test(post_set_view2e, "/some/page/", ?POSTSET_VIEW, 401, loggedoutjson).
 
--define(POSTSAVE_TEMPLATE, "{\"save_template\": {\"template\": \"banjolele\"}}").
+-define(POSTSAVE_TEMPLATE, "{\"save_template\": {\"name\": \"banjolele\"}}").
 ?test(post_save_template1a, "/some/page/B4", ?POSTSAVE_TEMPLATE, 401, loggedinjson).
 ?test(post_save_template2a, "/some/page/B4", ?POSTSAVE_TEMPLATE, 401, loggedoutjson).
 ?test(post_save_template3a, "/some/page/B4", ?POSTSAVE_TEMPLATE, 401, loggedinjsonnotadmin).
