@@ -63,13 +63,12 @@ init([]) ->
             {ok, false} -> []
         end,
 
-    %% HighRise = case application:get_env(hypernumbers, environment) of
-    %%                {ok, development} -> [{highrise_srv, true}];
-    %%                _                 -> []
-    %%            end,
+    MktIntegration = case application:get_env(hypernumbers, environment) of
+                   {ok, development} -> [{marketing_integration_srv, true}];
+                   _                 -> []
+               end,
 
-    %% S2 = lists:merge([Services, P, HighRise]),
-
+    %% S2 = lists:merge([Services, P, MktIntegration]),
     S2 = lists:merge([Services, P]),
 
     ChildSpecs = [gen_child_spec(S) || {S,X} <- S2, (IsDev or X)],

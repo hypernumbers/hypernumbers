@@ -82,10 +82,10 @@ init_tables() ->
     Storage = disc_only_copies,
 
     %% Core system tables -- required to operate system
-    %% CIdxs = [uid, in_highrise],
+    CIdxs = [uid, synched],
     CoreTbls = [
-                {core_site,  record_info(fields, core_site),  set, []}
-                %% {commission, record_info(fields, commission), set, CIdxs}
+                {core_site,  record_info(fields, core_site),  set, []},
+                {commission, record_info(fields, commission), set, CIdxs}
                ],
 
     [ok = hn_db_admin:create_table(N, N, F, Storage, T, true, I)
