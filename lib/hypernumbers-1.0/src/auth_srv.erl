@@ -419,7 +419,7 @@ get_vw(#control{views = ?EMPTY_TREE}, _S, _U, _T) ->
     not_found;
 get_vw(#control{champion = [], challenger = []}, _S, _U, _T) ->
     not_found;
-get_vw(#control{champion = V}=C, Site, Uid, champion) ->
+get_vw(#control{champion = V} = C, Site, Uid, champion) ->
     View = gb_trees:get(V, C#control.views),
     case can_view(Site, Uid, View) of
         true  -> {view, V};
