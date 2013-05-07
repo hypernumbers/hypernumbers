@@ -9,6 +9,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_api_table_2013_05_07/0,
          write_spoof_hmac_api_keys/1,
          write_spoof_dev_wordpress/1,
          upgrade_incs_record_2012_07_07/0,
@@ -86,6 +87,18 @@
          % upgrade_1743_B/0,
          % upgrade_1776/0
         ]).
+
+upgrade_api_table_2013_05_07() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tbl = new_db_wu:trans(Site, api),
+                   mnesia:delete(Tbl),
+                   Fields = record_info(fields, api),
+                   hn_db_admin:create_table(Tbl, api, Fields, disc_copies,
+                                            set, [], true, [])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 write_spoof_hmac_api_keys(Site) ->
     {{public, PubK}, {private, PrivK}} = hmac_api_lib:get_api_keypair(),

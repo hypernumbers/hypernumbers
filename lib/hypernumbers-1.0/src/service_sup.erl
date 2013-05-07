@@ -59,17 +59,14 @@ init([]) ->
     {ok, Services} = application:get_env(hypernumbers, services),
 
     P = case application:get_env(hypernumbers, phoneredirect) of
-            {ok, true}  -> [{phoneredir_srv, true}];
-            {ok, false} -> []
+            {ok, true}  -> [{phoneredir_srv, true} | Services];
+            {ok, false} -> Services
         end,
 
-    MktIntegration = case application:get_env(hypernumbers, environment) of
-                   {ok, development} -> [{marketing_integration_srv, true}];
-                   _                 -> []
+    S2 = case application:get_env(hypernumbers, featureflag) of
+             {ok, on} -> [{marketing_integration_srv, true} | P];
+             _        -> P
                end,
-
-    %% S2 = lists:merge([Services, P, MktIntegration]),
-    S2 = lists:merge([Services, P]),
 
     ChildSpecs = [gen_child_spec(S) || {S,X} <- S2, (IsDev or X)],
 
