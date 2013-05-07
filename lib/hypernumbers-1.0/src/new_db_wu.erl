@@ -1438,7 +1438,7 @@ post_process_format(Raw, Attrs) ->
                  _       -> "General"
              end,
     case format:get_src(Format) of
-        {erlang, {Type, Output}} ->
+        {erlang, {_Type, Output}} ->
             % Y'all hear, this is how America does color. I tell you what.
             case format:run_format(Raw, Output) of
                 {Color, Val1} ->
