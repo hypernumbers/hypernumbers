@@ -58,7 +58,7 @@ copy_site3(From, To, Type) ->
                          site(To, blank, []),
                          ok = sitemaster_sup:delete_site(From),
                          ok = sitemaster_sup:delete_site(To),
-                    ok = copy_tables(From, To),
+                         ok = copy_tables(From, To),
                          ok = copy_collateral(From, To),
                          ok = sitemaster_sup:add_site(From),
                          ok = sitemaster_sup:add_site(To)
