@@ -21,6 +21,7 @@
 % when adding more fns of the type phone.menu.xxx you need to stop
 % muin swallowing them by looking for phone.menu.WxH
 -export([
+         %% 'manage.api.keys.'/1,
          'invite.users'/1,
          'users.and.groups.'/1,
          'configure.email'/1,
@@ -37,6 +38,72 @@
          'phone.menu.sms'/1,
          'google.analytics'/1
         ]).
+
+'manage.api.keys.'([H]) ->
+    'manage.api.keys.'([H, 0]);
+'manage.api.keys.'([H, Type]) ->
+    [H2, Type2] = typechecks:throw_std_ints([H, Type]),
+    ok = typechecks:in_range(Type2, 0, 1),
+    m_a_k(H2, Type2).
+
+m_a_k(H, Type) ->
+    APIJson = get_api_json(),
+    {Ctrl, Attr}
+        = case Type of
+              1 -> {"", "false"};
+              0 -> {#form{id = {'api-keys', "Edit"}, kind = "api-keys"}, "true"}
+          end,
+    HTML = "<div class='hn_user_admin'>"
+        ++ "<div class='hn_overflow2'>"
+        ++ "<div class='hn_site_admin_top'>Manage API Keys</div>"
+        ++ "<div class='hn_api_management' "
+        ++ "data-json='" ++ APIJson ++ "' "
+        ++ "data-api-enabled=" ++ Attr ++ " ></div>"
+        ++ "</div>"
+        ++ "</div>",
+    Resize = #resize{width = 6, height = H},
+    Preview = get_m_a_k_preview(Type),
+    JS = ["/webcomponents/hn.apikeys.js"],
+    Reload = ["HN.APIKeys.reload_apikeys();"],
+    Incs = #incs{js= JS, js_reload = Reload},
+    #spec_val{val = lists:flatten(HTML), resize = Resize,
+              sp_webcontrol = Ctrl, preview = Preview,
+              sp_incs = Incs, sp_site = true}.
+
+get_m_a_k_preview(0) -> "API Key Management";
+get_m_a_k_preview(1) -> "Read-Only API Key".
+
+get_api_json() ->
+    Site = get(site),
+    APIKeys = new_db_api:get_api_keys(Site),
+    Len = length(APIKeys),
+    Indices = lists:seq(1, Len),
+    List = lists:zip(APIKeys, Indices),
+    Struct = {array, [make_j(X, N) || {X, N} <- List]},
+    JSON = (mochijson:encoder([{input_encoding, utf8}]))(Struct),
+    lists:flatten(JSON).
+
+make_j(#api{publickey = PubK, privatekey = PrivK,
+            notes = Nts, urls = URLs}, N) ->
+    {struct, [
+              {"number", N},
+              {"publickey", PubK},
+              {"privatekey", PrivK},
+              {"notes", Nts},
+              {"urls", {array, make_j2(URLs, [])}}
+             ]}.
+
+make_j2([], Acc) ->
+    lists:reverse(Acc);
+make_j2([H | T], Acc) ->
+    #api_url{path = P, admin = Ad, include_subs = IncS, append_only = AppO} = H,
+    NewA = {struct, [
+                     {"path", P},
+                     {"admin", Ad},
+                     {"include_subs", IncS},
+                     {"append_only", AppO}
+                     ]},
+    make_j2(T, [NewA | Acc]).
 
 'google.analytics'([Code]) ->
     [C] = typechecks:std_strs([Code]),
@@ -94,19 +161,20 @@
     u_and_g(W2, H2, Type2).
 
 u_and_g(W, H, Type) ->
-    {Gs, Hd} = get_options(Type),
+    {Gs, Hd} = get_u_and_g_options(Type),
     HTML = "<div class='hn_user_admin'>"
         ++ "<div class='hn_site_admin_top'>Users And Groups</div>"
         ++ "<div class='hn_overflow2'>"
         ++ "<table>"
         ++ "<tr>"
         ++ Hd
+        ++ "</tr>"
         ++ get_row(Gs, Type)
         ++ "</table>"
         ++ "</div>"
         ++ "</div>",
     Resize = #resize{width = W, height = H},
-    Preview = get_preview(Type),
+    Preview = get_u_and_g_preview(Type),
     case Type of
         N when N == 0 orelse N == 1 ->
             #spec_val{val = lists:flatten(HTML), resize = Resize,
@@ -519,11 +587,11 @@ get_r2a([H | T], M, G, Acc) ->
                   end,
     get_r2a(T, M, G, [Start ++ Middle ++ End | Acc]).
 
-get_preview(0) -> "Read-Only Users And Groups: ordered by group";
-get_preview(1) -> "Read-Only Users And Groups: ordered by user";
-get_preview(2) -> "Editable Users And Groups".
+get_u_and_g_preview(0) -> "Read-Only Users And Groups: ordered by group";
+get_u_and_g_preview(1) -> "Read-Only Users And Groups: ordered by user";
+get_u_and_g_preview(2) -> "Editable Users And Groups".
 
-get_options(Type) ->
+get_u_and_g_options(Type) ->
     Site = get(site),
     case Type of
         _N when _N == 0 ->

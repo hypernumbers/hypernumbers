@@ -784,7 +784,12 @@ input[type=submit].hninput:hover {
   overflow: auto;
   }
 
-.hn_user_table
+.hn_api_table
+{
+    text-align: left;
+}
+
+.hn_user_table, .hn_api_table
 {
   padding-bottom: 1.5em;
   }

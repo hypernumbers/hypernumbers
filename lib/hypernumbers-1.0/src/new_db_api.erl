@@ -536,13 +536,15 @@ does_page_exist(#refX{obj = {page, "/"}} = RefX) ->
 
 delete_api(Site, PublicKey) ->
     Fun = fun() ->
-                  ?wu:delete_apiD(Site, PublicKey)
+                  ?wu:delete_apiD(Site, PublicKey),
+                  ?wu:mark_site_dirtyD(Site)
           end,
     mnesia:activity(transaction, Fun).
 
 write_api(Site, #api{} = API) ->
     Fun = fun() ->
-                  ?wu:write_apiD(Site, API)
+                  ?wu:write_apiD(Site, API),
+                  ?wu:mark_site_dirtyD(Site)
           end,
     mnesia:activity(transaction, Fun).
 

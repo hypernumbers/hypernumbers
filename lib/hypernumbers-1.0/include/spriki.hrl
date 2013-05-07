@@ -406,15 +406,16 @@
         {
           publickey,
           privatekey,
+          notes = "insert notes about this key here...",
           urls = []
          }).
 
 -record(api_url,
         {
           path         = undefined,    % uninitialised records will crash! Good!
-          admin        = false,       % by default not admin
+          admin        = false,        % by default not admin
           include_subs = false,
-          append_only  = true   % by default can only append
+          append_only  = true          % by default can only append
          }).
 
 % used once we have got a signed request is

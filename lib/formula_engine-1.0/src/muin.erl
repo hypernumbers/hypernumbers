@@ -324,6 +324,8 @@ transform("phone.menu." ++ R = Fun, Args) ->
         _                    -> {W, H} = get_dims(R),
                                 {list_to_atom("phone.menu."), [W , H | Args]}
     end;
+transform("manage.api.keys." ++ R, Args) ->
+    {list_to_atom("manage.api.keys."), [R | Args]};
 transform("users.and.groups." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("users.and.groups."), [W , H | Args]};
