@@ -3,7 +3,7 @@
   [
    {nodename, hndev},
    {environment, development}, % development | production | server_dev
-
+   {featureflag, off},
    % Host to bind Mochiweb to. 9000 should be used for dev,
    % 9090-9092 reserved for production used, and should be turned off
    % for testing.
