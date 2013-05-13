@@ -66,7 +66,7 @@ init([]) ->
     S2 = case application:get_env(hypernumbers, featureflag) of
              {ok, on} -> [{marketing_integration_srv, true} | P];
              _        -> P
-               end,
+         end,
 
     ChildSpecs = [gen_child_spec(S) || {S,X} <- S2, (IsDev or X)],
 
