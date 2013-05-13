@@ -125,7 +125,6 @@ init([]) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_call(site_commissioned, _From, State) ->
-    io:format("Site commissioned...~n"),
     ok = push_to_integration(),
     Reply = ok,
     {reply, Reply, State};
