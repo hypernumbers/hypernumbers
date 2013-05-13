@@ -13,7 +13,6 @@
 -include("spriki.hrl").
 -include("xmerl.hrl").
 
--define(WLOG, new_db_api:write_commission_logD).
 -define(HIGHRISE, "https://vixo1.highrisehq.com").
 -define(HIGHRISEAUTH, "33d3579291e10ced535aaaa91631b018").
 -define(HIGHRISENONE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<nil-classes type=\"array\"/>\n").
@@ -37,7 +36,14 @@
 
 % API
 -export([
-         site_commissioned/0
+         site_commissioned/0,
+         nudge/2
+        ]).
+
+% Debuggin
+-export([
+         test/1,
+         test/2
         ]).
 
 -define(SERVER, ?MODULE).
@@ -49,6 +55,27 @@
 %%%===================================================================
 site_commissioned() ->
     gen_server:call(?SERVER, site_commissioned).
+
+test(Name) ->
+    test(Name, blank).
+
+test(Name, SiteType) ->
+    Email = Name ++ "@hypernumbers.com",
+    S = "http://hypernumbers.dev:9000",
+    P = ["some", "page"],
+    O = {cell, {1, 1}},
+    NewSite = "http://newsite.vixo.com",
+    {ok, _, UID} = passport:get_or_create_user(Email),
+    Zone = "dev",
+    LoginURL = "http://some.logging.com/blah/blah/",
+    Synched = false,
+    Commission = #commission{uid = UID, email = Email, site = NewSite,
+                             sitetype = SiteType, zone = Zone,
+                             link = LoginURL, comm_site = S,
+                             comm_path = P, comm_cell = O,
+                             synched = Synched},
+    new_db_api:write_commission_logD(Commission),
+    ok = push_to_integration().
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -162,71 +189,85 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 push_to_integration() ->
     Comms = new_db_api:get_unprocessed_commissionsD(),
-    io:format("Commissions is ~p~n", [Comms]),
     [ok = write_to_highrise(X)  || X <- Comms],
-    [ok = ?WLOG(#refX{site = CS, path = CP, obj = CO}, NS, STy, U, E, Z, true)
-     || #commission{uid = U, email = E, site = NS, sitetype = STy, zone = Z,
-                    commissioning_site = CS, commissioning_path = CP,
-                    commissioning_cell = CO} <- Comms],
+    [ok = new_db_api:write_commission_logD(X#commission{synched = true})
+     || X <- Comms],
     ok.
 
-write_to_highrise(Commission) ->
-    #commission{uid = U, email = EM, sitetype = STy} = Commission,
+nudge(Email, Nudge) when is_list(Nudge) ->
     % search for the user
-    io:format("Searching for user with UID of ~p~n", [U]),
+    {ok, existing, UID} = passport:get_or_create_user(Email),
+    Headers = get_highrise_headers(),
+    URL = ?HIGHRISE ++ "/people/search.xml?criteria[uid]=" ++ UID,
+    Ret = httpc:request(get, {URL, Headers}, [], []),
+    {ok, {{_, 200, _}, _, Body}} = Ret,
+    Details = xmerl_scan:string(Body),
+    Id = get_highrise_id(Details, existinguser),
+    Tag = create_highrise_tag("Nudged: " ++ Nudge),
+    ok = add_highrise_tag(Id, Tag),
+    Opts = [
+            {"NUDGE",     Nudge},
+            {"NUDGEDATE", dh_date:format("Y-m-d H:h:s")}
+            ],
+    ok = add_to_mailchimp(Email, Opts).
+
+write_to_highrise(Commission) ->
+    #commission{uid = U, email = EM, sitetype = STy, site = S, link = L} = Commission,
+    % search for the user
     Headers = get_highrise_headers(),
     URL = ?HIGHRISE ++ "/people/search.xml?criteria[uid]=" ++ U,
     Ret = httpc:request(get, {URL, Headers}, [], []),
     {ok, {{_, Code, _}, _, Body}} = Ret,
-    case {Code, Body} of
-        {200, ?HIGHRISENONE} ->
-            io:format("Need to create user...~n"),
-            XML = create_highrise_user_xml(Commission),
-            ok = create_user_in_highrise(XML);
-        {200, _} ->
-            io:format("Person exists...~n") end,
-    Details = xmerl_scan:string(Body),
-    Id = get_highrise_id(Details),
+    Id = case {Code, Body} of
+             {200, ?HIGHRISENONE} ->
+                 XML = create_highrise_user_xml(Commission),
+                 _Id = create_user_in_highrise(XML);
+             {200, _} ->
+                 Details = xmerl_scan:string(Body),
+                 _Id = get_highrise_id(Details, existinguser)
+    end,
     Note = create_highrise_note(Commission),
-    %ok = add_highrise_note(Id, Note),
-    Tag = create_highrise_tag("commissioned"),
-    %ok = add_highrise_tag(Id, Tag),
-    ok = add_to_mailchimp(EM, STy),
-    ok.
+    ok = add_highrise_note(Id, Note),
+    Tag = create_highrise_tag("Commissioned"),
+    Tag2 = create_highrise_tag("Site Type Commissioned: " ++ atom_to_list(STy)),
+    [ok = add_highrise_tag(Id, X) || X <- [Tag, Tag2]],
+    Opts = [
+            {"SITETYPE", atom_to_list(STy)},
+            {"DATECOM",  dh_date:format("Y-m-d H:h:s")},
+            {"SIGNIN",   L},
+            {"SITE",     S}
+           ],
+    ok = add_to_mailchimp(EM, Opts).
 
-add_to_mailchimp(EMail, SiteType) ->
+add_to_mailchimp(EMail, Opts) ->
     Name = hn_util:extract_name_from_email(EMail),
-    ST = atom_to_list(SiteType),
-    Groupings = [{struct, [
-                           {name,    "commissioned"},
-                           {groups, {array, [ST]}}
-                          ]
-                 }],
-    Batch = [{struct, [
-                       {"EMAIL",      EMail},
-                       {"EMAIL_TYPE", html},
-                       {"FNAME",      "{-}"},
-                       {"LNAME",      Name},
-                       {"GROUPINGS",  {array, Groupings}}
-                      ]}],
+    Batch = [
+             {"EMAIL",      EMail},
+             {"EMAIL_TYPE", html},
+             {"FNAME",      "{-}"},
+             {"LNAME",      Name}
+            ],
+    Batch2 = [{struct, lists:merge(Batch, Opts)}],
     Json = {struct, [{apikey,            ?MAILCHIMPAUTH},
                      {id,                ?MAILCHIMPLIST},
                      {double_optin,      false},
                      {update_existing,   true},
                      {replace_interests, false},
-                     {batch,             {array, Batch}}
+                     {batch,             {array, Batch2}}
                     ]},
     Json2 = lists:flatten(mochijson:encode(Json)),
-    io:format("Json2 is ~p~n", [Json2]),
     URL = ?MAILCHIMP ++ "?method=listBatchSubscribe",
     Ret = httpc:request(post, {URL, [], ["application/json"], Json2}, [], []),
-    {ok, {{_, Code, _}, _, Body}} = Ret,
-    io:format("Code is ~p~nBody is ~p~n", [Code, Body]),
+    {ok, {{_, _Code, _}, _, _Body}} = Ret,
     ok.
 
-get_highrise_id(XML) ->
+%% need to munge the XML in a couple of different ways
+get_highrise_id(XML, existinguser) ->
     #xmlElement{content = [_C1, C2 | _R]} = element(1, XML),
     #xmlElement{content = List} = C2,
+    get(List, id);
+get_highrise_id(XML, newuser) ->
+    #xmlElement{content = List} = element(1, XML),
     get(List, id).
 
 get([], _)                                            -> "";
@@ -239,8 +280,9 @@ create_user_in_highrise(XML) ->
     Headers = get_highrise_headers(),
     URL = ?HIGHRISE ++ "/people.xml",
     Ret = httpc:request(post, {URL, Headers, ["application/xml"], XML}, [], []),
-    {ok, {{_, 201, _}, _, _Body}} = Ret,
-    ok.
+    {ok, {{_, 201, _}, _, Body}} = Ret,
+    Details = xmerl_scan:string(Body),
+    _Id = get_highrise_id(Details, newuser).
 
 get_highrise_headers() ->
     Encoded = base64:encode_to_string(?HIGHRISEAUTH ++ ":loverboy, ooh, ooh"),
@@ -264,8 +306,8 @@ add_highrise_tag(Id, XML) ->
 
 create_highrise_note(Commission) ->
     #commission{uid = _U, email = Em, site = S, sitetype = St,
-                commissioning_site = CS, commissioning_path = CP,
-                commissioning_cell = CC} = Commission,
+                comm_site = CS, comm_path = CP,
+                comm_cell = CC} = Commission,
     URL = CS ++ hn_util:list_to_path(CP) ++ hn_util:obj_to_ref(CC),
     Message = "A site of type " ++ atom_to_list(St) ++ " was created at "
         ++ S ++ " on " ++ dh_date:format("Y/m/d H:i:s") ++ " by " ++ Em ++ ".\n"

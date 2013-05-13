@@ -470,16 +470,17 @@
 % a record for notifying the CRM system of a site commission
 -record(commission,
         {
-          timestamp             = util2:get_timestamp(),
+          timestamp  = util2:get_timestamp(),
           uid,
           email,
+          link,
           site,
           sitetype,
           zone,
-          commissioning_site,
-          commissioning_path,
-          commissioning_cell,
-          synched               = false
+          comm_site,
+          comm_path,
+          comm_cell,
+          synched    = false
          }).
 
 % these records are for specifiying special returns from fns

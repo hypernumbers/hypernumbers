@@ -275,11 +275,24 @@ handle_static(_X, Site, Env) ->
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -spec log_signup(#refX{}, string(), string(), atom(), auth_srv:uid(),
-                 string(), string()) -> ok.
-log_signup(RefX, NewSite, SiteType, Node, Uid, Email, Zone) ->
+                 string(), string(), string()) -> ok.
+log_signup(RefX, NewSite, SiteType, Node, Uid, Email, Zone, LoginURL) ->
     % write the signup to the new commision table
-    ok = new_db_api:write_commission_logD(RefX, NewSite, SiteType, Uid,
-                                          Email, Zone, false),
+    case application:get_env(hypernumbers, featureflag) of
+        {ok, on} ->
+            io:format("logging the commission...~n"),
+            #refX{site = S, path = P, obj = O} = RefX,
+            Commission = #commission{uid = Uid, email = Email, site = NewSite,
+                                     sitetype = SiteType, zone = Zone,
+                                     link = LoginURL, comm_site = S,
+                                     comm_path = P, comm_cell = O,
+                                     synched = false},
+            ok = new_db_api:write_commission_logD(Commission);
+        {ok, off} ->
+            io:format("not logging the commission...~n"),
+            ok
+    end,
+
     LogS = case application:get_env(hypernumbers, environment) of
                {ok, development} -> "http://hypernumbers.dev:9000";
                {ok, server_dev}  -> "http://dev.hypernumbers.com:8080";
@@ -822,14 +835,18 @@ provision_site(#refX{site = RootSite} = RefX, PrevUID, SiteType,
     case factory:provision_site(Zone, Email, From, Sig, SiteType,
                                 PrevUID, Data) of
         {ok, new, Site, Node, Uid, Name, InitialView} ->
-            log_signup(RefX, Site, SiteType, Node, Uid, Email, Zone),
             Opaque = [{param, InitialView}],
             Expiry = "never",
-            Url = passport:create_hypertag_url(Site, ["_mynewsite", Name],
-                                               Uid, Email, Opaque, Expiry),
-            json(Env, {struct, [{"result", "success"}, {"url", Url}]});
-        {ok, existing, Site, Node, Uid, _Name, InitialView} ->
-            log_signup(RefX, Site, SiteType, Node, Uid, Email, Zone),
+            LoginUrl = passport:create_hypertag_url(Site, ["_mynewsite", Name],
+                                                    Uid, Email, Opaque, Expiry),
+            log_signup(RefX, Site, SiteType, Node, Uid, Email, Zone, LoginUrl),
+            json(Env, {struct, [{"result", "success"}, {"url", LoginUrl}]});
+        {ok, existing, Site, Node, Uid, Name, InitialView} ->
+            Opaque = [{param, InitialView}],
+            Expiry = "never",
+            LoginUrl = passport:create_hypertag_url(Site, ["_mynewsite", Name],
+                                                    Uid, Email, Opaque, Expiry),
+            log_signup(RefX, Site, SiteType, Node, Uid, Email, Zone, LoginUrl),
             json(Env, {struct, [{"result", "success"},
                                 {"url", Site ++ InitialView}]});
         {error, invalid_email} ->

@@ -14,7 +14,7 @@
 -include("errvals.hrl").
 
 -export([
-         write_commission_logD/7,
+         write_commission_logD/1,
          read_commission_logD/1,
          get_unprocessed_commissionsD/0,
          run_zevalD/3,
@@ -122,12 +122,7 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-write_commission_logD(RefX, NewSite, SiteType, Uid, Email, Zone, Synched) ->
-    #refX{site = S, path = P, obj = O} = RefX,
-    Commission = #commission{uid = Uid, email = Email, site = NewSite,
-                             sitetype = SiteType, zone = Zone,
-                             commissioning_site = S, commissioning_path = P,
-                             commissioning_cell = O, synched = Synched},
+write_commission_logD(Commission) ->
     Table = commission,
     Fun = fun() ->
                   ok = mnesia:write(Table, Commission, write)
