@@ -2214,7 +2214,7 @@
         "resize_rows_default": 4,
         "resize_cols_default": 8,
         "wizardready": true,
-        "link": "http://documentation.vixo.com/contents/vixo-functions/navigation/html-panel.html",
+        "link": "http://documentation.vixo.com/contents/vixo-functions/layout-and-display/html-panel.html",
         "args": [
             {
                 "name": "Item",
