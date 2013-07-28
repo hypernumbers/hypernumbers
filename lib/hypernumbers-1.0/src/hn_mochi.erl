@@ -220,12 +220,12 @@ cluster_up() ->
             Msg = dh_date:format("Y/m/d G:i:s"),
             error_logger:info_msg(F, [Msg]),
             case net_adm:ping('hnlive@hypernumbers.com') of
-                pong -> ok = hn_net_util:email("gordon@hypernumbers.com", "",
+                pong -> ok = sendgrid:email("gordon@hypernumbers.com", "",
                                                atom_to_list(node()),
                                                "Disconnected Nodes",
                                                "...reconnecting sucessfully!"),
                         true; % reconnected, yay!
-                pang -> ok = hn_net_util:email("gordon@hypernumbers.com", "",
+                pang -> ok = sendgrid:email("gordon@hypernumbers.com", "",
                                                atom_to_list(node()),
                                                "Disconnected Nodes",
                                                "...reconnection unsucessful"),

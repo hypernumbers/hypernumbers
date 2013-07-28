@@ -21,7 +21,7 @@
 % when adding more fns of the type phone.menu.xxx you need to stop
 % muin swallowing them by looking for phone.menu.WxH
 -export([
-         %% 'manage.api.keys.'/1,
+         'manage.api.keys.'/1,
          'invite.users'/1,
          'users.and.groups.'/1,
          'configure.email'/1,
@@ -53,19 +53,18 @@ m_a_k(H, Type) ->
               1 -> {"", "false"};
               0 -> {#form{id = {'api-keys', "Edit"}, kind = "api-keys"}, "true"}
           end,
-    HTML = "<div class='hn_user_admin'>"
-        ++ "<div class='hn_overflow2'>"
-        ++ "<div class='hn_site_admin_top'>Manage API Keys</div>"
+    HTML = "<div>"
+        ++ "<h3>Manage API Keys</h3>"
         ++ "<div class='hn_api_management' "
         ++ "data-json='" ++ APIJson ++ "' "
         ++ "data-api-enabled=" ++ Attr ++ " ></div>"
-        ++ "</div>"
         ++ "</div>",
     Resize = #resize{width = 6, height = H},
     Preview = get_m_a_k_preview(Type),
     JS = ["/webcomponents/hn.apikeys.js"],
+    CSS = ["/bootstrap/css/bootstrap.css", "/bootstrap/css/helper.css"],
     Reload = ["HN.APIKeys.reload_apikeys();"],
-    Incs = #incs{js= JS, js_reload = Reload},
+    Incs = #incs{js = JS, css = CSS, js_reload = Reload},
     #spec_val{val = lists:flatten(HTML), resize = Resize,
               sp_webcontrol = Ctrl, preview = Preview,
               sp_incs = Incs, sp_site = true}.
@@ -76,17 +75,13 @@ get_m_a_k_preview(1) -> "Read-Only API Key".
 get_api_json() ->
     Site = get(site),
     APIKeys = new_db_api:get_api_keys(Site),
-    Len = length(APIKeys),
-    Indices = lists:seq(1, Len),
-    List = lists:zip(APIKeys, Indices),
-    Struct = {array, [make_j(X, N) || {X, N} <- List]},
+    Struct = {array, [make_j(X) || X <- APIKeys]},
     JSON = (mochijson:encoder([{input_encoding, utf8}]))(Struct),
     lists:flatten(JSON).
 
 make_j(#api{publickey = PubK, privatekey = PrivK,
-            notes = Nts, urls = URLs}, N) ->
+            notes = Nts, urls = URLs}) ->
     {struct, [
-              {"number", N},
               {"publickey", PubK},
               {"privatekey", PrivK},
               {"notes", Nts},

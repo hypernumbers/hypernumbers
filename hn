@@ -15,7 +15,7 @@ main(Args) ->
         _      -> ok end,
 
     os:cmd("/usr/local/bin/epmd -daemon"),
-    %% Because ssl sucks(I cant set -name on the escript args)
+    %% Because ssl sucks (I cant set -name on the escript args)
 
     {ok, _} = net_kernel:start([ctrl_node(), longnames]),
     auth:set_cookie(cookie()),
@@ -101,12 +101,12 @@ start(Extra) ->
     filelib:ensure_dir("var/runerl_log/"),
     filelib:ensure_dir(PipeDir),
 
-    Cmd = "run_erl -daemon "++PipeDir ++ " var/runerl_log "
-        "\"erl -name "++Node++" -setcookie "++atol(cookie())++" "
+    Cmd = "run_erl -daemon " ++ PipeDir ++ " var/runerl_log "
+        "\"erl -name " ++ Node ++ " -setcookie " ++ atol(cookie()) ++ " "
         "-config var/sys.config -boot ebin/hypernumbers "
         "-env ERL_MAX_ETS_TABLES 18000 -kernel net_setuptime 120 "
         "+K true +A8 "
-        ++ ssl() ++ parse_extra_args(Extra)++"\"",
+        ++ ssl() ++ parse_extra_args(Extra) ++ "\"",
 
     case os:cmd(Cmd) of
         []   ->
@@ -177,12 +177,12 @@ no_mnesia(Extra) ->
     filelib:ensure_dir("var/runerl_log/"),
     filelib:ensure_dir(PipeDir),
 
-    Cmd = "run_erl -daemon "++PipeDir ++ " var/runerl_log "
-        "\"erl -name "++Node++" -setcookie "++atol(cookie())++" "
+    Cmd = "run_erl -daemon "++ PipeDir ++ " var/runerl_log "
+        "\"erl -name "++ Node ++" -setcookie "++ atol(cookie()) ++" "
         "-config var/sys.config -boot ebin/no_mnesia "
         "-env ERL_MAX_ETS_TABLES 18000 -kernel net_setuptime 120 "
         "+K true +A8 "
-        ++ ssl() ++ parse_extra_args(Extra)++"\"",
+        ++ ssl() ++ parse_extra_args(Extra) ++ "\"",
 
     case os:cmd(Cmd) of
         []   ->
@@ -333,7 +333,6 @@ usage() ->
 
 make_pa() ->
     Paths = [X ++ "/ebin" || X <- filelib:wildcard("./lib/*")],
-    io:format("Paths is ~p~n", [Paths]),
     string:join(["-pa" | Paths], " ").
 
 ssl() ->

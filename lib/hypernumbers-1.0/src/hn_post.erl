@@ -312,6 +312,7 @@ post(#refX{obj = {cell, _}} = Ref, _Qry,
      #env{uid = PrevUID,
           body = [{"postwebcontrols", {struct, [{"signup", Act}]}}]} = Env) ->
     {struct, List} = Act,
+    io:format("Act is ~p~n", [Act]),
     {"sitetype", SiteType} = lists:keyfind("sitetype", 1, List),
     {"email", Email} = lists:keyfind("email", 1, List),
     {"data", {struct, Data}} = lists:keyfind("data", 1, List),

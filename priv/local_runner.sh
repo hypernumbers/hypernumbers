@@ -14,41 +14,46 @@ printf "\n\n"
 ruby regen_tests.rb 2x
 cd $HNTOP
 
-## Generate System Tests
+## Generate And Run System Tests
 printf $(./hn call 'testsys:generate().')
-printf "\n\n"
+printf "\ntestsys:generate complete\n"
 printf $(./hn call 'test:sys().')
-printf "\n\n"
-printf $(./hn call 'test:security().')
-printf "\n\n"
+printf "\ntest:sys completd\n"
 
-## Run tests
+## Run the test of the hypernumbers tests
+printf $(./hn call 'test:security().')
+printf "\ntest:security complete\n"
+printf $(./hn call 'test:auth().')
+printf "\ntest:auth complete\n"
+printf $(./hn call 'test:authorization().')
+printf "\ntest:authorization complete\n"
+printf $(./hn call 'test:auth().')
+printf "\ntest:auth complete\n"
+printf $(./hn call 'test:ztest().')
+printf "\ntest:ztest complete\n"
+
+## Run the Excel-compatible tests
 printf $(./hn call 'test:excel("1a").')
-printf "\n\n"
+printf "\ntest:excel 1a complete\n"
 printf $(./hn call 'test:excel("1b").')
-printf "\n\n"
+printf "\ntest:excel 1b complete\n"
 printf $(./hn call 'test:excel("1c").')
-printf "\n\n"
+printf "\ntest:excel 1c complete\n"
 printf $(./hn call 'test:excel("1d").')
-printf "\n\n"
+printf "\ntest:excel 1d complete\n"
 printf $(./hn call 'test:excel("1e").')
-printf "\n\n"
+printf "\ntest:excel 1e complete\n"
 
 printf $(./hn call 'test:excel("2a").')
-printf "\n\n"
+printf "\ntest:excel 2a complete\n"
 printf $(./hn call 'test:excel("2b").')
-printf "\n\n"
+printf "\ntest:excel 2b complete\n"
 printf $(./hn call 'test:excel("2c").')
-printf "\n\n"
+printf "\ntest:excel 2c complete\n"
 printf $(./hn call 'test:excel("2d").')
-printf "\n\n"
+printf "\ntest:excel 2d complete\n"
 printf $(./hn call 'test:excel("2e").')
-printf "\n\n"
-
-printf $(./hn call 'test:auth().')
-printf "\n\n"
-printf $(./hn call 'test:ztest().')
-printf "\n\n"
+printf "\ntest:excel 2e complete\n"
 
 ## Cleanup.
 ./hn stop

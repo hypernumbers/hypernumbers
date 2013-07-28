@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html class="no-js js no-flexbox canvas canvastext hashchange history draganddrop rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow no-opacity cssanimations csscolumns cssgradients no-cssreflections csstransforms csstransitions fontface generatedcontent video audio applicationcache" lang="en-US"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="msapplication-TileImage" content="http://coding.smashingmagazine.com/wp-content/themes/smashingv4/images/smashing-windows-icon-144-144.png">
+    <meta name="msapplication-TileColor" content="#e63b2c">
+    <title>Customizing Bootstrap | Smashing Coding</title>
+    <link rel="alternate" type="application/atom+xml" title="News-Feed" href="http://rss1.smashingmagazine.com/feed/">
+    <link type="application/atom+xml" rel="alternate" title="Smashing Magazine » Coding Feed" href="http://rss1.smashingmagazine.com/feed/?f=coding-std">    <link rel="pingback" href="http://coding.smashingmagazine.com/xmlrpc.php">
+    <link rel="apple-touch-icon-precomposed" href="http://coding.smashingmagazine.com/wp-content/themes/smashingv4/images/apple-touch-icon-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="http://coding.smashingmagazine.com/wp-content/themes/smashingv4/images/apple-touch-icon-57x57-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://coding.smashingmagazine.com/wp-content/themes/smashingv4/images/apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://coding.smashingmagazine.com/wp-content/themes/smashingv4/images/apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://coding.smashingmagazine.com/wp-content/themes/smashingv4/images/apple-touch-icon-144x144-precomposed.png">
+    <link rel="shortcut icon" href="http://coding.smashingmagazine.com/wp-content/themes/smashingv4/images/favicon.ico">
+    
+<!-- This site is optimized with the Yoast WordPress SEO plugin v1.2.2 - http://yoast.com/wordpress/seo/ -->
+<meta name="description" content="This article shows some ways to customize Bootstrap to fit your needs, whether it’s a tweak to a button or a full-fledged theme.">
+<link rel="canonical" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/">
+<!-- / Yoast WordPress SEO plugin. -->
+
+<link type="application/atom+xml" rel="alternate" title="Smashing Magazine » Feed" href="http://rss1.smashingmagazine.com/feed/">
+
+
+<link rel="stylesheet" id="prismjs-css" href="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/default.css" type="text/css" media="all">
+<link rel="stylesheet" id="BotBlockerCSS-css" href="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/styles.css" type="text/css" media="all">
+<link rel="stylesheet" id="smash-commentratings-css" href="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/commentratings-css.css" type="text/css" media="all">
+<link rel="stylesheet" id="fontdeck-css" href="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/12777.css" type="text/css" media="screen, print">
+<link rel="stylesheet" id="main-css" href="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/main.css" type="text/css" media="all">
+<script type="text/javascript" async="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/1125.js"></script><script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/jquery.js"></script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/site-config.js"></script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/thirdparty.js"></script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/widgets.js"></script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/onload.js"></script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/comment-reply.js"></script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/footnotes.js"></script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/contact.js"></script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/commentratings-min.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpAjax = {"noPerm":"You do not have permission to do that.","broken":"An unidentified error has occurred."};
+/* ]]> */
+</script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/wp-ajax-response.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var thickboxL10n = {"next":"Next >","prev":"< Prev","image":"Image","of":"of","close":"Close","noiframes":"This feature requires inline frames. You have iframes disabled or your browser does not support them.","loadingAnimation":"http:\/\/coding.smashingmagazine.com\/wp-includes\/js\/thickbox\/loadingAnimation.gif","closeImage":"http:\/\/coding.smashingmagazine.com\/wp-includes\/js\/thickbox\/tb-close.png"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/thickbox.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpajaxeditcomments = {"AEC_PluginUrl":"http:\/\/coding.smashingmagazine.com\/wp-content\/plugins\/smash-edit-comments","AEC_CanScroll":"0","AEC_Minutes":"minutes","AEC_Minute":"minute","AEC_And":"and","AEC_Seconds":"seconds","AEC_Second":"second","AEC_Moderation":"Mark for Moderation?","AEC_Approve":"Approve Comment?","AEC_Spam":"Mark as Spam?","AEC_Delete":"Delete this comment?","AEC_Anon":"Anonymous","AEC_Loading":"Loading...","AEC_Ready":"Ready","AEC_Sending":"Sending...","AEC_Sent":"Message Sent","AEC_LoadSuccessful":"Comment Loaded Successfully","AEC_Saving":"Saving...","AEC_Saved":"Comment Successfully Saved","AEC_Delink":"De-link Successful"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/wp-ajax-edit-comments.js"></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://coding.smashingmagazine.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://coding.smashingmagazine.com/wp-includes/wlwmanifest.xml"> 
+
+<link rel="shortlink" href="http://coding.smashingmagazine.com/?p=121998">
+<link rel="stylesheet" href="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/edit-comments.css" type="text/css" media="screen"><!-- Ajax Edit Comments -->
+<!--[if IE]>
+<style>
+  .clearfix {display: inline-block;}
+  /* Hides from IE-mac \*/
+  * html .clearfix {height: 1%;}
+  .clearfix {display: block;}
+  /* End hide from IE-mac */
+</style>
+<![endif]-->
+<link rel="stylesheet" href="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/thickbox.css" type="text/css" media="all">    <!--[if IE 8]>
+    <link rel="stylesheet" href="http://coding.smashingmagazine.com/wp-content/themes/smashingv4/stylesheets/ie8.css" />
+    <![endif]-->
+    <script src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/in.php" async="" type="text/javascript"></script></head>
+    <body data-twttr-rendered="true" class="single single-post postid-121998 single-format-standard coding-section">
+        <a id="top"></a>
+        <nav class="toplevel clearfix">
+            <div class="mini">
+                <a style="border: medium none;" href="http://www.smashingmagazine.com/"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/logo.png" alt="Smashing Magazine" title="Jump to the front page"></a>
+                <select name="network" id="networkselection">
+                    <option value="network" selected="selected">- select -</option>
+                    <option value="http://www.smashingmagazine.com/books/">Books</option>
+                    <option value="http://www.smashingmagazine.com/ebooks/">eBooks</option>
+                    <option value="http://jobs.smashingmagazine.com/">Job Board</option>
+                    <option value="https://shop.smashingmagazine.com/">Shop</option>
+                </select>
+            </div>
+            <ul class="network clearfix">			
+                <li class="current"><a style="border: medium none;" href="http://www.smashingmagazine.com/"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/logo.png" alt="Smashing Magazine" title="Jump to the front page"></a></li>
+                <li><a href="http://www.smashingmagazine.com/books/">Books</a></li>
+                <li><a href="http://www.smashingmagazine.com/ebooks/">eBooks</a><a style="border: medium none;" href="http://www.smashingmagazine.com/ebooks/" id="naviebookslink"><img id="littleebooksimage" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/navilittlebook.png" alt="Smashing Library"></a></li>
+                <li><a href="http://jobs.smashingmagazine.com/">Job Board</a></li>
+                <li><a href="https://shop.smashingmagazine.com/">Shop</a></li>
+            </ul>
+            <ul class="channels">
+                <li class="rss"><a href="http://rss1.smashingmagazine.com/feed/" title="Subscribe to our RSS-feed (1100K)">RSS</a></li>
+                <li class="facebook"><a href="http://www.facebook.com/smashmag" title="Join our Facebook page! (99k)">Facebook</a></li>
+                <li class="twitter"><a href="http://twitter.com/smashingmag" title="Follow us on Twitter! (612K)">Twitter</a></li>
+                <li class="newsletter"><a href="http://www.smashingmagazine.com/the-smashing-newsletter/" title="Subscribe to our Email Newsletter (107K)">Newsletter</a></li>
+            </ul>
+        </nav>
+
+<div id="container">
+    <div class="fluid clearfix">
+        <div class="grid clearfix">
+            <div class="mini-search wp-search-form">			
+                <form id="search" method="get" action="http://www.smashingmagazine.com/search-results/" target="_top">
+                    <input name="q" placeholder="e.g. JavaScript" type="text">
+                    <button class="search_submit" type="submit"><span class="first-type">Search</span><span class="last-type">Go!</span></button>
+                    <input name="cx" value="partner-pub-6779860845561969:5884617103" type="hidden">
+                    <input name="cof" value="FORID:10" type="hidden">
+                    <input name="ie" value="UTF-8" type="hidden">
+                </form>
+            </div>
+            <div class="col sidebar">
+                <nav class="sections">
+                <div class="mini">
+                    <select name="sections" id="subsection-select">
+                        <option value="network">- select -</option>
+                        <optgroup label="Smashing Categories">
+                            <option value="http://www.smashingmagazine.com/books/">Books</option>
+                            <option value="http://www.smashingmagazine.com/ebooks/">eBooks</option>
+                            <option value="http://jobs.smashingmagazine.com/">Job Board</option>
+                            <option value="https://shop.smashingmagazine.com/">Shop</option>								
+                        </optgroup>
+                        <optgroup label="Smashing Sections">
+                            <option selected="selected" value="http://coding.smashingmagazine.com/">Coding</option>
+                            <option value="http://www.smashingmagazine.com/category/design/">Design</option>
+                            <option value="http://mobile.smashingmagazine.com">Mobile</option>
+                            <option value="http://www.smashingmagazine.com/category/graphics/">Graphics</option>
+                            <option value="http://uxdesign.smashingmagazine.com">UX Design</option>
+                            <option value="http://wp.smashingmagazine.com">WordPress</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <ul class="clearfix">
+                    <li class="coding current">
+                        <a href="http://coding.smashingmagazine.com/">Coding</a>
+                        <ul>
+                            <li><a href="http://coding.smashingmagazine.com/tag/css/">CSS</a></li>
+                            <li><a href="http://coding.smashingmagazine.com/tag/html/">HTML</a></li>
+                            <li><a href="http://coding.smashingmagazine.com/tag/javascript/">JavaScript</a></li>
+                            <li><a href="http://coding.smashingmagazine.com/tag/techniques/">Techniques</a></li>
+                        </ul>
+                    </li>
+                    <li class="design">
+                        <a href="http://www.smashingmagazine.com/category/design/">Design</a>
+                        <ul>
+                            <li><a href="http://www.smashingmagazine.com/tag/web-design/">Web Design</a></li>
+                            <li><a href="http://www.smashingmagazine.com/tag/typography/">Typography</a></li>
+                            <li><a href="http://www.smashingmagazine.com/tag/inspiration/">Inspiration</a></li>
+                            <li><a href="http://www.smashingmagazine.com/tag/business/">Business</a></li>
+                        </ul>
+                    </li>
+                    <li class="community">
+                        <a href="http://mobile.smashingmagazine.com/">Mobile</a>
+                        <ul>
+                            <li><a href="http://mobile.smashingmagazine.com/tag/responsive-design/">Responsive</a></li>
+                            <li><a href="http://mobile.smashingmagazine.com/tag/ios/">iPhone &amp; iPad</a></li>
+                            <li><a href="http://mobile.smashingmagazine.com/tag/android/">Android</a></li>
+                            <li><a href="http://mobile.smashingmagazine.com/tag/design-patterns/">Design Patterns</a></li>
+                        </ul>
+                    </li>
+                    <li class="graphics">
+                        <a href="http://www.smashingmagazine.com/category/graphics/">Graphics</a>
+                        <ul>
+                            <li><a href="http://www.smashingmagazine.com/tag/photoshop/">Photoshop</a></li>
+                            <li><a href="http://www.smashingmagazine.com/tag/illustrator/">Illustrator</a></li>
+                            <li><a href="http://www.smashingmagazine.com/tag/wallpapers/">Wallpapers</a></li>
+                            <li><a href="http://www.smashingmagazine.com/tag/freebies/">Freebies</a></li>
+                        </ul>
+                    </li>
+                    <li class="ux">
+                        <a href="http://uxdesign.smashingmagazine.com/">UX Design</a>
+                        <ul>
+                            <li><a href="http://uxdesign.smashingmagazine.com/tag/usability/">Usability</a></li>
+                            <li><a href="http://uxdesign.smashingmagazine.com/tag/user-experience/">User Experience</a></li>
+                            <li><a href="http://uxdesign.smashingmagazine.com/tag/ui/">UI Design</a></li>
+                            <li><a href="http://uxdesign.smashingmagazine.com/tag/e-commerce/">E-Commerce</a></li>
+                        </ul>
+                    </li>
+                    <li class="wordpress">
+                        <a href="http://wp.smashingmagazine.com/" class="clearfix"><span class="short">WP</span><span class="long"><span>Word</span><span>Press</span></span></a>
+                        <ul>
+                            <li><a href="http://wp.smashingmagazine.com/tag/essentials/">Essentials</a></li>
+                            <li><a href="http://wp.smashingmagazine.com/tag/techniques/">Techniques</a></li>
+                            <li><a href="http://wp.smashingmagazine.com/tag/plugins/">Plugins</a></li>
+                            <li><a href="http://wp.smashingmagazine.com/tag/themes/">Themes</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <br class="nasty">
+            </nav>
+        </div><!-- .col.sidebar -->
+        <div class="col main single">    <article class="post-121998 post type-post status-publish format-standard hentry category-css-popular category-javascript tag-css tag-frameworks tag-javascript post">
+                    <h2><a href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/" rel="bookmark" title="Read 'Customizing Bootstrap'">Customizing Bootstrap</a></h2>
+                <ul class="postmetadata clearfix">
+            <li class="author">By <a rel="author" href="http://coding.smashingmagazine.com/author/thomas-park/?rel=author" title="Posts by Thomas Park">Thomas Park</a></li>
+            <li id="logoedtarget" class="inline"><div id="logoed"></div></li>            <li class="date">March 12th, 2013</li>
+            <li class="tags"><a href="http://coding.smashingmagazine.com/tag/css/">CSS</a>, <a href="http://coding.smashingmagazine.com/tag/frameworks/">Frameworks</a>, <a href="http://coding.smashingmagazine.com/tag/javascript/">JavaScript</a></li>
+            <li class="comments"><a href="#comments" title="Comment on Customizing Bootstrap">18 Comments</a></li>
+                    </ul>
+                <div class="ad ed">
+            <span class="declare">Advertisement</span>
+            <div id="mediumrectangletarget"><div id="mediumrectangle"><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5824__zoneid=22__OXLCA=1__cb=a1ed2bbc6a__oadest=http%3A%2F%2Fwww.LogoDesignTeam.com" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai.gif" alt="" title="" border="0"></a><div id="beacon_a1ed2bbc6a" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg.gif" alt="" style="width: 0px; height: 0px;"></div>
+</div></div>
+        </div>
+                
+            
+                    <p>Twitter’s <a href="http://twitter.github.com/bootstrap/">Bootstrap</a><sup class="print_only">1</sup>
+ has taken off like a rocket since its release a year ago. The popular 
+CSS framework supplies a responsive grid system, pre-styled components 
+and JavaScript plugins to a <a href="http://builtwithbootstrap.com/">parade of websites</a><sup class="print_only">2</sup>.</p>
+<p>One of Bootstrap’s appeals is that it just works. It’s a significant 
+time-saver when starting a website, so much so that major organizations 
+such as NBC, NASA and the White House are adopting it. And it empowers 
+even the non-designers among us to turn out something decent.</p>
+<p>To illustrate, you can transform the default button below on the left
+ to the polished one on the right just by adding two classes: <code>btn</code> and <code>btn-primary</code>.</p>
+<p><a style="border: medium none;" href="http://media.smashingmagazine.com/wp-content/uploads/2012/09/buttons.png"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/buttons.png" alt="" title="Default and Bootstrap buttons" class="alignnone size-full wp-image-122052"></a><br>
+<em>A browser’s default button (left) and a Bootstrap button (right).</em></p>
+<p>But what if your company logo is a different shade of blue? Not to worry. <strong>You don’t have to stick with the defaults.</strong>
+ This article shows some ways to customize Bootstrap to fit your needs, 
+whether it’s a tweak to a button or a full-fledged theme.</p>
+<p><a style="border: medium none;" href="http://media.smashingmagazine.com/wp-content/uploads/2012/09/themes.png"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/themes.png" alt="" title="Bootstrap Themes" class="alignnone size-full wp-image-122048"></a><br>
+<em>Three Bootstrap themes from Bootswatch</em></p>
+<div id="textadtarget"><div id="textad"><div style="padding: 1em !important; margin-top: 0.75em; background-color: rgba(0,0,0,0.05); border-radius: 8px;">
+<div id="mc_embed_signup" class="sm-search">
+<p>Every other Tuesday we send out our lovely <strong style="font-family: 'Proxima Nova Bold', Arial, Verdana, sans-serif;">email newsletter</strong>
+ with useful tips and techniques, recent articles and upcoming events. 
+145,000 readers have signed up already. Why don't you sign up, too?</p>
+<form action="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php" method="GET" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_self">
+<input name="EMAIL" style="width: 45%;" placeholder="Your email" type="text">
+<button class="search_submit" type="submit"><span class="first-type">Sign up!</span></button>
+<input name="oaparams" value="2__bannerid=3452__zoneid=68__OXLCA=1__cb=969d930a1b__oadest=http://smashingmagazine.us1.list-manage1.com/subscribe/post?u=16b832d9ad4b28edf261f34df&amp;id=a1666656e0" type="hidden"></form>
+</div>
+</div><div id="beacon_969d930a1b" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_002.gif" alt="" style="width: 0px; height: 0px;"></div></div></div><h3>Overriding With CSS</h3>
+<p>The most straightforward approach is to override Bootstrap’s styles 
+using CSS. This can be accomplished by writing your own styles for the 
+classes used in Bootstrap. You could, for example, make your buttons 
+more rounded by adding the following code:</p>
+<pre class="  language-css"><code class="  language-css"><span class="token selector">.btn </span><span class="token punctuation">{</span>
+   <span class="token property">-webkit-border-radius</span><span class="token punctuation">:</span> 20px<span class="token punctuation">;</span>
+   <span class="token property">-moz-border-radius</span><span class="token punctuation">:</span> 20px<span class="token punctuation">;</span>
+   <span class="token property">border-radius</span><span class="token punctuation">:</span> 20px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><a style="border: medium none;" href="http://media.smashingmagazine.com/wp-content/uploads/2012/09/custom-button1.png"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/custom-button1.png" alt="" title="Custom button" class="alignnone size-full wp-image-122056"></a><br>
+<em>A Bootstrap button customized with an increased border radius.</em></p>
+<p>For the overrides to be successful, remember to add your code after Bootstrap’s have been declared.</p>
+<p>The advantage of this method is that <strong>it hardly changes your workflow</strong>.
+ Even when using Bootstrap, you’ll want your own style sheet in order to
+ fit the framework to your content just right. You might not realize it,
+ but Bootstrap’s own website relies on a thousand-line style sheet <em>on top of</em> Bootstrap.</p>
+<p>But for more extensive changes (such as overhauling the navigation 
+bar) or for changes that aren’t localized (such as changing the 
+highlight color used throughout the website), overriding in this 
+piecemeal fashion can feel like a band-aid solution. And your new styles
+ are tacked onto Bootstrap’s default style sheet, adding bloat to the 
+already considerable 100 KB size. If you’re planning more than a few 
+such overrides, you may want to consider a more extensive approach.</p>
+<h3>Generating A Custom Build</h3>
+<p>An alternative is to create a custom build entirely. With the <a href="http://twitter.github.com/bootstrap/customize.html">official generator</a><sup class="print_only">3</sup>, you can assign your own values to key variables that are reused throughout the framework, such as <code>@linkColor</code>, <code>@navbarHeight</code> and <code>@baseFontFamily</code>.
+ Click the big button at the end of the generator and download the 
+resulting style sheet. You can even pick and choose which components to 
+include, slimming down your file size.</p>
+<p><a style="border: medium none;" href="http://media.smashingmagazine.com/wp-content/uploads/2012/09/generator-full.png"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/generator1.png" alt="" title="Bootstrap generator" class="alignnone size-full wp-image-122059"></a><br>
+<em>Some of the variables that can be set in the official generator. (<a href="http://media.smashingmagazine.com/wp-content/uploads/2012/09/generator-full.png">Large version</a>)</em></p>
+<p>Several third-party generators are also available on the Web. Unlike 
+the official generator, they provide live previews as you adjust 
+variables. <a href="http://bootswatchr.com/">Bootswatchr</a><sup class="print_only">4</sup> organizes itself by variable, and <a href="http://stylebootstrap.info/">StyleBootstrap</a><sup class="print_only">5</sup> by component. <a href="http://www.boottheme.com/">BootTheme</a><sup class="print_only">6</sup> adds a roll-the-dice feature to randomize your values. If lady luck isn’t on your side, <a href="http://www.lavishbootstrap.com/">Lavish</a><sup class="print_only">7</sup> can generate a theme from any image you provide, and <a href="http://paintstrap.com/">PaintStrap</a><sup class="print_only">8</sup> from existing color schemes.</p>
+<p>Using a generator simplifies the logistics of custom-building 
+Bootstrap. And with a deft hand, you can pull together a well-designed, 
+unique look.</p>
+<h3>Digging Into LESS</h3>
+<p>Even with over a hundred variables, you still might find generators 
+too constraining. Or you might not want to work in-browser, which can 
+limit integration with your workflow. In either case, it’s time to dig 
+into Bootstrap’s source.</p>
+<h4>Getting to the Source</h4>
+<p>As an open-source project, Bootstrap’s source code is <a href="https://github.com/twitter/bootstrap/zipball/master">freely available</a><sup class="print_only">9</sup> (ZIP) for downloading.</p>
+<p>Open the source and you’ll notice that Bootstrap’s styles aren’t written in CSS after all, but in <a href="http://lesscss.org/">LESS</a><sup class="print_only">10</sup>. LESS is a dynamic style sheet language that sports a <a href="http://coding.smashingmagazine.com/2010/12/06/using-the-less-css-preprocessor-for-smarter-style-sheets/">number of advantages over CSS</a><sup class="print_only">11</sup>,
+ including the ability to nest selectors and to create variables (as 
+used in the generators above). Once written, the LESS code is compiled 
+to CSS either in advance or at runtime. If Sass is your preferred 
+language, there’s a <a href="https://github.com/thomas-mcdonald/bootstrap-sass">Sass conversion of Bootstrap</a><sup class="print_only">12</sup>.</p>
+<p>In the <code>less</code> directory, you’ll find a bunch of LESS files labelled by component.</p>
+<p><a style="border: medium none;" href="http://media.smashingmagazine.com/wp-content/uploads/2012/09/bootstrap-less-full.png"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/bootstrap-less.png" alt="" title="Bootstrap LESS files" class="alignnone size-full wp-image-122064"></a><br>
+<em>The LESS files that make up Bootstrap’s source. (<a href="http://media.smashingmagazine.com/wp-content/uploads/2012/09/bootstrap-less-full.png">Large version</a>)</em></p>
+<p>Some things to note about these files:</p>
+<ul>
+<li><code>bootstrap.less</code><br>
+This is the central file. It imports all of the others and is the one you’ll ultimately compile.</li>
+<li><code>reset.less</code><br>
+Always the first file to be imported.</li>
+<li><code>variables.less</code> and <code>mixins.less</code><br>
+These always follow because they’re dependencies for the rest. The 
+former contains the same variables as used on the generator websites.</li>
+<li><code>utilities.less</code><br>
+This is always the last file to be imported, in order for the classes 
+that it contains to override the rest of the styles where necessary.</li>
+</ul>
+<p>Open up the LESS files and check out how Bootstrap styles each component. For example, in <code>buttons.less</code>, here is the rule for the <code>.btn-large</code> class:</p>
+<pre class="  language-css"><code class="  language-css"><span class="token selector">.btn-large </span><span class="token punctuation">{</span>
+   <span class="token property">padding</span><span class="token punctuation">:</span> 9px 14px<span class="token punctuation">;</span>
+   <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token atrule">@baseFontSize + 2px</span><span class="token punctuation">;</span>
+   <span class="token property">line-height</span><span class="token punctuation">:</span> normal<span class="token punctuation">;</span>
+   .border-radius(5px)<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>As you can see, it looks very similar to CSS. It does have a couple of LESS-specific features, however. In the <code>font-size</code> declaration, the variable <code>@baseFontSize</code> — specified in <code>variables.less</code> — and an addition operation are combined to calculate the value. The <code>.border-radius</code> mixin, defined in <code>mixins.less</code>, also handles vendor prefixes so that we don’t have to.</p>
+<p>It’s within these LESS files that you can make your customizations. Start with the values in <code>variables.less</code>, then experiment with the styles in the rest of the source. Have some fun with it.</p>
+<h4>Installing LESS</h4>
+<p>After you’ve made some changes and are ready to view them, you’ll 
+want to compile to CSS. To do this, you’ll need to install LESS. You 
+have a <a href="http://lesscss.org/#-client-side-usage">number of options</a><sup class="print_only">13</sup>; for starters, I’d suggest a client such as <a href="http://incident57.com/less/">LESS.app</a><sup class="print_only">14</sup>.</p>
+<p>If you prefer the command line, then install <a href="http://nodejs.org/">Node.js</a><sup class="print_only">15</sup>, which includes the Node Package Manager (NPM). Then, issue the following command:</p>
+<pre>npm install less
+</pre>
+<p>Once it’s installed, you can compile <code>bootstrap.less</code> like so:</p>
+<pre>lessc bootstrap.less &gt; bootstrap.css
+</pre>
+<p>And for the minified version, use this instead:</p>
+<pre>lessc --compress bootstrap.less &gt; bootstrap.min.css
+</pre>
+<p>Regardless of how you compile, target only <code>bootstrap.less</code> when compiling, not any of the other files.</p>
+<h4>Modularizing Your Changes</h4>
+<p>You might notice a limitation of the approach above. Your changes are
+ now intertwined with the original source. So, when Bootstrap is 
+inevitably updated with bug fixes and new features, disentangling your 
+customizations and updating them to the new version will be nearly 
+impossible.</p>
+<p>To avoid this issue, you’ll want to modularize your changes. Here’s the approach I take when making themes for <a href="http://bootswatch.com/">Bootswatch</a><sup class="print_only">16</sup>.</p>
+<p>First, I download Bootstrap’s source code, rename it to <code>bootstrap</code> and leave it untouched. Instead of making changes to the files that it contains, I create a separate folder, named <code>custom</code>, with these three files:</p>
+<ul>
+<li><code>custom-variables.less</code><br>
+I make a copy of <code>variables.less</code> from Bootstrap’s source and modify the variables in this copy instead.</li>
+<li><code>custom-other.less</code><br>
+This file holds any other customizations that I want to make that aren’t possible with the variables.</li>
+<li><code>custom-bootstrap.less</code><br>
+This is the new “central” file that you’ll compile to CSS. Along with 
+the original LESS files, it imports the two custom files above using the
+ following commands:</li>
+</ul>
+<pre class="  language-css"><code class="  language-css"><span class="token atrule">@import "../bootstrap/less/bootstrap.less"</span><span class="token punctuation">;</span>
+<span class="token atrule">@import "custom-variables.less"</span><span class="token punctuation">;</span>
+<span class="token atrule">@import "custom-other.less"</span><span class="token punctuation">;</span>
+<span class="token atrule">@import "../bootstrap/less/utilities.less"</span><span class="token punctuation">;</span></code></pre>
+<p>By keeping the changes separate, you can easily upgrade to newer versions of Bootstrap. Just replace the old <code>bootstrap</code> directory with the new one, and recompile.</p>
+<p>I’ve created a boilerplate for this set-up, named <a href="https://github.com/thomaspark/bootswatch/tree/master/swatchmaker">swatchmaker</a><sup class="print_only">17</sup>.
+ It also includes some extras, such as test pages and commands to update
+ Bootstrap to the latest version, to automatically compile whenever 
+changes are saved, and to reset your customizations.</p>
+<h3>Tips And Techniques</h3>
+<p>Here are additional tips and techniques that you might find helpful when customizing Bootstrap.</p>
+<ul>
+<li><strong>Get to know Bootstrap.</strong><br>
+Read the <a href="http://twitter.github.com/bootstrap/scaffolding.html">official documentation</a><sup class="print_only">18</sup>,
+ familiarize yourself with all of the components, and learn the ins and 
+outs of the source. If you will be regularly customizing Bootstrap, then
+ the time you invest here will pay off down the line.</li>
+<li><strong>Start with variables first.</strong><br>
+Whether you’re using a generator or editing the source, begin your 
+modifications with the supported variables. You might discover that 
+they’re sufficient for your needs. Just changing the navigation bar and 
+basic colors is a huge start.</li>
+<li><strong>Pick your palette.</strong><br>
+Think about your website’s color scheme, particularly your primary and secondary accent colors. Some <a href="http://www.colourlovers.com/">good resources</a><sup class="print_only">19</sup>
+ are out there to help you with this. After you’ve decided on a palette,
+ set up and use these colors as variables. You shouldn’t be seeing hex 
+codes sprinkled throughout your code.</li>
+<li><strong>Add some assets.</strong><br>
+A <a href="http://subtlepatterns.com/">textured background</a><sup class="print_only">20</sup> and <a href="http://www.google.com/webfonts/">custom font</a><sup class="print_only">21</sup> make a world of difference. For Web fonts, you can add the <code>@import</code> statement anywhere in your code, because LESS will hoist it to the top of the generated CSS. I like to keep mine at the top of <code>custom-other.less</code>.</li>
+<li><strong>Use alpha transparency.</strong><br>
+When adding touches like <code>box-shadow</code> and <code>text-shadow</code>, define your colors using <a href="http://css-tricks.com/rgba-browser-support/">RGBa, with fallbacks for old browsers</a><sup class="print_only">22</sup>, and use your values consistently. This will add cohesion to your components.</li>
+<li><strong>Match selectors.</strong><br>
+When overriding a class, try to use the same selector that Bootstrap 
+uses. This will help to keep your classes in sync with the originals and
+ avoid an escalating specificity war. Remember that, in a tie, the last 
+one wins. With the modularized set-up above, your customizations will 
+always override the defaults.</li>
+<li><strong>Encapsulate your code.</strong><br>
+Remember that LESS allows for nested selectors. Make use of this to 
+encapsulate each component. I’ve found this to be a big help in keeping 
+code tidy and readable. While both work the same, rather than using 
+this…<p></p>
+<pre class="  language-css"><code class="  language-css"><span class="token selector">.navbar .brand </span><span class="token punctuation">{</span>
+   <span class="token property">color</span><span class="token punctuation">:</span> <span class="token atrule">@white</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token selector">.navbar .nav &gt; li &gt; a </span><span class="token punctuation">{</span>
+   <span class="token property">color</span><span class="token punctuation">:</span> <span class="token atrule">@grayLighter</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>…&nbsp;try this:</p>
+<pre class="  language-css"><code class="  language-css"><span class="token selector">.navbar </span><span class="token punctuation">{</span>
+   		
+   <span class="token selector">.brand </span><span class="token punctuation">{</span>
+   	<span class="token property">color</span><span class="token punctuation">:</span> <span class="token atrule">@white</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+
+   <span class="token selector">.nav &gt; li &gt; a </span><span class="token punctuation">{</span>
+   	<span class="token property">color</span><span class="token punctuation">:</span> <span class="token atrule">@grayLighter</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><strong>Take advantage of mixins.</strong><br>
+Out of the box, LESS includes handy mixins such as <code>lighten()</code> and <code>darken()</code>. The ones that Bootstrap defines in <code>mixins.less</code> are also at your disposal. And don’t forget that you can always create your own.</li>
+<li><strong>Learn by example.</strong><br>
+Look at how others are customizing Bootstrap. For instance, the sources for all of my themes are available on <a href="https://github.com/thomaspark/bootswatch/tree/gh-pages">GitHub</a><sup class="print_only">23</sup>.</li>
+</ul>
+<p>Do you have a tip to add? Please share in the comments below.</p>
+<h3>Final Word</h3>
+<p>If performance is a priority — as it often should be — then you’ll be best served by <a href="http://coding.smashingmagazine.com/2007/09/21/css-frameworks-css-reset-design-from-scratch/">tailoring your own solution</a><sup class="print_only">24</sup> atop a <a href="http://html5boilerplate.com/">more lightweight foundation</a><sup class="print_only">25</sup>.</p>
+<p>But if your goal first and foremost is to launch your website, or if 
+front-end development isn’t your strong suit, then Twitter Bootstrap may
+ be right for you. Many people put themselves in these camps, judging by
+ Bootstrap’s popularity.</p>
+<p>Given its heavy usage across the Web, consider taking everything good about Bootstrap and making it your own.</p>
+<p><em>(al)</em></p>
+            
+        <div class="tagsdata">
+            <p class="tags longtags"><strong>Tags:</strong><a href="http://coding.smashingmagazine.com/tag/css/" title="View all articles tagged 'CSS' (139)">CSS</a><sup class="print_only">26</sup><a href="http://coding.smashingmagazine.com/tag/frameworks/" title="View all articles tagged 'Frameworks' (10)">Frameworks</a><sup class="print_only">27</sup><a href="http://coding.smashingmagazine.com/tag/javascript/" title="View all articles tagged 'JavaScript' (60)">JavaScript</a><sup class="print_only">28</sup></p>            <p><a href="#top" class="backtotop single" title="Jump to the top of the page">↑ Back to top</a><a href="https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Fcoding.smashingmagazine.com%2F2013%2F03%2F12%2Fcustomizing-bootstrap%2F&amp;source=tweetbutton&amp;text=Customizing%20Bootstrap&amp;url=http%3A%2F%2Fcoding.smashingmagazine.com%2F2013%2F03%2F12%2Fcustomizing-bootstrap%2F&amp;via=smashingmag" class="share-on-twitter single" title="Share on Twitter!">Share on Twitter</a></p>
+        </div>
+    </article><ul class="print_only_notelist"><li><h4>Footnotes:</h4></li><li><sup>1</sup> Bootstrap - http://twitter.github.com/bootstrap/</li><li><sup>2</sup> parade of websites - http://builtwithbootstrap.com</li><li><sup>3</sup> official generator - http://twitter.github.com/bootstrap/customize.html</li><li><sup>4</sup> Bootswatchr - http://bootswatchr.com</li><li><sup>5</sup> StyleBootstrap - http://stylebootstrap.info</li><li><sup>6</sup> BootTheme - http://www.boottheme.com</li><li><sup>7</sup> Lavish - http://www.lavishbootstrap.com</li><li><sup>8</sup> PaintStrap - http://paintstrap.com/</li><li><sup>9</sup> freely available - https://github.com/twitter/bootstrap/zipball/master</li><li><sup>10</sup> LESS - http://lesscss.org</li><li><sup>11</sup>
+ number of advantages over CSS - 
+http://coding.smashingmagazine.com/2010/12/06/using-the-less-css-preprocessor-for-smarter-style-sheets/</li><li><sup>12</sup> Sass conversion of Bootstrap - https://github.com/thomas-mcdonald/bootstrap-sass</li><li><sup>13</sup> number of options - http://lesscss.org/#-client-side-usage</li><li><sup>14</sup> LESS.app - http://incident57.com/less/</li><li><sup>15</sup> Node.js - http://nodejs.org</li><li><sup>16</sup> Bootswatch - http://bootswatch.com</li><li><sup>17</sup> swatchmaker - https://github.com/thomaspark/bootswatch/tree/master/swatchmaker</li><li><sup>18</sup> official documentation - http://twitter.github.com/bootstrap/scaffolding.html</li><li><sup>19</sup> good resources - http://www.colourlovers.com</li><li><sup>20</sup> textured background - http://subtlepatterns.com/</li><li><sup>21</sup> custom font - http://www.google.com/webfonts/</li><li><sup>22</sup> RGBa, with fallbacks for old browsers - http://css-tricks.com/rgba-browser-support/</li><li><sup>23</sup> GitHub - https://github.com/thomaspark/bootswatch/tree/gh-pages</li><li><sup>24</sup> tailoring your own solution - http://coding.smashingmagazine.com/2007/09/21/css-frameworks-css-reset-design-from-scratch/</li><li><sup>25</sup> more lightweight foundation - http://html5boilerplate.com/</li><li><sup>26</sup> CSS - http://coding.smashingmagazine.com/tag/css/</li><li><sup>27</sup> Frameworks - http://coding.smashingmagazine.com/tag/frameworks/</li><li><sup>28</sup> JavaScript - http://coding.smashingmagazine.com/tag/javascript/</li></ul>	
+	
+    <div class="bio clearfix">
+        <div class="gravatar">
+            <img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ec8560921f8715605bfa731058c012a7.jpeg" class="avatar avatar-78 photo">        </div>
+        <div class="about">
+            <a rel="author" href="http://coding.smashingmagazine.com/author/thomas-park/?rel=author" title="Posts by Thomas Park" class="post-author">Thomas Park</a>            <p>Thomas Park does UX research and design out of Philadelphia, PA. He is the creator of <a href="http://bootswatch.com/">Bootswatch</a>, a library of free themes for Bootstrap. Check out his <a href="http://thomaspark.me/">personal blog</a> or <a href="https://twitter.com/thomashpark">follow him on Twitter</a>.</p>
+        </div>
+    </div>
+	
+        <div class="related-articles">
+        <h2>Related Articles</h2>
+                    <div class="related-article">
+                <a style="border: medium none;" class="post-picture" href="http://coding.smashingmagazine.com/2011/09/23/create-an-animated-bar-graph-with-html-css-and-jquery/"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/related-075.jpg" alt="Create An Animated Bar Graph With HTML CSS And jQuery"></a>
+                <h3><a href="http://coding.smashingmagazine.com/2011/09/23/create-an-animated-bar-graph-with-html-css-and-jquery/">Create An Animated Bar Graph With HTML CSS And jQuery</a></h3>
+            </div>
+                    <div class="related-article">
+                <a style="border: medium none;" class="post-picture" href="http://coding.smashingmagazine.com/2013/02/27/css-form-elements-problem/"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/rp-march-css-form-elements.jpg" alt="The Problem Of CSS Form Elements"></a>
+                <h3><a href="http://coding.smashingmagazine.com/2013/02/27/css-form-elements-problem/">The Problem Of CSS Form Elements</a></h3>
+            </div>
+                    <div class="related-article">
+                <a style="border: medium none;" class="post-picture" href="http://coding.smashingmagazine.com/2011/08/23/the-semantic-grid-system-page-layout-for-tomorrow/"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/related-105.jpg" alt="The Semantic Grid System: Page Layout For Tomorrow"></a>
+                <h3><a href="http://coding.smashingmagazine.com/2011/08/23/the-semantic-grid-system-page-layout-for-tomorrow/">The Semantic Grid System: Page Layout For Tomorrow</a></h3>
+            </div>
+            </div>
+    
+<!-- Smashing Magazine - Comment spnsr ed spot -->
+<a id="comments"></a>
+<div class="singlepost advertisement">
+    <span class="declare">Advertising</span>
+    <div id="commentspnsrtarget"><div id="commentspnsr"><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5791__zoneid=26__OXLCA=1__cb=50c129ff60__oadest=http%3A%2F%2Fwww.lightcms.com%2F%3Futm_source%3DSmashing%252B%28Comment%29%26utm_medium%3Dbanner%26utm_content%3DSwitcher%252B%28Title%252BOnly%29%26utm_campaign%3DSmashing" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_008.png" alt="" title="" border="0"></a><div id="beacon_50c129ff60" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_008.gif" alt="" style="width: 0px; height: 0px;"></div>
+</div></div>
+</div>
+<ul class="sub-tabs clearfix">
+    <li><a href="#show-comments" class="active">18 Comments</a></li>
+    <li><a href="#best-comments">Best Comments</a></li></ul>
+
+<div id="discussion" class="subtab-pages">
+    <div style="display: block;" id="show-comments">
+                <ol id="comments-overview" class="commentlist">
+                <li class="comment even thread-even depth-1 clearfix ">
+    <span class="commentnumber">1</span>
+    <div class="comment" id="comment-647276">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/dc59c454594bd0bb4c716448265a6fb9.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">quickredfox</h3> 
+        		<span class="datetime"><a title="Commentlink #1" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-647276">March 13th, 2013 2:25 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>I’ve been using Bootstrap for a while now and on various 
+types of UIs. Quite frankly, I’m coming to the conclusion that it’s a 
+bit of an overkill to use these types of frameworks if you’re already 
+using LESS or SASS (variables and functions in CSS: the stuff of dreams 
+in 1995). From now on, I plan to use a more granular approach as I’m 
+quite comfortable building my own DHTML components. I thought of using 
+the semantic.gs grid system (look at the source code, you’ll see why) 
+and maybe LESS Elements to wrap those vendor prefixes. </p>
+<p>I highly suggest people consider reading the 2007 article “tailoring 
+your own solution” mentioned in “The Final Word” at the conclusion of 
+this post. I think smashing magazine had a moment of clarity there, 
+especially the “Disadvantages” section.</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=647276#respond" onclick='return addComment.moveForm("comment-647276", "647276", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult negative">-2</div>
+        		<a class="ratebtn down_active" id="btn-647276-down" style="opacity:0.3;" title="Vote down! (8 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-647276-up" style="opacity:0.3;" title="Vote up! (6 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+<li class="comment odd alt thread-odd thread-alt depth-1 clearfix ">
+    <span class="commentnumber">2</span>
+    <div class="comment" id="comment-654778">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/1b7e6ca17e704824d54459cd49115b20.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Gaurav Mishra</h3> 
+        		<span class="datetime"><a title="Commentlink #2" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-654778">March 20th, 2013 3:06 am</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>While doing the customization of Bootstrap based themes, it 
+has opened the visual plethora for clients and designer can product 
+different tastes of a theme, which can gel or let say best fist with the
+ brand style guideline of the customer/big client.</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=654778#respond" onclick='return addComment.moveForm("comment-654778", "654778", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult positive">+1</div>
+        		<a class="ratebtn down_active" id="btn-654778-down" style="opacity:0.3;" title="Vote down! (1 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-654778-up" style="opacity:0.3;" title="Vote up! (2 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+<li class="comment even thread-even depth-1 clearfix ">
+    <span class="commentnumber">3</span>
+    <div class="comment" id="comment-659758">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/c1263e40a319586ce784ff54b96baf98.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Curtis</h3> 
+        		<span class="datetime"><a title="Commentlink #3" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-659758">March 25th, 2013 4:15 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>Great Article + Tips. Anyone know if the SASS Conversion is trustworthy?</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=659758#respond" onclick='return addComment.moveForm("comment-659758", "659758", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult positive">+1</div>
+        		<a class="ratebtn down_active" id="btn-659758-down" style="opacity:0.3;" title="Vote down! (1 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-659758-up" style="opacity:0.3;" title="Vote up! (2 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+<li class="comment odd alt thread-odd thread-alt depth-1 clearfix ">
+    <span class="commentnumber">4</span>
+    <div class="comment" id="comment-662356">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/9489a5cea880cfdb51a7d80334762972.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Chris Colman</h3> 
+        		<span class="datetime"><a title="Commentlink #4" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-662356">March 30th, 2013 1:35 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>In the article your custom-bootstrap.less has:</p>
+<p>@import “../bootstrap/less/bootstrap.less”;<br>
+@import “custom-variables.less”;<br>
+@import “custom-other.less”;<br>
+@import “../bootstrap/less/utilities.less”;</p>
+<p>Yet when I look into bootstrap.less it already imports utilities.less. Is this a problem?</p>
+<p>On your blog at <a href="http://thomaspark.me/2012/02/introducing-bootswatch/" rel="nofollow">http://thomaspark.me/2012/02/introducing-bootswatch/</a> you say to edit bootstrap.less and insert the @import of bootswatch just before the @import utilities.</p>
+<p>The blog entry is much older than this smashing magazine article so I
+ assume this newer approach is better but what about the problem I 
+mention above with utilities.less?</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=662356#respond" onclick='return addComment.moveForm("comment-662356", "662356", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult">0</div>
+        		<a class="ratebtn down_active" id="btn-662356-down" style="opacity:0.3;" title="Vote down! (1 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-662356-up" style="opacity:0.3;" title="Vote up! (1 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            <ul class="children">
+<li class="comment even depth-2 clearfix ">
+    <span class="commentnumber">5</span>
+    <div class="comment" id="comment-891941">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/fa64fa88dd9e12c84378f4c0e3451776.jpeg" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Sandeep</h3> 
+        		<span class="datetime"><a title="Commentlink #5" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-891941">May 9th, 2013 1:38 am</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>I read some where, @import is loading slow. Is this true!!</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=891941#respond" onclick='return addComment.moveForm("comment-891941", "891941", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult">0</div>
+        		<a class="ratebtn down_active" id="btn-891941-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-891941-up" style="opacity:0.3;" title="Vote up! (0 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+</ul>
+</li>
+<li class="comment odd alt thread-even depth-1 clearfix ">
+    <span class="commentnumber">6</span>
+    <div class="comment" id="comment-662369">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/9489a5cea880cfdb51a7d80334762972.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Chris Colman</h3> 
+        		<span class="datetime"><a title="Commentlink #6" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-662369">March 30th, 2013 3:16 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>Another question ;)</p>
+<p>In bootstraps dist responsive.less is compiled to bootstrap-responsive.css</p>
+<p>responsive.less also includes variables.less (which is tailored for 
+each swatch) so does that mean we need to compile responsive.less as 
+well as bootstrap.less whenever we make a change to a swatch (assuming 
+we’re building a responsive website).</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=662369#respond" onclick='return addComment.moveForm("comment-662369", "662369", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult positive">+3</div>
+        		<a class="ratebtn down_active" id="btn-662369-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-662369-up" style="opacity:0.3;" title="Vote up! (3 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            <ul class="children">
+<li class="comment even depth-2 clearfix ">
+    <span class="commentnumber">7</span>
+    <div class="comment" id="comment-666230">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/1436a7d072b29010342f0b470dce6301.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">David Paul</h3> 
+        		<span class="datetime"><a title="Commentlink #7" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-666230">April 15th, 2013 10:12 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>I’ve had the same issue as Chris with the responsive.less including the variables.less.<br>
+I was banging my head against a wall when my swatch colors weren’t being pulled in.</p>
+<p>Looking at responsive.less, it just imports the individual responsive
+ files (responsive-767px-max.less, responsive-768px-979px.less etc).  So
+ doesn’t it make sense to import these separate files into our 
+custom-bootstrap.less, and NOT import responsive.less?<br>
+The media queries are written in the individual less files.</p>
+<p>My custom-bootstrap.less has:</p>
+<p>@import “custom-variables.less”;<br>
+@import “../bootstrap/less/mixins.less”;</p>
+<p>… (more @imports)…</p>
+<p>// responsive<br>
+@import “../bootstrap/less/responsive-768px-979px.less”;<br>
+@import “../bootstrap/less/responsive-1200px-min.less”;<br>
+@import “../bootstrap/less/responsive-navbar.less”;<br>
+@import “../bootstrap/less/responsive-utilities.less”;</p>
+<p>// Utility classes<br>
+@import “../bootstrap/less/utilities.less”; // Has to be last to override when necessary</p>
+<p>Then you just compile your custom-bootstrap.less into css.</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=666230#respond" onclick='return addComment.moveForm("comment-666230", "666230", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult negative">-1</div>
+        		<a class="ratebtn down_active" id="btn-666230-down" style="opacity:0.3;" title="Vote down! (1 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-666230-up" style="opacity:0.3;" title="Vote up! (0 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            <ul class="children">
+<li class="comment odd alt depth-3 clearfix ">
+    <span class="commentnumber">8</span>
+    <div class="comment" id="comment-666234">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/1436a7d072b29010342f0b470dce6301.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">David Paul</h3> 
+        		<span class="datetime"><a title="Commentlink #8" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-666234">April 15th, 2013 10:40 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>Ignore that, doesn’t work, as the file says it needs compiling separately.<br>
+I’m going to take a copy of responsive.less and reference my custom-variables.less in it instead of the default variables.</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=666234#respond" onclick='return addComment.moveForm("comment-666234", "666234", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult">0</div>
+        		<a class="ratebtn down_active" id="btn-666234-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-666234-up" style="opacity:0.3;" title="Vote up! (0 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="comment even thread-odd thread-alt depth-1 clearfix ">
+    <span class="commentnumber">9</span>
+    <div class="comment" id="comment-663200">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/675562d505649706963208a085647aeb.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Luis González</h3> 
+        		<span class="datetime"><a title="Commentlink #9" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-663200">April 2nd, 2013 6:11 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>Great article, thanks!</p>
+<p>By the way, I’ve been trying to tweak an example for Bootstrap’s site and I found some hard to track issues.<br>
+For example, the starter example has “bootstrap.css” linked on the head,
+ below there’s some inline styling and below of that, 
+“bootstrap-responsive.css” is also linked, all of this within the head.</p>
+<p>I tried changing the container width below all these linked stylesheets, and didn’t work.<br>
+Then, I moved “bootstrap-responsive.css” right below “bootstrap.css” and added my custom styling below.</p>
+<p>This way I changed the container’s width, but the navbar on top 
+behaved strange when resizing the page on the browser (it didn’t stick 
+to the top).</p>
+<p>So my question is, where exactly should I add my custom styling?<br>
+Should I link it before or after the bootstrap’s stylesheets (both of them)?</p>
+<p>What should I do when both stylesheets are linked to the page (the default and the responsive one)?</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=663200#respond" onclick='return addComment.moveForm("comment-663200", "663200", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult">0</div>
+        		<a class="ratebtn down_active" id="btn-663200-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-663200-up" style="opacity:0.3;" title="Vote up! (0 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            <ul class="children">
+<li class="comment odd alt depth-2 clearfix ">
+    <span class="commentnumber">10</span>
+    <div class="comment" id="comment-701185">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/d0ca0287dd67c4fd66fcb783ad43efd8.jpeg" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Pelayo</h3> 
+        		<span class="datetime"><a title="Commentlink #10" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-701185">April 24th, 2013 10:15 am</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>The last css to load must be your custom. As app.css loads in roothstheme for wp (with bootstrap)</p>
+<p>But, I know the right thing is keep the original css unedited, but 
+dont know why… Maybe you can explain. Why not edit the original files?</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=701185#respond" onclick='return addComment.moveForm("comment-701185", "701185", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult positive">+1</div>
+        		<a class="ratebtn down_active" id="btn-701185-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-701185-up" style="opacity:0.3;" title="Vote up! (1 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+</ul>
+</li>
+<li class="comment even thread-even depth-1 clearfix ">
+    <span class="commentnumber">11</span>
+    <div class="comment" id="comment-663319">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/d05b05be7f23d258b2742671f1d84fd4.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Newbie</h3> 
+        		<span class="datetime"><a title="Commentlink #11" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-663319">April 3rd, 2013 8:53 am</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>To other newbies having problems. This article was very 
+inspiring and gave me the courage to try Bootstrap. But I could tell by 
+the questions at the end it wasn’t detailed enough for me, especially 
+the scary LESS stuff. I asked around and found a much more broken down 
+guide to customizing Bootstrap at Packt Press:<br>
+Free article: <a href="http://www.packtpub.com/article/downloading-and-setting-up-bootstrap" rel="nofollow">http://www.packtpub.com/article/downloading-and-setting-up-bootstrap</a><br>
+$5 e-book: <a href="http://www.packtpub.com/twitter-bootstrap-web-development/book" rel="nofollow">http://www.packtpub.com/twitter-bootstrap-web-development/book</a> </p>
+<p>Thank you for this great tutorial– and it totally saved me from 
+having all my work getting overwritten by making a custom (or 
+child-like?) theme! I’m teaching high school kids this!</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=663319#respond" onclick='return addComment.moveForm("comment-663319", "663319", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult positive">+1</div>
+        		<a class="ratebtn down_active" id="btn-663319-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-663319-up" style="opacity:0.3;" title="Vote up! (1 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+<li class="comment odd alt thread-odd thread-alt depth-1 clearfix ">
+    <span class="commentnumber">12</span>
+    <div class="comment" id="comment-665450">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/6a54102d3af783bab96b14b59f25f8b0.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Scott Rosenthal</h3> 
+        		<span class="datetime"><a title="Commentlink #12" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-665450">April 12th, 2013 12:41 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>Easily import twitter bootstrap/bootswatch themes into your rails app:</p>
+<p><a href="https://github.com/scottvrosenthal/twitter-bootswatch-rails" rel="nofollow">https://github.com/scottvrosenthal/twitter-bootswatch-rails</a></p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=665450#respond" onclick='return addComment.moveForm("comment-665450", "665450", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult">0</div>
+        		<a class="ratebtn down_active" id="btn-665450-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-665450-up" style="opacity:0.3;" title="Vote up! (0 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+<li class="comment even thread-even depth-1 clearfix ">
+    <span class="commentnumber">13</span>
+    <div class="comment" id="comment-811602">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/7c1ad7d013e430e28577423d00644675.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">colin summers</h3> 
+        		<span class="datetime"><a title="Commentlink #13" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-811602">May 2nd, 2013 7:47 am</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>I am not new to Bootstrap CSS, but I am new to LESS. Is 
+there any good articles out there that explain both Bootstrap and LESS 
+together?</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=811602#respond" onclick='return addComment.moveForm("comment-811602", "811602", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult">0</div>
+        		<a class="ratebtn down_active" id="btn-811602-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-811602-up" style="opacity:0.3;" title="Vote up! (0 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+<li class="comment odd alt thread-odd thread-alt depth-1 clearfix ">
+    <span class="commentnumber">14</span>
+    <div class="comment" id="comment-834857">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/24ef75c80fa9f42c79eb95a1fa8595b2.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Shajed</h3> 
+        		<span class="datetime"><a title="Commentlink #14" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-834857">May 4th, 2013 3:33 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>Thanks great tutorial</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=834857#respond" onclick='return addComment.moveForm("comment-834857", "834857", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult">0</div>
+        		<a class="ratebtn down_active" id="btn-834857-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-834857-up" style="opacity:0.3;" title="Vote up! (0 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+<li class="comment even thread-even depth-1 clearfix ">
+    <span class="commentnumber">15</span>
+    <div class="comment" id="comment-838824">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/5070bd0b459053a328886f0aed071a06.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Bootstraptor</h3> 
+        		<span class="datetime"><a title="Commentlink #15" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-838824">May 5th, 2013 3:13 am</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>Developing sites on this framework, we at the beginning 
+faced with the fact that official basic templates is not enough for fast
+ start with Bootstrap.  Gradually accumulated some templates,  we have 
+decided to provide it for Bootstrap community. Free of charge to 
+download a set of basic  template build with Bootstrap framework on his 
+popular base.  here link <a href="http://www.bootstraptor.com/" rel="nofollow">http://www.bootstraptor.com</a></p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=838824#respond" onclick='return addComment.moveForm("comment-838824", "838824", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult positive">+2</div>
+        		<a class="ratebtn down_active" id="btn-838824-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-838824-up" style="opacity:0.3;" title="Vote up! (2 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+<li class="comment odd alt thread-odd thread-alt depth-1 clearfix ">
+    <span class="commentnumber">16</span>
+    <div class="comment" id="comment-843364">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/3231e2315516dbb91cc848555f51ce98.jpeg" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Mark Hallam</h3> 
+        		<span class="datetime"><a title="Commentlink #16" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-843364">May 5th, 2013 7:15 pm</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>How can you create gradients in CSS for navigation bars (like the one in Bootstrap)?</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=843364#respond" onclick='return addComment.moveForm("comment-843364", "843364", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult">0</div>
+        		<a class="ratebtn down_active" id="btn-843364-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-843364-up" style="opacity:0.3;" title="Vote up! (0 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            <ul class="children">
+<li class="comment even depth-2 clearfix ">
+    <span class="commentnumber">17</span>
+    <div class="comment" id="comment-878463">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/24de118de418063d2370c3aa555a18a5.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Skelly</h3> 
+        		<span class="datetime"><a title="Commentlink #17" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-878463">May 8th, 2013 5:18 am</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>Mark – Have you seen colorzilla (<a href="http://www.colorzilla.com/gradient-editor/" rel="nofollow">http://www.colorzilla.com/gradient-editor/</a>)? It’s a very useful to for creating gradients in CSS.</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=878463#respond" onclick='return addComment.moveForm("comment-878463", "878463", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult positive">+1</div>
+        		<a class="ratebtn down_active" id="btn-878463-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-878463-up" style="opacity:0.3;" title="Vote up! (1 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+</ul>
+</li>
+<li class="comment odd alt thread-even depth-1 clearfix ">
+    <span class="commentnumber">18</span>
+    <div class="comment" id="comment-891503">
+        <div class="comment-author">
+		<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/87d1e628f2ef25ee8dae75b2c39255b1.png" class="avatar avatar-38 photo">        	<div class="authormeta">
+       			<h3 class="comment-author">Brian</h3> 
+        		<span class="datetime"><a title="Commentlink #18" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-891503">May 9th, 2013 12:45 am</a></span>            
+        	</div>
+        </div>
+        <div class="comment-text">
+        	<p>I’m primarily a UI / UX designer and I’m adopting Bootstrap specifically for prototyping.</p>
+<p>Its great as it’s relatively quick and saves time doing hundreds of  wireframes and ui mockups.</p>
+        </div>
+        <div class="commentmeta">
+            <div class="reply">
+                        <a class="comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/?replytocom=891503#respond" onclick='return addComment.moveForm("comment-891503", "891503", "respond", "121998")'>Reply</a>            </div>
+                            	        	<div class="commentrating clearfix">
+        		<div class="rateresult">0</div>
+        		<a class="ratebtn down_active" id="btn-891503-down" style="opacity:0.3;" title="Vote down! (0 votes)"></a>
+        		<a class="ratebtn up_active" id="btn-891503-up" style="opacity:0.3;" title="Vote up! (0 votes)"></a>
+        	</div>
+        	        </div>
+    </div>
+            </li>
+        </ol>
+                        </div>
+		    <div style="display: none;" id="best-comments">
+			<ol id="ratedcomments-overview" class="commentlist">
+					<li class="comment even thread-odd thread-alt depth-1 clearfix ">
+			<span class="commentnumber">1</span>
+			<div class="comment" id="bestcomment-662369">
+			<div class="comment-author">
+				<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/9489a5cea880cfdb51a7d80334762972.png" class="avatar avatar-38 photo">								
+				<div class="authormeta">
+					<h3 class="comment-author">Chris Colman</h3> 
+					<span class="datetime"><a title="Commentlink #1" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-662369">March 30th, 2013 3:16 pm</a></span>
+				</div>
+			</div>
+			<div class="comment-text">
+				<p>Another question ;)</p>
+<p>In bootstraps dist responsive.less is compiled to bootstrap-responsive.css</p>
+<p>responsive.less also includes variables.less (which is tailored for 
+each swatch) so does that mean we need to compile responsive.less as 
+well as bootstrap.less whenever we make a change to a swatch (assuming 
+we’re building a responsive website).</p>
+			</div>
+			<div class="commentmeta">
+									<div class="commentrating clearfix">
+						<div class="rateresult positive">+3</div>
+					</div>
+											</div>
+		</div>
+				</li><li class="comment odd alt thread-even depth-1 clearfix ">
+			<span class="commentnumber">2</span>
+			<div class="comment" id="bestcomment-838824">
+			<div class="comment-author">
+				<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/5070bd0b459053a328886f0aed071a06.png" class="avatar avatar-38 photo">								
+				<div class="authormeta">
+					<h3 class="comment-author">Bootstraptor</h3> 
+					<span class="datetime"><a title="Commentlink #2" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-838824">May 5th, 2013 3:13 am</a></span>
+				</div>
+			</div>
+			<div class="comment-text">
+				<p>Developing sites on this framework, we at the beginning faced 
+with the fact that official basic templates is not enough for fast start
+ with Bootstrap.  Gradually accumulated some templates,  we have decided
+ to provide it for Bootstrap community. Free of charge to download a set
+ of basic  template build with Bootstrap framework on his popular base. 
+ here link <a href="http://www.bootstraptor.com/" rel="nofollow">http://www.bootstraptor.com</a></p>
+			</div>
+			<div class="commentmeta">
+									<div class="commentrating clearfix">
+						<div class="rateresult positive">+2</div>
+					</div>
+											</div>
+		</div>
+				</li><li class="comment even thread-odd thread-alt depth-1 clearfix ">
+			<span class="commentnumber">3</span>
+			<div class="comment" id="bestcomment-654778">
+			<div class="comment-author">
+				<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/1b7e6ca17e704824d54459cd49115b20.png" class="avatar avatar-38 photo">								
+				<div class="authormeta">
+					<h3 class="comment-author">Gaurav Mishra</h3> 
+					<span class="datetime"><a title="Commentlink #3" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-654778">March 20th, 2013 3:06 am</a></span>
+				</div>
+			</div>
+			<div class="comment-text">
+				<p>While doing the customization of Bootstrap based themes, it has 
+opened the visual plethora for clients and designer can product 
+different tastes of a theme, which can gel or let say best fist with the
+ brand style guideline of the customer/big client.</p>
+			</div>
+			<div class="commentmeta">
+									<div class="commentrating clearfix">
+						<div class="rateresult positive">+1</div>
+					</div>
+											</div>
+		</div>
+				</li><li class="comment odd alt thread-even depth-1 clearfix ">
+			<span class="commentnumber">4</span>
+			<div class="comment" id="bestcomment-659758">
+			<div class="comment-author">
+				<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/c1263e40a319586ce784ff54b96baf98.png" class="avatar avatar-38 photo">								
+				<div class="authormeta">
+					<h3 class="comment-author">Curtis</h3> 
+					<span class="datetime"><a title="Commentlink #4" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-659758">March 25th, 2013 4:15 pm</a></span>
+				</div>
+			</div>
+			<div class="comment-text">
+				<p>Great Article + Tips. Anyone know if the SASS Conversion is trustworthy?</p>
+			</div>
+			<div class="commentmeta">
+									<div class="commentrating clearfix">
+						<div class="rateresult positive">+1</div>
+					</div>
+											</div>
+		</div>
+				</li><li class="comment even thread-odd thread-alt depth-1 clearfix ">
+			<span class="commentnumber">5</span>
+			<div class="comment" id="bestcomment-663319">
+			<div class="comment-author">
+				<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/d05b05be7f23d258b2742671f1d84fd4.png" class="avatar avatar-38 photo">								
+				<div class="authormeta">
+					<h3 class="comment-author">Newbie</h3> 
+					<span class="datetime"><a title="Commentlink #5" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-663319">April 3rd, 2013 8:53 am</a></span>
+				</div>
+			</div>
+			<div class="comment-text">
+				<p>To other newbies having problems. This article was very inspiring
+ and gave me the courage to try Bootstrap. But I could tell by the 
+questions at the end it wasn’t detailed enough for me, especially the 
+scary LESS stuff. I asked around and found a much more broken down guide
+ to customizing Bootstrap at Packt Press:<br>
+Free article: <a href="http://www.packtpub.com/article/downloading-and-setting-up-bootstrap" rel="nofollow">http://www.packtpub.com/article/downloading-and-setting-up-bootstrap</a><br>
+$5 e-book: <a href="http://www.packtpub.com/twitter-bootstrap-web-development/book" rel="nofollow">http://www.packtpub.com/twitter-bootstrap-web-development/book</a> </p>
+<p>Thank you for this great tutorial– and it totally saved me from 
+having all my work getting overwritten by making a custom (or 
+child-like?) theme! I’m teaching high school kids this!</p>
+			</div>
+			<div class="commentmeta">
+									<div class="commentrating clearfix">
+						<div class="rateresult positive">+1</div>
+					</div>
+											</div>
+		</div>
+				</li><li class="comment odd alt thread-even depth-1 clearfix ">
+			<span class="commentnumber">6</span>
+			<div class="comment" id="bestcomment-701185">
+			<div class="comment-author">
+				<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/d0ca0287dd67c4fd66fcb783ad43efd8.jpeg" class="avatar avatar-38 photo">								
+				<div class="authormeta">
+					<h3 class="comment-author">Pelayo</h3> 
+					<span class="datetime"><a title="Commentlink #6" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-701185">April 24th, 2013 10:15 am</a></span>
+				</div>
+			</div>
+			<div class="comment-text">
+				<p>The last css to load must be your custom. As app.css loads in roothstheme for wp (with bootstrap)</p>
+<p>But, I know the right thing is keep the original css unedited, but 
+dont know why… Maybe you can explain. Why not edit the original files?</p>
+			</div>
+			<div class="commentmeta">
+									<div class="commentrating clearfix">
+						<div class="rateresult positive">+1</div>
+					</div>
+											</div>
+		</div>
+				</li><li class="comment even thread-odd thread-alt depth-1 clearfix ">
+			<span class="commentnumber">7</span>
+			<div class="comment" id="bestcomment-878463">
+			<div class="comment-author">
+				<img alt="" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/24de118de418063d2370c3aa555a18a5.png" class="avatar avatar-38 photo">								
+				<div class="authormeta">
+					<h3 class="comment-author">Skelly</h3> 
+					<span class="datetime"><a title="Commentlink #7" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#comment-878463">May 8th, 2013 5:18 am</a></span>
+				</div>
+			</div>
+			<div class="comment-text">
+				<p>Mark – Have you seen colorzilla (<a href="http://www.colorzilla.com/gradient-editor/" rel="nofollow">http://www.colorzilla.com/gradient-editor/</a>)? It’s a very useful to for creating gradients in CSS.</p>
+			</div>
+			<div class="commentmeta">
+									<div class="commentrating clearfix">
+						<div class="rateresult positive">+1</div>
+					</div>
+											</div>
+		</div>
+					</li></ol>
+				    </div>
+	</div>
+
+
+<div id="respond">
+
+    <h3>Leave a Comment</h3>
+
+    <p class="desc">Yay! You've decided to leave a comment. That's fantastic! Please keep in mind that comments are moderated and <code>rel="nofollow"</code>
+ is in use. So, please do not use a spammy keyword or a domain as your 
+name, or it will be deleted. Let's have a personal and meaningful 
+conversation instead. Thanks for dropping by!</p>
+
+        
+        
+<a rel="nofollow" id="cancel-comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#respond" style="display:none;">Click here to cancel reply.</a>								<div id="respond">
+				<h3 id="reply-title"> <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://coding.smashingmagazine.com/2013/03/12/customizing-bootstrap/#respond" style="display:none;">Click here to cancel reply.</a></small></h3>
+									<form action="http://coding.smashingmagazine.com/wp-comments-post.php" method="post" id="commentform">
+																										<div class="clearfix"><p class="input-half"><label for="comment_author">Your name<span class="required">*</span></label><input name="author" id="comment_author" tabindex="1" class="input" type="text"></p>
+<p class="input-half"><label for="email">Your email<span class="required">*</span></label><input name="email" id="email" tabindex="2" class="input" type="text"></p></div>
+<input name="f64074website" id="f64074website" class="_hidden hide" type="text">
+												<div id="message-box"><div class="cancel-comment-reply right"><small></small></div><label for="comment">Your message<span class="required">*</span></label><textarea name="comment" id="comment" rows="10" tabindex="4" class="input textarea"></textarea></div>												<p class="form-submit">
+							<input name="submit" id="submit" value="Submit Comment" type="submit">
+							<input name="comment_post_ID" value="121998" id="comment_post_ID" type="hidden">
+<input name="comment_parent" id="comment_parent" value="0" type="hidden">
+						</p>
+						<p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" value="acb7e5fcb7" type="hidden"></p>					</form>
+							</div><!-- #respond -->
+						
+        </div>
+
+					</div><!-- .col.main -->								
+				</div><!-- .grid -->
+				<p><a href="#top" class="backtotop" title="Jump to the top of the page">↑ Back to top</a></p>
+			</div><!-- .fluid -->
+		</div><!-- #container -->
+			<div id="wpsidebar">
+		<div class="col side">
+			<div class="sm-search wp-search-form">			
+				<form method="get" action="http://www.smashingmagazine.com/search-results/" target="_top">
+					<span class="declare">Search on Smashing Magazine</span>
+					<input name="q" placeholder="e.g. Responsive design" type="text">
+					<button class="search_submit" type="submit"><span class="first-type">Search</span><span class="last-type">Go!</span></button>
+					<input name="cx" value="partner-pub-6779860845561969:5884617103" type="hidden">
+					<input name="cof" value="FORID:10" type="hidden">
+					<input name="ie" value="UTF-8" type="hidden">
+				</form>
+			</div>
+			<div class="ed spnsrlistwrapper">
+					  			<span class="declare">Advertisement</span>
+	  			<span class="awithus"><a href="mailto:advertising@smashingmagazine.com" title="Advertise with us!" class="sprite ed-us">Advertise with us!</a></span>
+								<div id="spnsrlisttarget"><ul id="spnsrlist" class="bnnr-list"><li><a style="border: medium none;" onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5611__zoneid=24__OXLCA=1__cb=d73352c165__oadest=http%3A%2F%2Fwww.philau.edu%2Fmsintdesign%2F'" href="http://www.philau.edu/msintdesign/" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_008.jpeg" alt="Get your Master's degree!" title="Get your Master's degree!" border="0"></a><br><a onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5611__zoneid=24__OXLCA=1__cb=d73352c165__oadest=http%3A%2F%2Fwww.philau.edu%2Fmsintdesign%2F'" href="http://www.philau.edu/msintdesign/" target="_blank">Get your Master's degree!</a><div id="beacon_d73352c165" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_010.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5847__zoneid=24__OXLCA=1__cb=94214d8f1f__oadest=http%3A%2F%2Fwww.icenium.com%2F%3Futm_source%3Dsmashingmag%26utm_medium%3Dbanner%26utm_campaign%3Dhp1'" href="http://www.icenium.com/?utm_source=smashingmag&amp;utm_medium=banner&amp;utm_campaign=hp1" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_004.jpeg" alt="Cross-platform mobile development" title="Cross-platform mobile development" border="0"></a><br><a onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5847__zoneid=24__OXLCA=1__cb=94214d8f1f__oadest=http%3A%2F%2Fwww.icenium.com%2F%3Futm_source%3Dsmashingmag%26utm_medium%3Dbanner%26utm_campaign%3Dhp1'" href="http://www.icenium.com/?utm_source=smashingmag&amp;utm_medium=banner&amp;utm_campaign=hp1" target="_blank">Cross-platform mobile development</a><div id="beacon_94214d8f1f" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_003.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=4588__zoneid=24__OXLCA=1__cb=5be5e96ec2__oadest=http%3A%2F%2Fmarkup-service.com%2F'" href="http://markup-service.com/" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_006.png" alt="" title="" border="0"></a><br><a onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=4588__zoneid=24__OXLCA=1__cb=5be5e96ec2__oadest=http%3A%2F%2Fmarkup-service.com%2F'" href="http://markup-service.com/" target="_blank">PSD to HTML5/CSS3</a><div id="beacon_5be5e96ec2" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_019.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5768__zoneid=24__OXLCA=1__cb=0b0178f7aa__oadest=http%3A%2F%2Fdashboard.webydo.com%2Flandingpages%2Fstarta.aspx%3Fcampaign%3DSM'" href="http://dashboard.webydo.com/landingpages/starta.aspx?campaign=SM" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_005.jpeg" alt="Freedom of Website Design" title="Freedom of Website Design" border="0"></a><br><a onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5768__zoneid=24__OXLCA=1__cb=0b0178f7aa__oadest=http%3A%2F%2Fdashboard.webydo.com%2Flandingpages%2Fstarta.aspx%3Fcampaign%3DSM'" href="http://dashboard.webydo.com/landingpages/starta.aspx?campaign=SM" target="_blank">Freedom of Website Design</a><div id="beacon_0b0178f7aa" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_016.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5617__zoneid=24__OXLCA=1__cb=814a1e066d__oadest=http%3A%2F%2Fwww.stickermule.com%3Futm_campaign%3DSmashing_Branded%26utm_medium%3DBanner%26utm_source%3DSmashing_Mag'" href="http://www.stickermule.com/?utm_campaign=Smashing_Branded&amp;utm_medium=Banner&amp;utm_source=Smashing_Mag" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai.png" alt="Custom Stickers" title="Custom Stickers" border="0"></a><br><a onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5617__zoneid=24__OXLCA=1__cb=814a1e066d__oadest=http%3A%2F%2Fwww.stickermule.com%3Futm_campaign%3DSmashing_Branded%26utm_medium%3DBanner%26utm_source%3DSmashing_Mag'" href="http://www.stickermule.com/?utm_campaign=Smashing_Branded&amp;utm_medium=Banner&amp;utm_source=Smashing_Mag" target="_blank">Custom Stickers</a><div id="beacon_814a1e066d" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_018.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5822__zoneid=24__OXLCA=1__cb=8a7df0e2fc__oadest=http%3A%2F%2Fwww.instiller.co.uk'" href="http://www.instiller.co.uk/" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_003.jpeg" alt="Email marketing for agencies" title="Email marketing for agencies" border="0"></a><br><a onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5822__zoneid=24__OXLCA=1__cb=8a7df0e2fc__oadest=http%3A%2F%2Fwww.instiller.co.uk'" href="http://www.instiller.co.uk/" target="_blank">Email marketing for agencies</a><div id="beacon_8a7df0e2fc" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_005.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5753__zoneid=24__OXLCA=1__cb=cdb047afcb__oadest=http%3A%2F%2Fpsd2html.com%2F%3Futm_source%3Dsmashingmagazine.com%26utm_medium%3Dbanner%26utm_campaign%3Dnew-p2h'" href="http://psd2html.com/?utm_source=smashingmagazine.com&amp;utm_medium=banner&amp;utm_campaign=new-p2h" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_004.png" alt="PSD2HTML.com" title="PSD2HTML.com" border="0"></a><br><a onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5753__zoneid=24__OXLCA=1__cb=cdb047afcb__oadest=http%3A%2F%2Fpsd2html.com%2F%3Futm_source%3Dsmashingmagazine.com%26utm_medium%3Dbanner%26utm_campaign%3Dnew-p2h'" href="http://psd2html.com/?utm_source=smashingmagazine.com&amp;utm_medium=banner&amp;utm_campaign=new-p2h" target="_blank">PSD2HTML.com</a><div id="beacon_cdb047afcb" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_012.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5736__zoneid=24__OXLCA=1__cb=91355145e0__oadest=http%3A%2F%2Fwww.sitefinity.com%2Fcampaigns%2Fwhitepapers%2Fthree-steps-to-a-better-mobile-strategy%3Futm_source%3Dsmashing-magazine%26utm_medium%3Dbanner%26utm_campaign%3Dsmmag_mobilewhitepaper'" href="http://www.sitefinity.com/campaigns/whitepapers/three-steps-to-a-better-mobile-strategy?utm_source=smashing-magazine&amp;utm_medium=banner&amp;utm_campaign=smmag_mobilewhitepaper" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai.jpeg" alt="Web Content Management." title="Web Content Management." border="0"></a><br><a onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5736__zoneid=24__OXLCA=1__cb=91355145e0__oadest=http%3A%2F%2Fwww.sitefinity.com%2Fcampaigns%2Fwhitepapers%2Fthree-steps-to-a-better-mobile-strategy%3Futm_source%3Dsmashing-magazine%26utm_medium%3Dbanner%26utm_campaign%3Dsmmag_mobilewhitepaper'" href="http://www.sitefinity.com/campaigns/whitepapers/three-steps-to-a-better-mobile-strategy?utm_source=smashing-magazine&amp;utm_medium=banner&amp;utm_campaign=smmag_mobilewhitepaper" target="_blank">Web Content Management.</a><div id="beacon_91355145e0" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_017.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=4360__zoneid=70__OXLCA=1__cb=279653a2b1__oadest=http%3A%2F%2Fw3-markup.com'" href="http://w3-markup.com/" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_006.jpeg" alt="PSD to HTML" title="PSD to HTML" border="0"></a><br><a onmousedown="this.href='http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=4360__zoneid=70__OXLCA=1__cb=279653a2b1__oadest=http%3A%2F%2Fw3-markup.com'" href="http://w3-markup.com/" target="_blank">PSD to HTML</a><div id="beacon_279653a2b1" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_006.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><script src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/adServer.html"></script><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5223__zoneid=24__OXLCA=1__cb=9e37204e48__oadest=http%3a//bs.serving%2dsys.com/BurstingPipe/BannerRedirect.bs?cn=brd%26FlightID=6080755%26Page=%26sessionid=7309538813540572613%26PluID=0%26EyeblasterID=13968954%26Pos=4141416466808%26ord=%5btimestamp%5d" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/e75cafb0-d5b3-4e0e-ba6c-5207b1b0a492.jpg" title="" border="0"></a>
+<noscript>
+<a href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5223__zoneid=24__OXLCA=1__cb=9e37204e48__oadest=http%3A%2F%2Fbs.serving-sys.com%2FBurstingPipe%2FadServer.bs%3Fcn%3Dbrd%26FlightID%3D6080755%26Page%3D%26PluID%3D0%26Pos%3D777" target="_blank"><img src="http://bs.serving-sys.com/BurstingPipe/adServer.bs?cn=bsr&FlightID=6080755&Page=&PluID=0&Pos=777" border=0 width=200 height=125></a>
+</noscript>
+<br>
+<a href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5223__zoneid=24__OXLCA=1__cb=9e37204e48__oadest=http%3A%2F%2Fbs.serving-sys.com%2FBurstingPipe%2FadServer.bs%3Fcn%3Dbrd%26FlightID%3D6080755%26Page%3D%26PluID%3D0%26Pos%3D777" target="_blank">Create free stunning sites!</a><div id="beacon_9e37204e48" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_004.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5609__zoneid=24__OXLCA=1__cb=b8660a4e86__oadest=http%3A%2F%2Fwww.zoho.com%2Fprojects%2Flp%2Fproject-management-and-collaboration.html" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_002.png" alt="Online Project Management" title="Online Project Management" border="0"></a><br><a href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5609__zoneid=24__OXLCA=1__cb=b8660a4e86__oadest=http%3A%2F%2Fwww.zoho.com%2Fprojects%2Flp%2Fproject-management-and-collaboration.html" target="_blank">Online Project Management</a><div id="beacon_b8660a4e86" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_007.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=2877__zoneid=24__OXLCA=1__cb=b019940bbc__oadest=http%3A%2F%2Fwww.dreamtemplate.com%2F%3Fref%3Dsm" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_002.gif" alt="Premium Web Templates" title="Premium Web Templates" border="0"></a><br><a href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=2877__zoneid=24__OXLCA=1__cb=b019940bbc__oadest=http%3A%2F%2Fwww.dreamtemplate.com%2F%3Fref%3Dsm" target="_blank">Premium Web Templates</a><div id="beacon_b019940bbc" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_011.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5891__zoneid=24__OXLCA=1__cb=742b504aa5__oadest=http%3A%2F%2Fwww.zoomyimages.com" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_007.jpeg" alt="Quality Stock Images &amp; Music" title="Quality Stock Images &amp; Music" border="0"></a><br><a href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5891__zoneid=24__OXLCA=1__cb=742b504aa5__oadest=http%3A%2F%2Fwww.zoomyimages.com" target="_blank">Quality Stock Images &amp; Music</a><div id="beacon_742b504aa5" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_014.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5809__zoneid=24__OXLCA=1__cb=95cf5eca5a__oadest=http%3A%2F%2Fwww.lightcms.com%2Ffor-designers%3Futm_source%3DSmashing%252B%28Sponsor%29%26utm_medium%3Dbanner%26utm_content%3DHTML-Green%26utm_campaign%3DSmashing" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_005.png" alt="Sign Up for Free!" title="Sign Up for Free!" border="0"></a><br><a href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5809__zoneid=24__OXLCA=1__cb=95cf5eca5a__oadest=http%3A%2F%2Fwww.lightcms.com%2Ffor-designers%3Futm_source%3DSmashing%252B%28Sponsor%29%26utm_medium%3Dbanner%26utm_content%3DHTML-Green%26utm_campaign%3DSmashing" target="_blank">Sign Up for Free!</a><div id="beacon_95cf5eca5a" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_020.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li><li class="double"><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5045__zoneid=77__OXLCA=1__cb=27ad7cc0a8__oadest=http%3A%2F%2Fad.au.doubleclick.net%2Fclk%3B268093556%3B92859839%3Bk" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_002.jpeg" alt="" title="" border="0"></a><div id="beacon_27ad7cc0a8" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_009.gif" alt="" style="width: 0px; height: 0px;"></div>
+</li></ul></div><!-- /#spnsrlisttarget -->
+			</div><!-- /.ed.spnsrlistwrapper -->
+			<div class="inner">
+				<div class="sidebartabs">
+                                	<div id="jobs" class="smashingwidget">
+                                        	<h3><a style="border: medium none;" href="http://jobs.smashingmagazine.com/?pk_campaign=sm&amp;piwik_kwd=widget"><span>Smashing Job Board</span><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/sm-jobs.png" alt="Smashing Jobs"></a></h3>
+                                        	<ul class="topiclist">
+                                                	<li style="display:none;"></li>
+                                                	<li class="clearfix"><a href="http://feedproxy.google.com/%7Er/smjobs/%7E3/uzeM3LSOOjk/2391686">WordPress Developer - Moguldom Media Group - (Fort Lauderdale, FL) - FullTime</a><p>The
+ WordPress Developer will be the technical architect and manager for a 
+growing portfolio of WordPress blogs. The WD will be responsible for 
+general Wordpress back-end…</p></li><li class="clearfix"><a href="http://feedproxy.google.com/%7Er/smjobs/%7E3/jYohaPlK5I8/2390860">Front-end Web Developer [Entry / Junior] - Huemor - (Massapequa Park, NY) - FullTime</a><p>Huemor
+ Designs LLC is seeking a versatile junior front end web developer to 
+join our team! Huemor is a start-up studio-style creative agency from 
+Long Island,…</p></li>                                        	</ul>
+                                        	<p class="view-more"><a href="http://jobs.smashingmagazine.com/?pk_campaign=sm&amp;piwik_kwd=widget">View more job openings…</a></p>
+                                	</div><!-- /#jobs -->
+                        	</div><!-- /.sidebartabs -->	
+				<div id="sidebarspecialtarget"><div id="sidebarspecial"><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5804__zoneid=72__OXLCA=1__cb=79f0134443__oadest=http%3A%2F%2Fwww.lightcms.com%2Ffor-designers%3Futm_source%3DSmashing%252B%28420x200%29%26utm_medium%3Dbanner%26utm_content%3DLovedByDesigners%26utm_campaign%3DSmashing" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_007.png" alt="" title="" border="0"></a><div id="beacon_79f0134443" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_015.gif" alt="" style="width: 0px; height: 0px;"></div>
+</div></div><!-- /#sidebarspecialtarget -->
+			</div><!-- /.inner -->
+        		<div class="two clearfix">
+            			<div class="left">	
+                			<div class="ed sidebared">
+                    				<div id="sidebaredtarget"><div id="sidebared"><!--<span class="declare">Advertisement</span>-->
+<div style="height:20px;"></div><a style="border: medium none;" href="http://auslieferung.commindo-media-ressourcen.de/www/delivery/ck.php?oaparams=2__bannerid=5802__zoneid=40__OXLCA=1__cb=71def4b5f7__oadest=http%3A%2F%2Fwww.lightcms.com%2Ffor-designers%3Futm_source%3DSmashing%252B%28Sidebar%29%26utm_medium%3Dbanner%26utm_content%3DHTML-Green%26utm_campaign%3DSmashing" target="_blank"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/ai_003.png" alt="" title="" border="0"></a><div id="beacon_71def4b5f7" style="position: absolute; left: 0px; top: 0px; visibility: hidden;"><img src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/lg_013.gif" alt="" style="width: 0px; height: 0px;"></div>
+</div></div>
+                			</div><!-- /.ed.sidebared -->
+                			<div class="ed sidebared">
+                    				<div id="sidebaredthreetarget"><div id="sidebaredthree"></div></div>
+                			</div>
+				</div><!-- /.left -->
+            			<div class="right">
+            			</div><!-- /.right -->
+        		</div><!-- /.two -->
+			
+		</div><!-- .col.ads -->
+	</div>
+		<div id="footer">
+	            <div class="contribute">
+	                <h4>Best of Design</h4>
+				<ul>
+					<li><a href="http://www.smashingmagazine.com/responsive-web-design-guidelines-tutorials/">Responsive Design</a></li>
+					<li><a href="http://www.smashingmagazine.com/professional-photoshop-techniques-tutorials/">Photoshop</a></li>
+					<li><a href="http://www.smashingmagazine.com/typography-guidelines-and-references/">Typography</a></li>
+					<li><a href="http://www.smashingmagazine.com/guidelines-for-mobile-web-development/">Mobile Design</a></li>
+					<li><a href="http://www.smashingmagazine.com/usability-and-user-experience/">Usability and UX</a></li>
+					<li><a href="http://www.smashingmagazine.com/web-design-essentials-examples-and-best-practices/">Web Design Showcases</a></li>
+				</ul>
+	            </div>
+	            <div class="contribute">
+	                <h4>Best of Coding</h4>
+				<ul>
+					<li><a href="http://www.smashingmagazine.com/learning-javascript-essentials-guidelines-tutorials/">JavaScript &amp; jQuery</a></li>
+					<li><a href="http://www.smashingmagazine.com/learning-wordpress-useful-wordpress-tips-tutorials/">WordPress Techniques</a></li>
+					<li><a href="http://www.smashingmagazine.com/coding-with-html5-tutorials-guidelines/">HTML5 Tutorials</a></li>
+					<li><a href="http://www.smashingmagazine.com/mastering-css-principles-comprehensive-reference-guide/">CSS</a>, <a href="http://www.smashingmagazine.com/learning-css3-useful-reference-guide/">CSS3</a></li>
+					<li><a href="http://www.smashingmagazine.com/time-savers-tools-useful-services-web-design/">Useful Time Savers</a></li>
+					<li><a href="http://www.smashingmagazine.com/bored-the-curious-side-of-smashing-magazine/">Bored?</a></li>
+				</ul>
+	            </div>
+	            <div class="contribute our-content">
+	                <h4>Smashing Hub</h4>
+	                <ul>
+					    <li><a href="http://catalog.smashinglibrary.com/">Free Library Catalog</a></li>
+					    <li><a href="http://www.smashingmagazine.com/ebooks/">eBooks</a>, <a href="http://www.smashingmagazine.com/books/">Books</a></li>
+	                    <li><a href="http://www.smashingmagazine.com/the-smashing-newsletter/">Newsletter</a></li>
+	                    <li><a href="http://www.smashingmagazine.com/the-smashing-conference-list-join-in/">Events Mailing List</a></li>
+	                    <li><a href="http://www.smashingmagazine.com/publishing-policy/">Publishing Policy</a></li>
+	                    <li><a href="http://www.smashingmagazine.com/contact/">Contact us</a></li>
+	                </ul>
+	            </div>
+	            <div class="contribute">
+	            	<h4></h4>
+	            	<a style="border: medium none;" href="http://www.smashing-media.com/"><img title="Hey there! I'm Cody, the official Smashing mascot!" alt="Hey there! I'm Cody, the official Smashing mascot!" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/smashing-mascot.png"></a>
+	            </div>
+		    <p class="statement"><em>With a commitment to quality content for the design community.</em><br><a href="http://www.smashing-media.com/">Smashing Media</a> Made in Germany. 2006-2013. <a href="http://www.smashingmagazine.com/about/">Impressum</a></p>
+		</div>
+		<!-- Anfang Bannersammelstelle -->
+<script type="text/javascript">/* <![CDATA[ */  ads_init();   /* ]]> */ </script>
+<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/spcjs.js"></script><script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/spc.js"></script><script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/fl.js"></script>
+
+	<script type="text/javascript">/* <![CDATA[ */  ads_display();   /* ]]> */ </script><div id="edpool"><div id="sidebaredtwo"></div>
+</div><!-- /#edpool -->
+<!-- Ende Bannersammelstelle -->
+		    <script src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/js.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        try{ clicky.init(66569468); }catch(e){}
+    </script>
+<script type="text/javascript">
+setTimeout(function(){var a=document.createElement("script");
+var b=document.getElementsByTagName('script')[0];
+a.src=document.location.protocol+"//dnn506yrbagrg.cloudfront.net/pages/scripts/0011/1125.js";
+a.async=true;a.type="text/javascript";b.parentNode.insertBefore(a,b)}, 1);
+</script>		<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/prism_002.js"></script>
+		<script type="text/javascript" src="Customizing%20Bootstrap%20%7C%20Smashing%20Coding_files/prism.js"></script>
+	
+
+</body></html>

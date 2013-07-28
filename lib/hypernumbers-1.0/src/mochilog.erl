@@ -78,7 +78,6 @@ clear() ->
     stop(),
     file:delete(logfile()).
 
-
 %% Repair a logfile, useful for fixing specific copylogs
 -spec repair(string()) -> ok | {error, term()}.
 repair(Name) ->

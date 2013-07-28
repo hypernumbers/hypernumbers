@@ -1,0 +1,65 @@
+/* if (!(styles conveniently stolen from sources named or WordPress)) { 
+		styles created by Ronald Huereca;
+ 	 }
+Edit below at your own risk of cataclysmic failure */
+.edit-comment-admin-links, .edit-comment-user-link {
+	display: none;
+}
+.edit-comment-admin-links a, .ajax-edit-time-left{
+	display: block;
+	font-size: 12px;
+	padding: 2px 0px;
+	padding-left: 20px;
+	float: left;
+	margin-right: 10px;
+}
+.edit-comment-admin-links-no-icon a, .ajax-edit-time-left-no-icon{
+	display: inline;
+	float: none;
+	font-size: 12px;
+	padding: 2px 0px;
+}
+.ajax-edit-time-left {
+	padding-left: 0;
+}
+#discussion .clearfix:after { /* from http://blue-anvil.com/archives/experiments-with-floats-whats-the-best-method-of-clearance*/
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+/* Begin Images */
+.edit-comment-admin-links a.edit-comment {
+	background:url(http://media.smashingmagazine.com/plugins/smash-edit-comments/images/edit.png?v1) left center no-repeat;
+	position: relative;
+	z-index: 9999;
+}
+.edit-comment-admin-links a.move-comment {
+	background:url(http://media.smashingmagazine.com/plugins/smash-edit-comments/images/copy.png?v1) left center no-repeat;
+}
+.edit-comment-admin-links a.moderate-comment {
+	background:url(http://media.smashingmagazine.com/plugins/smash-edit-comments/images/tag_red.png?v1) left center no-repeat;
+}
+.edit-comment-admin-links a.approve-comment {
+	background:url(http://media.smashingmagazine.com/plugins/smash-edit-comments/images/yes.png?v1) left center no-repeat;
+}
+.edit-comment-admin-links a.delete-comment {
+	background:url(http://media.smashingmagazine.com/plugins/smash-edit-comments/images/delete.png?v1) left center no-repeat;
+}
+.edit-comment-admin-links a.spam-comment {
+	background:url(http://media.smashingmagazine.com/plugins/smash-edit-comments/images/minus.png?v1) left center no-repeat;
+}
+.edit-comment-admin-links a.delink-comment {
+	background:url(http://media.smashingmagazine.com/plugins/smash-edit-comments/images/cancel.png?v1) left center no-repeat;
+}
+.edit-comment-admin-links a.request-deletion-comment {
+	background:url(http://media.smashingmagazine.com/plugins/smash-edit-comments/images/delete.png?v1) left center no-repeat;
+}
+.edit-comment-admin-links a, .edit-comment-user-link a, .edit-comment-admin-links-no-icon a {
+	text-decoration: none;
+}
+/* Errors */
+li.ajax-delete, div.ajax-delete { background: #F33; } /* todo Doesn't work for .alt comments */
+li.ajax-approve, div.ajax-approve { background: #04cd33; }
+li.ajax-unapprove, div.ajax-unapprove { background: #F96; }

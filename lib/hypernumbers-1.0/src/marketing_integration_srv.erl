@@ -61,6 +61,7 @@ test(Name) ->
 
 test(Name, SiteType) ->
     Email = Name ++ "@hypernumbers.com",
+    true = hn_util:valid_email(Email),
     S = "http://hypernumbers.dev:9000",
     P = ["some", "page"],
     O = {cell, {1, 1}},

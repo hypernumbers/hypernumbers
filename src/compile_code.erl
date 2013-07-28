@@ -147,7 +147,7 @@ jslint3([H | T], JSLint) ->
     Cmd = "rhino " ++ JSLint ++ " " ++ H,
     Ret = os:cmd(Cmd),
     io:format("*************************************************~n"
-              ++"JSLint for:~p~n~s~n",
+              ++ "JSLint for:~p~n~s~n",
               [filename:basename(H), Ret]),
     jslint3(T, JSLint).
 
@@ -173,7 +173,7 @@ build_standard() ->
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
                 {i, Dir ++ "lib/sysmon-1.0/include"},
                 {i, Dir ++ "lib/twilio/include"},
-                {i, code:lib_dir(xmerl)++"/include"}
+                {i, code:lib_dir(xmerl) ++ "/include"}
                ],
 
 
@@ -193,7 +193,7 @@ add_libs_to_path() ->
     Dir = get_root(),
     % Add ebins for everything in /lib/ (eugh)
     [code:add_pathz(X ++ "/ebin")
-      || X <- filelib:wildcard(Dir++"/lib/*")],
+      || X <- filelib:wildcard(Dir ++ "/lib/*")],
     ok.
 
 make_release_boot_scripts() ->
@@ -255,7 +255,7 @@ compile(File, Options) ->
 uptodate(File, Dir) ->
 
     % Find the beam corresponding to this erl file.
-    Beam = Dir ++"/"++ filename:basename(File,".erl") ++ ".beam",
+    Beam = Dir ++ "/" ++ filename:basename(File,".erl") ++ ".beam",
 
     case beam_lib:chunks(Beam, [abstract_code]) of
         {error,_,_} -> % beam doesn't exist, recompile
@@ -386,7 +386,7 @@ build(Root) ->
     make_lexer_parser(Root),
     minify(Root),
     make_ms_util(Root),
-    file:set_cwd(Root++"/ebin"),
+    file:set_cwd(Root ++ "/ebin"),
     io:format("...now compile all the actual code~n"),
     compile_code:start(),
     check_console_log(Root).
@@ -410,7 +410,7 @@ make_lexer_parser(Root) ->
     file:set_cwd(Root).
 
 make_quick(Root) ->
-    file:set_cwd(Root++"/ebin"),
+    file:set_cwd(Root ++ "/ebin"),
     compile_code:quick(),
     file:set_cwd(Root).
 
@@ -475,7 +475,7 @@ make_ms_util(Root) ->
     ok = file:delete("ms_util2.erl").
 
 check_console_log(Root) ->
-    file:set_cwd(Root++"/lib/hypernumbers-1.0/priv/core_install/docroot/"),
+    file:set_cwd(Root ++ "/lib/hypernumbers-1.0/priv/core_install/docroot/"),
     print_msgs(string:tokens(os:cmd("grep -R -l console.log *"), "\n")).
 
 print_msgs(List) ->

@@ -231,7 +231,7 @@ handle_email(Phone, Args) ->
             {"email_subject", S2}  = lists:keyfind("email_subject", 1, Args),
             {"email_body",    B2}  = lists:keyfind("email_body",    1, Args),
 
-            ok = hn_net_util:email(To2, CC2, Fr2, S2, B2)
+            ok = sendgrid:email(To2, CC2, Fr2, S2, B2)
     end.
 
 handle_email_DEPR(Phone, Args) ->
@@ -246,7 +246,7 @@ handle_email_DEPR(Phone, Args) ->
     % in the capability
     case validate(Caps, Args) of
         false -> {error, 401};
-        true  -> ok = hn_net_util:email(To, CC, Fr, Su, Cn)
+        true  -> ok = sendgrid:email(To, CC, Fr, Su, Cn)
     end.
 
 redir(#env{} = Env) ->

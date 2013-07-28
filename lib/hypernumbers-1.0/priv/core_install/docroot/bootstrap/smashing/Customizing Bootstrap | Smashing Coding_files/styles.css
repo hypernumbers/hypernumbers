@@ -1,0 +1,25 @@
+._hidden {
+	display: none;
+}
+
+._hidden, #respond ._hidden, #commentform ._hidden {
+	display: none;
+}
+
+#respond input[type="text"]._hidden,
+#commentform input[type="text"]._hidden {
+	display: none;
+}
+
+div._errorMsg {
+	border: 1px solid #d45252;
+	color: #540000;
+	background: #ffe1e1;
+	margin: 1em 0;
+	font-size: 1em;
+	padding: 5px;
+}
+
+div._errorMsg span {
+	
+}

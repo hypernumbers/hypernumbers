@@ -1,0 +1,91 @@
+/* commentrating */
+.commentlist li .commentrating {
+	position: absolute;
+	bottom: 6px;
+	right: 80px;
+	z-index: 100;
+	width: 220px;
+	line-height: 15px;
+	height: 15px;
+}
+.commentlist li .commentrating .rateresult {
+	margin-left: 6px;
+	width: auto;
+	white-space: nowrap;
+	cursor: text;
+	font-weight: bold;
+}
+.commentlist li .commentrating .rateresult.positive {
+	color: green;
+}
+.commentlist li .commentrating .rateresult.negative {
+	color: red;
+}
+.commentlist li .commentrating .ratingmsg {
+	margin-top: 8px;
+	clear: right;
+	display: none;
+}
+.commentlist li .commentrating .ratingmsg.error {
+	color: red;
+}
+.commentlist li .commentrating div {
+	float: right;
+	margin: 0 0 0 2px;
+	padding: 0;
+	cursor: pointer;
+}
+.commentlist li .commentrating a {
+	width: 16px;
+	height: 16px;
+	display: block;
+	float: right;
+	cursor: pointer;
+}
+.commentlist li .commentrating .indicator {
+	background: transparent url(http://media.smashingmagazine.com/plugins/smash-commentratings/images/ajax-check-indicator.gif) no-repeat left top;
+}
+.commentlist li .commentrating .desel {
+	opacity: 0.3;
+}
+.commentlist li .commentrating .ratebtn {
+	margin-left: 2px;
+	background: transparent url(http://media.smashingmagazine.com/plugins/smash-commentratings/images/sprt-cmtvote.gif) no-repeat top left;
+}
+.commentlist li .commentrating .ratebtn.down {
+	background-position: 0 0;
+}
+.commentlist li .commentrating .ratebtn.down_active {
+	background-position: 0 -52px;
+}
+.commentlist li .commentrating .ratebtn.down_done {
+	background-position: 0 -26px;
+}
+.commentlist li .commentrating .ratebtn.up {
+	background-position: 0 -78px;
+}
+.commentlist li .commentrating .ratebtn.up_active {
+	background-position: 0 -130px;
+}
+.commentlist li .commentrating .ratebtn.up_done {
+	background-position: 0 -104px;
+}
+/* hidecomment */
+.hidecomment {
+	display: none;
+}
+a.unhidecmt {
+	margin-top: 13px;
+	display: block;
+}
+/* badrated */
+.badrated .comment-text p,
+.badrated .comment-text .edit-comment,
+.badrated .comment-text .comment-author,
+.badrated .comment-text .date,
+.badrated .comment-text .time {
+	color: #aaa;
+}
+.badrated .gravatar {
+	opacity: 0.6;
+}

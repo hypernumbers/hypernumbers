@@ -4,6 +4,7 @@
    {nodename, hndev},
    {environment, development}, % development | production | server_dev
    {featureflag, off},
+
    % Host to bind Mochiweb to. 9000 should be used for dev,
    % 9090-9092 reserved for production used, and should be turned off
    % for testing.
@@ -30,9 +31,12 @@
    {norefer_url, "http://hypernumbers.dev:9000"},
 
    % Mail Setup
-   {mailserver,   "smtp.sendgrid.net"},
-   {mailuser,     "service@hypernumbers.com"},
-   {mailpassword, "spell!hello!right"},
+   {sendgridserver,   "smtp.sendgrid.net"},
+   {sendgriduser,     "service@hypernumbers.com"},
+   {sendgridpassword, "spell!hello!right"},
+
+   {mandrillserver,   "https://mandrillapp.com/api/1.0/"},
+   {mandrillapikey,   "37AwyHaftBGZlhpxjPyy8Q"},
 
    % Set to false to not start the individual site modules
    {should_start_sites, true},

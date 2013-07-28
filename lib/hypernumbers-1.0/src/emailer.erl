@@ -137,7 +137,7 @@ send1(reset, To, CC, From, Name, Site, URL, Args) ->
 send_email(To, CC, From, Subject, EmailBody) ->
     case application:get_env(hypernumbers, environment) of
         {ok, production}  ->
-            spawn(hn_net_util, email,
+            spawn(sendgrid, email,
                   [To, CC, From, Subject, EmailBody]),
             ok;
         {ok, _} ->
