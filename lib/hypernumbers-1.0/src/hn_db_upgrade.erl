@@ -6,9 +6,11 @@
 
 -include("spriki.hrl").
 -include("keyvalues.hrl").
+-include("passport.hrl").
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_user_cache_table_2013_11_11/0,
          upgrade_api_table_2013_05_07/0,
          write_spoof_hmac_api_keys/1,
          write_spoof_dev_wordpress/1,
@@ -87,6 +89,11 @@
          % upgrade_1743_B/0,
          % upgrade_1776/0
         ]).
+
+add_user_cache_table_2013_11_11() ->
+    hn_db_admin:create_table(passport_cached, passport_cached,
+                             record_info(fields, user),
+                             disc_only_copies, set, true, [email]).
 
 upgrade_api_table_2013_05_07() ->
     Sites = hn_setup:get_sites(),
