@@ -9,11 +9,15 @@
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
+-include("passport.hrl").
 -include("keyvalues.hrl").
 -include("syslib.hrl").
 -include("errvals.hrl").
 
 -export([
+         write_user_to_cacheD/1,
+         uid_to_emailD/1,
+         email_to_uidD/1,
          write_commission_logD/1,
          read_commission_logD/1,
          get_unprocessed_commissionsD/0,
@@ -122,6 +126,30 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+write_user_to_cacheD(User) ->
+    Fun = fun() ->
+                  ok = mnesia:write(passport_cached, User, write)
+          end,
+    mnesia:activity(transaction, Fun).
+
+uid_to_emailD(UID) ->
+    Fun = fun() ->
+                  mnesia:read(passport_cached, UID, read)
+          end,
+    case mnesia:activity(transaction, Fun) of
+        [U] -> {ok, U#user.email};
+        _   -> {error, not_in_cache}
+    end.
+
+email_to_uidD(Email) ->
+    Fun = fun() ->
+                  mnesia:index_read(passport_cached, Email, #user.email)
+          end,
+    case mnesia:activity(transaction, Fun) of
+        [U] -> {ok, U#user.uid};
+        _   -> {error, not_in_cache}
+    end.
+
 write_commission_logD(Commission) ->
     Table = commission,
     Fun = fun() ->

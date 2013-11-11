@@ -91,7 +91,7 @@
         ]).
 
 add_user_cache_table_2013_11_11() ->
-    hn_db_admin:create_table(passport_cached, passport_cached,
+    hn_db_admin:create_table(passport_cached, user,
                              record_info(fields, user),
                              disc_only_copies, set, true, [email]).
 
