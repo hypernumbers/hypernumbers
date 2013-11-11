@@ -204,14 +204,14 @@ uid_to_email([$_|_]) -> {ok, "anonymous"};
 uid_to_email(UID) ->
     case new_db_api:uid_to_emailD(UID) of
         {ok, Email} ->
-            Email;
+            {ok, Email};
         {error, not_in_cache} ->
             case fetch_user_by_uid(UID) of
                 {error, Err} ->
                     {error, Err};
                 User ->
                     ok = new_db_api:write_user_to_cacheD(User),
-                    User#user.email
+                    {ok, User#user.email}
             end
     end.
 
@@ -219,14 +219,14 @@ uid_to_email(UID) ->
 email_to_uid(Email) ->
     case new_db_api:email_to_uidD(Email) of
         {ok, UID}           ->
-            UID;
+            {ok, UID};
         {error, not_in_cache} ->
             case fetch_user_by_email(Email) of
                 {error, Err} ->
                     {error, Err};
                 User         ->
                     ok = new_db_api:write_user_to_cacheD(User),
-                    User#user.uid
+                    {ok, User#user.uid}
             end
     end.
 
