@@ -13,6 +13,7 @@
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
 -include("keyvalues.hrl").
+-include("passport.hrl").
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
@@ -84,12 +85,13 @@ init_tables() ->
     %% Core system tables -- required to operate system
     CIdxs = [uid, synched],
     CoreTbls = [
-                {core_site,  record_info(fields, core_site),  set, []},
-                {commission, record_info(fields, commission), set, CIdxs}
+                {core_site,       record_info(fields, core_site),  set, []},
+                {commission,      record_info(fields, commission), set, CIdxs},
+                {passport_cached, record_info(fields, user),       set, [email]}
                ],
 
     [ok = hn_db_admin:create_table(N, N, F, Storage, T, true, I)
-     || {N,F,T,I} <- CoreTbls],
+     || {N, F, T, I} <- CoreTbls],
     case application:get_env(hypernumbers, startup_debug) of
        {ok, true} -> io:format("Vixo Debug: tables created (if required)...~n");
        _Other2    -> ok
