@@ -85,7 +85,7 @@ handle(MochiReq) ->
                       {type, Type},
                       {what, What},
                       {trace, erlang:get_stacktrace()}],
-            ?E(Format, [Msg]),
+            ?E(Format, Msg),
             Headers = mochiweb_headers:lookup('Content-Type',
                                               MochiReq:get(headers)),
             Env2 = #env{mochi = MochiReq, headers = Headers},
