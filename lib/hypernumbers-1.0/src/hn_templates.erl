@@ -42,6 +42,14 @@ save_template(#refX{site = S} = RefX, Name, UID)  ->
     TemplatesDir = hn_util:templateroot(S),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     FileName = filename:join(TemplatesDir, Name++".json"),
+    Date = dh_date:format(".Y.m.d.H.i.s") ++ ".json" ,
+    BackupName = filename:join(TemplatesDir ++ "/backups", Name ++ Date),
+    % if this is the first save of the template don't try and take a backup
+    case filelib:is_file(FileName) of
+        true  -> ok = filelib:ensure_dir(BackupName),
+                 {ok, _} = file:copy(FileName, BackupName);
+        false -> ok
+    end,
     Page = Encoder(hn_mochi:page_attrs_for_export(RefX, #env{uid = UID})),
     Data = io_lib:format("~s", [lists:flatten(Page)]),
     ok = filelib:ensure_dir(FileName),
