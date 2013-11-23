@@ -199,16 +199,15 @@ any_adminD(Site) ->
                   case mnesia:read(Tbl, "admin", read) of
                       [#group{members = M}] ->
                           case gb_sets:is_empty(M) of
-                              false -> gb_sets:smallest(M);
+                              false -> {uid, gb_sets:smallest(M)};
                               true  -> no_admin
                           end;
                       _ ->
                           no_group
                   end
           end,
-    % use a spoof RefX for write activity
-    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
-    write_activity(RefX, Fun, "quiet").
+    {atomic, Ret} = mnesia:transaction(Fun),
+    Ret.
 
 set_usersD(Site, Users, GroupN) ->
     Tbl = ?wu:trans(Site, group),
@@ -311,7 +310,7 @@ is_memberD(Site, Uid, Groups) ->
 
 is_member1([], _Tbl, _Email, _Uid) -> false;
 is_member1([GroupN | Rest], Tbl, Email, Uid) ->
-    % check if the Group is the Email first
+    %% check if the Group is the Email first
     case GroupN of
         Email ->
             true;
