@@ -1,0 +1,5 @@
+%%-*-erlang-*-
+{twilio,{twilio_account,"AC7a076e30da6d49119b335d3a6de43844",
+                        "9248c9a2a25f6914fad9c9fb5b30e69c",
+                        "AP93d273f3cc624008805842376d561bed","+441315101897",
+                        outbound}}.
