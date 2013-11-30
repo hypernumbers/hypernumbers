@@ -651,9 +651,9 @@ obj_to_change_msg({page,Path}) ->
 obj_to_change_msg({cell,{X, Y}}) ->
     tconv:to_b26(X) ++ text(Y);
 % file import seems to create old-fashioned rows
-obj_to_change_msg({row, {Y, _Y}}) ->
-    text(Y); % change msgs only get a singleton ref
 obj_to_change_msg({row, {range, {zero, Y, inf, Y}}}) ->
+    text(Y); % change msgs only get a singleton ref
+obj_to_change_msg({row, {Y, _Y}}) ->
     text(Y); % change msgs only get a singleton ref
 obj_to_change_msg({column, {range, {X, zero, X, inf}}}) ->
     tconv:to_b26(X); % change msgs only get a singleton ref
