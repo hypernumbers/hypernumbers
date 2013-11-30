@@ -89,18 +89,23 @@ parse_expr_for_gui(Expr) when is_list(Expr) ->
 fetch_for_select(#rangeref{} = RangeRef, Rti) ->
     ok = init_proc_dict(Rti),
     {range, List} = fetch(RangeRef, "__rawvalue"),
-    special_flatten(List, []);
+    List2 = special_flatten(List, []),
+    [X || X <- List2, X =/= blank];
 fetch_for_select(#cellref{} = CellRef, Rti) ->
     ok = init_proc_dict(Rti),
     Val = fetch(CellRef, "__rawvalue"),
     % return a list 'cos the select expects a list
-    [Val];
+    [tconv:to_s(Val)];
 %% use in setting up z-ref inline selects only
 fetch_for_select(#zcellref{} = Z, Rti) ->
     ok = init_proc_dict(Rti),
     {zeds, Zeds, _, _} = fetch(Z, "__rawvalue"),
     {_Urls, Vals} = lists:unzip(Zeds),
-    Vals;
+    Vals2 = lists:delete(blank, hslists:uniq(Vals)),
+    Vals3 = [tconv:to_s(XX) || XX <- Vals2],
+    %% lists:delete don't mind if the value already exists...
+    %% sooo, get rid of any blanks
+    _Vals4 = lists:sort(Vals3);
 %% TODO work out what you need to do to make a dynamic select
 %% get a #REF element written into it
 fetch_for_select(_Other, _Rti) ->
@@ -1060,12 +1065,9 @@ external_zeval(Site, Path, Toks) ->
 zeval(Site, Path, Toks) ->
     X = ?mx,
     Y = ?my,
-    XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {X, Y}}},
-    %XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {0, 0}}},
-    %[XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX]),
     % NOTE that we create an xrefX{} with a fake idx this xrefX{}
     % doesn't go anywhere near the database
-    %XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {0, 0}}},
+    XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {X, Y}}},
     zeval2(XRefX, Toks).
 
 %% the execution context for expressions is stored in the process dictionary
@@ -1272,7 +1274,7 @@ init_proc_dict(#muin_rti{site = Site, path = Path, col = Col,
                {selfreference, false}]),
     ok.
 
-special_flatten([], Acc)                      -> Acc;
+special_flatten([], Acc)                      -> lists:reverse(Acc);
 special_flatten([H | T], Acc) when is_list(H) -> NewAcc = special_f2(H, Acc),
                                                  special_flatten(T, NewAcc);
 special_flatten([H | T], Acc)                 -> special_flatten(T, [H | Acc]).

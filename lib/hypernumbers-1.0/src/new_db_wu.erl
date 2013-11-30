@@ -110,8 +110,9 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-all_groupsD(Site) -> Tbl = new_db_wu:trans(Site, group),
-                     mnesia:all_keys(Tbl).
+all_groupsD(Site) ->
+    Tbl = new_db_wu:trans(Site, group),
+    mnesia:all_keys(Tbl).
 
 groupsD(Site) ->
     Tbl = new_db_wu:trans(Site, group),
@@ -680,6 +681,7 @@ refX_to_xrefX_createD(#refX{site = S, type = Ty, path = P, obj = O} = RefX)
         XrefX -> XrefX
     end.
 
+
 -spec write_attrs(#xrefX{}, [{string(), term()}]) -> ?dict.
 write_attrs(XRefX, NewAttrs) -> write_attrs(XRefX, NewAttrs, nil).
 
@@ -853,11 +855,6 @@ process_dyn(#xrefX{obj = {cell, {X, Y}}} = XRefX, {Path, Ref}, Select) ->
         {ok, AST} ->
             Rti = xrefX_to_rti(XRefX, nil, false),
             Vals = muin:fetch_for_select(AST, Rti),
-            Vals2 = lists:delete(blank, hslists:uniq(Vals)),
-            Vals3 = [tconv:to_s(XX) || XX <- Vals2],
-            % lists:delete don't mind if the value already exists...
-            % sooo, get rid of any blanks
-            Vals4 = lists:sort(Vals3),
             {_Errors, References} = get(retvals),
             FiniteRefs = [{XX, L} || {XX, _, L} <- References],
             InfiniteRefs = get(infinite),
@@ -866,7 +863,7 @@ process_dyn(#xrefX{obj = {cell, {X, Y}}} = XRefX, {Path, Ref}, Select) ->
                     {{"input", {"dynamic_select", Select, ["#CIRCREF!"]}},
                      [], []};
                 false ->
-                    {{"input", {"dynamic_select", Select, Vals4}},
+                    {{"input", {"dynamic_select", Select, Vals}},
                      FiniteRefs, InfiniteRefs}
             end;
         _Err ->
@@ -1106,10 +1103,13 @@ set_parents(Tbl,
 
 %% @doc Make a #muin_rti record out of an xrefX record and a flag that specifies
 %% whether to run formula in an array context.
-xrefX_to_rti(#xrefX{idx = Idx, site = S, path = P,
-                    obj = {cell, {C, R}}}, AR, AC)
+xrefX_to_rti(#xrefX{idx = Idx,
+                    site = S,
+                    path = P,
+                    obj  = {cell, {C, R}}}, AR, AC)
   when is_boolean(AC) ->
-    #muin_rti{site = S, path = P,
+    #muin_rti{site = S,
+              path = P,
               col = C, row = R, idx = Idx,
               array_context = AC,
               auth_req = AR};
@@ -1744,7 +1744,9 @@ lobj_to_xrefX(Site, #local_obj{idx = I, path = P, obj = O}) ->
     #xrefX{idx = I, site = Site, path = binary_to_term(P), obj = O}.
 
 -spec store_styleD(#xrefX{}, atom(), #magic_style{}) -> integer().
-store_styleD(XRefX, Tbl, MStyle) ->
+store_styleD(#xrefX{} = XRefX, Tbl, MStyle) ->
+    %% most times no style record is written so we don't
+    %% mind takes a read lock
     case mnesia:read(Tbl, MStyle, read) of
         [#style{idx = I}] ->
             I;
