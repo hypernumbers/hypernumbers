@@ -163,8 +163,6 @@ check_supervisors() ->
 check_supervisors(Site) ->
     Globals = global:registered_names(),
     Locals = registered(),
-    io:format("checking supervisors for ~p (no news is good news)~n",
-              [Site]),
     check_super2(Site, Globals, Locals).
 
 check_super2(Site, Globals, Locals) ->
