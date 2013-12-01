@@ -678,7 +678,7 @@ refX_to_xrefX_createD(#refX{site = S, type = Ty, path = P, obj = O} = RefX)
                                   idx = Idx, revidx = term_to_binary(RevIdx)},
                  ok = mnesia:write(trans(S, local_obj), Rec, write),
                  #xrefX{idx = Idx, site = S, path = P, obj = O};
-        XrefX -> XrefX
+        XRefX -> XRefX
     end.
 
 
