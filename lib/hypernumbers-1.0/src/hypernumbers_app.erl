@@ -84,14 +84,17 @@ init_tables() ->
 
     %% Core system tables -- required to operate system
     CIdxs = [uid, synched],
+    F1 = record_info(fields, core_site),
+    F2 = record_info(fields, commission),
+    F3 = record_info(fields, user),
     CoreTbls = [
-                {core_site,       record_info(fields, core_site),  set, []},
-                {commission,      record_info(fields, commission), set, CIdxs},
-                {passport_cached, record_info(fields, user),       set, [email]}
+                {core_site,       core_site,  F1, set, []},
+                {commission,      commission, F2, set, CIdxs},
+                {passport_cached, user,       F3, set, [email]}
                ],
 
-    [ok = hn_db_admin:create_table(N, N, F, Storage, T, true, I)
-     || {N, F, T, I} <- CoreTbls],
+    [ok = hn_db_admin:create_table(N, R, F, Storage, T, true, I)
+     || {N, R, F, T, I} <- CoreTbls],
     case application:get_env(hypernumbers, startup_debug) of
        {ok, true} -> io:format("Vixo Debug: tables created (if required)...~n");
        _Other2    -> ok
