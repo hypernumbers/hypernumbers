@@ -300,19 +300,15 @@ vlookup([V, IA, I0, IB]) ->
            true             -> IA
         end,
     B = ?bool(IB, [cast_numbers, cast_dates, cast_blanks, ban_strings]),
-    io:format("I is ~p A is ~p~n", [I, A]),
     muin_checks:ensure(?is_area(A), ?ERRVAL_REF),
     muin_checks:ensure(I =< area_util:width(A), ?ERRVAL_REF),
     muin_checks:ensure(I >= 1, ?ERRVAL_VAL),
 
     Row = area_util:col(1, A),
-    io:format("V is ~p Row is ~p V is ~p~n", [V, Row, B]),
     case find(V, Row, B) of
         0 ->
-            io:format(" in 0~n"),
             ?ERRVAL_NA;
         VIndex ->
-            io:format("VIndex is ~p~n", [VIndex]),
             {ok, Val} = area_util:at(I, VIndex, A),
             normalise(Val)
     end.
