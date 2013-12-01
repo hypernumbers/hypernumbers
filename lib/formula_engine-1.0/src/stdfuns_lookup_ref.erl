@@ -11,9 +11,6 @@
          index/1,
          match/1,
          row/1,
-         non_exact_find/2,
-         qsort/1,
-         transpose/1,
          indirect/1,
          vlookup/1,
          hlookup/1,
@@ -38,7 +35,7 @@ choose([Idx], List) ->
         % TODO: eugh
         {array,[Arr]} -> "{"++string:join([tconv:to_s(X)||X<-Arr], ",")++"}";
         {namedexpr, _, _} -> ?ERRVAL_NAME;
-        Else              -> Else
+        Else              -> normalise(Else)
     end.
 
 cellref([]) ->
@@ -303,25 +300,22 @@ vlookup([V, IA, I0, IB]) ->
            true             -> IA
         end,
     B = ?bool(IB, [cast_numbers, cast_dates, cast_blanks, ban_strings]),
-
+    io:format("I is ~p A is ~p~n", [I, A]),
     muin_checks:ensure(?is_area(A), ?ERRVAL_REF),
     muin_checks:ensure(I =< area_util:width(A), ?ERRVAL_REF),
     muin_checks:ensure(I >= 1, ?ERRVAL_VAL),
 
     Row = area_util:col(1, A),
-
+    io:format("V is ~p Row is ~p V is ~p~n", [V, Row, B]),
     case find(V, Row, B) of
         0 ->
+            io:format(" in 0~n"),
             ?ERRVAL_NA;
         VIndex ->
-            {ok, Ret} = area_util:at(I, VIndex, A),
-            Ret
+            io:format("VIndex is ~p~n", [VIndex]),
+            {ok, Val} = area_util:at(I, VIndex, A),
+            normalise(Val)
     end.
-
-    %% {Tag, L} = A,
-    %% NewA = {Tag, transpose(L)},
-    %% hlookup([V, NewA, I, B]).
-
 
 hlookup([V, A, I]) ->
     hlookup([V, A, I, true]);
@@ -341,8 +335,8 @@ hlookup([V, IA, I0, B]) ->
         0 ->
             ?ERRVAL_NA;
         VIndex ->
-            {ok, Ret} = area_util:at(VIndex, I, A),
-            Ret
+            {ok, Val} = area_util:at(VIndex, I, A),
+            normalise(Val)
     end.
 
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -393,14 +387,6 @@ pos(E, [_|T], I)             -> pos(E, T, I+1).
 
 %% TODO: as in pos.
 
-transpose(L) ->
-    Len = length(hd(L)),
-    transpose1(L, lists:duplicate(Len, [])).
-transpose1([R|T], Acc) ->
-    NewAcc = lists:zipwith(fun(X, Y) -> Y ++ [X] end, R, Acc),
-    transpose1(T, NewAcc);
-transpose1([], Acc) ->
-    Acc.
 
 
 %%% @doc Return first element that satisfies a predicate.
@@ -415,3 +401,6 @@ find_first(Pred, IfNone, [Hd|Tl]) ->
     end;
 find_first(_Pred, IfNone, []) ->
     IfNone().
+
+normalise(blank) -> "";
+normalise(X)     -> X.

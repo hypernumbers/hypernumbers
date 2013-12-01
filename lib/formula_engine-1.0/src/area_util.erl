@@ -20,7 +20,8 @@
          to_list/1,
          col/2,
          row/2,
-         are_congruent/2
+         are_congruent/2,
+         transpose/1
         ]).
 
 -export([
@@ -152,3 +153,12 @@ abs_rel_convert(R, CellX, CellY, F) when ?is_rangeref(R) ->
     R#rangeref{tl = {F(X1, CellX), F(Y1, CellY)},
                br = {F(X2, CellX), F(Y2, CellY)}}.
 
+transpose(L) ->
+    Len = length(hd(L)),
+    transpose1(L, lists:duplicate(Len, [])).
+
+transpose1([R|T], Acc) ->
+    NewAcc = lists:zipwith(fun(X, Y) -> Y ++ [X] end, R, Acc),
+    transpose1(T, NewAcc);
+transpose1([], Acc) ->
+    Acc.
