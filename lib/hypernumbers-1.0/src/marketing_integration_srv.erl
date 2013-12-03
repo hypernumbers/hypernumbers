@@ -264,14 +264,14 @@ add_to_mailchimp(EMail, Opts) ->
 get_highrise_id(XML, existinguser) ->
     #xmlElement{content = [_C1, C2 | _R]} = element(1, XML),
     #xmlElement{content = List} = C2,
-    get(List, id);
+    get2(List, id);
 get_highrise_id(XML, newuser) ->
     #xmlElement{content = List} = element(1, XML),
-    get(List, id).
+    get2(List, id).
 
-get([], _)                                            -> "";
-get([#xmlElement{name = Id, content = [C]} | _T], Id) -> get_val(C);
-get([_H | T], Id)                                     -> get(T, Id).
+get2([], _)                                            -> "";
+get2([#xmlElement{name = Id, content = [C]} | _T], Id) -> get_val(C);
+get2([_H | T], Id)                                     -> get2(T, Id).
 
 get_val(#xmlText{value = V}) -> V.
 
