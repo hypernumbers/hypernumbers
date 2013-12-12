@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         rerun_upgrade_relations_table_2013_12_02/0,
          upgrade_relations_table_2013_12_02/0,
          add_user_cache_table_2013_11_11/0,
          upgrade_api_table_2013_05_07/0,
@@ -90,6 +91,37 @@
          % upgrade_1743_B/0,
          % upgrade_1776/0
         ]).
+
+rerun_upgrade_relations_table_2013_12_02() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fun = fun({relation, Idx, C, P, IP, ZP, DP, DIP, A}) ->
+                                 RC = ordsets:new(),
+                                 RP = ordsets:new(),
+                                 {relation, Idx, C, RC, P, IP, ZP, RP, DP, DIP, A};
+                            %% if its been done don't redo it
+                            ({relation, Idx, C, RC, P, IP, ZP, RP, DP, DIP, A}) ->
+                                 {relation, Idx, C, RC, P, IP, ZP, RP, DP, DIP, A}
+                         end,
+                   Tbl = new_db_wu:trans(Site, relation),
+                   io:format("Table ~p transformed~n", [Tbl]),
+                   Ret1 = mnesia:transform_table(Tbl, Fun,
+                                                 [
+                                                  cellidx,
+                                                  children,
+                                                  range_children,
+                                                  parents,
+                                                  infparents,
+                                                  z_parents,
+                                                  range_parents,
+                                                  dyn_parents,
+                                                  dyn_infparents,
+                                                  attrs
+                                                 ]),
+                   io:format("Ret is ~p~n", [Ret1])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 upgrade_relations_table_2013_12_02() ->
     Sites = hn_setup:get_sites(),
