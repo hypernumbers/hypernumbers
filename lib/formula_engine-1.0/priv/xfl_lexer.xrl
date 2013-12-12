@@ -246,12 +246,11 @@ Erlang code.
 
 -export([lex/2, debang/1]).
 -include("muin_records.hrl").
+-include("muin_proc_dict.hrl").
 -include("typechecks.hrl").
 
 %% These are read-only.
 -define(SQBRA, $[). %]
--define(mx, get(mx)).
--define(my, get(my)).
 -define(pivot, {?mx, ?my}).
 
 %%% @type coord() = {Row :: pos_integer(), Column :: pos_integer()}
@@ -260,8 +259,8 @@ Erlang code.
 %% @spec lex(Input :: string(), Cell :: coord()) -> tokens()
 %% @doc  Lex a string relative to some cell.
 lex(Input, {Mx, My}) ->
-    put(mx, Mx),
-    put(my, My),
+    muin:pd_store(x, Mx),
+    muin:pd_store(y, My),
     case string(Input) of
         {ok, Toks, _} ->
             case no_strings_above_limit(Toks) of

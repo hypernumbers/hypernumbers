@@ -70,10 +70,9 @@ snapshot([Arg]) ->
     Rules = [first_array, fetch_name, fetch_ref, eval_funs, blank_as_str],
     Passes = [],
     [Ret] = muin_collect:col([Arg], Rules, Passes),
-    {Errors, _References} = get(retvals),
     % snapshot works by killng the parents so the fn never relcalcs
-    put(retvals, {Errors, []}),
-    put(infinite, []),
+    muin:pd_store(finite_refs, []),
+    muin:pd_store(infinite_refs, []),
     Ret.
 
 timestamp(_List) -> stdfuns_date:now([]).

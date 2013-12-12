@@ -177,18 +177,19 @@ run_zevalD(Site, Path, Z) ->
     % {cell, {0, 0}} is 1 up and 1 left of the cell 'A1'
     {ok, Toks} = xfl_lexer:lex(Z2, {0, 0}),
     % need to set up the process dictionary
-    Fun = fun() -> try
-                       muin:external_zeval(Site, Path, Toks)
-                   catch
-                       error:
-                       Err  -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
-                                  [Toks, Site, Path, Err]),
-                               ?ERRVAL_VAL;
-                       exit:
-                       Exit -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
-                                  [Toks, Site, Path, Exit]),
-                               ?ERRVAL_VAL
-                   end
+    Fun = fun() ->
+                  try
+                      muin:external_zeval(Site, Path, Toks)
+                  catch
+                      error:
+                      Err  -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
+                                 [Toks, Site, Path, Err]),
+                              ?ERRVAL_VAL;
+                      exit:
+                      Exit -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
+                                 [Toks, Site, Path, Exit]),
+                              ?ERRVAL_VAL
+                  end
           end,
     {atomic, Ret} = mnesia:transaction(Fun),
     Ret.
@@ -1153,16 +1154,24 @@ handle_dirty_cell(Site, Idx, Ar) ->
                     true ->
                         [];
                     false ->
-                        Cell = ?wu:idx_to_xrefXD(Site, Idx),
-                        Attrs = case ?wu:read_ref(Cell, inside, write) of
-                                    [{_, A}] -> A;
-                                    _        -> orddict:new()
+                        Attrs = case ?wu:read_itemD(Site, Idx) of
+                                    [#item{attrs = A}] -> binary_to_term(A);
+                                    _                  -> orddict:new()
                                 end,
+                        Cell = ?wu:idx_to_xrefXD(Site, Idx),
                         case orddict:find("formula", Attrs) of
                             {ok, F} ->
                                 _ = ?wu:write_attrs(Cell, [{"formula", F}], Ar);
                             _ ->
-                                []
+                                %% handle range caching
+                                case orddict:find(range, Attrs) of
+                                    {ok, _R} ->
+                                        %% delete the range because its children
+                                        %% will then refetch it
+                                        ok = new_db_wu:delete_itemD(Cell);
+                                    _ ->
+                                        ok
+                                end
                         end,
                         ok = handle_dirty_c2(Cell, Attrs, Ar),
                         % cells may have been written that now depend
@@ -1350,7 +1359,6 @@ move(RefX, Type, Disp, Ar, LogChange)
 move_tr(RefX, Type, Disp, Ar, LogChange) ->
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
-    _R = {insert, atom_to_list(Disp)},
     % when the move type is DELETE the cells that are moved
     % DO NOT include the cells described by the reference
     % but when the move type is INSERT the cells that are
@@ -1365,7 +1373,7 @@ move_tr(RefX, Type, Disp, Ar, LogChange) ->
     ReWr = do_delete(Type, RefX, Disp, Ar),
     ok = ?wu:shift_rows_and_columnsD(RefX, Type, Disp, Ar),
     MoreDirty = ?wu:shift_cellsD(RefX, Type, Disp, ReWr, Ar),
-    ok = ?wu:mark_these_dirtyD(ReWr, Ar),
+    %% TODO Mebbies remove - not sure if next line is needed?
     ok = ?wu:mark_these_dirtyD(MoreDirty, Ar).
 
 do_delete(insert, _RefX, _Disp, _UId) ->

@@ -376,6 +376,10 @@ to_dict([{Ref, KVs} | T], JSON) ->
 
 add_ref(_Ref, [], JSON) ->
     JSON;
+%% this is a range object which we don't want to send to the front
+%% end, so we supress it
+add_ref(Ref, [{range, _} | Tail], JSON) ->
+    add_ref(Ref, Tail, JSON);
 add_ref(Ref, [{"__rawvalue", _} = KV | Tail], JSON) ->
     JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
     add_ref(Ref, Tail, JSON2);

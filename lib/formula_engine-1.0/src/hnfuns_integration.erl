@@ -446,8 +446,8 @@ tw_b1(5, Colour, UserName) -> "<a href='http://www.twitter.com/" ++ UserName ++ 
 tw_b1(_, _, _) -> ?ERRVAL_VAL.
 
 'twitter.profile'([UserName]) ->
-    ID = "hn_twitter_profile_" ++ string:join(get(path), "_")
-        ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
+    ID = "hn_twitter_profile_" ++ string:join(muin:pd_retrieve(path), "_")
+        ++ hn_util:obj_to_ref({cell, {muin:pd_retrieve(mx), muin:pd_retrieve(my)}}),
     U = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     Js = "http://widgets.twimg.com/j/2/widget.js",
     Js_reload = "new TWTR.Widget({"
@@ -478,8 +478,8 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
 %%     'twitter.list'([User, ListId, Title, ListId]);
 %% 'twitter.list'([User, ListId, Title, SubTitle]) ->
 %%     [U2, L2, T2, SubT2] = typechecks:std_strs([User, ListId, Title, SubTitle]),
-%%     ID = "hn_twitter_list_" ++ string:join(get(path), "_")
-%%         ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
+%%     ID = "hn_twitter_list_" ++ string:join(muin:pd_retrieve(path), "_")
+%%         ++ hn_util:obj_to_ref({cell, {muin:pd_retrieve(mx), muin:pd_retrieve(my)}}),
 %%     Js = "http://widgets.twimg.com/j/2/widget.js",
 %%     Js_reload = "new TWTR.Widget({"
 %%         ++ "version: 2, "

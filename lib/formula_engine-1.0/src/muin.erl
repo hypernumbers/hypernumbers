@@ -16,11 +16,14 @@
                     'map.custom.button',
                     'load.template.button']).
 
-% these functions are wrappers for use externally
-% they enable us to deny certain spreadsheet functions to
-% ability to be called inside other fns
-% used for fns line '=include(reference)' which operate
-% on the presentation of some cells and not the values
+-define(ISZCALC,    true).
+-define(NOTISZCALC, false).
+
+%% these functions are wrappers for use externally
+%% they enable us to deny certain spreadsheet functions to
+%% ability to be called inside other fns
+%% used for fns line '=include(reference)' which operate
+%% on the presentation of some cells and not the values
 -export([
          external_eval/1,
          external_eval_formula/1
@@ -54,6 +57,12 @@
          expand/1
         ]).
 
+%% exports for the process dictionary
+-export([
+         pd_retrieve/1,
+         pd_store/2
+        ]).
+
 %% test exports
 -export([
          test_formula/2,
@@ -62,22 +71,12 @@
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%% @doc Test harness for running a formula inside transaction
-test_formula(Fla) ->
-    test_formula(Fla, #muin_rti{site = "http://localhost:9000",
-                                path = [],
-                                col = 1, row = 1,
-                                array_context = false,
-                                auth_req = nil}).
-test_formula(Fla, Rti) ->
-    mnesia:activity(transaction, fun run_formula/2, [Fla, Rti]).
-
 -spec parse_expr_for_gui(Expr :: list()) -> [{atom(), list()}].
 parse_expr_for_gui(Expr) when is_list(Expr) ->
     case superparser:process(Expr) of
         {formula, Fla} ->
-            % not going to run this so compile in the
-            % context of cell A1/{cell, {1, 1}}
+            %% not going to run this so compile in the
+            %% context of cell A1/{cell, {1, 1}}
             case compile(Fla, {1, 1}) of
                 {ok, Expr2}   -> process_for_gui(Expr2);
                 {errval, Err} -> {struct, [{"error", Err}]}
@@ -86,19 +85,19 @@ parse_expr_for_gui(Expr) when is_list(Expr) ->
     end.
 
 %% use in setting up selects
-fetch_for_select(#rangeref{} = RangeRef, Rti) ->
-    ok = init_proc_dict(Rti),
+fetch_for_select(#rangeref{} = RangeRef, RTI) ->
+    ok = init_proc_dict(RTI),
     {range, List} = fetch(RangeRef, "__rawvalue"),
     List2 = special_flatten(List, []),
     [X || X <- List2, X =/= blank];
-fetch_for_select(#cellref{} = CellRef, Rti) ->
-    ok = init_proc_dict(Rti),
+fetch_for_select(#cellref{} = CellRef, RTI) ->
+    ok = init_proc_dict(RTI),
     Val = fetch(CellRef, "__rawvalue"),
-    % return a list 'cos the select expects a list
+    %% return a list 'cos the select expects a list
     [tconv:to_s(Val)];
 %% use in setting up z-ref inline selects only
-fetch_for_select(#zcellref{} = Z, Rti) ->
-    ok = init_proc_dict(Rti),
+fetch_for_select(#zcellref{} = Z, RTI) ->
+    ok = init_proc_dict(RTI),
     {zeds, Zeds, _, _} = fetch(Z, "__rawvalue"),
     {_Urls, Vals} = lists:unzip(Zeds),
     Vals2 = lists:delete(blank, hslists:uniq(Vals)),
@@ -108,39 +107,32 @@ fetch_for_select(#zcellref{} = Z, Rti) ->
     _Vals4 = lists:sort(Vals3);
 %% TODO work out what you need to do to make a dynamic select
 %% get a #REF element written into it
-fetch_for_select(_Other, _Rti) ->
+fetch_for_select(_Other, _RTI) ->
     ["#ERROR!"].
 
 %% @doc Runs formula given as a string.
 run_formula("#CIRCREF!", _) -> {error, ?ERRVAL_CIRCREF};
-run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
+run_formula(Fla, RTI = #muin_rti{col = Col, row = Row}) ->
     case compile(Fla, {Col, Row}) of
-        {ok, Ecode}       -> run_code(Ecode, Rti);
+        {ok, Ecode}       -> run_code(Ecode, RTI);
         ?error_in_formula -> {error, ?ERRVAL_FORM}
     end.
 
 %% @doc Runs compiled formula.
-run_code(Pcode, Rti) ->
-    ok = init_proc_dict(Rti),
+run_code(Pcode, RTI) ->
+    ok = init_proc_dict(RTI),
     Fcode = case ?array_context of
                 true -> loopify(Pcode);
                 false -> Pcode
             end,
     Result = eval_formula(Fcode),
-    % this code borks NEED TO FIX
-    % [Fname | Args] = Fcode,
-    %case atom_to_list(Fname) of
-    %    "user." ++ _Rest  ->  Fcode2 = [Fname, Site | Args],
-    %                          Result = eval_formula(Fcode2);
-    %    _        ->  Result = eval_formula(Fcode)
- 	  %end,
-    {_Errors, References} = get(retvals),
+    References = pd_retrieve(finite_refs),
     FiniteRefs = [{X, L} || {X, _, L} <- References],
-    InfiniteRefs = get(infinite),
-    {ok, {Fcode, Result, FiniteRefs, InfiniteRefs,
-          get(recompile), get(circref), get(selfreference)}}.
+    {ok, {Fcode, Result, FiniteRefs, pd_retrieve(infinite_refs),
+          pd_retrieve(range_refs), pd_retrieve(recompile),
+          pd_retrieve(circref), pd_retrieve(selfreference)}}.
 
-% not all functions can be included in other functions
+%% not all functions can be included in other functions
 external_eval_formula(X) ->
     case lists:member(X, ?notincfns) of
         true  -> ?ERRVAL_CANTINC;
@@ -158,7 +150,7 @@ eval_formula(Fcode) ->
                 R when ?is_cellref(R) ->
                     case muin_util:attempt(?MODULE, fetch, [R, "__rawvalue"]) of
                         {ok,    blank}              -> 0;
-                        {error, {aborted, _} = Err} -> exit(Err);
+                        {error, {aborted, _} = Err} ->  exit(Err);
                         {ok,    Other}              -> Other;
                         {error, ErrVal}             -> ErrVal
                     end;
@@ -192,12 +184,12 @@ parse(Fla, {Col, Row}) ->
         {ok, Toks} ->
             case catch(xfl_parser:parse(Toks)) of
                 {ok, Ast} -> {ok, Ast};
-                _         -> ?syntax_err
+                _Err      -> ?syntax_err
             end;
-        _ -> ?syntax_err
+        _Err2 -> ?syntax_err
     end.
 
-% not all functions can be included in other functions
+%% not all functions can be included in other functions
 external_eval([]) -> eval([]);
 external_eval(X) when is_list(X)->
     case lists:member(hd(X), ?notincfns) of
@@ -223,8 +215,8 @@ eval(_Node = [Func|Args]) when ?is_fn(Func) ->
 eval(Value) ->
     Value.
 
-% I know it is fugly but you try and get it to work with guards and
-% it won't - so stick it up yes
+%% I know it is fugly but you try and get it to work with guards and
+%% it won't - so stick it up yez
 transform("user." ++ R, Args)  ->
     {user_defined_function, [list_to_atom("user." ++ R) | Args]};
 transform("tim.alert." ++ R, Args) ->
@@ -311,21 +303,21 @@ transform("ztable." ++ R, Args) ->
 transform("debug.array." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("debug.array."), [W , H | Args]};
-% stop 'em getting swallowed by phone.menu.WxH
+                                                % stop 'em getting swallowed by phone.menu.WxH
 transform("phone.menu." ++ R = Fun, Args) ->
     case R of
         Fn when Fn == "say"
-        orelse Fn == "play"
-        orelse Fn == "record"
-        orelse Fn == "phoneno"    % twilio #number{}
-        orelse Fn == "extension"  % twilio #client{}
-        orelse Fn == "conference" % twilio #conference{}
-        orelse Fn == "dial"
-        orelse Fn == "sms"
-        orelse Fn == "redirect"
-        orelse Fn == "record"
-        orelse Fn == "transcribe"
-        orelse Fn == "pause" -> {list_to_atom(Fun), Args};
+                orelse Fn == "play"
+                orelse Fn == "record"
+                orelse Fn == "phoneno"    % twilio #number{}
+                orelse Fn == "extension"  % twilio #client{}
+                orelse Fn == "conference" % twilio #conference{}
+                orelse Fn == "dial"
+                orelse Fn == "sms"
+                orelse Fn == "redirect"
+                orelse Fn == "record"
+                orelse Fn == "transcribe"
+                orelse Fn == "pause" -> {list_to_atom(Fun), Args};
         _                    -> {W, H} = get_dims(R),
                                 {list_to_atom("phone.menu."), [W , H | Args]}
     end;
@@ -334,7 +326,7 @@ transform("manage.api.keys." ++ R, Args) ->
 transform("users.and.groups." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("users.and.groups."), [W , H | Args]};
-% stop 'em getting swallowed by factory.WxH
+                                                % stop 'em getting swallowed by factory.WxH
 transform("factory." ++ R = Fun, Args) ->
     case R of
         "info"      -> {list_to_atom(Fun), Args};
@@ -349,7 +341,7 @@ transform("upload.file." ++ R, Args) ->
 transform("html.panel." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("html.panel."), [W , H | Args]};
-% single parameter stuff
+                                                % single parameter stuff
 transform("tim.headline." ++ R, Args) ->
     {list_to_atom("tim.headline."), [R | Args]};
 transform("tim.vertical.line." ++ R, Args) ->
@@ -376,7 +368,7 @@ transform("make.goto.buttonbar." ++ R, Args) ->
     {list_to_atom("make.goto.buttonbar."), [R | Args]};
 transform("breadcrumbs." ++ R, Args) ->
     {list_to_atom("breadcrumbs."), [R | Args]};
-% these clauses needs to be captured to stop the next one capturing it!
+%% these clauses needs to be captured to stop the next one capturing it!
 transform("html.submenu", Args) ->
     {list_to_atom("html.submenu"), Args};
 transform("html.zsubmenu", Args) ->
@@ -440,7 +432,7 @@ funcall(pair_up, [A, V]) when ?is_area(A) andalso not(?is_area(V)) ->
 funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
     funcall(pair_up, [A, V]);
 
-% fun user-defined curie fns
+%% fun user-defined curie fns
 funcall(user_defined_function, [Function_Name, Site | Args])  ->
     case curie:read_user_fn(Site, atom_to_list(Function_Name)) of
         {ok, DB_Entry}  ->
@@ -448,13 +440,13 @@ funcall(user_defined_function, [Function_Name, Site | Args])  ->
             Params_in_AST = length(curie_arity:walk_AST(lists:flatten(AST), [])),
             case Params_in_AST =:= length(Args) of
                 true  ->  io:format("TRUE~n~p~n", [AST]);
-                % TODO
-                % Now need to swap AST for function parameters.
-                % Walk through the AST and for each cellref grab its cell
-                % Address,
-                % than compare it with walk_AST result (get its position) and
-                % grab argument with the same position from Args.
-                % TODO
+                %% TODO
+                %% Now need to swap AST for function parameters.
+                %% Walk through the AST and for each cellref grab its cell
+                %% Address,
+                %% than compare it with walk_AST result (get its position) and
+                %% grab argument with the same position from Args.
+                %% TODO
                 false  ->  ?ERRVAL_VAL
             end;
         {error, _Message}  ->  ?ERRVAL_NAME
@@ -464,8 +456,8 @@ funcall(user_defined_function, [Function_Name, Site | Args])  ->
 %% TODO: If a function exists in one of the modules, but calling it returns
 %%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
 funcall(Fname, Args0) ->
-    % TODO, this should be taken out, no reason to strictly
-    % evaluate arguments -- hahaha
+    %% TODO, this should be taken out, no reason to strictly
+    %% evaluate arguments -- hahaha
     Funs = [ '+', '^^',
              abs, acos, 'and', asin, asinh, atan, atan2, atanh, avedev,
              average, averagea,
@@ -496,7 +488,7 @@ funcall(Fname, Args0) ->
     end.
 
 call_fun(Fun, Args, []) ->
-    % mebbies the VM has unloaded the function, so try and reload them
+    %% mebbies the VM has unloaded the function, so try and reload them
     case force_load(get_modules()) of
         reloaded -> call_fun(Fun, Args, get_modules());
         loaded   -> {error, not_found}
@@ -511,13 +503,15 @@ call_fun(Fun, Args, [Module | Rest]) ->
 force_load(Modules) ->
     Fun = fun(Element, Flag) ->
                   case code:is_loaded(Element) of
-                      false    -> code:load_file(Element),
-                                  ok = hn_net_util:email("gordon@hypernumbers.com",
-                                                         "", atom_to_list(node()),
-                                                         "Functions unloaded",
-                                                         "reloading..."),
-                                  reloaded;
-                      {file,_} -> Flag
+                      false ->
+                          code:load_file(Element),
+                          ok = hn_net_util:email("gordon@hypernumbers.com",
+                                                 "", atom_to_list(node()),
+                                                 "Functions unloaded",
+                                                 "reloading..."),
+                          reloaded;
+                      {file,_} ->
+                          Flag
                   end
           end,
     lists:foldl(Fun, loaded, Modules).
@@ -571,7 +565,7 @@ process_for_gui([Fn| Args])
 process_for_gui([Fn| Args]) when ?is_fn(Fn) ->
     {struct, [{fn, {struct, [{name, Fn}, {type, "prefix"}]}},
               {args, {array, process_args(Args, [])}}]};
-% so its not a fn - must be a constant
+%% so its not a fn - must be a constant
 process_for_gui({cellref, _, _, _, Text}) ->
     {struct, [{cellref, Text}]};
 process_for_gui({rangeref, _, _, _, _, _, _, Text}) ->
@@ -609,9 +603,8 @@ implicit_intersection_col(R) ->
         1 ->
             {col, Col} = R#rangeref.tl,
             ColIdx = col_index(Col),
-            xx1(),
             do_cell(R#rangeref.path, ?my, ColIdx, finite, "__rawvalue", false);
-        _ ->
+        _N ->
             ?ERRVAL_VAL
     end.
 
@@ -620,9 +613,8 @@ implicit_intersection_row(R) ->
         1 ->
             {row, Row} = R#rangeref.tl,
             RowIdx = row_index(Row),
-            xx2(),
             do_cell(R#rangeref.path, RowIdx, ?mx, finite, "__rawvalue", false);
-        _ ->
+        _N ->
             ?ERRVAL_VAL
     end.
 
@@ -631,25 +623,22 @@ implicit_intersection_finite(R) ->
     case Dim of
         {1, 1} ->
             [{X, Y}] = muin_util:expand_cellrange(R),
-            xx3(),
             do_cell(R#rangeref.path, Y, X, finite, "__rawvalue", false);
         {1, _H} -> % vertical vector
             CellCoords = muin_util:expand_cellrange(R),
             case lists:filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
-                [{X, Y}] -> xx4(),
-                            do_cell(R#rangeref.path, Y, X, finite,
+                [{X, Y}] -> do_cell(R#rangeref.path, Y, X, finite,
                                     "__rawvalue", false);
                 []       -> ?ERRVAL_VAL
             end;
         {_W, 1} -> % horizontal vector
             CellCoords = muin_util:expand_cellrange(R),
             case lists:filter(fun({X, _Y}) -> X == ?mx end, CellCoords) of
-                [{X, Y}] -> xx5(),
-                            do_cell(R#rangeref.path, Y, X, finite,
+                [{X, Y}] -> do_cell(R#rangeref.path, Y, X, finite,
                                     "__rawvalue", false);
                 []       -> ?ERRVAL_VAL
             end;
-        {_, _} ->
+        {_N, _M} ->
             ?ERRVAL_VAL
     end.
 
@@ -672,10 +661,9 @@ prefetch_references(L) ->
              ([], Acc) ->
                   [[] | Acc];
              (X, Acc) when is_list(X)->
-                  % not all functions can be included in other functions
+                  %% not all functions can be included in other functions
                   case lists:member(hd(X), ?notincfns) of
-                      true  -> io:format("cant inc (2)~n"),
-                               ?ERRVAL_CANTINC;
+                      true  -> ?ERRVAL_CANTINC;
                       false -> [X | Acc]
                   end;
              (X, Acc) ->
@@ -691,7 +679,7 @@ col_index({offset, N}) -> ?mx + N.
 
 fetch(Ref, ValType) -> fetch(Ref, ValType, false).
 
-% Override makes no sense on a zquery
+%% Override makes no sense on a zquery
 fetch(#zcellref{zpath = Z, cellref = C}, ValType, false)
   when is_record(C, cellref) ->
     {zpath, ZList} = Z,
@@ -701,11 +689,11 @@ fetch(#zcellref{zpath = Z, cellref = C}, ValType, false)
     OCol = C#cellref.col,
     ORow = C#cellref.row,
     Vals = fetch_vals(MPaths, ORow, OCol, ValType),
-    % build the refX that describes the infinite reference
+    %% build the refX that describes the infinite reference
     XRefX = make_inf_xrefX(C#cellref.path, C#cellref.text),
-    Infinites = get(infinite),
+    Infinites = pd_retrieve(infinite_refs),
     NewInfinites = ordsets:add_element({local, XRefX}, Infinites),
-    put(infinite, NewInfinites),
+    pd_store(infinite_refs, NewInfinites),
     {zeds, Vals, NoMatch, Err};
 fetch(#zrangeref{zpath = Z, rangeref = R}, ValType, false)
   when is_record(R, rangeref) ->
@@ -715,64 +703,103 @@ fetch(#zrangeref{zpath = Z, rangeref = R}, ValType, false)
     PageTree = page_srv:get_pages(?msite),
     {MPaths, NoMatch, Err} = match(?msite, PageTree, NewPath),
     {XRefXs, Ranges} = fetch_ranges(MPaths, ZP, R, ValType),
-    Infinites = get(infinite),
+    Infinites = pd_retrieve(infinite_refs),
     Fun = fun(X, Acc) ->
                   ordsets:add_element({local, X}, Acc)
           end,
     NewInfinites = lists:foldl(Fun, Infinites, lists:flatten(XRefXs)),
-    put(infinite, NewInfinites),
+    pd_store(infinite_refs, NewInfinites),
     {zeds, Ranges, NoMatch, Err};
 fetch(N, _ValType, _Override) when ?is_namedexpr(N) ->
     ?ERRVAL_NAME;
 fetch(#cellref{col = Col, row = Row, path = Path}, ValType, Override) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
-    xx6(),
     do_cell(Path, RowIndex, ColIndex, finite, ValType, Override);
 fetch(#rangeref{type = Type, path = Path} = Ref, ValType, Oride)
   when Type == row orelse Type == col ->
     NewPath = muin_util:walk_path(?mpath, Path),
     #refX{obj = Obj} = RefX = muin_util:make_refX(?msite, NewPath, Ref),
-    Infinites = get(infinite),
-    put(infinite, ordsets:add_element(RefX,Infinites)),
+    Infinites = pd_retrieve(infinite_refs),
+    pd_store(infinite_refs, ordsets:add_element(RefX,Infinites)),
     Refs = new_db_wu:expand_ref(RefX),
     Rows = case Obj of
                {T2, {_I, _I}} -> sort1D(Refs, Path, T2, ValType, Oride);
                {T2, {I,   J}} -> sort2D(Refs, Path, {T2, I, J}, ValType, Oride)
            end,
-    % pinch out the functionality for a release
     {range, Rows};
-% error_logger:info_msg("Somebody tried a row or column rangeref~n"),
-% ?ERRVAL_ERR;
 fetch(#rangeref{type = finite} = Ref, ValType, Override) ->
     CellCoords = muin_util:expand_cellrange(Ref),
-    Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows
-                   Fun2 = fun({_, Y}) ->
-                                  Y == CurrRow
-                          end,
-                   Fun3 = fun({X, Y}) ->
-                                  xx7(),
-                                  do_cell(Ref#rangeref.path, Y, X,
-                                          finite, ValType, Override)
-                          end,
-                   RowCoords = lists:filter(Fun2, CellCoords),
-                   Row = lists:map(Fun3, RowCoords),
-                   [Row|Acc]
-           end,
-    Rows = lists:foldr(Fun1, [], lists:seq(muin_util:tl_row(Ref),
-                                           muin_util:br_row(Ref))),
-    {range, Rows}. % still tagging to tell stdfuns where values came from.
+    Path = muin_util:walk_path(?mpath, Ref#rangeref.path),
+    RefX = muin_util:make_refX(?msite, Path, Ref),
+    XRefX = new_db_wu:refX_to_xrefX_createD(RefX),
+    IsZCalc = pd_retrieve(is_zcalc),
+    case new_db_wu:read_itemD(XRefX) of
+        []  ->
+            %% Need to do a muin context swap
+            OldContext = pd_retrieve(),
+            AuthReq = pd_retrieve(auth_req),
+            RTI = new_db_wu:xrefX_to_rti(XRefX, AuthReq, false, IsZCalc),
+            ok = init_proc_dict(RTI),
+            Fun1 = fun(CurrRow, Acc) -> % Current row, result rows
+                           Fun2 = fun({_, Y}) ->
+                                          Y == CurrRow
+                                  end,
+                           Fun3 = fun({X, Y}) ->
+                                          do_cell(Ref#rangeref.path, Y, X,
+                                                  finite, ValType, Override)
+                                  end,
+                           RowCoords = lists:filter(Fun2, CellCoords),
+                           Row = lists:map(Fun3, RowCoords),
+                           [Row | Acc]
+                   end,
+            Rows = lists:foldr(Fun1, [], lists:seq(muin_util:tl_row(Ref),
+                                                   muin_util:br_row(Ref))),
+            %% one mans range parents are another mans finite refs
+            RangeParents = pd_retrieve(finite_refs),
+            RP2 = [Idx || {_, _, #xrefX{idx = Idx}} <- RangeParents],
+            %% now we restore the original context and merge the changes
+            ok = pd_store(OldContext),
+            NewFiniteRefs = get_finite_refs(XRefX, IsZCalc),
+            ok = pd_merge(range_refs, [{XRefX, RP2}]),
+            ok = pd_merge(finite_refs, NewFiniteRefs),
+            case IsZCalc of
+                false -> BRange = term_to_binary([{range, Rows}]),
+                         ok = new_db_wu:write_itemD(XRefX, BRange);
+                true -> ok
+            end,
+            %% still tagging to tell stdfuns where values came from.
+            {range, Rows};
+        [I] ->
+            #item{attrs = BAttrs} = I,
+            NewFiniteRefs = get_finite_refs(XRefX, IsZCalc),
+            pd_store(finite_refs, NewFiniteRefs),
+            Attrs = binary_to_term(BAttrs),
+            case IsZCalc of
+                false -> [Rels] = new_db_wu:read_relations(XRefX, write),
+                         %% now read the range parents out of the range
+                         #relation{range_parents = RP} = Rels,
+                         ok = pd_merge(range_refs, [{XRefX, RP}]);
+                true  -> ok
+            end,
+            _Range = lists:keyfind(range, 1, Attrs)
+    end.
+
+get_finite_refs(XRefX, false) ->
+    [{local, finite, XRefX}];
+get_finite_refs(XRefX, true) ->
+    [{local, finite, X} || X <- new_db_wu:expand_ref(XRefX)].
 
 %% why are we passing in Url?
 get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
-    % TODO get rid of
+                                                % TODO get rid of
     NewMPath = lists:filter(fun(X) -> not(X == $/) end, MPath),
     NewRPath = lists:filter(fun(X) -> not(X == $/) end, RPath),
 
     Child  = #refX{site=MSite, type = url, path=NewMPath, obj={cell, {MX, MY}}},
     Parent = #refX{site=RSite, type = url, path=NewRPath, obj={cell, {RX, RY}}},
 
-    % Yup it is not implemented...
+                                                % Yup it is not implemented...
     case new_db_api:read_incoming_hn(Parent, Child) of
 
         {error,permission_denied} ->
@@ -780,7 +807,7 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
 
         {Val, DepTree} ->
             F = fun({url, [{type, Type}], [Url2]}) ->
-                        % yeah parse_url is now deprecated...
+                        %% yeah parse_url is now deprecated...
                         Ref = hn_util:parse_url(Url2),
                         #refX{site = S, type = url, path = P,
                               obj = {cell, {X, Y}}} = Ref,
@@ -830,19 +857,19 @@ loop_transform([Fn|Args]) when ?is_fn(Fn) ->
                 _ -> % IF, CONCATENATE &c (NOT binops)
                     [Area|Rst] = ArgsProcd,
                     [loop] ++ [Area] ++ [{[Fn | lists:reverse(Rst)]}]
-                    % to wrap Area or not may depend on if it's node or literal?
-                    % wrap in {} to prevent from being eval'd -- need a proper '
+                    %% to wrap Area or not may depend on if it's node or literal?
+                    %% wrap in {} to prevent from being eval'd -- need a proper '
             end
     end.
 
 %% Try the userdef module first, then Ruby, Gnumeric, R, whatever.
 userdef_call(Fname, Args) ->
-    % changed to apply because using the construction userdef:Fname failed
-    % to work after hot code load (Gordon Guthrie 2008_09_08)
+    %% changed to apply because using the construction userdef:Fname failed
+    %% to work after hot code load (Gordon Guthrie 2008_09_08)
     case (catch apply(userdef,Fname,Args)) of
         {'EXIT', {undef, _}} -> ?ERR_NAME;
         {'EXIT', _}          -> ?ERR_NAME;
-        % FIXME: should return a descriptive error message.
+        %% FIXME: should return a descriptive error message.
         Val                  -> Val
     end.
 
@@ -868,26 +895,26 @@ do_cell(RelPath, Rowidx, Colidx, Type, ValType, OverrideCantInc) ->
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
     {Value, Errs, Refs} = FetchFun(),
-    % this checks for DIRECT circular references where a formula
-    % refers to itself (ie =A1 in cell A1). INDIRECT circular references
-    % (eg =A2 in cell A1 and =A1 in cell A2) are found in dbsrv.erl
-    % the process dictionary entry 'oldcontextpath' only exists
-    % if this is a z-reference so check if it exists and then
-    % look for a circular reference against a the original path
-    % not the current one
-    {MPath, MX, MY} = case get(oldcontextpath) of
+    %% this checks for DIRECT circular references where a formula
+    %% refers to itself (ie =A1 in cell A1). INDIRECT circular references
+    %% (eg =A2 in cell A1 and =A1 in cell A2) are found in dbsrv.erl
+    %% the process dictionary entry 'oldcontextpath' only exists
+    %% if this is a z-reference so check if it exists and then
+    %% look for a circular reference against a the original path
+    %% not the current one
+    {MPath, MX, MY} = case pd_retrieve_old(path) of
                           undefined -> {?mpath, ?mx, ?my};
-                          OldCP     -> {OldCP, get(oldcontextcol),
-                                        get(oldcontextrow)}
-                                  end,
+                          OldCP     -> {OldCP, pd_retrieve_old(col),
+                                        pd_retrieve_old(row)}
+                      end,
     case Refs of
         [{_, _, {xrefX, _, _, MPath, {cell, {MX, MY}}}}] ->
-            put(circref, true);
+            ok = pd_store(circref, true);
         _ ->
             ok
     end,
-    {Errs0, Refs0} = get(retvals),
-    put(retvals, {Errs0 ++ Errs, Refs0 ++ Refs}),
+    ok = pd_merge(errors, Errs),
+    ok = pd_merge(finite_refs, Refs),
     Value.
 
 %% Row or Col information --> index.
@@ -906,21 +933,18 @@ sort1D(Refs, Path, Type, ValType, Override) ->
 sort1D_([], _Path, Type, Dict, _ValType, _Override) ->
     Size = orddict:size(Dict),
     List = orddict:to_list(Dict),
-    Filled = fill1D(List, 1, 1, Size + 1, [],
-                    'to-last-key'),
-    % if it is row then you need to flatten the
-    % List by one degree and wrap it in a list
-    % (ie a 2d transposition)
+    Filled = fill1D(List, 1, 1, Size + 1, [], 'to-last-key'),
+    %% if it is row then you need to flatten the
+    %% List by one degree and wrap it in a list
+    %% (ie a 2d transposition)
     case Type of
         column -> Filled;
         row    -> [[X || [X] <- Filled]]
     end;
 sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, row, Dict, ValType, Oride) ->
-    xx8(),
     V = do_cell(Path, Y, X, infinite, ValType, Oride),
     sort1D_(T, Path, row, orddict:append(X, V, Dict), ValType, Oride);
 sort1D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, column, Dict, ValType, Oride) ->
-    xx9(),
     V = do_cell(Path, Y, X, infinite, ValType, Oride),
     sort1D_(T, Path, column, orddict:append(Y, V, Dict), ValType, Oride).
 
@@ -944,7 +968,6 @@ sort2D_([#xrefX{obj = {cell, {X, Y}}} | T], Path, Def, Dict, ValType, Oride) ->
                   true  -> orddict:fetch(X, Dict);
                   false -> orddict:new()
               end,
-    xx10(),
     V = do_cell(Path, Y, X, infinite, ValType, Oride),
     NewSub  = orddict:append(Y, V, SubDict),  % works because there are no dups!
     NewDict = orddict:store(X, NewSub, Dict),
@@ -1051,22 +1074,22 @@ m2(Site,  S, {zseg, Z, _}, Htap) ->
     end.
 
 %% used in the zinf server and the api evaluator.
-% Neither has any context to execute at this stage!
+%% Neither has any context to execute at this stage!
 external_zeval(Site, Path, Toks) ->
-    % zeval evaluates an expression in a cell context - but that cell
-    % cannot actually exists - so use {0,0} which is the cell 1 up and 1
-    % right of A1
-    % NOTE that we create an xrefX{} with a fake idx this xrefX{}
-    % doesn't go anywhere near the database
+    %% zeval evaluates an expression in a cell context - but that cell
+    %% cannot actually exists - so use {0,0} which is the cell 1 up and 1
+    %% right of A1
+    %% NOTE that we create an xrefX{} with a fake idx this xrefX{}
+    %% doesn't go anywhere near the database
     XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {0, 0}}},
     Return = zeval2(XRefX, Toks),
-    {Return, get(circref)}.
+    {Return, pd_retrieve(circref)}.
 
 zeval(Site, Path, Toks) ->
     X = ?mx,
     Y = ?my,
-    % NOTE that we create an xrefX{} with a fake idx this xrefX{}
-    % doesn't go anywhere near the database
+    %% NOTE that we create an xrefX{} with a fake idx this xrefX{}
+    %% doesn't go anywhere near the database
     XRefX = #xrefX{idx = 0, site = Site, path = Path, obj = {cell, {X, Y}}},
     zeval2(XRefX, Toks).
 
@@ -1074,19 +1097,21 @@ zeval(Site, Path, Toks) ->
 %% so here you need to rip it out and then stick it back in
 %% (not good, Damn you Hasan!).
 zeval2(XRefX, Toks) ->
-    % set the oldcontext path
-    put(oldcontextpath, ?mpath),
-    put(oldcontextrow, ?my),
-    put(oldcontextcol, ?mx),
-    % capture the process dictionary (it will get gubbed!)
-    OldContext = get(),
-    % no array context (fine) or security context (erk!)
-    RTI = new_db_wu:xrefX_to_rti(XRefX, nil, false),
+    %% set the oldcontext path
+    Path = ?mpath,
+    ok = pd_store_old(path, Path),
+    ok = pd_store_old(row, ?my),
+    ok = pd_store_old(col, ?mx),
+    %% capture the process dictionary (it will get gubbed!)
+    OldContext = pd_retrieve(),
+    AuthReq = pd_retrieve(auth_req),
+    %% no array context (fine)
+    RTI = new_db_wu:xrefX_to_rti(XRefX, AuthReq, false, ?ISZCALC),
     {Return, CircRef} =
         case catch(xfl_parser:parse(Toks)) of
             {ok, Ast} ->
-                {ok, {_, Rs, _, _, _, CR, _}} = muin:run_code(Ast, RTI),
-                % cast to a boolean
+                {ok, {_, Rs, _, _, _, _, CR, _}} = muin:run_code(Ast, RTI),
+                %% cast to a boolean
                 Rs2 = typechecks:std_bools([Rs]),
                 case Rs2 of
                     [true]  -> {match, CR};
@@ -1096,20 +1121,19 @@ zeval2(XRefX, Toks) ->
             ?syntax_err ->
                 {?error_in_formula, false}
         end,
-    % restore the process dictionary (fugly! fugly! fugly!)
-    {_Errs, ZRetVals} = get(retvals),
-    [put(K, V) || {K, V} <- OldContext],
-    erase(oldcontextpath),
-    erase(oldcontextrow),
-    erase(oldcontextcol),
-    % need to flag up the circular reference (which you have just erased)
+    %% restore the process dictionary (fugly! fugly! fugly!)
+    %% first capture the additional finite refs
+    %% then restore the stashed context
+    ZRefs = pd_retrieve(finite_refs),
+    ok = pd_store(OldContext),
+    ok = pd_merge(finite_refs, ZRefs),
+    %% finally trash the old muin context
+    ok = pd_delete_old(),
+    %% need to flag up the circular reference (which you have just erased)
     case CircRef of
-        true  -> put(circref, true);
+        true  -> pd_store(circref, true);
         false -> ok
     end,
-    % also add in the missing parents from the sub-context
-    {Errs, OrigRetVals} = get(retvals),
-    put(retvals, {Errs, ZRetVals ++ OrigRetVals}),
     Return.
 
 make_blank_infinites([], _ZPath, Acc) ->
@@ -1139,7 +1163,6 @@ fetch_r2([{cell, {X, Y}} | T], Path, ZPath, ValType, Acc1, Acc2) ->
     Cell = tconv:to_b26(X) ++ integer_to_list(Y),
     NewAcc1 = make_inf_xrefX(ZPath, Cell),
     URL = {Path, Cell},
-    xx11(),
     NewAcc2 = do_cell(Path, Y, X, infinite, ValType, false),
     fetch_r2(T, Path, ZPath, ValType, [NewAcc1 | Acc1],
              [{URL, NewAcc2} | Acc2]).
@@ -1152,7 +1175,6 @@ fetch_v1([H | T], Row, Col, ValType, Acc) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
     URL = {H, tconv:to_b26(ColIndex) ++ integer_to_list(RowIndex)},
-    xx12(),
     NewAcc = do_cell(Path, RowIndex, ColIndex, infinite, ValType, false),
     fetch_v1(T, Row, Col, ValType, [{URL, NewAcc} | Acc]).
 
@@ -1163,72 +1185,6 @@ make_inf_xrefX(Path, Text) ->
     Obj = hn_util:parse_ref(Ref),
     RefX = #refX{site = ?msite, type = gurl, path = NewPath, obj = Obj},
     new_db_wu:refX_to_xrefX_createD(RefX).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Test Functions
-test_xfl() ->
-    Exprs = [
-             % "sum(/_sites/a1, 2, 3)",
-             % "sum(./_sites/a1, 2, 3)",
-             % "sum(../_sites/a1, 2, 3)",
-             % "sum(/blah/_sites/bleh/a1:b2, 3)",
-             % "sum(/_SITES/a1, 2, 3)",
-             % "sum(./_SITES/a1, 2, 3)",
-             % "sum(../_SITES/a1, 2, 3)",
-             % "sum(../_SITES/a:b, 2, 3)",
-             % "sum(../_SITES/2:3, 2, 3)",
-             % "sum(/blah/_SITES/a1:b2, 3)",
-             % "sum(/blah/bleeh/[seg() = \"bluh\"]/bloh/a1)",
-             % "sum(/blah/bleeh/a$1)",
-             % "sum(atan2(3))",
-             % "sum(/blah/bleeh/a1)",
-             % "sum(/bb/[eg]/doggy/[or(A1,B2)]/a1)",
-             % "sum(/bb/[eg]/doggy/[or(A1,a1/atan2(2))]/a1)",
-             % "sum(/[or(BB)]/blah/a1)",
-             % "sum([or(BB)]/a1)",
-             % "sum([o]/a1)",
-             % "sum(/blah/[or(BB)]/blah/a1)",
-             % "sum(/blah/[or(BB)]/blah/a1) + atan(/[xx]/N2)".
-             % "sum(/blah/[or(true,true)]/a1)+ sum(/blEh/[SUM(a1,B3)]/BLeh/A3)",
-             % "sum(/blah/[or(1,2)]/a1, /[true = a1]/b99:bev90210)",
-             % "/[or(1,2)]/a1",
-             % "/[or(1,2)]/a1:b2",
-             % "/[or(1,2)]/a:a",
-             % "/[or(1,2)]/3:3"
-             %"/bleh/1:1",
-             %"/bleh/a:a"
-             "sum(/bleh/gloh/dleh/1:1)"
-            ],
-    Fun= fun(X) ->
-                 Fla = superparser:process("="++X),
-                 io:format("~n~nStarting a new parse...~n"),
-                 Trans = translator:do(Fla),
-                 case catch (xfl_lexer:lex(Trans, {1, 1})) of
-                     {ok, Toks} ->
-                         case catch(xfl_parser:parse(Toks)) of
-                             {ok, Ast} ->
-                                 io:format("Success Expr is ~p Fla is ~p "++
-                                           "Trans is ~p~n"++
-                                           "Toks is ~p~nAst is ~p~n"++
-                                           "Status is ~p~n",
-                                           [X, Fla, Trans, Toks, Ast, "Ok"]),
-                                 {ok, Ast};
-                             O2         ->
-                                 io:format("Parse fail: "++
-                                           "Expr is ~p Fla is ~p Trans is ~p~n"
-                                           ++ "Toks is ~p~nStatus is ~p~n",
-                                           [X, Fla, Trans, Toks, O2]),
-                                 ?syntax_err
-                         end;
-                     O1 -> io:format("Lex fail: Expr is ~p Fla is ~p "++
-                                     "Trans is ~p~n"++
-                                     "Status is ~p~n",
-                                     [X, Fla, Trans, O1]),
-                           ?syntax_err
-                 end
-         end,
-    [Fun(X) || X <- Exprs],
-    ok.
 
 expand(#rangeref{tl = {{_, C1}, {_, R1}}, br = {{_, C2}, {_, R2}}}) ->
     X = ?mx,
@@ -1260,19 +1216,34 @@ make_zpath([{seg, Seg} | T], Acc) ->
 make_zpath([{zseg, _, ZSeg} | T], Acc) ->
     make_zpath(T, [ZSeg | Acc]).
 
-init_proc_dict(#muin_rti{site = Site, path = Path, col = Col,
-                         row = Row, idx = Idx,array_context = AryCtx,
-                         auth_req = AuthReq}) ->
-    % Populate the process dictionary.
-    lists:map(fun({K,V}) -> put(K, V) end,
-              [{site, Site}, {path, Path}, {x, Col}, {y, Row},
-               {idx, Idx},
-               {array_context, AryCtx}, {infinite, []},
-               {retvals, {[], []}}, {recompile, false},
-               {auth_req, AuthReq},
-               {circref, false},
-               {selfreference, false}]),
-    ok.
+init_proc_dict(#muin_rti{site          = Site,
+                         path          = Path,
+                         col           = Col,
+                         row           = Row,
+                         idx           = Idx,
+                         auth_req      = AuthReq,
+                         array_context = ArrayContext,
+                         finite_refs   = FinRefs,
+                         range_refs    = RangeRefs,
+                         infinite_refs = InfRefs,
+                         errors        = Errs,
+                         is_zcalc      = IsZCalc}) ->
+    %% Populate the process dictionary
+    %% some values have been set, but most must be written over
+    Rec = pd_retrieve(),
+    Rec2 = Rec#muin_context{site          = Site,
+                            path          = Path,
+                            col           = Col,
+                            row           = Row,
+                            idx           = Idx,
+                            auth_req      = AuthReq,
+                            array_context = ArrayContext,
+                            finite_refs   = FinRefs,
+                            range_refs    = RangeRefs,
+                            infinite_refs = InfRefs,
+                            errors        = Errs,
+                            is_zcalc      = IsZCalc},
+    ok = pd_store(Rec2).
 
 special_flatten([], Acc)                      -> lists:reverse(Acc);
 special_flatten([H | T], Acc) when is_list(H) -> NewAcc = special_f2(H, Acc),
@@ -1282,18 +1253,190 @@ special_flatten([H | T], Acc)                 -> special_flatten(T, [H | Acc]).
 special_f2([], Acc)      -> Acc;
 special_f2([H | T], Acc) -> special_f2(T, [H | Acc]).
 
-% these funs are just to enable to me track different paths through
-% muin when running cprof - bit of a perf testing artefact
-xx1() -> ok.
-xx2() -> ok.
-xx3() -> ok.
-xx4() -> ok.
-xx5() -> ok.
-xx6() -> ok.
-xx7() -> ok.
-xx8() -> ok.
-xx9() -> ok.
-xx10() -> ok.
-xx11() -> ok.
-xx12() -> ok.
+%%
+%% Fns for manipulating the process dictionary
+%%
+pd_retrieve() -> get(muin_context).
 
+pd_retrieve(Key) ->
+    case get(muin_context) of
+        undefined -> undefined;
+        Record    -> pd_retrieve2(Key, Record)
+    end.
+
+pd_retrieve2(idx,           #muin_context{idx = V})           -> V;
+pd_retrieve2(site,          #muin_context{site = V})          -> V;
+pd_retrieve2(path,          #muin_context{path = V})          -> V;
+pd_retrieve2(row,           #muin_context{row = V})           -> V;
+pd_retrieve2(col,           #muin_context{col = V})           -> V;
+pd_retrieve2(x,             #muin_context{x = V})             -> V;
+pd_retrieve2(y,             #muin_context{y = V})             -> V;
+pd_retrieve2(auth_req,      #muin_context{auth_req = V})      -> V;
+pd_retrieve2(array_context, #muin_context{array_context = V}) -> V;
+pd_retrieve2(finite_refs,   #muin_context{finite_refs = V})   -> V;
+pd_retrieve2(range_refs,    #muin_context{range_refs = V})    -> V;
+pd_retrieve2(infinite_refs, #muin_context{infinite_refs = V}) -> V;
+pd_retrieve2(errors,        #muin_context{errors = V})        -> V;
+pd_retrieve2(recompile,     #muin_context{recompile = V})     -> V;
+pd_retrieve2(circref,       #muin_context{circref = V})       -> V;
+pd_retrieve2(selfreference, #muin_context{selfreference = V}) -> V;
+pd_retrieve2(is_zcalc,      #muin_context{is_zcalc = V})      -> V.
+
+%% might need it one day :(
+%% pd_retrieve_old() -> get(old_muin_context).
+
+pd_retrieve_old(Key) ->
+    case get(old_muin_context) of
+        undefined -> undefined;
+        Record    -> pd_retrieve_old2(Key, Record)
+    end.
+
+pd_retrieve_old2(path, #old_muin_context{path = V}) -> V;
+pd_retrieve_old2(row,  #old_muin_context{row = V})  -> V;
+pd_retrieve_old2(col,  #old_muin_context{col = V})  -> V.
+
+pd_store(Rec) when is_record(Rec, muin_context) ->
+    _Ret = put(muin_context, Rec),
+    ok.
+
+pd_store(Key, Val) ->
+    Record = case get(muin_context) of
+                 undefined -> #muin_context{};
+                 R         -> R
+             end,
+    _Ret = put(muin_context, pd_store2(Key, Val, Record)),
+    ok.
+
+pd_store2(idx,           V, Rec) -> Rec#muin_context{idx = V};
+pd_store2(site,          V, Rec) -> Rec#muin_context{site = V};
+pd_store2(path,          V, Rec) -> Rec#muin_context{path = V};
+pd_store2(row,           V, Rec) -> Rec#muin_context{row = V};
+pd_store2(col,           V, Rec) -> Rec#muin_context{col = V};
+pd_store2(x,             V, Rec) -> Rec#muin_context{x = V};
+pd_store2(y,             V, Rec) -> Rec#muin_context{y = V};
+pd_store2(auth_req,      V, Rec) -> Rec#muin_context{auth_req = V};
+pd_store2(array_context, V, Rec) -> Rec#muin_context{array_context = V};
+pd_store2(finite_refs,   V, Rec) -> Rec#muin_context{finite_refs = V};
+pd_store2(range_refs,    V, Rec) -> Rec#muin_context{range_refs = V};
+pd_store2(infinite_refs, V, Rec) -> Rec#muin_context{infinite_refs = V};
+pd_store2(errors,        V, Rec) -> Rec#muin_context{errors = V};
+pd_store2(recompile,     V, Rec) -> Rec#muin_context{recompile = V};
+pd_store2(circref,       V, Rec) -> Rec#muin_context{circref = V};
+pd_store2(selfreference, V, Rec) -> Rec#muin_context{selfreference = V}.
+
+%% might need it one day :(
+%% pd_store_old(Rec) when is_record(Rec, old_muin_context) ->
+%%     _Ret = put(old_muin_context, Rec),
+%%     ok.
+
+pd_store_old(Key, Val) ->
+    Record = case get(old_muin_context) of
+                 undefined -> #old_muin_context{};
+                 R         -> R
+             end,
+    _Ret = put(old_muin_context, pd_store_old2(Key, Val, Record)),
+    ok.
+
+pd_store_old2(path, V, Rec) -> Rec#old_muin_context{path = V};
+pd_store_old2(row,  V, Rec) -> Rec#old_muin_context{row = V};
+pd_store_old2(col,  V, Rec) -> Rec#old_muin_context{col = V}.
+
+pd_merge(Key, NewVal) when is_list(NewVal) ->
+    Record = get(muin_context),
+    _Ret = put(muin_context, pd_merge2(Key, NewVal, Record)),
+    ok.
+
+pd_merge2(finite_refs,   NV, #muin_context{finite_refs = V} = R) ->
+    R#muin_context{finite_refs = hslists:uniq(lists:merge(NV, V))};
+pd_merge2(range_refs,    NV, #muin_context{range_refs = V} = R) ->
+    R#muin_context{range_refs = hslists:uniq(lists:merge(NV, V))};
+pd_merge2(infinite_refs, NV, #muin_context{infinite_refs = V} = R) ->
+    R#muin_context{infinite_refs = hslists:uniq(lists:merge(NV, V))};
+pd_merge2(errors,        NV, #muin_context{errors = V} = R) ->
+    R#muin_context{errors = hslists:uniq(lists:merge(NV, V))}.
+
+%% might need 'em one day, old boy!
+%% pd_clear() -> put(muin_context, #muin_context{}).
+
+%% pd_clear_old() -> put(old_muin_context, #old_muin_context{}).
+
+%% pd_delete() -> erase(muin_context).
+
+pd_delete_old() -> _Old = erase(old_muin_context),
+                   ok.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Test Functions
+%% @doc Test harness for running a formula inside transaction
+test_formula(Fla) ->
+    test_formula(Fla, #muin_rti{site = "http://localhost:9000",
+                                path = [],
+                                col = 1, row = 1,
+                                array_context = false,
+                                auth_req = nil}).
+test_formula(Fla, RTI) ->
+    mnesia:activity(transaction, fun run_formula/2, [Fla, RTI]).
+
+test_xfl() ->
+    Exprs = [
+             %% "sum(/_sites/a1, 2, 3)",
+             %% "sum(./_sites/a1, 2, 3)",
+             %% "sum(../_sites/a1, 2, 3)",
+             %% "sum(/blah/_sites/bleh/a1:b2, 3)",
+             %% "sum(/_SITES/a1, 2, 3)",
+             %% "sum(./_SITES/a1, 2, 3)",
+             %% "sum(../_SITES/a1, 2, 3)",
+             %% "sum(../_SITES/a:b, 2, 3)",
+             %% "sum(../_SITES/2:3, 2, 3)",
+             %% "sum(/blah/_SITES/a1:b2, 3)",
+             %% "sum(/blah/bleeh/[seg() = \"bluh\"]/bloh/a1)",
+             %% "sum(/blah/bleeh/a$1)",
+             %% "sum(atan2(3))",
+             %% "sum(/blah/bleeh/a1)",
+             %% "sum(/bb/[eg]/doggy/[or(A1,B2)]/a1)",
+             %% "sum(/bb/[eg]/doggy/[or(A1,a1/atan2(2))]/a1)",
+             %% "sum(/[or(BB)]/blah/a1)",
+             %% "sum([or(BB)]/a1)",
+             %% "sum([o]/a1)",
+             %% "sum(/blah/[or(BB)]/blah/a1)",
+             %% "sum(/blah/[or(BB)]/blah/a1) + atan(/[xx]/N2)".
+             %% "sum(/blah/[or(true,true)]/a1)+ sum(/blEh/[SUM(a1,B3)]/BLeh/A3)",
+             %% "sum(/blah/[or(1,2)]/a1, /[true = a1]/b99:bev90210)",
+             %% "/[or(1,2)]/a1",
+             %% "/[or(1,2)]/a1:b2",
+             %% "/[or(1,2)]/a:a",
+             %% "/[or(1,2)]/3:3"
+             %%"/bleh/1:1",
+             %%"/bleh/a:a"
+             "sum(/bleh/gloh/dleh/1:1)"
+            ],
+    Fun= fun(X) ->
+                 Fla = superparser:process("="++X),
+                 io:format("~n~nStarting a new parse...~n"),
+                 Trans = translator:do(Fla),
+                 case catch (xfl_lexer:lex(Trans, {1, 1})) of
+                     {ok, Toks} ->
+                         case catch(xfl_parser:parse(Toks)) of
+                             {ok, Ast} ->
+                                 io:format("Success Expr is ~p Fla is ~p "++
+                                               "Trans is ~p~n"++
+                                               "Toks is ~p~nAst is ~p~n"++
+                                               "Status is ~p~n",
+                                           [X, Fla, Trans, Toks, Ast, "Ok"]),
+                                 {ok, Ast};
+                             O2         ->
+                                 io:format("Parse fail: "++
+                                               "Expr is ~p Fla is ~p Trans is ~p~n"
+                                           ++ "Toks is ~p~nStatus is ~p~n",
+                                           [X, Fla, Trans, Toks, O2]),
+                                 ?syntax_err
+                         end;
+                     O1 -> io:format("Lex fail: Expr is ~p Fla is ~p "++
+                                         "Trans is ~p~n"++
+                                         "Status is ~p~n",
+                                     [X, Fla, Trans, O1]),
+                           ?syntax_err
+                 end
+         end,
+    [Fun(X) || X <- Exprs],
+    ok.

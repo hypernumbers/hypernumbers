@@ -74,7 +74,7 @@ get_m_a_k_preview(0) -> "API Key Management";
 get_m_a_k_preview(1) -> "Read-Only API Key".
 
 get_api_json() ->
-    Site = get(site),
+    Site = muin:pd_retrieve(site),
     APIKeys = new_db_api:get_api_keys(Site),
     Len = length(APIKeys),
     Indices = lists:seq(1, Len),
@@ -107,8 +107,8 @@ make_j2([H | T], Acc) ->
 
 'google.analytics'([Code]) ->
     [C] = typechecks:std_strs([Code]),
-    Site = get(site),
-    Idx = get(idx),
+    Site = muin:pd_retrieve(site),
+    Idx = muin:pd_retrieve(idx),
     ok = new_db_wu:write_kvD(Site, google_analytics, {Idx, C}),
     Preview = "Google Analytics Code: " ++ C,
     #spec_val{val = "", preview = Preview, unique = google_analytics}.
@@ -126,7 +126,7 @@ make_j2([H | T], Acc) ->
         ++ "name='groups' "
         ++ "multiple='multiple'>"
         ++ lists:flatten(["<option>" ++ X ++ "</option>"
-                          || X <- lists:sort(new_db_wu:all_groupsD(get(site))),
+                          || X <- lists:sort(new_db_wu:all_groupsD(muin:pd_retrieve(site))),
                              X /= "admin"])
         ++ "</select></div>"
         ++ "</div>"
@@ -134,7 +134,7 @@ make_j2([H | T], Acc) ->
         ++ "please take a look at this page...</textarea>"
         ++ "<div>Where do you want the user to go?</div>"
         ++ "<input class='hn_invite_path' value='"
-        ++ hn_util:list_to_path(get(path)) ++ "' />"
+        ++ hn_util:list_to_path(muin:pd_retrieve(path)) ++ "' />"
         ++ "<input class='hn_addnewuserbutton button' "
         ++ "value='Create User' type='submit' data-id='" ++ Id ++ "'>"
         ++ "<p class='hn_newuserfeedback'>&nbsp;</p>"
@@ -194,8 +194,8 @@ u_and_g(W, H, Type) ->
     ?check_paid(fun 'phone.menu2'/2, [W, H, List], inbound).
 
 'phone.menu2'([W, H, List], _Acnt) ->
-    Site = get(site),
-    Idx = get(idx),
+    Site = muin:pd_retrieve(site),
+    Idx = muin:pd_retrieve(idx),
     V = new_db_wu:read_kvD(Site, site_phone_menu),
     OrigIdx = case V of
                   []                                           -> null;
@@ -412,8 +412,8 @@ phsay(Text, Voice, Language, Loop) ->
         Valid == false -> ?ERR_VAL;
         Valid == true  -> ok
     end,
-    Site = get(site),
-    Idx = get(idx),
+    Site = muin:pd_retrieve(site),
+    Idx = muin:pd_retrieve(idx),
     V = new_db_wu:read_kvD(Site, site_email),
     % got some validation to do
     % a new email has to be validated
@@ -515,7 +515,7 @@ col([H | T], Acc) ->
     col(T, NewAcc).
 
 send_invite(From, Idx) ->
-   case get(auth_req) of
+   case muin:pd_retrieve(auth_req) of
        nil -> ok;
        Uid -> {ok, Email} = passport:uid_to_email(Uid),
               Name = hn_util:extract_name_from_email(From),
@@ -560,7 +560,7 @@ get_row(Groups, N) when N == 0 orelse N == 1 ->
     ["<tr class='hn_user_table'><td>" ++ G ++ "</td><td>"
      ++ string:join(M, "<br />") ++ "</td></tr>" || {G, M} <- Groups];
 get_row(Groups, 2) ->
-    All = lists:sort(new_db_wu:all_groupsD(get(site))),
+    All = lists:sort(new_db_wu:all_groupsD(muin:pd_retrieve(site))),
     get_r2(Groups, All, []).
 
 get_r2([], _All, Acc) ->
@@ -592,7 +592,7 @@ get_u_and_g_preview(1) -> "Read-Only Users And Groups: ordered by user";
 get_u_and_g_preview(2) -> "Editable Users And Groups".
 
 get_u_and_g_options(Type) ->
-    Site = get(site),
+    Site = muin:pd_retrieve(site),
     case Type of
         _N when _N == 0 ->
             {lists:sort(new_db_wu:groupsD(Site)),

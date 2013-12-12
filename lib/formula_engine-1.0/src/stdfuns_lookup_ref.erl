@@ -39,7 +39,7 @@ choose([Idx], List) ->
     end.
 
 cellref([]) ->
-    put(selfreference, true),
+    muin:pd_store(selfreference, true),
     {X, Y} = muin:context_setting(cell),
     tconv:to_b26(X) ++ integer_to_list(Y);
 cellref([C]) when ?is_cellref(C) ->
@@ -56,7 +56,7 @@ cellref([_]) ->
     ?ERR_VAL.
 
 column([]) ->
-    put(selfreference, true),
+    muin:pd_store(selfreference, true),
     muin:context_setting(col);
 column([C]) when ?is_namedexpr(C) ->
     ?ERRVAL_NAME;
@@ -82,7 +82,7 @@ indirect([S, R1]) ->
     muin_util:apply([Str, Bool], fun indirect_/2).
 
 indirect_([Str], [_Bool]) ->
-    put(recompile, true),
+    muin:pd_store(recompile, true),
     case muin:parse(Str, {muin:context_setting(col),
                           muin:context_setting(row)}) of
         {ok, Ast} ->
@@ -96,7 +96,7 @@ indirect_([Str], [_Bool]) ->
 % TODO fix row and column rewritting
 % need to add a circular children
 row([]) ->
-    put(selfreference, true),
+    muin:pd_store(selfreference, true),
     muin:context_setting(row);
 row([C]) when ?is_namedexpr(C) ->
     ?ERRVAL_NAME;

@@ -59,9 +59,10 @@ find_rel(Site, Idx) ->
     Tbl = new_db_wu:trans(Site, relation),
     F1 = fun() ->
                  F2 = fun(R, Acc) ->
-                              #relation{children = C, parents = P,
-                                        infparents = IP, z_parents = ZP} = R,
-                              All = lists:merge([C, P, IP, ZP]),
+                              #relation{children = C, range_children = RC,
+                                        parents = P, infparents = IP,
+                                        z_parents = ZP, range_parents = RP} = R,
+                              All = lists:merge([C, RC, P, IP, ZP, RP]),
                               case lists:member(Idx, All) of
                                   false ->
                                       ok;
@@ -131,7 +132,6 @@ dump_keys(Site, Table, Keys) ->
            end,
     mnesia:activity(transaction, Fun2),
     io:format("~n").
-
 
 tick() ->
     S = "http://hypernumbers.dev:9000",
@@ -268,7 +268,18 @@ idx(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                     _     ->
                         O2a  = io_lib:format("The idx points to ~p (~p) on page ~p",
                                              [Obj, hn_util:obj_to_ref(Obj), P2]),
-                        Cs = lists:sort(new_db_wu:read_ref(XRefX, inside)),
+                        Cs = case XRefX#xrefX.obj of
+                                 {cell, _} ->
+                                     lists:sort(new_db_wu:read_ref(XRefX, inside));
+                                 {range, _} ->
+                                     case new_db_wu:read_itemD(XRefX) of
+                                         [Item] ->
+                                             Attrs = binary_to_term(Item#item.attrs),
+                                             [{XRefX, Attrs}];
+                                         [] ->
+                                             [{XRefX, []}]
+                                     end
+                             end,
                         O3 = pretty_print(XRefX, Cs, "The idx contains:", Mode,
                                           [[O2a] | O2]),
                         lists:reverse(O3)
@@ -332,12 +343,14 @@ print_relations(#xrefX{site = S} = XRefX, Acc) ->
     end.
 
 print_rel2(S, R, Acc) ->
-    O1 = print_rel3(S, R#relation.children,   "children",         Acc),
-    O2 = print_rel3(S, R#relation.parents,    "parents",          O1),
-    O3 = print_rel3(S, R#relation.infparents, "infinite parents", O2),
-    O4 = print_rel3(S, R#relation.z_parents,  "z parents",        O3),
+    O1 = print_rel3(S, R#relation.children,       "children",         Acc),
+    O2 = print_rel3(S, R#relation.range_children, "range children",   O1),
+    O3 = print_rel3(S, R#relation.parents,        "parents",          O2),
+    O4 = print_rel3(S, R#relation.infparents,     "infinite parents", O3),
+    O5 = print_rel3(S, R#relation.z_parents,      "z parents",        O4),
+    O6 = print_rel3(S, R#relation.range_parents,  "range parents",    O5),
     [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is it an include/circ? ~p",
-                   [R#relation.attrs]) | O4].
+                   [R#relation.attrs]) | O6].
 
 print_rel3(_S, [], Type, Acc) -> [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;"
                                                 ++ "&nbsp; no " ++ Type, [])
@@ -483,7 +496,9 @@ dump_logs(Site, Idx) ->
           end,
     [Fun(X) || X <- Records].
 
-pad(List) ->
+pad(Atom) when is_atom(Atom) ->
+    pad(atom_to_list(Atom));
+pad(List) when is_list(List) ->
     Len = length(List),
     List ++ pad2(20 - Len, []).
 

@@ -202,6 +202,10 @@ get(#refX{} = Ref, cell, #qry{view = ?DEBUG}, #env{accept = html} = Env) ->
     Url = hn_util:refX_to_url(Ref),
     hn_mochi:text_html(Env, wrap(new_db_DEBUG:url(Url, verbose)));
 
+get(#refX{} = Ref, range, #qry{view = ?DEBUG}, #env{accept = html} = Env) ->
+    Url = hn_util:refX_to_url(Ref),
+    hn_mochi:text_html(Env, wrap(new_db_DEBUG:url(Url, verbose)));
+
 % in html you can see cell and page logs
 get(Ref, Obj, #qry{view = ?LOGVIEW}, #env{accept = html} = Env)
   when Obj == page orelse Obj == cell ->

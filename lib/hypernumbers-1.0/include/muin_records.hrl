@@ -3,9 +3,18 @@
 
 %% Runtime information: describes the context in which to run a formula.
 -record(muin_rti, {
-          site, path, col, row, idx, % target cell
-          array_context = false,      % array formula?
-          auth_req = nil
+          site,
+          path,
+          col,
+          row,
+          idx,                   % target cell
+          auth_req      = nil,
+          array_context = false, % array formula?
+          finite_refs   = [],
+          range_refs    = []    :: list(),
+          infinite_refs = []    :: list(),
+          errors        = []    :: list(),
+          is_zcalc      = false :: boolean()
          }).
 
 %% DateTime: fields are in the format expected by functions in the

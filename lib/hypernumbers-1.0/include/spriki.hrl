@@ -115,9 +115,11 @@
         {
           cellidx                        :: cellidx(),
           children       = ordsets:new() :: ordsets:ordset(cellidx()),
+          range_children = ordsets:new() :: ordsets:ordset(cellidx()),
           parents        = ordsets:new() :: ordsets:ordset(cellidx()),
           infparents     = ordsets:new() :: ordsets:ordset(cellidx()),
           z_parents      = ordsets:new() :: ordsets:ordset(#refX{}),
+          range_parents  = ordsets:new() :: ordsets:ordset(#refX{}),
           dyn_parents    = ordsets:new() :: ordsets:ordset(cellidx()),
           dyn_infparents = ordsets:new() :: ordsets:ordset(cellidx()),
           attrs          = []

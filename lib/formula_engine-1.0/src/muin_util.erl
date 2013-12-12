@@ -42,7 +42,7 @@
 -include("muin_proc_dict.hrl").
 
 get_zs(List) ->
-    put(recompile, true),
+    muin:pd_store(recompile, true),
     Strs = typechecks:std_strs(List),
     get_z2(Strs, []).
 

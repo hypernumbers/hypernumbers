@@ -251,7 +251,8 @@ sum(Vs) ->
                      [return_errors, {all, fun is_number/1}],
                      fun sum1/1).
 
-sum1(Nums) -> lists:sum(Nums).
+sum1(Nums) ->
+    lists:sum(Nums).
 
 product(Vals) ->
     muin_collect:col(Vals,

@@ -34,7 +34,7 @@
 -include("muin_proc_dict.hrl").
 
 'display.phone.nos'([]) ->
-    Site = get(site),
+    Site = muin:pd_retrieve(site),
     case contact_utils:get_twilio_account(Site) of
         ?ERRVAL_PAYONLY ->
             "No phone numbers have been purchased for this website";
@@ -72,7 +72,7 @@
     'manual.email'([To, Subject, Contents, CC, []]);
 'manual.email'([To, Su, Cn, CC, Reply]) ->
     [To2, Su2, Cn2, CC2, Fr] = check(To, Su, Cn, CC, Reply),
-    Log = #contact_log{idx = get(idx),
+    Log = #contact_log{idx = muin:pd_retrieve(idx),
                        type = "manual email",
                        to = To2,
                        reply_to = Fr,
@@ -105,8 +105,8 @@
     case Cond2 of
         false -> "Email not sent";
         true  -> hn_net_util:email(To2, CC2, Fr, Su2, Cn2),
-                 S = get(site),
-                 Log = #contact_log{idx = get(idx),
+                 S = muin:pd_retrieve(site),
+                 Log = #contact_log{idx = muin:pd_retrieve(idx),
                                     type = "email out",
                                     to = To2,
                                     cc = CC2,
@@ -118,7 +118,7 @@
     end.
 
 check(To, Su, Cn, CC, Reply) ->
-    Domain = get_domain(get(site)),
+    Domain = get_domain(muin:pd_retrieve(site)),
     Vals = ?t:std_strs([To, Su, Cn, CC, Reply]),
     [To2, Su2, Cn2, CC2, R2] = Vals,
     Fr = case R2 of
@@ -142,7 +142,7 @@ check(To, Su, Cn, CC, Reply) ->
     [PhNo2] = ?t:std_strs([PhNo]),
     Msg2 = contact_utils:rightsize(Msg, ?SMSLength),
     {Prefix2, PhNo3} = ?t:std_phone_no(Prefix, PhNo2),
-    Log = #contact_log{idx = get(idx), type = "manual sms",
+    Log = #contact_log{idx = muin:pd_retrieve(idx), type = "manual sms",
                        to = "+" ++ Prefix2 ++ PhNo3, contents = Msg2},
     TwiML = "",
     Capability = [{manual_sms, "+" ++ Prefix2 ++ PhNo3, Msg2}],
@@ -166,9 +166,9 @@ check(To, Su, Cn, CC, Reply) ->
     {Prefix2, PhNo3} = ?t:std_phone_no(Prefix, PhNo2),
     PhNo3 = "+" ++ Prefix2 ++ PhNo2,
     Msg2 = contact_utils:rightsize(Msg, ?SMSLength),
-    Log = #contact_log{idx = get(idx), type = "automatic sms",
+    Log = #contact_log{idx = muin:pd_retrieve(idx), type = "automatic sms",
                        to = PhNo3, contents = Msg2},
-    S = get(site),
+    S = muin:pd_retrieve(site),
     case Cond of
         true ->
             case contact_utils:post_sms(AC, PhNo3, Msg2) of
@@ -256,7 +256,7 @@ create_p3([Title, Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
           ETo, ECC, EFrom, ESubject, EBody, ESig, Colour], AC) ->
     % this is a self referencing formula that needs to rewrite if the
     % cell moves
-    put(selfreference, true),
+    muin:pd_store(selfreference, true),
     [G2] = ?t:throw_std_strs([Groups]),
     [Ext2] = case Extension of
                  false -> [false];
@@ -293,7 +293,7 @@ create_p3([Title, Type2, Groups, Extension, DiallingCode, PhoneNo, SMSMsg,
     end.
 
 make_twiml(none, _, _, _) ->
-    {none, #contact_log{idx = get(idx)}};
+    {none, #contact_log{idx = muin:pd_retrieve(idx)}};
 make_twiml(Type2, DiallingCode, PhoneNo, SitePhone) ->
     Type3 = type(Type2),
     Type4 = case Type3 of
@@ -303,7 +303,7 @@ make_twiml(Type2, DiallingCode, PhoneNo, SitePhone) ->
                 none     -> "none"
 
             end,
-    Log = #contact_log{idx = get(idx), type = Type4, to = ""},
+    Log = #contact_log{idx = muin:pd_retrieve(idx), type = Type4, to = ""},
     {PhonePerms, _SMSPerms, _EmailPerms} = get_config(Type2),
     TwiML = case PhonePerms of
                 "free dial"  -> [
@@ -403,8 +403,8 @@ get_config(_)  -> ?ERR_VAL.
 'phone.out2'(PhNo, Prefix) ->
     % this is a self referencing formula that needs to rewrite if the
     % cell moves
-    put(selfreference, true),
-    Site = get(site),
+    muin:pd_store(selfreference, true),
+    Site = muin:pd_retrieve(site),
     case contact_utils:get_twilio_account(Site) of
         ?ERRVAL_PAYONLY ->
             ?ERRVAL_PAYONLY;
@@ -412,7 +412,7 @@ get_config(_)  -> ?ERR_VAL.
             #twilio_account{application_sid = AppSID,
                             site_phone_no = SitePhone} = AC,
             {Prefix2, PhNo2} = ?t:std_phone_no(Prefix, PhNo),
-            Log = #contact_log{idx = get(idx), type = "outbound call",
+            Log = #contact_log{idx = muin:pd_retrieve(idx), type = "outbound call",
                                to = "+" ++ Prefix2 ++ PhNo2},
             TwiML = [
                      #dial{callerId = SitePhone, record = true,
@@ -435,9 +435,9 @@ get_config(_)  -> ?ERR_VAL.
 'phone.in2'([Name], _AC) ->
     % this is a self referencing formula that needs to rewrite if the
     % cell moves
-    put(selfreference, true),
+    muin:pd_store(selfreference, true),
     [Name2] = ?t:std_strs([Name]),
-    Log = #contact_log{idx = get(idx), type = "inbound call", to = "Name2"},
+    Log = #contact_log{idx = muin:pd_retrieve(idx), type = "inbound call", to = "Name2"},
     TwiML = [],
     Capability = [{client_incoming, Name}],
     Type = {"softphone_type", "inbound call"},
@@ -450,10 +450,10 @@ get_config(_)  -> ?ERR_VAL.
     phone(Phone, "Phone In: ", Headline, ButtonTxt).
 
 phone(Payload, Preview, Headline, ButtonTxt) ->
-    Site = get(site),
-    Path = get(path),
-    X = get(mx),
-    Y = get(my),
+    Site = muin:pd_retrieve(site),
+    Path = muin:pd_retrieve(path),
+    X = muin:pd_retrieve(mx),
+    Y = muin:pd_retrieve(my),
     URL = hn_util:refX_to_url(#refX{site = Site, path = Path,
                                     obj = {cell, {X, Y}}}),
     HTML = "<div class='hn_softphone'>"
@@ -471,10 +471,10 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
               sp_phone = Payload}.
 
 phone2(Payload, Preview, ButtonTxt, Colour) ->
-    Site = get(site),
-    Path = get(path),
-    X = get(mx),
-    Y = get(my),
+    Site = muin:pd_retrieve(site),
+    Path = muin:pd_retrieve(path),
+    X = muin:pd_retrieve(mx),
+    Y = muin:pd_retrieve(my),
     URL = hn_util:refX_to_url(#refX{site = Site, path = Path,
                                     obj = {cell, {X, Y}}}),
     HTML = "<a class='btn btn-large hn-btn-large "  ++ Colour ++ "' href='"

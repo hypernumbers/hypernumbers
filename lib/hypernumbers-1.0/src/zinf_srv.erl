@@ -630,7 +630,7 @@ match_seg({zseg, S1},   S,   Site,  Htap) ->
         {errval, _Err}          -> error; % dunno where this came from
         {{errval, _Err}, false} -> error;
         {{error, _}, false}     -> error % Old style errs from fns
-                                   % (shouldn't exist!)
+                                         % (shouldn't exist!)
     end.
 
 % used in tests - not sure why...

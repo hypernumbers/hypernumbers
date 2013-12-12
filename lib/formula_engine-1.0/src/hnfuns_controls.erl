@@ -323,7 +323,7 @@ is_valid(Input) ->
             "";
         true ->
             [Title, Template] = typechecks:std_strs(List),
-            Templates = hn_util:get_templates(get(site)),
+            Templates = hn_util:get_templates(muin:pd_retrieve(site)),
             Id = "id_" ++ muin_util:create_name(),
             case lists:member(Template, Templates) of
                 false -> ?ERRVAL_VAL;
@@ -358,7 +358,7 @@ is_valid(Input) ->
             "";
         true ->
             [Title, Map] = typechecks:std_strs(List),
-            Maps = hn_util:get_maps(get(site)),
+            Maps = hn_util:get_maps(muin:pd_retrieve(site)),
             Id = "id_" ++ muin_util:create_name(),
             case lists:member(Map, Maps) of
                 false ->
@@ -395,7 +395,7 @@ is_valid(Input) ->
             "";
         true ->
             [Title, Page, Map] = typechecks:std_strs(List),
-            Maps = hn_util:get_maps(get(site)),
+            Maps = hn_util:get_maps(muin:pd_retrieve(site)),
             Id = "id_" ++ muin_util:create_name(),
             case lists:member(Map, Maps) of
                 false -> ?ERRVAL_VAL;
@@ -429,7 +429,7 @@ is_valid(Input) ->
         false -> "";
         true ->
             [Title, Map] = typechecks:std_strs(List),
-            Maps = hn_util:get_maps(get(site)),
+            Maps = hn_util:get_maps(muin:pd_retrieve(site)),
             Id = "id_" ++ muin_util:create_name(),
             case lists:member(Map, Maps) of
                 false -> ?ERRVAL_VAL;

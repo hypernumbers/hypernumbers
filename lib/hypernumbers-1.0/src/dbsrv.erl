@@ -273,12 +273,14 @@ update_recalc_graph([], _Site, _Graph) ->
 update_recalc_graph([Idx|Rest], Site, Graph) ->
     case digraph:vertex(Graph, Idx) of
         false ->
-            case new_db_wu:read_relationsD(Site, Idx, read) of
+            case new_db_wu:read_relationsD(Site, Idx, write) of
                 [R] ->
                     digraph:add_vertex(Graph, Idx),
                     Children = ordsets:to_list(R#relation.children),
-                    update_recalc_graph(Children, Site, Graph),
-                    [digraph:add_edge(Graph, Idx, C) || C <- Children];
+                    RangeChildren = ordsets:to_list(R#relation.range_children),
+                    AllChildren = lists:merge(Children, RangeChildren),
+                    update_recalc_graph(AllChildren, Site, Graph),
+                    [digraph:add_edge(Graph, Idx, C) || C <- AllChildren];
                 _ ->
                     ok
             end;
