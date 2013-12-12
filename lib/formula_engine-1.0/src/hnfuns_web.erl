@@ -191,7 +191,7 @@ get_lorem() ->
 'lorem.h1'([N]) when  N >= 22        -> "Fiat Justitia Ruat Caelum".
 
 'crumb.trail'([]) ->
-    trail2(lists:reverse(get(path)), []).
+    trail2(lists:reverse(muin:pd_retrieve(path)), []).
 
 trail2([], Acc) -> lists:flatten(["<a href=\"/\">" ++ ?msite ++
                                   "</a>" | Acc]);
@@ -258,12 +258,12 @@ img_(Src) ->
 
 %% site just returns the site url
 site([]) ->
-    Site = get(site),
+    Site = muin:pd_retrieve(site),
     [_Proto, [$/, $/ | Domain], _Port] = string:tokens(Site, ":"),
     Domain.
 
 siteurl([]) ->
-    Site = get(site),
+    Site = muin:pd_retrieve(site),
     [Proto, Domain, _Port] = string:tokens(Site, ":"),
     Proto ++ ":" ++ Domain.
 
@@ -271,12 +271,12 @@ segment([]) ->
     segment([0]);
 segment([N]) when is_integer(N) ->
     if N >= 0 ->
-            case get(path) of
+            case muin:pd_retrieve(path) of
                 []   -> "";
                 List -> hd(lists:reverse(List))
             end;
        N < 0 ->
-            case get(path) of
+            case muin:pd_retrieve(path) of
                 []   -> "";
                 List -> Len = length(List),
                         if Len =< -N -> "";
@@ -288,13 +288,13 @@ segment([N]) when is_integer(N) ->
 pageurl([]) -> site([]) ++ page([]).
 
 page([]) ->
-    case get(path) of
+    case muin:pd_retrieve(path) of
         [] -> "/";
         L  -> hn_util:list_to_path(L)
     end;
 page([N]) ->
     [N1] = typechecks:std_ints([N]),
-    List = get(path),
+    List = muin:pd_retrieve(path),
     Len = length(List),
     if
         N1 >= Len                -> hn_util:list_to_path(List);
@@ -416,7 +416,7 @@ img_style(_N) ->  ?ERR_VAL.
                _Else ->
                    ?ERR_VAL
            end,
-    put(recompile, true),
+    muin:pd_store(recompile, true),
     Rules = [fetch_ztable],
     Passes = [],
     [{zeds, Ranges, _, _}] = muin_collect:col([ZRef], Rules, Passes),
@@ -515,7 +515,7 @@ include([CellRef, Title]) when ?is_cellref(CellRef) ->
     include([RelRan, Title]);
 include([RelRan, Title]) when ?is_rangeref(RelRan) ->
     OldPath = RelRan#rangeref.path,
-    OrigPath = get(path),
+    OrigPath = muin:pd_retrieve(path),
     NewPath = muin_util:walk_path(OrigPath, OldPath),
 %% DIRTY HACK. This forces muin to setup dependencies, and checks
 %% for circ errors.
