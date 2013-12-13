@@ -1227,11 +1227,15 @@ init_proc_dict(#muin_rti{site          = Site,
                          range_refs    = RangeRefs,
                          infinite_refs = InfRefs,
                          errors        = Errs,
-                         is_zcalc      = IsZCalc}) ->
+                         is_zcalc      = IsZCalc} = RTI) ->
     %% Populate the process dictionary
     %% some values have been set, but most must be written over
     Rec = pd_retrieve(),
-    Rec2 = Rec#muin_context{site          = Site,
+    Rec2 = case Rec of
+         undefined -> #muin_context{};
+         R         -> R
+    end,
+    Rec3 = Rec2#muin_context{site          = Site,
                             path          = Path,
                             col           = Col,
                             row           = Row,
@@ -1243,7 +1247,8 @@ init_proc_dict(#muin_rti{site          = Site,
                             infinite_refs = InfRefs,
                             errors        = Errs,
                             is_zcalc      = IsZCalc},
-    ok = pd_store(Rec2).
+    ok = pd_store(Rec3).
+
 
 special_flatten([], Acc)                      -> lists:reverse(Acc);
 special_flatten([H | T], Acc) when is_list(H) -> NewAcc = special_f2(H, Acc),
