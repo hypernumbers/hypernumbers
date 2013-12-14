@@ -10,6 +10,7 @@
 -include("spriki.hrl").
 
 -export([
+         force_whole_server_recalc/0,
          force_dbsrv/1,
          dump_lost_idxs/1,
          tick/0,
@@ -37,6 +38,32 @@
 %%% Debug Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+force_whole_server_recalc() ->
+    Sites = hn_setup:get_sites(),
+    RecalcFun = fun(X) ->
+                        %% clear all the dirty queues
+                        Tbl1 = new_db_wu:trans(X, dirty_for_zinf),
+                        Tbl2 = new_db_wu:trans(X, dirty_queue_cache),
+                        Tbl3 = new_db_wu:trans(X, dirty_queue),
+                        Tbl4 = new_db_wu:trans(X, dirty_zinf),
+                        {atomic, ok} = mnesia:clear_table(Tbl1),
+                        {atomic, ok} = mnesia:clear_table(Tbl2),
+                        {atomic, ok} = mnesia:clear_table(Tbl3),
+                        {atomic, ok} = mnesia:clear_table(Tbl4),
+                        io:format("Forcing full recalc of ~p~n", [X]),
+                        ok = new_db_api:recalc_site_EMERGENCYD(X),
+                        ok = finished_recalcing(X)
+                end,
+    [RecalcFun(X) || X <- Sites].
+
+finished_recalcing(X) ->
+    timer:sleep(1000),
+    case dbsrv:is_busy(X) of
+        false -> ok;
+        Other -> timer:sleep(1000),
+                 finished_recalcing(X)
+    end.
+
 clear_dirty_FIX(Site, {_, _, _} = Id) ->
     Fun = fun() ->
                   Tbl = new_db_wu:trans(Site, dirty_queue),

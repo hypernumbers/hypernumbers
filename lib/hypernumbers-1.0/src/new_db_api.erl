@@ -96,6 +96,11 @@
          write_activity_DEBUG/3
         ]).
 
+%% will force a web site to recalc completes
+-export([
+         recalc_site_EMERGENCYD/1
+        ]).
+
 % fns for logging
 -export([
          get_logs/1
@@ -866,6 +871,16 @@ read_attribute(RefX, Field) when is_record(RefX, refX) ->
                   ?wu:read_ref_field(XRefX, Field, read)
           end,
     read_activity(RefX, Fun).
+
+recalc_site_EMERGENCYD(Site) ->
+    Tbl = ?wu:trans(Site, item),
+    Fun = fun() ->
+                  Idxs = mnesia:all_keys(Tbl),
+                  io:format("Marking ~p cells on ~p dirty~n",
+                            [length(Idxs), Site]),
+                  new_db_wu:mark_these_idxs_dirtyD(Idxs, Site, nil)
+          end,
+    mnesia:activity(transaction, Fun).
 
 recalc(#refX{} = RefX) ->
     Fun = fun() ->

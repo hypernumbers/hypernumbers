@@ -332,6 +332,8 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 process_zs(Site, Tree) ->
     %StartTime = get_time(),
+    %% need to set the authorisation to nil to enable z calcs to run
+    %% muin:pd_store(auth_req, nil),
     Ret = new_db_api:process_dirty_zinfs(Site, Tree, fun add/2, fun del/2),
     %EndTime = get_time(),
     %Msg = io_lib:format("~p", [EndTime - StartTime]),
@@ -340,6 +342,8 @@ process_zs(Site, Tree) ->
 
 check_zs(Site, Tree) ->
     %StartTime = get_time(),
+    %% muin:pd_store(auth_req, nil),
+    Ret = new_db_api:process_dirty_zinfs(Site, Tree, fun add/2, fun del/2),
     ok = new_db_api:process_dirties_for_zinf(Site, Tree, fun check/2),
     %EndTime = get_time(),
     %Msg = io_lib:format("~p", [EndTime - StartTime]),
