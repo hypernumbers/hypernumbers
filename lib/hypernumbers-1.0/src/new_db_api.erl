@@ -882,7 +882,7 @@ clear_all_queues_EMERGENCYD(Site) ->
     Tbl3 = new_db_wu:trans(Site, dirty_queue),
     Tbl4 = new_db_wu:trans(Site, dirty_zinf),
     {atomic, ok} = mnesia:clear_table(Tbl1),
-                       {atomic, ok} = mnesia:clear_table(Tbl2),
+    {atomic, ok} = mnesia:clear_table(Tbl2),
     {atomic, ok} = mnesia:clear_table(Tbl3),
     {atomic, ok} = mnesia:clear_table(Tbl4),
     ok.
