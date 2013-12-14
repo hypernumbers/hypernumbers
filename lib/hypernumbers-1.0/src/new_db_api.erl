@@ -98,7 +98,8 @@
 
 %% will force a web site to recalc completes
 -export([
-         recalc_site_EMERGENCYD/1
+         recalc_site_EMERGENCYD/1,
+         clear_all_queues_EMERGENCYD/1
         ]).
 
 % fns for logging
@@ -871,6 +872,20 @@ read_attribute(RefX, Field) when is_record(RefX, refX) ->
                   ?wu:read_ref_field(XRefX, Field, read)
           end,
     read_activity(RefX, Fun).
+
+clear_all_queues_EMERGENCYD(Site) ->
+    %% clear all the dirty queues
+    io:format("Clearing all the dirty queues of ~p~n",
+              [Site]),
+    Tbl1 = new_db_wu:trans(Site, dirty_for_zinf),
+    Tbl2 = new_db_wu:trans(Site, dirty_queue_cache),
+    Tbl3 = new_db_wu:trans(Site, dirty_queue),
+    Tbl4 = new_db_wu:trans(Site, dirty_zinf),
+    {atomic, ok} = mnesia:clear_table(Tbl1),
+                       {atomic, ok} = mnesia:clear_table(Tbl2),
+    {atomic, ok} = mnesia:clear_table(Tbl3),
+    {atomic, ok} = mnesia:clear_table(Tbl4),
+    ok.
 
 recalc_site_EMERGENCYD(Site) ->
     Tbl = ?wu:trans(Site, item),
