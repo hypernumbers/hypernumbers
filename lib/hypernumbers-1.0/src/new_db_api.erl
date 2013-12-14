@@ -878,9 +878,13 @@ recalc_site_EMERGENCYD(Site) ->
                   Idxs = mnesia:all_keys(Tbl),
                   io:format("Marking ~p cells on ~p dirty~n",
                             [length(Idxs), Site]),
-                  new_db_wu:mark_these_idxs_dirtyD(Idxs, Site, nil)
+                  [ok = new_db_wu:mark_these_idxs_dirtyD([X], Site, nil)
+                   || X <- Idxs],
+                  ok
           end,
-    mnesia:activity(transaction, Fun).
+    %% use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet").
 
 recalc(#refX{} = RefX) ->
     Fun = fun() ->
