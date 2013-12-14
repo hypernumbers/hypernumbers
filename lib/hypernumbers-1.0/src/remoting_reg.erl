@@ -114,6 +114,10 @@ notify_refresh(Site, Path) ->
                                    term_to_binary(Msg)}).
 
 %% @doc  Notify server of change to a cell
+%% we need to suppress notification of range changes to the front end
+%% PROLLY should NOT be done here but at source
+notify_change(_Site, _Path, {range, _}, _Attrs) ->
+    ok;
 notify_change(Site, Path, {RefType, _} = R, Attrs) ->
     Fun = fun({"__"++_Hidden, _}) -> false; (_X) -> true end,
     FilteredAttrs = lists:filter(Fun, Attrs),
