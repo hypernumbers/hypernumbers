@@ -59,8 +59,8 @@ force_whole_server_recalc() ->
 finished_recalcing(X) ->
     timer:sleep(1000),
     case dbsrv:is_busy(X) of
-        false -> ok;
-        Other -> timer:sleep(1000),
+        false  -> ok;
+        _Other -> timer:sleep(1000),
                  finished_recalcing(X)
     end.
 
