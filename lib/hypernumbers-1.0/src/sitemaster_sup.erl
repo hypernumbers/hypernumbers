@@ -73,4 +73,4 @@ init([]) ->
 
 gen_child_spec(S) ->
     {S, {site_sup, start_link, [S]},
-     permanent, infinity, supervisor, [site_sup]}.
+     temporary, infinity, supervisor, [site_sup]}.
