@@ -550,13 +550,16 @@ jsonify_val({K, V}) ->
         {K, V}
     catch
         error: _Err ->
-            error_logger:error_msg("#MOCHIJSON! error ~p ~p~n", [K, V]),
+            error_logger:error_msg("#MOCHIJSON! error ~p ~p~n- ~p~n",
+                                   [K, V, erlang:get_stacktrace()]),
             {K, '#MOCHIJSON!'};
         exit: _Err ->
-            error_logger:error_msg("#MOCHIJSON! exit ~p ~p~n", [K, V]),
+            error_logger:error_msg("#MOCHIJSON! error ~p ~p~n- ~p~n",
+                                   [K, V, erlang:get_stacktrace()]),
             {K, '#MOCHIJSON!'};
         throw: _Err ->
-            error_logger:error_msg("#MOCHIJSON! throw ~p ~p~n", [K, V]),
+            error_logger:error_msg("#MOCHIJSON! error ~p ~p~n- ~p~n",
+                                   [K, V, erlang:get_stacktrace()]),
             {K, '#MOCHIJSON!'}
     end.
 
