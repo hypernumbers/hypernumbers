@@ -33,7 +33,7 @@ content(Ref) -> content(Ref, webpage).
 %% by the given Ref, along with the width of said html.
 -spec content(#refX{}, atom()) -> {{[textdata()], integer(), integer()}, #render{}}.
 content(Ref, Type) ->
-    Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
+    Data = lists:sort(fun order_objs/2, read_data_without_page_or_range(Ref)),
     Cells = [{{X,Y},L} || {#xrefX{obj={cell,{X,Y}}},L} <- Data],
     RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)}
              || {#xrefX{obj={row,{R,R}}},RPs} <- Data],
@@ -65,11 +65,12 @@ content(Ref, Type) ->
                      js_reload = Js_r2, title = Title},
     {layout(Ref, Type, Cells, ColWs, RowHs, Palette), Addons}.
 
-read_data_without_page(Ref) ->
+read_data_without_page_or_range(Ref) ->
     XRefs = new_db_api:read_intersect_ref(Ref),
-    [ {XRefX, Val} || {XRefX, Val} <- XRefs,
-                      element(1, XRefX#xrefX.obj) =/= page,
-                      Val =/= []].
+    [{XRefX, Val} || {XRefX, Val} <- XRefs,
+                     element(1, XRefX#xrefX.obj) =/= page,
+                     element(1, XRefX#xrefX.obj) =/= range,
+                     Val =/= []].
 
 -spec layout(#xrefX{}, atom(), cells(), cols(), rows(), gb_tree())
 -> {[textdata()], integer(), integer()}.
