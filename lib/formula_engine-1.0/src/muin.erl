@@ -881,6 +881,7 @@ do_cell(RelPath, Rowidx, Colidx, Type, ValType, OverrideCantInc) ->
                        get_cell_info(?msite, Path, Colidx, Rowidx, Type,
                                      ValType, OverrideCantInc)
                end,
+    %% if the authority is nil it is a recalc so we don't do a security check
     case ?mar of
         nil   -> get_value_and_link(FetchFun);
         _Else -> case auth_srv:get_any_main_view(?msite, Path, ?mar) of
@@ -1227,7 +1228,7 @@ init_proc_dict(#muin_rti{site          = Site,
                          range_refs    = RangeRefs,
                          infinite_refs = InfRefs,
                          errors        = Errs,
-                         is_zcalc      = IsZCalc} = RTI) ->
+                         is_zcalc      = IsZCalc}) ->
     %% Populate the process dictionary
     %% some values have been set, but most must be written over
     Rec = pd_retrieve(),
