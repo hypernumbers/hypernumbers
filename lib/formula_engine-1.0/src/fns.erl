@@ -3,7 +3,8 @@
 -module(fns).
 
 -export([
-         get_modules/0
+         get_modules/0,
+         transform/2
         ]).
 
 get_modules() ->
@@ -31,3 +32,9 @@ get_modules() ->
      hnfuns_site,
      hnfuns_bootstrap
     ].
+
+%% transform("myfun." ++ R, Args) ->
+%%     {W, H} = muin:get_dims(R),
+%%     {list_to_atom("myfun."), [W , H | Args]};
+transform(List, Args) ->
+    {list_to_atom(List), Args}.

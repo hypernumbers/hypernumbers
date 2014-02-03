@@ -53,7 +53,8 @@
          toidx/1,
          do_cell/6,
          parse/2,
-         expand/1
+         expand/1,
+         get_dims/1
         ]).
 
 %% exports for the process dictionary
@@ -218,21 +219,6 @@ eval(Value) ->
 %% it won't - so stick it up yez
 transform("user." ++ R, Args)  ->
     {user_defined_function, [list_to_atom("user." ++ R) | Args]};
-transform("tim.alert." ++ R, Args) ->
-    {W, H} = get_dims(R),
-    {list_to_atom("tim.alert."), [W, H | Args]};
-transform("tim.box." ++ R, Args) ->
-    {W, H} = get_dims(R),
-    {list_to_atom("tim.box."), [W, H | Args]};
-transform("tim.plainbox." ++ R, Args) ->
-    {W, H} = get_dims(R),
-    {list_to_atom("tim.plainbox."), [W, H | Args]};
-transform("tim.ruledbox." ++ R, Args) ->
-    {W, H} = get_dims(R),
-    {list_to_atom("tim.ruledbox."), [W, H | Args]};
-transform("tim.tabs." ++ R, Args) ->
-    {W, H} = get_dims(R),
-    {list_to_atom("tim.tabs."), [W, H | Args]};
 transform("generic.integration." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("generic.integration."), [W, H | Args]};
@@ -302,7 +288,7 @@ transform("ztable." ++ R, Args) ->
 transform("debug.array." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("debug.array."), [W , H | Args]};
-                                                % stop 'em getting swallowed by phone.menu.WxH
+%% stop 'em getting swallowed by phone.menu.WxH
 transform("phone.menu." ++ R = Fun, Args) ->
     case R of
         Fn when Fn == "say"
@@ -325,7 +311,7 @@ transform("manage.api.keys." ++ R, Args) ->
 transform("users.and.groups." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("users.and.groups."), [W , H | Args]};
-                                                % stop 'em getting swallowed by factory.WxH
+%% stop 'em getting swallowed by factory.WxH
 transform("factory." ++ R = Fun, Args) ->
     case R of
         "info"      -> {list_to_atom(Fun), Args};
@@ -340,13 +326,7 @@ transform("upload.file." ++ R, Args) ->
 transform("html.panel." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("html.panel."), [W , H | Args]};
-                                                % single parameter stuff
-transform("tim.headline." ++ R, Args) ->
-    {list_to_atom("tim.headline."), [R | Args]};
-transform("tim.vertical.line." ++ R, Args) ->
-    {list_to_atom("tim.vertical.line."), [R | Args]};
-transform("tim.horizontal.line." ++ R, Args) ->
-    {list_to_atom("tim.horizontal.line."), [R | Args]};
+%% single parameter stuff
 transform("horizontal.line." ++ R, Args) ->
     {list_to_atom("horizontal.line."), [R | Args]};
 transform("vertical.line." ++ R, Args) ->
@@ -377,7 +357,7 @@ transform("html." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("html."), [W , H | Args]};
 %% terminal clause
-transform(List, Args) -> {list_to_atom(List), Args}.
+transform(List, Args) -> fns:transform(List, Args).
 
 get_dims(String) -> case string:tokens(String, "x") of
                         [W, H] -> {W, H};
