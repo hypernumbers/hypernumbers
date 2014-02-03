@@ -63,8 +63,10 @@
     Preview = "ANSWERPHONE: " ++ Title,
     Resize = #resize{width = 2, height = 2},
     RECORD = #record{method = "GET", finishOnKey = "*"},
+    Form = #form{callback = {actions_hnfuns, run_action}},
     #spec_val{val = "", preview = Preview, resize = Resize,
-              sp_phone = #phone{twiml = [SAY, RECORD]}}.
+              sp_phone = #phone{twiml = [SAY, RECORD]},
+              rawform = #rawform{form = Form}}.
 
 'manual.email'([To, Subject, Contents]) ->
     'manual.email'([To, Subject, Contents, [], []]);
@@ -467,8 +469,9 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
         ++ "</div>",
     PreV = Preview ++ ButtonTxt,
     Resize = #resize{width = 2, height = 4},
+    Form = #form{callback = {actions_hnfuns, run_action}},
     #spec_val{val = HTML, preview = PreV, resize = Resize,
-              sp_phone = Payload}.
+              sp_phone = Payload, rawform = #rawform{form = Form}}.
 
 phone2(Payload, Preview, ButtonTxt, Colour) ->
     Site = muin:pd_retrieve(site),
@@ -486,8 +489,9 @@ phone2(Payload, Preview, ButtonTxt, Colour) ->
     Reload = ["HN.BootstrapHelper.reload();"],
     CSS = ["/bootstrap/css/bootstrap.css", "/bootstrap/css/helper.css"],
     Incs = #incs{js = JS, js_reload = Reload, css = CSS},
+    Form = #form{callback = {actions_hnfuns, run_action}},
     #spec_val{val = HTML, preview = PreV, resize = Resize, sp_phone = Payload,
-             sp_incs = Incs}.
+              sp_incs = Incs, rawform = #rawform{form = Form}}.
 
 % exemption for testing domain
 is_valid_email(_List, "hypernumbers.dev") ->

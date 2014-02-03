@@ -497,7 +497,8 @@ create_b2(List) ->
             % record format and then compare the records to see if the
             % action is approved
             Form = #form{id = {'create-button', Title}, kind = "create-button",
-                         attrs = Commands3},
+                         attrs = Commands3,
+                         callback = {actions_hnfuns, run_actions}},
             Preview = Title,
             Resize = #resize{height = 2, width = 2},
             #spec_val{val = HTML, sp_webcontrol = Form,

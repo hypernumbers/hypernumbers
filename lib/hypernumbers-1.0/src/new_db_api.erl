@@ -15,6 +15,7 @@
 -include("errvals.hrl").
 
 -export([
+         get_callbackD/1,
          write_user_to_cacheD/1,
          uid_to_emailD/1,
          email_to_uidD/1,
@@ -132,6 +133,15 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_callbackD(RefX) ->
+    Fun = fun() ->
+                  #xrefX{site = S, idx = Idx} = new_db_wu:refX_to_xrefXD(RefX),
+                  Tbl = new_db_wu:trans(S, form),
+                  [#form{callback = C}] = mnesia:read(Tbl, Idx, read),
+                  C
+          end,
+    mnesia:activity(transaction, Fun).
+
 write_user_to_cacheD(User) ->
     Fun = fun() ->
                   ok = mnesia:write(passport_cached, User, write)

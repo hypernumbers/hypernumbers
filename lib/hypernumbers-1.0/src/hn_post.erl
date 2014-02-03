@@ -342,7 +342,8 @@ post(Ref = #refX{obj = {cell, _}}, _Qry,
                 uid = Uid}) ->
     {struct, Act} = Actions,
     Status = element(1, hd(Act)),
-    case hn_actions:run_actions(Ref, Env, Act, Uid) of
+    {Mod, Fn} = new_db_api:get_callbackD(Ref),
+    case Mod:Fn(Ref, Env, Act, Uid) of
         "success"              -> ok = status_srv:update_status(Uid, Ref, Status),
                                   hn_mochi:json(Env, "success");
         {"successresp", Resp1} -> ok = status_srv:update_status(Uid, Ref, Status),

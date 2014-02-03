@@ -145,7 +145,8 @@ make_j2([H | T], Acc) ->
     Resize = #resize{width = 4, height = 20},
     Preview = "Invite Users",
     Control = #form{id = {'invite-user', "Edit"},
-                    kind = "invite-user"},
+                    kind = "invite-user",
+                    callback = {actions_hnfuns, action}},
     #spec_val{val = HTML, resize = Resize, sp_webcontrol = Control,
               sp_incs = Incs, preview = Preview, sp_site = true}.
 
@@ -184,7 +185,8 @@ u_and_g(W, H, Type) ->
             Reload = ["HN.UsersAndGroups.reload_u_and_g();"],
             Incs = #incs{js= JS, js_reload = Reload},
             Control = #form{id = {'users-and-groups', "Edit"},
-                            kind = "users-and-groups"},
+                            kind = "users-and-groups",
+                            callback = {actions_hnfuns, run_actions}},
             #spec_val{val = lists:flatten(HTML), resize = Resize,
                       sp_webcontrol = Control, preview = Preview,
                       sp_incs = Incs, sp_site = true}

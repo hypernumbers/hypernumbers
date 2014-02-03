@@ -5,7 +5,7 @@
 %%% @end
 %%% Created : 16 Oct 2012 by gordon@vixo.com
 
--module(hn_actions).
+-module(actions_hnfuns).
 
 -export([
          run_actions/4
@@ -158,7 +158,8 @@ run_actions(#refX{} = RefX, _Env, [{Act, {struct, _L}} = Payload], Uid)
                                 500
             end
     end;
-run_actions(#refX{site = S, path = P} = RefX, _Env, [{_, {array, Json}}], Uid) ->
+run_actions(#refX{site = S, path = P} = RefX, _Env,
+            [{"createpages", {array, Json}}], Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
                    N2 = list_to_integer(N),
                    {N2, lists:flatten([json_recs:json_to_rec(X)
