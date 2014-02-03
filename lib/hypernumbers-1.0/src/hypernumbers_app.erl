@@ -71,7 +71,7 @@ ensure_dirs() ->
 % these need to be loaded for exported_function() to work
 load_muin_modules() ->
     [ {module, Module} = code:ensure_loaded(Module)
-      || Module <- muin:get_modules() ],
+      || Module <- fns:get_modules() ],
     ok.
 
 init_tables() ->

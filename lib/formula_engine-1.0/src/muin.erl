@@ -41,7 +41,6 @@
          col/1,
          row/1,
          path/1,
-         get_modules/0,
          test_formula/1,
          funcall/2,
          call_fun/3,
@@ -481,7 +480,7 @@ funcall(Fname, Args0) ->
                true  -> Args0;
                false -> [external_eval(X) || X <- prefetch_references(Args0)]
            end,
-    Modules = get_modules(),
+    Modules = fns:get_modules(),
     case call_fun(Fname, Args, Modules) of
         {error, not_found} -> userdef_call(Fname, Args);
         {ok, Value}        -> Value
@@ -489,8 +488,8 @@ funcall(Fname, Args0) ->
 
 call_fun(Fun, Args, []) ->
     %% mebbies the VM has unloaded the function, so try and reload them
-    case force_load(get_modules()) of
-        reloaded -> call_fun(Fun, Args, get_modules());
+    case force_load(fns:get_modules()) of
+        reloaded -> call_fun(Fun, Args, fns:get_modules());
         loaded   -> {error, not_found}
     end;
 
@@ -515,32 +514,6 @@ force_load(Modules) ->
                   end
           end,
     lists:foldl(Fun, loaded, Modules).
-
-get_modules() ->
-    [
-     stdfuns_text,
-     stdfuns_math,
-     stdfuns_stats,
-     stdfuns_date,
-     stdfuns_financial,
-     stdfuns_info,
-     stdfuns_lookup_ref,
-     stdfuns_eng,
-     stdfuns_logical,
-     stdfuns_db,
-     hnfuns_graphs,
-     hnfuns_graphs2,
-     hnfuns_web,
-     hnfuns_integration,
-     hnfuns_html,
-     hnfuns_forms,
-     hnfuns_contacts,
-     hnfuns_controls,
-     hnfuns_z,
-     hnfuns_special,
-     hnfuns_site,
-     hnfuns_bootstrap
-    ].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 process_for_gui([Fn | []])  ->
