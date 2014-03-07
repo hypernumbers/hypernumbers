@@ -33,6 +33,8 @@ get_modules() ->
      hnfuns_bootstrap
     ].
 
+%% this function stub lets you write funcs with row and column sizes like:
+%% myfun.4x5(1, 2, 3).
 %% transform("myfun." ++ R, Args) ->
 %%     {W, H} = muin:get_dims(R),
 %%     {list_to_atom("myfun."), [W , H | Args]};
