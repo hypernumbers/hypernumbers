@@ -3,7 +3,34 @@
 %%! -boot ebin/start_ssl -proto_dist inet_ssl -ssl_dist_opt server_certfile "priv/keys/servercert.pem" -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" -ssl_dist_opt keyfile "priv/keys/key.pem"
 
 cookie() ->
-    completelysecure.
+    CookieFile = ".erlang.cookie",
+    case filelib:is_file(CookieFile) andalso not filelib:is_dir(CookieFile) of
+        true ->
+            io:format("cookie exists~n"),
+            case file:open(CookieFile, read) of
+                {ok, Id} ->
+                    {ok, ExistingCookie} = file:read_line(Id),
+                    io:format("ExistingCookie is ~p~n", [ExistingCookie]),
+                    ok = file:close(Id),
+                    list_to_atom(ExistingCookie);
+                _ ->
+                    exit(cookie_read_error)
+            end;
+        false ->
+            io:format("cookie doesn't exist~n"),
+            Cookie = crypto:rand_uniform(round(math:pow(2,128)),
+                                         round(math:pow(2,129)-1)),
+            Cookie2 = "randomcookie_" ++ integer_to_list(Cookie),
+            case file:open(CookieFile, [write]) of
+                {ok, Id} ->
+                    io:format("Cookie2 is ~p~n", [Cookie2]),
+                    ok = io:fwrite(Id, "~s", [Cookie2]),
+                    ok = file:close(Id),
+                    Cookie2;
+                _ ->
+                    exit(cookie_write_error)
+            end
+    end.
 
 main([]) ->
     usage();
