@@ -1,5 +1,6 @@
 %%%-------------------------------------------------------------------
 %%% file        ms_util.erl
+%%% @copyright (C) 2011 - 2014, Hypernumbers.com
 %%% @author     Gordon Guthrie gordon@hypernumbers.com
 %%% @doc        this is the match spec utilities module
 %%%             it works closely with ms_util2.erl which is
@@ -9,6 +10,24 @@
 %%% Created     :  3 Sep 2008 by Gordon Guthrie
 %%% @private
 %%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(ms_util).
 
 -export([make_ms/2, make_record/2]).

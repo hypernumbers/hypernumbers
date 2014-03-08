@@ -1,6 +1,23 @@
-%%% @copyright (C) 2010, Hypernumbers Ltd.
+%%% @copyright (C) 2010-2014, Hypernumbers Ltd.
 %%% Note: The admin grouped is treated specially, and is expected to be there.
 %%% it must always be created, and never deleted.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(hn_groups).
 

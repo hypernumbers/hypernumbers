@@ -1,11 +1,28 @@
 %%% @author    Gordon Guthrie
 %%% @author    Jakub Chlanda
-%%% @copyright (C) 2011, Hypernumbers Ltd
+%%% @copyright (C) 2011-2014, Hypernumbers Ltd
 %%% @doc
 %%%		Implements famous paper "A User-Centred Approach to Functions in Excel"
 %%%		by Simon Peyton Jones, Alan Blackwell and Margaret Burnett
 %%% @end
 %%% Created :  15 Jun 2011
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(curie).
 

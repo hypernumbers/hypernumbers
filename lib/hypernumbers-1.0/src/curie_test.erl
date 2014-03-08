@@ -1,10 +1,28 @@
 %%% @author    Jakub Chlanda
-%%% @copyright (C) 2011, Hypernumbers Ltd
+%%% @copyright (C) 2011-2014, Hypernumbers Ltd
 %%% @doc
 %%%		Test suite for curie.erl
 %%%		Use test_me/8 to simulate subbmition of user_defined_fn wizard.
 %%% @end
 %%% Created :  21 Jul 2011
+
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(curie_test).
 
@@ -26,7 +44,7 @@ test_write(Site, Page, Name, Description, OutputValue, ListOfParameterNames, Lis
     Params = get_parameters(Site, Page, ListOfParameterNames,
                             ListOfParameterDescriptions,
                             ListOfParameterValues, []),
-    
+
 	Entry = {struct,	[{	"write_user_fn",
 										{struct,	[	{site, Site},
 														{page, String_Page},
@@ -36,8 +54,8 @@ test_write(Site, Page, Name, Description, OutputValue, ListOfParameterNames, Lis
 														{parameters, {array, Params}}
 										]}
 					}]
-			},    
-    
+			},
+
     Json_Entry = lists:flatten(mochijson:encode(Entry)),
     % Cookie lives only 7 days!
     Auth = "test!hypernumbers.com|90a9b1042a97f45c008d1949b3cf25a2|63480704413|de3b4a5f22afae3b4452c176934922dd",
@@ -46,7 +64,7 @@ test_write(Site, Page, Name, Description, OutputValue, ListOfParameterNames, Lis
                           {"accept", "application/json"},
                           {"cookie", Auth}],
                          "", Json_Entry }, [], []).
-	
+
 
 %% curie_test:test_delete("http://hypernumbers.dev:9000", "user.normalise").
 test_delete(Site, Function_Name)	->
@@ -64,7 +82,7 @@ test_delete(Site, Function_Name)	->
                           {"accept", "application/json"},
                           {"cookie", Auth}],
                          "", Json_Entry }, [], []).
-	
+
 
 %% curie_test:test_read("http://hypernumbers.dev:9000", "user.normalise").
 test_read(Site, Function_Name)	->
@@ -83,8 +101,8 @@ test_read(Site, Function_Name)	->
                           {"accept", "application/json"},
                           {"cookie", Auth}],
                          "", Json_Entry }, [], []).
-                         
-	
+
+
 get_parameters(_Site, _Page, [], [], [], Parameters)	->
     lists:reverse(Parameters);
 

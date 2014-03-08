@@ -1,9 +1,28 @@
+%%% @copyright (C) 2007 - 2014, Hypernumbers.com
 %%% @doc    This module provides utilities for handling the
 %%%         number/text formatting for a cell
 %%%         Created the 11th March 2008
 %%%         Cut out the 31st August 2008
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 %%% @private
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(format_util).
 
 %% Standard Interfaces
