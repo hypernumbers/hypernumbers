@@ -1,3 +1,5 @@
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
+%%% This module is licensed under the Erlang Public License V1.0
 %% This defines a series of constants taken from the Open Office
 %% specification of the Microsoft Biff8 and Biff8X file formats
 

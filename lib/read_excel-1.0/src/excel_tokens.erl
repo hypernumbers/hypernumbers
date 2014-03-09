@@ -1,5 +1,6 @@
 %%%-------------------------------------------------------------------
 %%% File    excel_tokens.erl
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
 %%% @author Gordon Guthrie <gordon@hypernumberftAs.com>
 %%% @doc    This module parses the RPN tokens what Excel uses to store
 %%%         the formulae in cells
@@ -7,6 +8,7 @@
 %%% @end
 %%% Created     : 11th Jan 2008 by Gordon Guthrie
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(excel_tokens).
 
 -export([parse_tokens/4]).

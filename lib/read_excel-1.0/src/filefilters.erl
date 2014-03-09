@@ -1,5 +1,6 @@
 %%%-------------------------------------------------------------------
 %%% File     filefilters.erl
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
 %%% @author  Gordon Guthrie gordon@hypernumbers.com
 %%% @doc     This module runs Microsoft Office filters.
 %%%
@@ -11,6 +12,7 @@
 %%% @end
 %%% Created     :  4 Apr 2007 by Gordon Guthrie
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(filefilters).
 
 %%% Exports

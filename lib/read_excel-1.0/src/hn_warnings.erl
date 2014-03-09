@@ -1,11 +1,12 @@
 %%%-------------------------------------------------------------------
 %%% @author     Gordon Guthrie
-%%% @copyright (C) 2009, Hypernumbers Ltd
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd
 %%% @doc       This document writes warnings for unsupported functions
 %%%
 %%% @end
 %%% Created : 17 Mar 2009 by <gordonguthrie@hypernumbers.com>
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(hn_warnings).
 
 -include("working_fns.hrl").
@@ -21,18 +22,18 @@ warnings1(FuncVar, H, Tbl) ->
     % whose name is the head of the arguments list...
     Nm    = get_name(H, FuncVar),
     Index = ms_util2:get_index(help, name) + 1, % we are working with the raw tuple here
-    
+
     case lists:keysearch(Nm, Index, ?WORKING_FNS) of
-        false ->  
+        false ->
             Str = "Function " ++ Nm ++ " "
                 "is used in your spreadsheet but "++
                 "not supported in Hypernumbers "++
                 "at the moment!",
             excel_util:write(Tbl, warnings, [Nm | Str]);
-        
-        {value, #help{warning = ""}} -> 
+
+        {value, #help{warning = ""}} ->
             ok;
-        
+
         {value, #help{warning = Warning}} ->
             excel_util:write(Tbl, warnings, [Nm | Warning])
 
@@ -42,6 +43,6 @@ get_name(H, 255) ->
     {string, Name} = H,
     Name;
 get_name(_H, FuncVar) ->
-    excel_rev_comp:macro_to_string_WARNING(FuncVar). 
+    excel_rev_comp:macro_to_string_WARNING(FuncVar).
 
-    
+

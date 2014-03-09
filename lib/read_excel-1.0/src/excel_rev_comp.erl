@@ -1,5 +1,6 @@
 %%%-------------------------------------------------------------------
 %%% File    excel_rev_comp.erl
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 %%% @doc     This is the reverse compiler for the Excel RPN token
 %%%          stream that turns the internal representation of an Excel
@@ -8,6 +9,7 @@
 %%% @end
 %%% Created     : 11th Jan 2008 by Gordon Guthrie
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(excel_rev_comp).
 
 -export([reverse_compile/4]).
@@ -44,10 +46,10 @@ rev_comp(_Index,[],_TokArr,Stack,_Tbl) ->
     "="++to_str(lists:reverse(Stack));
 
 %% tExp1
-%% tExp is a placeholder for a shared or array formula 
+%% tExp is a placeholder for a shared or array formula
 %% we treat them differently
-%% 
-%% so first we read the array/shared formula then we push the 
+%%
+%% so first we read the array/shared formula then we push the
 %% shared formula onto the Stack in place of the tExp one and carry on
 rev_comp(I,[{expr_formula_range,{tExp,[Sheet,Row,Col], {return,none}}}|T],
          TokArr,Stack,Tbl) ->
@@ -59,7 +61,7 @@ rev_comp(I,[{expr_formula_range,{tExp,[Sheet,Row,Col], {return,none}}}|T],
     end;
 
 %% tTbl
-%% used in what-if tables and stuff - not implemented yet!    
+%% used in what-if tables and stuff - not implemented yet!
 
 %% tAdd tSub tDiv tMul tPower tConcat tLT tLE tEQ tGE tGT tNE tIsect
 %% Pop two off the stack and the build an operator set backwards
@@ -324,7 +326,7 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
 rev_comp(Index,[{name_xref,{tNameX, [{reference_index,Ref},
                                      {name_index, NameIdx}, _Type],
                             _Ret}}|T],TokArr,Stack,Tbl) ->
-    
+
     [{_Idx, [{extbook_index, EXBIdx}, {firstsheet,FirstIdx}, _]}]
         = ?read(Tbl,tmp_extsheets, Ref),
 
@@ -334,36 +336,36 @@ rev_comp(Index,[{name_xref,{tNameX, [{reference_index,Ref},
         case FirstIdx of
             ?EXTERNALBOOK ->
                 case Worksheet of
-                    {this_file, expanded} ->                        
+                    {this_file, expanded} ->
                         [{_I2, [{extbook, _E},{sheetindex, _S}, {type, _},
                                 {name, LocalName}, _V]}]
-                            = ?read(Tbl,tmp_names,NameIdx),              
+                            = ?read(Tbl,tmp_names,NameIdx),
                         {{sheet,SheetName},_,_}=Index,
                         EscSheet=excel_util:esc_tab_name(SheetName),
                         "../"++EscSheet++"/"++LocalName;
-                    
+
                     {skipped, add_ins} ->
-                        % First get all the externames with the 
+                        % First get all the externames with the
                         % EXBindex of EXBIdx now get the sheet name
                         {value, {_Name, Tid}}
                             = lists:keysearch(tmp_externnames, 1, Tbl),
-                        ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}), 
+                        ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}),
                         get_extname(ExtNameList, NameIdx);
-                    
+
                     _ ->
-                        % First get all the externames with the 
+                        % First get all the externames with the
                         % EXBindex of EXBIdx get the cell name
                         {{sheet,S}, {row_index, R}, {col_index, C}} = Index,
                         % now get the sheet name
                         {value, {_TableName, Tid}}
                             = lists:keysearch(tmp_externnames, 1, Tbl),
-                        ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}), 
+                        ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}),
                         ExtName = get_extname(ExtNameList, NameIdx),
                         % now get the file name
                         {value, {_TableName2, Tid2}}
                             = lists:keysearch(tmp_externalbook, 1, Tbl),
                         Lookup = ets:lookup(Tid2, {index, EXBIdx}),
-                        
+
                         case Lookup of
                             [{_I, [{name, FileName}, _]}] ->
                                 Str = io_lib:format("Cell ~s on page ~s has a "
@@ -558,7 +560,7 @@ to_str(addition)              -> "+";
 to_str(subtraction)           -> "-";
 to_str(multiply)              -> "*";
 %% Add spaces to division to resolve abiguity
-to_str(divide)                -> " / "; 
+to_str(divide)                -> " / ";
 to_str(power)                 -> "^";
 to_str(concatenate)           -> "&";
 to_str(less_than)             -> "<";
@@ -600,7 +602,7 @@ to_str({func,Var,Args})       ->
                         "../"++New -> New;
                         Else -> Else
                     end,
-            
+
             case Args2 of
                 [] -> FunNm++"()";
                 _  ->
@@ -648,7 +650,7 @@ to_str({abs_ref,Y,X,abs_row,rel_col}) ->
 to_str({abs_ref,Y,X,rel_row,abs_col}) ->
     "$"++tconv:to_b26(X)++integer_to_list(Y); %"; fix syntax highlight
 to_str({abs_ref,Y,X,abs_row,abs_col}) ->
-    "$"++tconv:to_b26(X)++"$"++integer_to_list(Y); 
+    "$"++tconv:to_b26(X)++"$"++integer_to_list(Y);
 to_str({L,S1,O,S2,R}) ->
     to_str(L)++to_str(S1)++to_str(O)++to_str(S2)++to_str(R).
 
@@ -674,15 +676,15 @@ popSpaces(List)            -> {[],List}.
 
 %% Used in tFunc, will grab the last I items from the list that
 %% aren't {space,Spaces}, {unary,Op} or {return}
-%% 
+%%
 %% WARNING - the terminating clause is placed third from the top
-%%           because we are greedy on no-arg values (ie spaces, 
+%%           because we are greedy on no-arg values (ie spaces,
 %%           returns and unaries) which we want to keep sooking
 %%           into the function until they all run out...
-%%           
-%%           which also is why the three clauses before the terminator 
+%%
+%%           which also is why the three clauses before the terminator
 %%           don't decrement the counter I :)
-%%           
+%%
 popVars(I,[{space,Val}|T],Args) ->
     popVars(I,T,[{space,Val}|Args]);
 popVars(I,[{unary,Op}|T],Args) ->

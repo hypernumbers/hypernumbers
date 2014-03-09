@@ -1,10 +1,12 @@
 %%%-------------------------------------------------------------------
 %%% File    : read_file_srv.erl
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
 %%% Author  : Gordon Guthrie <gordonguthrie@localhost>
-%%% Description : 
+%%% Description :
 %%%
 %%% Created : 25 Jul 2007 by Gordon Guthrie <gordonguthrie@localhost>
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(read_file_srv).
 
 -behaviour(gen_server).

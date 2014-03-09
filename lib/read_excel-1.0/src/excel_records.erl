@@ -1,8 +1,10 @@
 %%%-------------------------------------------------------------------
 %%% File    excel_records.erl
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 %%% @doc     This module parses the Excel records.
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(excel_records).
 
 %%% Include files with macros encoding Microsoft File Format constants

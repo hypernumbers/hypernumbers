@@ -1,3 +1,5 @@
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
+%%% This module is licensed under the Erlang Public License V1.0
 %%% This file contains the constants for attributes as defined in
 %%% Section 5.9.22 of excelfileformat.pdf V1.40
 

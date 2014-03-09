@@ -1,11 +1,13 @@
 %%%-------------------------------------------------------------------
 %%% File    excel_util.erl
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 %%% @doc    Utility module of common functions
-%%% 
+%%%
 %%% @end
 %%% Created     : 26 July 2007 by Gordon Guthrie
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(excel_util).
 
 -export([get_utf8/1,
@@ -50,7 +52,7 @@ dump([{Table,Tid}|T])->
         cell             -> dump2({Table,Tid});
         array_formulae   -> dump2({Table,Tid});
         formats          -> dump2({Table,Tid});
-        names            -> dump2({Table,Tid}); 
+        names            -> dump2({Table,Tid});
         warnings           -> dump2({Table,Tid});
         lacunaue         -> dump2({Table,Tid});
         misc             -> dump2({Table,Tid});
@@ -170,7 +172,7 @@ parse_CRS_Uni16(Bin, IndexSize)->
 
     <<Len:LenSize/little-unsigned-integer, NFlags:8/little-unsigned-integer,
      Rest/binary>> = Bin,
-    
+
     {LenStr, Encoding, BinLen1,
      {RICH_TEXT, LenRichText, _LenRichTextIdx},
      {ASIAN, LenAsian, _LenAsianIdx}, Rest3}
@@ -207,11 +209,11 @@ get_len_CRS_Uni16(Len, IndexSize, Bin, Flags) ->
     BinLen.
 
 get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
-    
+
     {ok, UNCOMP}    = check_flags(NFlags, ?CRS_UNI16_UNCOMPRESSED),
     {ok, ASIAN}     = check_flags(NFlags, ?CRS_UNI16_ASIAN),
     {ok, RICH_TEXT} = check_flags(NFlags, ?CRS_UNI16_RICH_TEXT),
-        
+
     case RICH_TEXT of
         match    ->
             <<LenRichText:16/little-unsigned-integer, Rest2/binary>> = Bin,
@@ -221,7 +223,7 @@ get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
             LenRichText = 0,
             LenRichTextIdx = 0
     end,
-    
+
     case ASIAN of
         match    ->
             <<LenAsian:16/little-unsigned-integer, Rest3/binary>> = Rest2,
@@ -236,10 +238,10 @@ get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
                              match    -> {Len*2,'uni16-16'};
                              no_match -> {Len,  'uni16-8'}
                          end,
-    
+
     BinLen = 1 + IndexSize + LenRichTextIdx + LenAsianIdx + LenStr
         + LenRichText*4 + LenAsian,
-    
+
     {LenStr, Encoding, BinLen,
      {RICH_TEXT, LenRichText, LenRichTextIdx},
      {ASIAN, LenAsian, LenAsianIdx},
