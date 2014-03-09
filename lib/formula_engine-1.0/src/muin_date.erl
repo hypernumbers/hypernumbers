@@ -36,6 +36,24 @@
 %%% In addition to different epochs (1/1/1904 vs 1/1/1900), they also use
 %%% different starting points for dates: the epoch on Mac is 0, and on Windows
 %%% it is 1. The unit tests cover this.
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(muin_date).
 

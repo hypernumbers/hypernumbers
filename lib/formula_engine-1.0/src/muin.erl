@@ -1,5 +1,23 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Interface to the formula engine/interpreter.
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(muin).
 
@@ -49,7 +67,6 @@
          fetch/3,
          prefetch_references/1,
          get_hypernumber/9,
-         userdef_call/2,
          toidx/1,
          do_cell/6,
          parse/2,
@@ -452,7 +469,7 @@ funcall(Fname, Args0) ->
              odd, int, degrees, radians, proper, index, var, steyx,
              small, skew, large, sumproduct, daverage, dcount, isref,
              irr, even,
-             include, 'tim.tabs.', 'table.',
+             include, 'table.',
              'phone.menu.', 'phone.menu.dial',
              'make.goto.buttonbar.'],
 
@@ -462,7 +479,7 @@ funcall(Fname, Args0) ->
            end,
     Modules = fns:get_modules(),
     case call_fun(Fname, Args, Modules) of
-        {error, not_found} -> userdef_call(Fname, Args);
+        {error, not_found} -> ?ERRVAL_NAME;
         {ok, Value}        -> Value
     end.
 
@@ -813,17 +830,6 @@ loop_transform([Fn|Args]) when ?is_fn(Fn) ->
                     %% to wrap Area or not may depend on if it's node or literal?
                     %% wrap in {} to prevent from being eval'd -- need a proper '
             end
-    end.
-
-%% Try the userdef module first, then Ruby, Gnumeric, R, whatever.
-userdef_call(Fname, Args) ->
-    %% changed to apply because using the construction userdef:Fname failed
-    %% to work after hot code load (Gordon Guthrie 2008_09_08)
-    case (catch apply(userdef,Fname,Args)) of
-        {'EXIT', {undef, _}} -> ?ERR_NAME;
-        {'EXIT', _}          -> ?ERR_NAME;
-        %% FIXME: should return a descriptive error message.
-        Val                  -> Val
     end.
 
 %% Returns value in the cell + get_value_and_link() is called`

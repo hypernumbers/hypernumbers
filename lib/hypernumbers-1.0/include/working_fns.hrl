@@ -1,11 +1,29 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2009, Hypernumbers Ltd
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd
 %%% @doc       The current supported function set
 %%%
 %%% @end
 %%% Created :  1 Apr 2009 by
 %%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -include("spriki.hrl").
 
 -define(date_time_warning, "is supported but dates and times "++

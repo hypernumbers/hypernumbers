@@ -12,6 +12,25 @@
 # based on generate_lexer.rb by
 # Hasan Veldstra <hasan@hypernumbers.com>
 
+# @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+#-------------------------------------------------------------------
+#
+# LICENSE
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation version 3
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-------------------------------------------------------------------
+
 require "erb"
 
 if ARGV[0].nil?
@@ -29,7 +48,7 @@ end
 # Read the map file, create English => Other Language map.
 map = IO.readlines(mapfile).inject({}) { |acc, line|
   en, tr = line.split("=").map { |s| s.strip }
-  acc[en] = tr 
+  acc[en] = tr
   acc
 }
 
@@ -43,7 +62,7 @@ map.each do |k, v|
     bytes.inject([]) { |acc, b| acc << b.to_s; acc }.join(",")
 
   @terms << "{'#{@lang}', \"#{k}\", [#{octal_seq}]},\n"
-  
+
 end
 
 template = ERB.new(IO.readlines("hrl_template.erb").flatten.join, 0, "%<>")
