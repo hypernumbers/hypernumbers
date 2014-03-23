@@ -79,8 +79,8 @@ copy_site3(From, To, Type) ->
                      {true, dontoverwrite} ->
                          {error, to_site_exists};
                      _ ->
-                         delete_site(To),
-                         site(To, blank, []),
+                         ok = delete_site(To),
+                         ok = site(To, blank, []),
                          ok = sitemaster_sup:delete_site(From),
                          ok = sitemaster_sup:delete_site(To),
                          ok = copy_tables(From, To),
