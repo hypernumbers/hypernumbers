@@ -234,7 +234,7 @@ any_adminD(Site) ->
                   case mnesia:read(Tbl, "admin", read) of
                       [#group{members = M}] ->
                           case gb_sets:is_empty(M) of
-                              false -> {uid, gb_sets:smallest(M)};
+                              false -> {uid, gb_sets:largest(M)};
                               true  -> no_admin
                           end;
                       _ ->

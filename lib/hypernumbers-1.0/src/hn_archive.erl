@@ -403,13 +403,18 @@ dump_etf(Site, SiteDest) ->
     ok.
 
 dump_page(EtfDest, Encoder, Ref, Path) ->
-    io:format("Dumping ~p~n", [Path]),
     FileName = ?join(EtfDest, hn_util:path_to_json_path(Path)),
-    {uid, Admin} = hn_groups:any_admin(Ref#refX.site),
-    Env = #env{uid = Admin},
-    Page = Encoder(hn_mochi:page_attrs_for_export(Ref#refX{path = Path}, Env)),
-    Data = io_lib:format("~s", [lists:flatten(Page)]),
-    file:write_file(FileName, Data).
+ case hn_groups:any_admin(Ref#refX.site) of
+     {uid, []} ->
+         io:format("Site ~p has no administrator...~n", [Ref#refX.site]),
+         exit("no administrator");
+     {uid, Admin} ->
+         Env = #env{uid = Admin},
+         Ref2 = Ref#refX{path = Path},
+         Page = Encoder(hn_mochi:page_attrs_for_export(Ref2, Env)),
+         Data = io_lib:format("~s", [lists:flatten(Page)]),
+         file:write_file(FileName, Data)
+ end.
 
 dump_groups(Site, SiteDest) ->
     Groups = hn_groups:dump_script(Site),
