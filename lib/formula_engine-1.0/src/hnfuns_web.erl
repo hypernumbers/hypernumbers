@@ -525,21 +525,26 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
 include([Ref]) ->
     include([Ref, none]);
 include([CellRef, Title]) when ?is_cellref(CellRef) ->
-    #cellref{col = C, row = R, path = Path} = CellRef,
+    #cellref{col = C, row = R, path = Path, text = CellText} = CellRef,
+    [Cell | _] = lists:reverse(string:tokens(CellText, "/")),
+    Range = Cell ++ ":" ++ Cell,
+    Txt = Path ++ Range,
     RelRan = #rangeref{type = finite,
                        path = Path,
-                       tl = {C, R},
-                       br = {C, R}},
+                       tl   = {C, R},
+                       br   = {C, R},
+                       text = Txt},
     include([RelRan, Title]);
 include([RelRan, Title]) when ?is_rangeref(RelRan) ->
     OldPath = RelRan#rangeref.path,
     OrigPath = muin:pd_retrieve(path),
     NewPath = muin_util:walk_path(OrigPath, OldPath),
-%% DIRTY HACK. This forces muin to setup dependencies, and checks
-%% for circ errors.
+    %% DIRTY HACK. This forces muin to setup dependencies, and checks
+    %% for circ errors.
     Ret = muin:fetch(RelRan, "__rawvalue"),
     case has_circref(Ret) of
-        true  -> {errval, '#CIRCREF'};
+        true  ->
+            {errval, '#CIRCREF'};
         false ->
             AbsRan = area_util:to_absolute(RelRan,
                                            muin:context_setting(col),
@@ -562,15 +567,15 @@ include([RelRan, Title]) when ?is_rangeref(RelRan) ->
                                  ++ hn_util:obj_to_ref(Obj) ++ "</div>"
                      end,
             case new_db_wu:has_forms(Ref) of
-                false ->  Content = hn_render:content(Ref),
-                          {{Html, Width, Height}, _Addons} = Content,
-                          {W2, H2} = get_preview(Width, Height),
-                          HTML = hn_render:wrap_region(Html, Width, Height),
-                          HTML2 = lists:flatten(HTML),
-                          Preview = Title2,
-                          Resize = #resize{width = W2, height = H2},
-                          #spec_val{val = HTML2, preview = Preview,
-                                    resize = Resize, include = true};
+                false -> Content = hn_render:content(Ref),
+                         {{Html, Width, Height}, _Addons} = Content,
+                         {W2, H2} = get_preview(Width, Height),
+                         HTML = hn_render:wrap_region(Html, Width, Height),
+                         HTML2 = lists:flatten(HTML),
+                         Preview = Title2,
+                         Resize = #resize{width = W2, height = H2},
+                         #spec_val{val = HTML2, preview = Preview,
+                                   resize = Resize, include = true};
                 true  -> ?ERRVAL_CANTINC
             end
     end.
