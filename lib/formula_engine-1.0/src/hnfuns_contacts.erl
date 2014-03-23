@@ -456,7 +456,9 @@ get_config(_)  -> ?ERR_VAL.
     % cell moves
     muin:pd_store(selfreference, true),
     [Name2] = ?t:std_strs([Name]),
-    Log = #contact_log{idx = muin:pd_retrieve(idx), type = "inbound call", to = "Name2"},
+    Log = #contact_log{idx  = muin:pd_retrieve(idx),
+                       type = "inbound call",
+                       to   = "Name2"},
     TwiML = [],
     Capability = [{client_incoming, Name}],
     Type = {"softphone_type", "inbound call"},
@@ -471,8 +473,8 @@ get_config(_)  -> ?ERR_VAL.
 phone(Payload, Preview, Headline, ButtonTxt) ->
     Site = muin:pd_retrieve(site),
     Path = muin:pd_retrieve(path),
-    X = muin:pd_retrieve(mx),
-    Y = muin:pd_retrieve(my),
+    X = muin:pd_retrieve(x),
+    Y = muin:pd_retrieve(y),
     URL = hn_util:refX_to_url(#refX{site = Site, path = Path,
                                     obj = {cell, {X, Y}}}),
     HTML = "<div class='hn_softphone'>"
@@ -485,16 +487,21 @@ phone(Payload, Preview, Headline, ButtonTxt) ->
         ++ "<a href='./_contacts/'>logs</a></div>"
         ++ "</div>",
     PreV = Preview ++ ButtonTxt,
-    Resize = #resize{width = 2, height = 4},
-    Form = #form{callback = {actions_hnfuns, run_action}},
-    #spec_val{val = HTML, preview = PreV, resize = Resize,
-              sp_phone = Payload, rawform = #rawform{form = Form}}.
+    Resize = #resize{width  = 2,
+                     height = 4},
+    Form = #form{id       = {'softphone', "SoftPhone"},
+                 callback = {actions_hnfuns, run_action}},
+    #spec_val{val      = HTML,
+              preview  = PreV,
+              resize   = Resize,
+              sp_phone = Payload,
+              rawform  = #rawform{form = Form}}.
 
 phone2(Payload, Preview, ButtonTxt, Colour) ->
     Site = muin:pd_retrieve(site),
     Path = muin:pd_retrieve(path),
-    X = muin:pd_retrieve(mx),
-    Y = muin:pd_retrieve(my),
+    X = muin:pd_retrieve(x),
+    Y = muin:pd_retrieve(y),
     URL = hn_util:refX_to_url(#refX{site = Site, path = Path,
                                     obj = {cell, {X, Y}}}),
     HTML = "<a class='btn btn-large hn-btn-large "  ++ Colour ++ "' href='"
