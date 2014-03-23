@@ -61,8 +61,7 @@ add_site(Site) ->
 
 -spec delete_site(string()) -> ok.
 delete_site(Site) ->
-    supervisor:terminate_child(?MODULE, Site),
-    ok = supervisor:delete_child(?MODULE, Site).
+    ok = supervisor:terminate_child(?MODULE, Site).
 
 %%====================================================================
 %% Supervisor callbacks
