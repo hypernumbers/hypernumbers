@@ -108,10 +108,10 @@ get_float() ->
 get_bool() ->
     BoolRand = stdfuns_math:rand([]),
     if
-        BoolRand > 0.75                         -> true;
-        0.5 < BoolRand andalso BoolRand =< 0.75 -> false;
-        0.25 < BoolRand andalso BoolRand =< 0.5 -> "true";
-        BoolRand =< 0.25                        -> "false"
+        BoolRand > 0.75                          -> true;
+        0.5  < BoolRand andalso BoolRand =< 0.75 -> false;
+        0.25 < BoolRand andalso BoolRand =< 0.5  -> "true";
+        BoolRand =< 0.25                         -> "false"
     end.
 
 get_err() ->
