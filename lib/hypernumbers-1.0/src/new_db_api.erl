@@ -1256,13 +1256,22 @@ handle_dirty_c2(Cell, Attrs, Ar) ->
             % recalc will 'fire' on writing
             case I of
                 "inline" ->
-                    % normal inlines don't have vals to recalcrecalc
+                    % normal inlines don't have vals to recalc
                     ok;
                 "inlinerich" ->
-                    % rich inlines don't have vals to recalcrecalc
+                    % rich inlines don't have vals to recalc
+                    ok;
+                "inlinecheckbox" ->
+                    % rich inlines don't have vals to recalc
+                    ok;
+                "inlineincrementor" ->
+                    % rich inlines don't have vals to recalc
                     ok;
                 "none" ->
                     % used to have an input but it's been cleared
+                    ok;
+                {"increment", _} ->
+                    % normal select's don't recalc their vals
                     ok;
                 {"select", _} ->
                     % normal select's don't recalc their vals

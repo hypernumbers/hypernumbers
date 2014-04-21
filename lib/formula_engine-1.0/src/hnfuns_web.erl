@@ -35,6 +35,7 @@
          img/1,
          'html.'/1,
          'iframe.'/1,
+         'iframe.if.'/1,
          page/1,
          pageurl/1,
          segment/1,
@@ -229,6 +230,18 @@ trail2([H | T] = L, Acc) ->
     PreV = "Raw HTML",
     Resize = #resize{width = Width, height = Height},
     #spec_val{val = HTML2, resize = Resize, preview = PreV}.
+
+'iframe.if.'([W, H, Boolean, URL]) ->
+    [Bool2] = typechecks:std_bools([Boolean]),
+    case Bool2 of
+        true  -> 'iframe.'([W, H, URL]);
+        false -> [Width] = typechecks:throw_std_ints([W]),
+                 [Height] = typechecks:throw_std_ints([H]),
+                 [URL2] = typechecks:throw_std_strs([URL]),
+                 PreV = "Disabled IFrame: " ++ URL2,
+                 Resize = #resize{width = Width, height = Height},
+                 #spec_val{val = "", resize = Resize, preview = PreV}
+    end.
 
 'iframe.'([W, H, URL]) ->
     [Width] = typechecks:throw_std_ints([W]),

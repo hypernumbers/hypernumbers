@@ -139,6 +139,8 @@ layout2([{{C, R}, L} | T], Type, C, R, PX, PY, H, CWs, RHs, Rec, GW, Acc) ->
     Ghostable = case Input of
                     "inline"                 -> false;
                     "inlinerich"             -> false;
+                    "inlinecheckbox"         -> false;
+                    {"increment", _}         -> false;
                     {"select", _}            -> false;
                     {"dynamic_select", _, _} -> false;
                     _                      -> true
@@ -246,13 +248,15 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
            integer(), integer(), integer(), integer())
 -> textdata().
 % all four inputs need to be drawn even if there is no value
-draw(undefined, Css, "inline", C, R, X, Y, W, H) ->
-    draw("", Css, "inline", C, R, X, Y, W, H);
-draw(undefined, Css, "inlinerich", C, R, X, Y, W, H) ->
-    draw("", Css, "inlinerich", C, R, X, Y, W, H);
-draw(undefined, Css, {"select", _} = Inp, C, R, X, Y, W, H) ->
-    draw("", Css, Inp, C, R, X, Y, W, H);
-draw(undefined, Css, {"dynamic_select", _} = Inp, C, R, X, Y, W, H) ->
+draw(undefined, Css, Input, C, R, X, Y, W, H)
+  when Input == "inline"         orelse
+       Input == "inlinerich "    orelse
+       Input == "inlinecheckbox" ->
+    draw("", Css, Input, C, R, X, Y, W, H);
+draw(undefined, Css, {Type, _} = Inp, C, R, X, Y, W, H)
+when Type == "dynamic_select" orelse
+     Type == "select"         orelse
+     Type == "increment"      ->
     draw("", Css, Inp, C, R, X, Y, W, H);
 draw(undefined, "", _Inp, _C, _R, _X, _Y, _W, _H) -> "";
 draw(Value, Css, Inp, C, R, X, Y, W, H) ->
@@ -313,6 +317,42 @@ draw(Value, Css, Inp, C, R, X, Y, W, H) ->
             "<div " ++ Style  ++ ">" ++
                 "<div class='" ++ Class ++ "' "
                 ++ StyleIn ++ " data-ref='" ++ Cell ++ "'>" ++ Val2 ++
+                "</div></div>";
+        "inlinecheckbox" ->
+            Class = case Prompt of
+                        false -> "inlinecheckbox";
+                        _     -> "inlinecheckbox hn_checkboxprompt"
+                    end,
+            Val2 = case Prompt of
+                       false -> Val;
+                       _     -> Prompt
+                   end,
+            Style = io_lib:format(St ++ "padding:1px 1px;'",
+                                  [X, Y, W - 4, H - 2, Css]),
+            StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
+                                    [W - 8, H - 4]),
+            "<div " ++ Style  ++ ">" ++
+                "<div class='" ++ Class ++ "' "
+                ++ StyleIn ++ " data-ref='" ++ Cell ++ "'>" ++
+                make_checkbox(Val2) ++
+                "</div></div>";
+        {"increment", Incr} ->
+            Class = case Prompt of
+                        false -> "inlineincrementor";
+                        _     -> "inlineincrementor hn_incrementorprompt"
+                    end,
+            Val2 = case Prompt of
+                       false -> Val;
+                       _     -> ""
+                   end,
+            Style = io_lib:format(St ++ "padding:1px 1px;'",
+                                  [X, Y, W - 4, H - 2, Css]),
+            StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
+                                    [W - 8, H - 4]),
+            "<div " ++ Style  ++ ">" ++
+                "<div class='" ++ Class ++ "' "
+                ++ StyleIn ++ " data-ref='" ++ Cell ++ "'>" ++
+                make_incrementor(Cell, Val2, Incr) ++
                 "</div></div>";
         {"select", Options} ->
             Style = io_lib:format(St ++ "padding:1px 1px;'",
@@ -448,6 +488,26 @@ wrap_region(Content, Width, Height) ->
     ["<div class='hn_inner' ", OuterStyle, ">",
      Content,
      "</div>"].
+
+make_checkbox(Val) ->
+    [Bool] = muin_collect:col([Val],
+                              [
+                               {cast, bool},
+                               {cast, str, bool, false}
+                              ],
+                              []),
+    "<input type='checkbox' value='" ++ atom_to_list(Bool) ++ "'>".
+
+make_incrementor(Ref, [], Incr) ->
+    make_incrementor(Ref, 0, Incr);
+make_incrementor(Ref, Val, Incr) ->
+    "<div class='hn_incrementor'>" ++
+        "<span class='hn_decrement'" ++
+        "' data-quantum='" ++ tconv:to_s(Incr) ++ "'>-</span>" ++
+        "<span class='hn_incr_val'>" ++ tconv:to_s(Val) ++ "</span>" ++
+        "<span class='hn_increment'" ++
+        "' data-quantum='" ++ tconv:to_s(Incr) ++ "'>+</span>" ++
+        "</div>".
 
 make_select(Val, Ref, Options) ->
     make_s(Options, Ref, Val, []).

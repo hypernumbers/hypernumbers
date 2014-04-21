@@ -274,6 +274,8 @@
       <a title="Make Wiki Input" class="toolbar-item" id="inlineinput"></a>
       <a title="Make Wiki Rich Text Input" class="toolbar-item" id="inlinerichtextinput"></a>
       <a title="Make Wiki Dropdown" class="toolbar-item" id="inlinedropdown"></a>
+      <a title="Make Wiki Checkbox" class="toolbar-item" id="inlinecheckbox"></a>
+      <a title="Make Wiki Incrementor" class="toolbar-item" id="inlineincrementor"></a>
     <a class="separator"></a>
       <a title="Ghost Out Cell" class="toolbar-item" id="ghost"></a>
     <a class="separator"></a>
@@ -573,6 +575,16 @@
           <input type="text" id="hn_insertwikiselect" />
           <input type="button", id="hn_wikiselectsubmit" class="button" value="Save" />
         </div>
+    </div>
+    <div id="wikiincrementdialog" class="mdialog">
+    <span>Enter the size of the increment.<br>A blank value clears the control.</span>
+    <form id="wikiincrementform">
+    <input type="test" id="incrementsize" value="1">
+      <div style="margin-top:4px;">
+        <input type="submit" class="button action" value="Set Increment"  />
+        <input type="button" class="button cancel" value="Cancel" />
+      </div>
+      </form>
     </div>
     <div id="insertimagedialog" class="mdialog">
       <span>Enter the URL of the image:</span>

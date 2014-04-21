@@ -514,11 +514,11 @@ auth_post(#refX{}, _Qry, #env{body = [{Action, _}]}, ?ISAUTH)
     allowed;
 %% some are never
 auth_post(#refX{}, _Qry, #env{body = [{Action, _}]}, ?ISAUTH)
-  when Action == "mark"           orelse
-       Action == "postform"       orelse
-       Action == "postinline"     orelse
-       Action == "postrichinline" orelse
-       Action == "postwebcontrols" ->
+  when Action == "mark"                orelse
+       Action == "postform"            orelse
+       Action == "postinline"          orelse
+       Action == "postrichinline"      orelse
+       Action == "postwebcontrols"     ->
     denied;
 
 %% allow a lot of stuff through

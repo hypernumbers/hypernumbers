@@ -67,6 +67,8 @@ to_f(Str) when is_list(Str) ->
 to_f(F) when is_float(F) -> F.
 
 %% String -> number.
+to_num(Atom) when is_atom(Atom) ->
+    to_num(atom_to_list(Atom));
 to_num(Str) when is_list(Str)   ->
     Str2 = string:strip(Str),
     try conv_to_int(Str2)

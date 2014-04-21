@@ -242,6 +242,9 @@ transform("generic.integration." ++ R, Args) ->
 transform("html.headline." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("html.headline."), [W , H | Args]};
+transform("iframe.if." ++ R, Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom("iframe.if."), [W , H | Args]};
 transform("iframe." ++ R, Args) ->
     {W, H} = get_dims(R),
     {list_to_atom("iframe."), [W , H | Args]};

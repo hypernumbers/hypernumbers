@@ -663,6 +663,7 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             %% The cells that are being deleted might be included in ranges
             %% so we need to get the range children's children
             Cs = [get_all_children(C) || C <- Cells],
+            %% TODO why don't we use RangeChildren?
             {AllChildren, RangeChildren} = lists:unzip(Cs),
             %% sometimes a cell will have local children that are also
             %% in the delete zone these need to be removed before we
@@ -904,15 +905,16 @@ process_dyn(#xrefX{obj = {cell, {X, Y}}} = XRefX, {Path, Ref}, Select) ->
         {ok, AST} ->
             Rti = xrefX_to_rti(XRefX, nil, false, ?NOTISZCALC),
             Vals = muin:fetch_for_select(AST, Rti),
+            Vals2 = [X || X <- Vals, X =/= []],
             References = muin:pd_retrieve(finite_refs),
             FiniteRefs = [{XX, L} || {XX, _, L} <- References],
-            InfiniteRefs = muin:pd_retrieve(infinite),
+            InfiniteRefs = muin:pd_retrieve(infinite_refs),
             case muin:pd_retrieve(circref) of
                 true  ->
                     {{"input", {"dynamic_select", Select, ["#CIRCREF!"]}},
                      [], []};
                 false ->
-                    {{"input", {"dynamic_select", Select, Vals}},
+                    {{"input", {"dynamic_select", Select, Vals2}},
                      FiniteRefs, InfiniteRefs}
             end;
         _Err ->
@@ -1576,8 +1578,11 @@ post_process_format(Raw, Attrs) ->
                                 _ -> Val1
                             end,
                     add_attributes(Attrs,
-                                   [{"value", Val2},
-                                    {"overwrite-color", atom_to_list(Color)}]);
+                                   [
+                                    {"__rawvalue",      Raw},
+                                    {"value",           Val2},
+                                    {"overwrite-color", atom_to_list(Color)}
+                                   ]);
                 _Other ->
                     Attrs
             end;
