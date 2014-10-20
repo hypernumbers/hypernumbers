@@ -23,7 +23,7 @@
    {phoneredirect, true},
 
    % Url to synchronize cookies against.
-   {sync_url, "http://hypernumbers.com"},
+   {sync_url, "http://hypernumbers.dev:9000"},
 
    % URL for forgotten password
    {reset_url, "http://hypernumbers.dev:9000/_forgotten_password/"},
