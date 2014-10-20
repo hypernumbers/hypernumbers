@@ -501,8 +501,8 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     funs_util:check_size(Width, Height),
-    % DIRTY HACK. This forces muin to setup dependencies, and checks
-%% for circ errors.
+    %% DIRTY HACK. This forces muin to setup dependencies, and checks
+    %% for circ errors.
     Ret = muin:fetch(Ref, "__rawvalue"), % this can be made to work properly now
     case has_circref(Ret) of
         true  -> {errval, '#CIRCREF'};
