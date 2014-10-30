@@ -19,6 +19,18 @@ Hypernumbers required Erlang R14B04 which is available from:
 
 http://www.erlang.org/download_release/12
 
+Hypernumbers has 5 dependencies which need to be installed.
+
+On Ubuntu they are:
+* libicu
+* libicu-dev
+* rake
+* ant1.7
+* openjdk-6-jdk
+
+icu is the internalisation library for Unicode from IBM:
+http://site.icu-project.org/
+
 Then git clone the source into a working directory.
 
 Build
@@ -52,7 +64,7 @@ The most important ones are the build commands
 * ``./hn lexer-parser`` does a partial build - the lexer/parsers run and then the main application is compiled and hot loaded (dependencies are not) and copies the js/html assets
 * ``./hn quick`` just does a quick Erlang compile and hot-load and copies the js/html assets
 
-For details of what copying the js/html assets means please see the section on sitetypes
+For details of what copying the js/html assets means please see the section on Hypernumbers In The File System
 
 Starting Hypernumbers
 ---------------------
@@ -77,7 +89,7 @@ The start up checks 3 things:
 * is there a ``.erlang.cookie`` in ``~`` - if not create a random cookie
 * is there a Hypernumbers site created - if not create a blank one on the domain ``hypernumbers.dev`` at the default port
 
-The default ``sys.config`` has a sane set of configuations
+The default ``sys.config`` has a sane set of configurations
 
 Hypernumbers On The File System
 -------------------------------
@@ -182,8 +194,10 @@ The cycle is this:
 * create your site by making pages, using templates and the ``=create.button(...)`` function
 * from the console save it as a sitetype using the command ``hn_archive:export_as_sitetype("http://some.domain.com:1234", new_type).``
 * it will have been saved in ``$HNROOT/lib/hypernumbers-1.0/priv/site_types/new_type``
-* to create a new instace use ``hn_setup:site("http://another.domain.com:1234", new_type, []).``
+* to create a new instance use ``hn_setup:site("http://another.domain.com:1234", new_type, []).``
 * the last option (here an empty list) can be used to pass in instantiation parameters if the site type has been setup to use them.
+
+
 
 TODO
 ----
