@@ -1,4 +1,4 @@
-hypernumbers
+Hypernumbers
 ============
 
 Hypernumbers is a Spreadsheet Platform.
@@ -33,7 +33,7 @@ Benfit 4
 
 Easy aggregation means the end of ‘under management’ where critical insights are buried in core operational spreadsheets from which they are never extracted due to cost and time constraints.
 
-Becuase Hypernumbers spreadsheets can be organised hierarchically and then queried and summarised using special spreadsheet functions this means that data can be simply rolled-up, aggregated, compared and managed.
+Because Hypernumbers spreadsheets can be organised hierarchically and then queried and summarised using special spreadsheet functions this means that data can be simply rolled-up, aggregated, compared and managed.
 
 Benefit 5
 ---------
