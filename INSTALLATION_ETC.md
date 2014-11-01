@@ -63,6 +63,14 @@ Install Hypernumbers
 
 Then git clone the source into a working directory.
 
+Setting Up Your Cryptographic Salts
+-----------------------------------
+
+Cryptographic salts are defined in the file:
+``lib/hypernumbers-1.0/src/salts.erl``
+
+You probably want to edit them.
+
 Build
 -----
 
