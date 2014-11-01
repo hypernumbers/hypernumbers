@@ -19,17 +19,37 @@ Hypernumbers required Erlang R14B04 which is available from:
 
 http://www.erlang.org/download_release/12
 
+
+Installing on Ubuntu
+--------------------
+
+First get all the erlang dependencies with
+``sudo apt-get build-dep erlang``
+then build Erlang R14B from source
+
 Hypernumbers has 5 dependencies which need to be installed.
 
 On Ubuntu they are:
-* libicu
-* libicu-dev
-* rake
-* ant1.7
-* openjdk-6-jdk
+* ``sudo apt-get install libicu``
+* ``sudo apt-get install libicu-dev``
+* ``sudo apt-get install rake``
+* ``sudo apt-get install ant1.7``
+* ``sudo apt-get install openjdk-6-jdk``
 
 icu is the internalisation library for Unicode from IBM:
 http://site.icu-project.org/
+
+Installing on Redhat/Centos
+---------------------------
+
+Start with Erlang
+``sudo yum install gcc glibc-devel make ncurses-devel openssl-devel autoconf``
+then build Erlang R14B from source
+
+
+
+Install Hypernumbers
+--------------------
 
 Then git clone the source into a working directory.
 
