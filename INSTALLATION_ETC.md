@@ -32,9 +32,11 @@ Hypernumbers has 5 dependencies which need to be installed.
 On Ubuntu they are:
 * ``sudo apt-get install libicu``
 * ``sudo apt-get install libicu-dev``
-* ``sudo apt-get install rake``
 * ``sudo apt-get install ant1.7``
 * ``sudo apt-get install openjdk-6-jdk``
+
+If you are going to generate test suites from Excel files you also need ruby and rake installed:
+* ``sudo apt-get install rake``
 
 icu is the internalisation library for Unicode from IBM:
 http://site.icu-project.org/
@@ -46,7 +48,15 @@ Start with Erlang
 ``sudo yum install gcc glibc-devel make ncurses-devel openssl-devel autoconf``
 then build Erlang R14B from source
 
+Then install the dependencies:
+* ``sudo yum install icu``
+* ``sudo yum install ant``
+* ``sudo yum install java-1.7.0-openjdk``
 
+If you are going to generate test suites from Excel files you also need ruby and rake installed:
+* ``sudo yum install ruby``
+* ``gem install rake``
+ 
 
 Install Hypernumbers
 --------------------
