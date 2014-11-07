@@ -52,6 +52,8 @@ Download ``icu4c-4_4_2-src.tgz`` from http://site.icu-project.org/
 ``cd icu/source``
 ``chmod +x runConfigureICU configure install-sh``
 ``./runConfigureICU Linux``
+``make``
+``sudo make install``
 
 Then install the dependencies:
 * ``sudo yum install ant``
