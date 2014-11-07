@@ -45,8 +45,15 @@ Start with Erlang
 ``sudo yum install gcc glibc-devel make ncurses-devel openssl-devel autoconf``
 then build Erlang R14B from source
 
+You need to install icu version 44 manually.
+
+Download ``icu4c-4_4_2-src.tgz`` from http://site.icu-project.org/
+``tar -xvf icu4c-4_4_2-src.tgz``
+``cd icu/source``
+``chmod +x runConfigureICU configure install-sh``
+``./runConfigureICU Linux``
+
 Then install the dependencies:
-* ``sudo yum install icu``
 * ``sudo yum install ant``
 * ``sudo yum install java-1.7.0-openjdk``
 * ``sudo yum install ruby``
