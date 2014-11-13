@@ -55,6 +55,9 @@ Download ``icu4c-4_4_2-src.tgz`` from http://site.icu-project.org/
 * ``make``
 * ``sudo make install``
 
+Because this isn't a yum install the new shared library won't be on the library path, so run this command:
+* ``sudo /sbin/ldconfig /usr/local/lib``
+
 Then install the dependencies:
 * ``sudo yum install ant``
 * ``sudo yum install java-1.7.0-openjdk``
@@ -114,6 +117,18 @@ The most important ones are the build commands
 
 For details of what copying the js/html assets means please see the section on Hypernumbers In The File System
 
+Configuring
+-----------
+
+The configuration is managed by the file:
+* ``$HNROOT/var/sys.config``
+
+If this doesn't exist a new one is created by copying the file:
+* ``$HNROOT/priv/sys.config.default``
+
+The default version included is a ``dev`` one which expects that the development machine has an DNS entry of ``hypernumbers.dev`` in ``/etc/hosts`` like this:
+* ``127.0.0.1   hypernumbers.dev``
+
 Starting Hypernumbers
 ---------------------
 
@@ -137,7 +152,9 @@ The start up checks 3 things:
 * is there a ``.erlang.cookie`` in ``~`` - if not create a random cookie
 * is there a Hypernumbers site created - if not create a blank one on the domain ``hypernumbers.dev`` at the default port
 
-The default ``sys.config`` has a sane set of configurations
+The default ``sys.config`` has a sane set of dev configurations
+
+For production systems you will need to edit this configuration. Hypernumbers servers can support many domains per server - and can be clustered across domains. These different sites use a single-singon. This works by redirecting the client to one of the domains - the urls of this process are specified in the ``sys.config``
 
 Hypernumbers On The File System
 -------------------------------
@@ -154,11 +171,11 @@ The various dependencies have been copied into this structure, for instance:
 * twilio
 
 The main hypernumbers applications are:
-* formula_engine-1.0 (spreadsheet formulae and execution engine)
-* hypernumbers-1.0 (mostly everything else)
-* read_excel-1.0 (reads Excel '97 file formats)
-* starling (unicode C port - maintained seperately)
-* sysmon-1.0 (not very important)
+* ``formula_engine-1.0`` (spreadsheet formulae and execution engine)
+* ``hypernumbers-1.0`` (mostly everything else)
+* ``read_excel-1.0`` (reads Excel '97 file formats)
+* ``starling`` (unicode C port - maintained seperately)
+* ``sysmon-1.0`` (not very important)
 
 Inside ``$HNROOT/lib/formula_engine-1.0/priv`` are the various ``.xrl`` and ``.yrl`` files that define the spreadsheet language and some ruby libraries that are used to generate them for multi-linguage spreadsheets (the double-meta)
 
