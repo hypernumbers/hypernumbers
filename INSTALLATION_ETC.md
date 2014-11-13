@@ -48,12 +48,12 @@ then build Erlang R14B from source
 You need to install icu version 44 manually.
 
 Download ``icu4c-4_4_2-src.tgz`` from http://site.icu-project.org/
-``tar -xvf icu4c-4_4_2-src.tgz``
-``cd icu/source``
-``chmod +x runConfigureICU configure install-sh``
-``./runConfigureICU Linux``
-``make``
-``sudo make install``
+* ``tar -xvf icu4c-4_4_2-src.tgz``
+* ``cd icu/source``
+* ``chmod +x runConfigureICU configure install-sh``
+* ``./runConfigureICU Linux``
+* ``make``
+* ``sudo make install``
 
 Then install the dependencies:
 * ``sudo yum install ant``
@@ -62,12 +62,11 @@ Then install the dependencies:
 * ``gem install rake``
 
 On some older version of CentOS rake won't install and you need to install Ruby by hand:
-
-``sudo yum install gpg``
-``gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3``
-``\curl -sSL https://get.rvm.io | bash -s stable --ruby``
-``rvm install 2.1``
-``gem install rake``
+* ``sudo yum install gpg``
+* ``gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3``
+* ``\curl -sSL https://get.rvm.io | bash -s stable --ruby``
+* ``rvm install 2.1``
+* ``gem install rake``
 
 Install Hypernumbers
 --------------------
