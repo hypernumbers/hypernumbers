@@ -8,6 +8,7 @@ This document gives instructions on how to do some basic stuff with Hypernumbers
 * runtime configuration of the Hypernumbers Server
 * hypernumbers on the file system
 * running tests
+* quick (Vagrant) install
 * create a cluster
 * add a new function
 * create a site-type
