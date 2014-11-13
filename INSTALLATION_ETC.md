@@ -5,7 +5,9 @@ This document gives instructions on how to do some basic stuff with Hypernumbers
 * installation
 * build
 * start
+* runtime configuration of the Hypernumbers Server
 * hypernumbers on the file system
+* running tests
 * create a cluster
 * add a new function
 * create a site-type
@@ -117,8 +119,8 @@ The most important ones are the build commands
 
 For details of what copying the js/html assets means please see the section on Hypernumbers In The File System
 
-Configuring
------------
+Runtime Configure Of The Hypernumbers Server
+--------------------------------------------
 
 The configuration is managed by the file:
 * ``$HNROOT/var/sys.config``
@@ -154,7 +156,41 @@ The start up checks 3 things:
 
 The default ``sys.config`` has a sane set of dev configurations
 
-For production systems you will need to edit this configuration. Hypernumbers servers can support many domains per server - and can be clustered across domains. These different sites use a single-singon. This works by redirecting the client to one of the domains - the urls of this process are specified in the ``sys.config``
+In particular on a ``dev`` machine:
+* a blank site called ``hypernumbers.dev:9000`` is created (if it doens't exist)
+
+``dev`` mode in production is set up to be as similar as possible to production - the most important difference is:
+* in ``prod`` email requests (invite a user to a page, etc, etc) are actually sent
+* in ``dev`` mode the email message (with the appropriate auto-login links etc) are printed to the Erlang console
+
+For production systems you will need to create a production configuration. Hypernumbers servers can support many domains per server - and can be clustered across domains. These different sites use a single-singon. This works by redirecting the client to one of the domains - the urls of this process are specified in the ``sys.config``
+
+Running The Common Tests
+------------------------
+
+The process is simple:
+* start a hypernubmbers server with ``./hn start``
+* ``cd priv/``
+* ``./local_runner``
+
+The test suite expects that ``/etc/hosts`` will have entries for the following domains:
+* ``127.0.0.1 tests.hypernumbers.dev``
+* ``127.0.0.1 auth.hypernumbers.dev``
+* ``127.0.0.1 sys.hypernumbers.dev``
+* ``127.0.0.1 security.hypernumbers.dev``
+
+Quick (Vagrant) Install
+-----------------------
+
+There is a quick scripted install using Vagrant. Copy the following files from the GitHub repository to a directory on your host machine:
+* ``priv/Vagrantfile``
+* ``priv/vagrant-hn-provision.sh``
+
+And then execute:
+* ``vagrant up``
+
+Installing an X-Server (like XMing) will enable you to access your hypernumbers site by starting a brower on the guest command line:
+* ``firefox http://hypernumbers.dev:9000 &``
 
 Hypernumbers On The File System
 -------------------------------
