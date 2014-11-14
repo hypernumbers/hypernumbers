@@ -69,7 +69,7 @@ Then install the dependencies:
 
 On some older version of CentOS ``rake`` won't install and you need to install Ruby by hand:
 * ``sudo yum install gpg``
-* ``gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3``
+* ``gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3``
 * ``\curl -sSL https://get.rvm.io | bash -s stable --ruby``
 * ``rvm install 2.1``
 * ``gem install rake``
