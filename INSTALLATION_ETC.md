@@ -50,7 +50,7 @@ then build Erlang R14B from source
 
 You need to install icu version 44 manually.
 
-Download ``icu4c-4_4_2-src.tgz`` from http://site.icu-project.org/
+Download ``icu4c-4_4_2-src.tgz`` from http://icu-project.org/download/4.4.html
 * ``tar -xvf icu4c-4_4_2-src.tgz``
 * ``cd icu/source``
 * ``chmod +x runConfigureICU configure install-sh``
