@@ -45,7 +45,7 @@ Installing on Redhat/Centos
 ---------------------------
 
 Start with Erlang
-``sudo yum install gcc glibc-devel make ncurses-devel openssl-devel autoconf``
+``sudo yum install gcc glibc-devel make ncurses-devel openssl-devel autoconf git``
 then build Erlang R14B from source
 
 You need to install icu version 44 manually.
@@ -77,7 +77,8 @@ On some older version of CentOS ``rake`` won't install and you need to install R
 Install Hypernumbers
 --------------------
 
-Then git clone the source into a working directory.
+Then git clone the source into a working directory:
+8 ``git clone https://github.com/hypernumbers/hypernumbers.git``
 
 Setting Up Your Cryptographic Salts
 -----------------------------------
