@@ -54,7 +54,7 @@ sed -i 's/#deb/deb/g' /etc/apt/sources.list
 sed -i 's/deb cdrom/# deb cdrom/g' /etc/apt/sources.list
 apt-get -y update >> $logfile
 apt-get -y install xemacs21 ntp libicu-dev \
-    rake git-core e2fslibs-dev lynx-cur >> $logfile
+    rake git-core e2fslibs-dev lynx-cur nginx >> $logfile
 
 #____ ____ _    ____ _  _ ____
 #|___ |__/ |    |__| |\ | | __
@@ -107,31 +107,27 @@ chown hypernumbers:hypernumbers /hn
 
 echo "setting up hypernumbers on hn partition" >> $logfile
 
-su hypernumbers -c 'mkdir -p /hn/dev-www'
-su hypernumbers -c 'mkdir -p /hn/files-www'
-su hypernumbers -c 'mkdir -p /hn/libs/ebin'
-su hypernumbers -c 'mkdir -p /hn/tarsnap'
+mkdir -p /hn/libs/ebin
 
 if [ ! -d "/hn/hypernumbers" ]; then
     cd /hn
-    su hypernumbers -c 'git clone https@github.com:hypernumbers/hypernumbers.git' >> $logfile
+    git clone https://github.com/hypernumbers/hypernumbers.git >> $logfile
 else
     cd /hn/hypernumbers
-    su hypernumbers -c 'git pull' >> $logfile
+    git pull >> $logfile
 fi
 cd /hn/hypernumbers
-su hypernumbers -c './hn build' >> $logfile
+./hn build >> $logfile
 
 rm -Rf /etc/nginx
 ln -s /hn/hypernumbers/priv/nginx /etc/nginx
 /etc/init.d/nginx restart
 
-chown -R hypernumbers:admin /hn/files-www
-chmod -R g+rwx /hn/files-www
+chown -R vagrant:vagrant /hn/hypernumbers
+chown -R vagrant:vagrant /hn/libs
 
 cp -p /hn/hypernumbers/priv/run_github_script /hn
 cp -p /hn/hypernumbers/lib/mochiweb/ebin/mochijson.beam /hn/libs/ebin
-crontab -u hypernumbers /hn/hypernumbers/priv/cron/standard
 
 ##
 ## Vagrant stuff
