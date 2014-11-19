@@ -78,7 +78,7 @@ Install Hypernumbers
 --------------------
 
 Then git clone the source into a working directory:
-8 ``git clone https://github.com/hypernumbers/hypernumbers.git``
+* ``git clone https://github.com/hypernumbers/hypernumbers.git``
 
 Setting Up Your Cryptographic Salts
 -----------------------------------
@@ -184,14 +184,22 @@ The test suite expects that ``/etc/hosts`` will have entries for the following d
 Quick (Vagrant) Install
 -----------------------
 
-There is a quick scripted install using Vagrant. Copy the following files from the GitHub repository to a directory on your host machine:
+There is a quick scripted install using Vagrant.
+
+First install vagrant from ``https://www.vagrantup.com/``
+
+Run ``vagrant init`` in a directory to initialise it and then
+
+Copy the following files from the GitHub repository to a directory on your host machine:
 * ``priv/Vagrantfile``
 * ``priv/vagrant-hn-provision.sh``
+
+You should overwrite the ``Vagrantfile`` that was created by ``vagrant init``
 
 And then execute:
 * ``vagrant up``
 
-Installing an X-Server (like XMing) will enable you to access your hypernumbers site by starting a brower on the guest command line:
+Installing an X-Server - like XMing available at http://sourceforge.net/projects/xming/ - will enable you to access your hypernumbers site by starting a brower on the guest command line:
 * ``firefox http://hypernumbers.dev:9000 &``
 
 Hypernumbers On The File System
