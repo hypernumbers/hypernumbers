@@ -1,6 +1,26 @@
 %%% @doc Lookup and reference functions.
 %%% @author <hasan@hypernumbers.com>
 %%% @private
+
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(stdfuns_lookup_ref).
 
 -export([
@@ -11,9 +31,6 @@
          index/1,
          match/1,
          row/1,
-         non_exact_find/2,
-         qsort/1,
-         transpose/1,
          indirect/1,
          vlookup/1,
          hlookup/1,
@@ -38,11 +55,11 @@ choose([Idx], List) ->
         % TODO: eugh
         {array,[Arr]} -> "{"++string:join([tconv:to_s(X)||X<-Arr], ",")++"}";
         {namedexpr, _, _} -> ?ERRVAL_NAME;
-        Else              -> Else
+        Else              -> normalise(Else)
     end.
 
 cellref([]) ->
-    put(selfreference, true),
+    muin:pd_store(selfreference, true),
     {X, Y} = muin:context_setting(cell),
     tconv:to_b26(X) ++ integer_to_list(Y);
 cellref([C]) when ?is_cellref(C) ->
@@ -59,7 +76,7 @@ cellref([_]) ->
     ?ERR_VAL.
 
 column([]) ->
-    put(selfreference, true),
+    muin:pd_store(selfreference, true),
     muin:context_setting(col);
 column([C]) when ?is_namedexpr(C) ->
     ?ERRVAL_NAME;
@@ -85,7 +102,7 @@ indirect([S, R1]) ->
     muin_util:apply([Str, Bool], fun indirect_/2).
 
 indirect_([Str], [_Bool]) ->
-    put(recompile, true),
+    muin:pd_store(recompile, true),
     case muin:parse(Str, {muin:context_setting(col),
                           muin:context_setting(row)}) of
         {ok, Ast} ->
@@ -99,7 +116,7 @@ indirect_([Str], [_Bool]) ->
 % TODO fix row and column rewritting
 % need to add a circular children
 row([]) ->
-    put(selfreference, true),
+    muin:pd_store(selfreference, true),
     muin:context_setting(row);
 row([C]) when ?is_namedexpr(C) ->
     ?ERRVAL_NAME;
@@ -303,25 +320,18 @@ vlookup([V, IA, I0, IB]) ->
            true             -> IA
         end,
     B = ?bool(IB, [cast_numbers, cast_dates, cast_blanks, ban_strings]),
-
     muin_checks:ensure(?is_area(A), ?ERRVAL_REF),
     muin_checks:ensure(I =< area_util:width(A), ?ERRVAL_REF),
     muin_checks:ensure(I >= 1, ?ERRVAL_VAL),
 
     Row = area_util:col(1, A),
-
     case find(V, Row, B) of
         0 ->
             ?ERRVAL_NA;
         VIndex ->
-            {ok, Ret} = area_util:at(I, VIndex, A),
-            Ret
+            {ok, Val} = area_util:at(I, VIndex, A),
+            normalise(Val)
     end.
-
-    %% {Tag, L} = A,
-    %% NewA = {Tag, transpose(L)},
-    %% hlookup([V, NewA, I, B]).
-
 
 hlookup([V, A, I]) ->
     hlookup([V, A, I, true]);
@@ -341,8 +351,8 @@ hlookup([V, IA, I0, B]) ->
         0 ->
             ?ERRVAL_NA;
         VIndex ->
-            {ok, Ret} = area_util:at(VIndex, I, A),
-            Ret
+            {ok, Val} = area_util:at(VIndex, I, A),
+            normalise(Val)
     end.
 
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -393,14 +403,6 @@ pos(E, [_|T], I)             -> pos(E, T, I+1).
 
 %% TODO: as in pos.
 
-transpose(L) ->
-    Len = length(hd(L)),
-    transpose1(L, lists:duplicate(Len, [])).
-transpose1([R|T], Acc) ->
-    NewAcc = lists:zipwith(fun(X, Y) -> Y ++ [X] end, R, Acc),
-    transpose1(T, NewAcc);
-transpose1([], Acc) ->
-    Acc.
 
 
 %%% @doc Return first element that satisfies a predicate.
@@ -415,3 +417,6 @@ find_first(Pred, IfNone, [Hd|Tl]) ->
     end;
 find_first(_Pred, IfNone, []) ->
     IfNone().
+
+normalise(blank) -> "";
+normalise(X)     -> X.

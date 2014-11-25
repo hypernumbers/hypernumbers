@@ -6,6 +6,25 @@
 %%%       speed up at() and apply_each()/apply_each_with_pos().
 %%% TODO: may want to cache width/height as well:
 %%%      {Tag, Width, Height, [ {Y, X, Term} ]}
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 
 -module(area_util).
 -export([
@@ -20,7 +39,8 @@
          to_list/1,
          col/2,
          row/2,
-         are_congruent/2
+         are_congruent/2,
+         transpose/1
         ]).
 
 -export([
@@ -152,3 +172,12 @@ abs_rel_convert(R, CellX, CellY, F) when ?is_rangeref(R) ->
     R#rangeref{tl = {F(X1, CellX), F(Y1, CellY)},
                br = {F(X2, CellX), F(Y2, CellY)}}.
 
+transpose(L) ->
+    Len = length(hd(L)),
+    transpose1(L, lists:duplicate(Len, [])).
+
+transpose1([R|T], Acc) ->
+    NewAcc = lists:zipwith(fun(X, Y) -> Y ++ [X] end, R, Acc),
+    transpose1(T, NewAcc);
+transpose1([], Acc) ->
+    Acc.

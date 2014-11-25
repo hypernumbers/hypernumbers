@@ -1,0 +1,30 @@
+Generally the code here is licensed under the AGPL V3.0
+
+THIS IS A HIGHLY INFECTIOUS OPEN SOURCE LICENSE.
+
+You are required to distribute all changes to your users without exception.
+
+Please read the license carefully:
+http://www.gnu.org/licenses/agpl.html
+
+If you wish to incorporate Hypernumbers into running operational systems that you DO NOT wish to also open source you MUST buy a commercial license from Hypernumbers Ltd. Please contact gordon@hypernumbers.com
+
+A number of modules are licensed under more permissive (or different licenses). They are:
+hypernumbers-1.0/src/salts.erl GPL V3.0 (cryptographic seeds - need to be private)
+
+The following modules have their own license and can be used separately under that license, but must be distributed by you under the terms of the AGPL V3.0:
+hypernumbers-1.0/src/parse_csv.erl (public domain)
+hypernumbers-1.0/src/hslists.erl   (EPL)
+hypernumbers-1.0/src/dh_date.erl   (DWTFYW License)
+
+read_excel-1.0/src/excel.erl              (EPL)
+read_excel-1.0/src/excel_post_process.erl (EPL)
+read_excel-1.0/src/excel_records.erl      (EPL)
+read_excel-1.0/src/excel_rev_comp.erl     (EPL)
+read_excel-1.0/src/excel_tokens.erl       (EPL)
+read_excel-1.0/src/excel_util.erl         (EPL)
+read_excel-1.0/src/filefilters.erl        (EPL)
+read_excel-1.0/src/hn_warnings.erl        (EPL)
+read_excel-1.0/src/read_excel.erl         (EPL)
+read_excel-1.0/src/read_excel_sup.erl     (EPL)
+read_excel-1.0/src/read_file_srv.erl      (EPL)

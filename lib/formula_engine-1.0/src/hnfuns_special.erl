@@ -1,10 +1,27 @@
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2011, Hypernumbers Ltd
+%%% @copyright (C) 2011-2014, Hypernumbers Ltd
 %%% @doc       This module implements special
 %%%            hypernumbers functions that are
 %%%            sui generis
 %%% @end
 %%% Created :  2 May 2011 by gordon@hypernumbers.com
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(hnfuns_special).
 
@@ -70,10 +87,9 @@ snapshot([Arg]) ->
     Rules = [first_array, fetch_name, fetch_ref, eval_funs, blank_as_str],
     Passes = [],
     [Ret] = muin_collect:col([Arg], Rules, Passes),
-    {Errors, _References} = get(retvals),
     % snapshot works by killng the parents so the fn never relcalcs
-    put(retvals, {Errors, []}),
-    put(infinite, []),
+    muin:pd_store(finite_refs, []),
+    muin:pd_store(infinite_refs, []),
     Ret.
 
 timestamp(_List) -> stdfuns_date:now([]).
@@ -82,18 +98,19 @@ tick([]) -> tick([1]);
 tick(Options) ->
     Opts = typechecks:std_ints(Options),
     Spec = case Opts of
-               [0]    -> hourly;
-               [1]    -> daily;
-               [2]    -> {weekly, 1}; % monday
-               [2, 1] -> {weekly, 1}; % monday
-               [2, 2] -> {weekly, 2}; % tuesday
-               [2, 3] -> {weekly, 3}; % wednesday
-               [2, 4] -> {weekly, 4}; % thursday
-               [2, 5] -> {weekly, 5}; % friday
-               [2, 6] -> {weekly, 6}; % saturday
-               [2, 7] -> {weekly, 7}; % sunday
-               [3]    -> {monthly, 1};
-               [3, N] when N > 0 andalso N < 31 -> {monthly, N};
+               [0]    -> everyminute;
+               [1]    -> hourly;
+               [2]    -> daily;
+               [3]    -> {weekly, 1}; % monday
+               [3, 1] -> {weekly, 1}; % monday
+               [3, 2] -> {weekly, 2}; % tuesday
+               [3, 3] -> {weekly, 3}; % wednesday
+               [3, 4] -> {weekly, 4}; % thursday
+               [3, 5] -> {weekly, 5}; % friday
+               [3, 6] -> {weekly, 6}; % saturday
+               [3, 7] -> {weekly, 7}; % sunday
+               [4]    -> {monthly, 1};
+               [4, N] when N > 0 andalso N < 31 -> {monthly, N};
                _      -> ?ERR_VAL
            end,
     #spec_val{val = stdfuns_date:now([]), sp_timer = #sp_timer{spec = Spec}}.

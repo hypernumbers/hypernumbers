@@ -1,5 +1,22 @@
-%%% copyright 2010 Hypernumbers Ltd
+%%% copyright 2010-2014 Hypernumbers Ltd
 %%% written by Tom McNulty
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(passport).
 
@@ -23,6 +40,8 @@
          inspect_stamp/1,
          temp_stamp/0,
          set_password/2,
+         fetch_user_by_uid/1,
+         fetch_user_by_email/1,
          uid_to_email/1,
          email_to_uid/1,
          validate_uid/1,
@@ -46,6 +65,7 @@
          terminate/2, code_change/3]).
 
 -include("hypernumbers.hrl").
+-include("passport.hrl").
 -include("date.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 -include_lib("eunit/include/eunit.hrl").
@@ -53,19 +73,6 @@
 -define(WEEK_S, 604800).
 -define(DAY_S,  86400).
 
--record(hypertag, {uid, email, expiry, data}).
-
--record(user, {uid,
-               email,
-               passMD5 = nil,
-               validated = false,
-               created_on = calendar:universal_time(),
-               lastlogin_on = nil,
-               data = dict:new()}).
-
--record(reset, {age = 0,
-                hash = "",
-                site = application:get_env(hypernumbers, norefer_url)}).
 
 -record(state, {}).
 
@@ -73,11 +80,11 @@
 %%% Local API
 %%%===================================================================
 -spec stamp(auth_srv:uid(), string(), integer() | string()) -> string().
-stamp(Uid, Email, Age) ->
+stamp(UID, Email, Age) ->
     Expiry = gen_expiry(Age),
     EscEmail = escape_email(Email),
-    Hash = gen_hash([Expiry, Uid, EscEmail]),
-    ?FORMAT("~s|~s|~s|~s", [EscEmail, Uid, Expiry, Hash]).
+    Hash = gen_hash([Expiry, UID, EscEmail]),
+    ?FORMAT("~s|~s|~s|~s", [EscEmail, UID, Expiry, Hash]).
 
 -spec create_hypertag_url(string(),
                       [string()],
@@ -85,8 +92,8 @@ stamp(Uid, Email, Age) ->
                       any(),
                       integer() | string())
                      -> string().
-create_hypertag_url(Site, Path, Uid, Email, Data, Age) ->
-    HTEnc = create_hypertag(Site, Path, Uid, Email, Data, Age),
+create_hypertag_url(Site, Path, UID, Email, Data, Age) ->
+    HTEnc = create_hypertag(Site, Path, UID, Email, Data, Age),
     lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
 
 -spec create_hypertag(string(),
@@ -95,9 +102,9 @@ create_hypertag_url(Site, Path, Uid, Email, Data, Age) ->
                       any(),
                       integer() | string())
                       -> string().
-create_hypertag(Site, Path, Uid, Email, Data, Age) ->
+create_hypertag(Site, Path, UID, Email, Data, Age) ->
     HalfKey = [Site, make_lower(Path, [])],
-    HT = #hypertag{uid = Uid,
+    HT = #hypertag{uid = UID,
                    email = Email,
                    expiry = gen_expiry(Age),
                    data = Data},
@@ -126,10 +133,10 @@ inspect_stamp(undefined) ->
     {error, no_stamp};
 inspect_stamp(Stamp) ->
     case string:tokens(Stamp, "|") of
-        [EscEmail, Uid, Expiry, Hash] ->
-            case {is_expired(Expiry), gen_hash([Expiry, Uid, EscEmail]),
+        [EscEmail, UID, Expiry, Hash] ->
+            case {is_expired(Expiry), gen_hash([Expiry, UID, EscEmail]),
                   Hash} of
-                {false, X, X} -> {ok, Uid, unescape_email(EscEmail)};
+                {false, X, X} -> {ok, UID, unescape_email(EscEmail)};
                 {false, _, _} -> {ok, bad_encryption};
                 {true, _, _}  -> {error, bad_stamp}
             end;
@@ -178,12 +185,12 @@ issue_pwd_reset(Email, Site) ->
 authenticate(Email, Password, Remember) ->
     Msg = {authenticate, Email, Password},
     case gen_server:call({global, ?MODULE}, Msg, 10000) of
-        {ok, Uid} ->
+        {ok, UID} ->
             Age = case Remember of
                          true -> ?WEEK_S;
                          false -> "session"
                   end,
-            {ok, Uid, stamp(Uid, Email, Age), Age};
+            {ok, UID, stamp(UID, Email, Age), Age};
         Else ->
             Else
     end.
@@ -192,9 +199,17 @@ authenticate(Email, Password, Remember) ->
                                        {error, invalid_uid} |
                                        {error, invalidated } |
                                        {error, weak_password}.
-set_password(Uid, Password) ->
-    Msg = {set_password, Uid, Password},
+set_password(UID, Password) ->
+    Msg = {set_password, UID, Password},
     gen_server:call({global, ?MODULE}, Msg).
+
+-spec fetch_user_by_uid(auth_srv:uid()) -> #user{} | {error, invalid_uid}.
+fetch_user_by_uid(UID) ->
+    gen_server:call({global, ?MODULE}, {fetch_user_by_uid, UID}).
+
+-spec fetch_user_by_email(string()) -> #user{} | {error, invalid_email}.
+fetch_user_by_email(Email) ->
+    gen_server:call({global, ?MODULE}, {fetch_user_by_email, Email}).
 
 %% Anonymous users have a _ symbol before their uid.
 -spec uid_to_email(auth_srv:uid()) -> {ok, string()} |
@@ -203,40 +218,73 @@ set_password(Uid, Password) ->
 %% Temporarily put back in to make logs works.
 uid_to_email(anonymous) -> {ok, "anonymous"};
 uid_to_email([$_|_]) -> {ok, "anonymous"};
-uid_to_email(Uid) ->
-    gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
+uid_to_email(UID) ->
+    case new_db_api:uid_to_emailD(UID) of
+        {ok, Email} ->
+            {ok, Email};
+        {error, not_in_cache} ->
+            case fetch_user_by_uid(UID) of
+                {error, Err} ->
+                    {error, Err};
+                User ->
+                    ok = new_db_api:write_user_to_cacheD(User),
+                    {ok, User#user.email}
+            end
+    end.
 
 -spec email_to_uid(string()) -> {ok, string()} | {error, invalid_email}.
 email_to_uid(Email) ->
-    gen_server:call({global, ?MODULE}, {email_to_uid, Email}).
+    case new_db_api:email_to_uidD(Email) of
+        {ok, UID}           ->
+            {ok, UID};
+        {error, not_in_cache} ->
+            case fetch_user_by_email(Email) of
+                {error, Err} ->
+                    {error, Err};
+                User         ->
+                    ok = new_db_api:write_user_to_cacheD(User),
+                    {ok, User#user.uid}
+            end
+    end.
 
 -spec validate_uid(auth_srv:uid()) -> ok | {error, invalid_uid}.
-validate_uid(Uid) ->
-    gen_server:call({global, ?MODULE}, {validate_uid, Uid}).
+validate_uid(UID) ->
+    gen_server:call({global, ?MODULE}, {validate_uid, UID}).
 
 -spec is_valid_uid(auth_srv:uid()) -> {ok, boolean} | {error, invalid_uid}.
-is_valid_uid(Uid) ->
-    gen_server:call({global, ?MODULE}, {is_valid_uid, Uid}).
+is_valid_uid(UID) ->
+    gen_server:call({global, ?MODULE}, {is_valid_uid, UID}).
 
 -spec get_or_create_user(string()) -> {ok, new | existing, string()}.
 get_or_create_user(Email) ->
-    SuggestedUid = create_uid(),
+    SuggestedUID = create_uid(),
     gen_server:call({global, ?MODULE}, {get_or_create_user,
-                                        Email, SuggestedUid}).
+                                        Email, SuggestedUID}).
 
 -spec get_or_create_user(string(), auth_srv:uid()) ->
     {ok, new | existing, string()}.
-get_or_create_user(Email, SuggestedUid) ->
+get_or_create_user(Email, SuggestedUID) ->
     gen_server:call({global, ?MODULE}, {get_or_create_user,
-                                        Email, SuggestedUid}).
+                                        Email, SuggestedUID}).
 
 -spec is_user(string()) -> true | false.
 is_user(Email) ->
-    gen_server:call({global, ?MODULE}, {is_user, Email}).
+    case new_db_api:email_to_uidD(Email) of
+        {ok, _UID}           ->
+            true;
+        {error, not_in_cache} ->
+            case fetch_user_by_email(Email) of
+                {error, _Err} ->
+                    false;
+                User         ->
+                    ok = new_db_api:write_user_to_cacheD(User),
+                    true
+            end
+    end.
 
 -spec delete_uid(string()) -> ok.
-delete_uid(Uid) when is_list(Uid) ->
-    gen_server:call({global, ?MODULE}, {delete_uid, Uid}).
+delete_uid(UID) when is_list(UID) ->
+    gen_server:call({global, ?MODULE}, {delete_uid, UID}).
 
 -spec create_uid() -> auth_srv:uid().
 
@@ -326,37 +374,41 @@ handle_call({authenticate, Email, Password}, _From, State) ->
                 mnesia:match_object(service_passport_user, User, read)
         end,
     Ret = case mnesia:activity(async_dirty, F) of
-              [#user{uid=Uid}] -> {ok, Uid};
+              [#user{uid=UID}] -> {ok, UID};
               _Else            -> {error, authentication_failed}
           end,
     {reply, Ret, State};
 
-handle_call({set_password, Uid, Password}, _From, State) ->
+handle_call({set_password, UID, Password}, _From, State) ->
     Ret = case acceptablepassword(Password) of
-              true  -> set_p1(Uid, Password);
+              true  -> set_p1(UID, Password);
               false -> {error, weak_password}
           end,
     {reply, Ret, State};
 
-handle_call({uid_to_email, Uid}, _From, State) ->
+handle_call({fetch_user_by_uid, UID}, _From, State) ->
     Ret = case mnesia:activity(async_dirty, fun mnesia:read/3,
-                               [service_passport_user, Uid, read]) of
-              [U] -> {ok, U#user.email};
+                               [service_passport_user, UID, read]) of
+              [U] -> U#user{passMD5   = "",
+                            validated = "",
+                            data      = ""};
               _   -> {error, invalid_uid}
           end,
     {reply, Ret, State};
 
-handle_call({email_to_uid, Email}, _From, State) ->
+handle_call({fetch_user_by_email, Email}, _From, State) ->
     Ret = case mnesia:activity(async_dirty, fun mnesia:index_read/3,
                                [service_passport_user, Email, #user.email]) of
-              [U] -> {ok, U#user.uid};
+              [U] -> U#user{passMD5   = "",
+                            validated = "",
+                            data      = ""};
               _   -> {error, invalid_email}
           end,
     {reply, Ret, State};
 
-handle_call({validate_uid, Uid}, _From, State) ->
+handle_call({validate_uid, UID}, _From, State) ->
     F = fun() ->
-                case mnesia:read(service_passport_user, Uid, write) of
+                case mnesia:read(service_passport_user, UID, write) of
                     [U] ->
                         mnesia:write(service_passport_user,
                                      U#user{validated = true},
@@ -368,25 +420,25 @@ handle_call({validate_uid, Uid}, _From, State) ->
     Ret = mnesia:activity(async_dirty, F),
     {reply, Ret, State};
 
-handle_call({is_valid_uid, Uid}, _From, State) ->
+handle_call({is_valid_uid, UID}, _From, State) ->
     Ret = case mnesia:activity(async_dirty, fun mnesia:read/3,
-                               [service_passport_user, Uid, read]) of
+                               [service_passport_user, UID, read]) of
               [U] -> {ok, U#user.validated};
               _   -> {error, invalid_uid}
           end,
     {reply, Ret, State};
 
-handle_call({get_or_create_user, Email, SuggestedUid}, _From, State) ->
+handle_call({get_or_create_user, Email, SuggestedUID}, _From, State) ->
     Ms = ets:fun2ms(fun(#user{email=E, uid=U}) when E == Email -> U end),
     T = fun() ->
                 case mnesia:select(service_passport_user, Ms, write) of
                     [U] ->
                         {ok, existing, U};
                     _ ->
-                        case mnesia:read(service_passport_user, SuggestedUid)
+                        case mnesia:read(service_passport_user, SuggestedUID)
                             of
                             [] ->
-                                User = #user{uid = SuggestedUid,
+                                User = #user{uid = SuggestedUID,
                                              email = Email},
                                 mnesia:write(service_passport_user,
                                              User, write),
@@ -403,20 +455,9 @@ handle_call({get_or_create_user, Email, SuggestedUid}, _From, State) ->
     Ret = mnesia:activity(async_dirty, T),
     {reply, Ret, State};
 
-handle_call({is_user, Email}, _From, State) ->
-    Ms = ets:fun2ms(fun(#user{email=E, uid=U}) when E == Email -> U end),
-    T = fun() ->
-                case mnesia:select(service_passport_user, Ms, write) of
-                    [_U] -> true;
-                    _   -> false
-                end
-        end,
-    Ret = mnesia:activity(async_dirty, T),
-    {reply, Ret, State};
-
-handle_call({delete_uid, Uid}, _From, State) ->
+handle_call({delete_uid, UID}, _From, State) ->
     Ret = mnesia:activity(async_dirty, fun mnesia:delete/3,
-                          [service_passport_user, Uid, write]),
+                          [service_passport_user, UID, write]),
     {reply, Ret, State};
 
 handle_call({load_script, Terms}, _From, State) ->
@@ -486,10 +527,10 @@ reset_p2(U, Password, Hash, Reset, Dict) ->
                         {success, S}
     end.
 
-set_p1(Uid, Password) ->
+set_p1(UID, Password) ->
     PassMD5 = crypto:md5_mac(server_key(), Password),
     T = fun() ->
-                case mnesia:read(service_passport_user, Uid, write) of
+                case mnesia:read(service_passport_user, UID, write) of
                     [U] when not U#user.validated ->
                         {error, not_validated};
                     [U] ->

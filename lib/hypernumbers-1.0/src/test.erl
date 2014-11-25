@@ -1,3 +1,28 @@
+%%%-------------------------------------------------------------------
+%%% @author    Gordon Guthrie
+%%% @copyright (C) 2007 - 2014, Hypernumbers.com
+%%% @doc       testing library
+%%% @end
+%%% Created :  by gordon@hypernumbers.com
+%%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(test).
 
 -export([
@@ -456,23 +481,23 @@ write_test(Module, Name, Min) ->
     NewName = "fuzz_" ++ Name ++ "_args_"
         ++ integer_to_list(Min) ++ "_SUITE",
     NewName2 = [case X of $. -> $_; X -> X end || X <- NewName],
-NewName3 = case NewName2 of
-               "and" -> "special_and";
-               "if" -> "special_if";
-               "or" -> "special_or";
-               _     -> NewName2
-           end,
-File = "-module(" ++ NewName3 ++ ").\n\n"
-++ "-define(MODULENAME, '" ++ atom_to_list(Module) ++ "')." ++ "\n"
-++ "-define(FN, '" ++ Name ++ "').\n"
-++ "-define(NOOFPARAMS, " ++ integer_to_list(Min) ++ ").\n\n"
-++ "-include(\"fuzz_include.irl\")." ++ "\n",
-Dir = code:lib_dir(hypernumbers)++"/../../tests/funs_fuzz_test/",
-file:write_file(Dir ++ NewName3 ++ ".erl", File),
-ok.
+    NewName3 = case NewName2 of
+                   "and" -> "special_and";
+                   "if" -> "special_if";
+                   "or" -> "special_or";
+                   _     -> NewName2
+               end,
+    File = "-module(" ++ NewName3 ++ ").\n\n"
+        ++ "-define(MODULENAME, '" ++ atom_to_list(Module) ++ "')." ++ "\n"
+        ++ "-define(FN, '" ++ Name ++ "').\n"
+        ++ "-define(NOOFPARAMS, " ++ integer_to_list(Min) ++ ").\n\n"
+        ++ "-include(\"fuzz_include.irl\")." ++ "\n",
+    Dir = code:lib_dir(hypernumbers)++"/../../tests/funs_fuzz_test/",
+    file:write_file(Dir ++ NewName3 ++ ".erl", File),
+    ok.
 
 find_module(Name) ->
-    Modules = muin:get_modules(),
+    Modules = fns:get_modules(),
     find_m(Modules, Name).
 
 find_m([], Name) -> Msg = "function " ++ Name ++ " is not found",

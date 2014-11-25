@@ -1,9 +1,26 @@
 %%% @author    Gordon Guthrie <gordon@hypernumbers.dev>
-%%% @copyright (C) 2013, Gordon Guthrie
+%%% @copyright (C) 2013-2014, Gordon Guthrie
 %%% @doc       Broken out post fns for hn_mochi
 %%%
 %%% @end
 %%% Created : 28 Mar 2013 by Gordon Guthrie <gordon@hypernumbers.dev>
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(hn_post).
 
@@ -13,6 +30,7 @@
 -define(E, error_logger:error_msg).
 -define(dbapi, new_db_api).
 -define(WRATTR, new_db_api:write_attributes).
+-define(TOLERANCE, 1.0e-10).
 
 -export([
          post/3
@@ -209,12 +227,24 @@ post(#refX{obj = {O, _}} = Ref, _Qry,
 
 %% post for inline editable cells
 post(#refX{obj = {cell, _}} = Ref, _Qry,
-     #env{body = [{"postinline", {struct, [{Type, Val}]}}],
-          uid = Uid} = Env) when Type == "formula" orelse Type == "clear" ->
+     #env{body = [{"postinline", {struct, [{Type, Val}]}}], uid = Uid} = Env)
+  when Type == "formula" orelse
+       Type == "clear"   ->
     case {Type, ?dbapi:read_attribute(Ref, "input")} of
         {"formula", [{#xrefX{}, "inline"}]} ->
             % escape the attributes to prevent script injection, etc
             Attrs = [{"formula", hn_util:esc(Val)}],
+            ok = ?WRATTR([{Ref, Attrs}], Uid, Uid),
+            ok = status_srv:update_status(Uid, Ref, "edited page"),
+            hn_mochi:json(Env, "success");
+        {"formula", [{#xrefX{}, "inlinecheckbox"}]} ->
+            % escape the attributes to prevent script injection, etc
+            % checkboxes can only send true/false values - make it so
+            Val2 = case hn_util:esc(Val) of
+                       "true"  -> "true";
+                       "false" -> "false"
+                   end,
+            Attrs = [{"formula", Val2}],
             ok = ?WRATTR([{Ref, Attrs}], Uid, Uid),
             ok = status_srv:update_status(Uid, Ref, "edited page"),
             hn_mochi:json(Env, "success");
@@ -226,6 +256,26 @@ post(#refX{obj = {cell, _}} = Ref, _Qry,
                     ok = status_srv:update_status(Uid, Ref, "edited page"),
                     hn_mochi:json(Env, "success");
                 false ->
+                    hn_mochi:respond(403, Env)
+            end;
+        {"formula", [{#xrefX{}, {"increment", Incr}}]} ->
+            OldVal = case new_db_api:read_attribute(Ref, "__rawvalue") of
+                         [{_X, OldV}] -> OldV;
+                         Other        -> 0
+                     end,
+            Val2 = tconv:to_num(Val),
+            OldVal2 = case tconv:to_num(OldVal) of
+                          {error, nan} -> 0;
+                          OVal         -> OVal
+                      end,
+            Diff = abs(Val2 - OldVal2) - Incr,
+            if
+                Diff < ?TOLERANCE ->
+                    Attrs = [{"formula", Val}],
+                    ok = ?WRATTR([{Ref, Attrs}], Uid, Uid),
+                    ok = status_srv:update_status(Uid, Ref, "edited page"),
+                    hn_mochi:json(Env, "success");
+                Diff >= ?TOLERANCE ->
                     hn_mochi:respond(403, Env)
             end;
         {"clear", [{#xrefX{}, Type2}]}
@@ -342,7 +392,8 @@ post(Ref = #refX{obj = {cell, _}}, _Qry,
                 uid = Uid}) ->
     {struct, Act} = Actions,
     Status = element(1, hd(Act)),
-    case hn_actions:run_actions(Ref, Env, Act, Uid) of
+    {Mod, Fn} = new_db_api:get_callbackD(Ref),
+    case Mod:Fn(Ref, Env, Act, Uid) of
         "success"              -> ok = status_srv:update_status(Uid, Ref, Status),
                                   hn_mochi:json(Env, "success");
         {"successresp", Resp1} -> ok = status_srv:update_status(Uid, Ref, Status),
@@ -446,6 +497,20 @@ post(#refX{obj = {O, _} = Obj} = Ref, _Qry,
             NewAttr = [{"input", {"dynamic_select", Expression}}],
             ok = ?WRATTR([{Ref, NewAttr}], Uid, Uid),
             hn_mochi:json(Env, "success");
+        [{"input", {struct, [{"inputincrement", Increment}]}}] ->
+            case tconv:to_num(Increment) of
+                {error, nan} ->
+                    Resp = {struct, [
+                                     {"result", "error"},
+                                     {"reason", 401}
+                                    ]},
+                    hn_mochi:json(Env, Resp);
+                NIncr ->
+                    ok = status_srv:update_status(Uid, Ref, "edited page"),
+                    NewAttr = [{"input", {"increment", NIncr}}],
+                    ok = ?WRATTR([{Ref, NewAttr}], Uid, Uid),
+                    hn_mochi:json(Env, "success")
+            end;
         _Else ->
             ok = status_srv:update_status(Uid, Ref, "edited page"),
             ok = ?WRATTR([{Ref, Attr}], Uid, Uid),

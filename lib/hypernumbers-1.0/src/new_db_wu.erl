@@ -1,9 +1,26 @@
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2011, Hypernumbers Ltd
+%%% @copyright (C) 2011-2014, Hypernumbers Ltd
 %%% @doc       new db api (old hn_db_api poured in and rewritten)
 %%%
 %%% @end
 %%% Created :  5 Apr 2011 by gordon@hypernumbers
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(new_db_wu).
 
@@ -23,8 +40,14 @@
 -define(dict, orddict:orddict()).
 -define(TRANSFORMATIVE, true).
 -define(NONTRANSFORMATIVE, false).
+-define(NOTISZCALC, false).
 
 -export([
+         set_relationsD/6,
+         delete_itemD/1,
+         write_itemD/2,
+         read_itemD/1,
+         read_itemD/2,
          all_groupsD/1,
          groupsD/1,
          revertD/3,
@@ -43,7 +66,7 @@
          read_timersD/1,
          has_forms/1,
          read_incsD/1,
-         xrefX_to_rti/3,
+         xrefX_to_rti/4,
          trans/2,
          get_prefix/1,
          delete_apiD/2,
@@ -110,11 +133,37 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-all_groupsD(Site) -> Tbl = new_db_wu:trans(Site, group),
-                     mnesia:all_keys(Tbl).
+%% should only be used for writing range items
+delete_itemD(#xrefX{site = S, idx = Idx, obj = {range, _}}) ->
+    Tbl = trans(S, item),
+    mnesia:delete(Tbl, Idx, write).
+
+%% should only be used for writing range items
+write_itemD(#xrefX{site = S, idx = Idx, obj = {range, _}} = XRefX, Attrs) ->
+    Tbl = trans(S, item),
+    NewAttrs = case read_itemD(XRefX) of
+                   []  -> Attrs;
+                   [I] -> #item{attrs = A} = I,
+                          [lists:keystore(K, 1, Attrs, {K, V}) || {K, V} <- A]
+               end,
+    mnesia:write(Tbl, #item{idx = Idx, attrs = NewAttrs}, write).
+
+%% should only be used for reading range items
+read_itemD(#xrefX{site = S, idx = Idx, obj = {range, _}}) ->
+    Tbl = trans(S, item),
+    mnesia:read(Tbl, Idx, write).
+
+read_itemD(Site, Idx) ->
+    Tbl = trans(Site, item),
+    mnesia:read(Tbl, Idx, write).
+
+
+all_groupsD(Site) ->
+    Tbl = trans(Site, group),
+    mnesia:all_keys(Tbl).
 
 groupsD(Site) ->
-    Tbl = new_db_wu:trans(Site, group),
+    Tbl = trans(Site, group),
     Fun1 = fun(#group{name = Name, members = Members}, Acc) ->
                    Mem2 = gb_sets:to_list(Members),
                    Mem3 = [X || {ok, X} <- [passport:uid_to_email(XX)
@@ -321,8 +370,8 @@ get_logsD(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
     lists:merge(Logs1, Logs3).
 
 load_dirty_sinceD(Site, Since) ->
-    Tbl = new_db_wu:trans(Site, dirty_queue),
-    TblC = new_db_wu:trans(Site, dirty_queue_cache),
+    Tbl = trans(Site, dirty_queue),
+    TblC = trans(Site, dirty_queue_cache),
     M = ets:fun2ms(fun(#dirty_queue{id = T, dirty = D})
                       when Since < T -> {T, D}
                    end),
@@ -561,7 +610,7 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                          case lists:keymember("formula", 1, Attrs) of
                              true ->
                                  % set relations to handle other cells
-                                 ok = set_relationsD(XRefX, [], [], false, false),
+                                 ok = set_relationsD(XRefX, [], [], [], false, false),
                                  ok = clean_up(XRefX, Attrs),
                                  ok = mark_these_dirtyD([XRefX], nil);
                              false ->
@@ -607,24 +656,26 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             expunge_refsD(S, expand_to_rows_or_cols(DelX)),
             [];
         Cells  ->
-            % update the children that point to the cell that is
-            % being deleted by rewriting the formulae of all the
-            % children cells replacing the reference to this cell
-            % with #ref!
-            % THESE NOW RETURN IDX's!
-            LocalChildren = [get_childrenD(C, normal) || C <- Cells],
-            LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
-
-            % sometimes a cell will have local children that are also
-            % in the delete zone these need to be removed before we
-            % do anything else...
-            LocalChildren3 = lists:subtract(LocalChildren2, Cells),
+            %% update the children that point to the cell that is
+            %% being deleted by rewriting the formulae of all the
+            %% children cells replacing the reference to this cell
+            %% with #ref!
+            %% The cells that are being deleted might be included in ranges
+            %% so we need to get the range children's children
+            Cs = [get_all_children(C) || C <- Cells],
+            %% TODO why don't we use RangeChildren?
+            {AllChildren, RangeChildren} = lists:unzip(Cs),
+            %% sometimes a cell will have local children that are also
+            %% in the delete zone these need to be removed before we
+            %% do anything else...
+            AllChildren2 = hslists:uniq(lists:flatten(AllChildren)),
+            AllChildren3 = lists:subtract(AllChildren2, Cells),
 
             % now clean up includes, timers and forms.
             [ok = clean_up(X) || X <- Cells],
 
             % Rewrite formulas
-            Status = [deref_formula(X, DelX, Disp, Uid) || X <- LocalChildren3],
+            Status = [deref_formula(X, DelX, Disp, Uid) || X <- AllChildren3],
             Fun = fun({dirty, _Ref}) -> true; ({clean, _Ref}) -> false end,
             Dirty = [X || {dirty, X} <- lists:filter(Fun, Status)],
             ok = mark_these_dirtyD(Dirty, nil),
@@ -633,11 +684,11 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             [ok = delete_relationD(X) || X <- Cells],
 
             % mark 'em dirty for zinf as well
-            [ok = mark_dirty_for_zinfD(X) || X <- Cells],
+            [ok = mark_dirty_for_zinfD(X) || X <- AllChildren3],
 
             % Delete the rows or columns and cells (and their indices)
             expunge_refsD(S, lists:append(expand_to_rows_or_cols(DelX), Cells)),
-            LocalChildren3
+            AllChildren3
     end.
 
 %% This function takes a list of refX's (including ranges) and converts them
@@ -677,8 +728,9 @@ refX_to_xrefX_createD(#refX{site = S, type = Ty, path = P, obj = O} = RefX)
                                   idx = Idx, revidx = term_to_binary(RevIdx)},
                  ok = mnesia:write(trans(S, local_obj), Rec, write),
                  #xrefX{idx = Idx, site = S, path = P, obj = O};
-        XrefX -> XrefX
+        XRefX -> XRefX
     end.
+
 
 -spec write_attrs(#xrefX{}, [{string(), term()}]) -> ?dict.
 write_attrs(XRefX, NewAttrs) -> write_attrs(XRefX, NewAttrs, nil).
@@ -851,22 +903,18 @@ process_dyn(#xrefX{obj = {cell, {X, Y}}} = XRefX, {Path, Ref}, Select) ->
     Z = hn_util:list_to_path(Path) ++ Ref,
     case muin:parse(Z, {X, Y}) of
         {ok, AST} ->
-            Rti = xrefX_to_rti(XRefX, nil, false),
+            Rti = xrefX_to_rti(XRefX, nil, false, ?NOTISZCALC),
             Vals = muin:fetch_for_select(AST, Rti),
-            Vals2 = lists:delete(blank, hslists:uniq(Vals)),
-            Vals3 = [tconv:to_s(XX) || XX <- Vals2],
-            % lists:delete don't mind if the value already exists...
-            % sooo, get rid of any blanks
-            Vals4 = lists:sort(Vals3),
-            {_Errors, References} = get(retvals),
+            Vals2 = [X || X <- Vals, X =/= []],
+            References = muin:pd_retrieve(finite_refs),
             FiniteRefs = [{XX, L} || {XX, _, L} <- References],
-            InfiniteRefs = get(infinite),
-            case get(circref) of
+            InfiniteRefs = muin:pd_retrieve(infinite_refs),
+            case muin:pd_retrieve(circref) of
                 true  ->
                     {{"input", {"dynamic_select", Select, ["#CIRCREF!"]}},
                      [], []};
                 false ->
-                    {{"input", {"dynamic_select", Select, Vals4}},
+                    {{"input", {"dynamic_select", Select, Vals2}},
                      FiniteRefs, InfiniteRefs}
             end;
         _Err ->
@@ -874,27 +922,27 @@ process_dyn(#xrefX{obj = {cell, {X, Y}}} = XRefX, {Path, Ref}, Select) ->
     end.
 
 write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
-    Rti = xrefX_to_rti(XRefX, AReq, false),
+    Rti = xrefX_to_rti(XRefX, AReq, false, ?NOTISZCALC),
     case muin:run_formula(Fla, Rti) of
         % General error condition
         {error, {errval, Error}} ->
             write_error_attrs(Attrs, XRefX, Formula, Error);
         % a special return
-        {ok, {Pcode, #spec_val{} = Res, Parents, InfParents,
+        {ok, {Pcode, #spec_val{} = Res, Parents, InfParents, RangeRefs,
               Recompile, CircRef, IsSelfRef}} ->
             Attrs2 = proc_special(Res, XRefX, Attrs, Parents),
             write_formula_attrs(Attrs2, XRefX, Formula, Pcode,
                                 Res#spec_val.val,
                                 {Parents, Res#spec_val.include}, InfParents,
-                                Recompile, CircRef, IsSelfRef);
+                                RangeRefs, Recompile, CircRef, IsSelfRef);
         % bog standard function!
-        {ok, {Pcode, Res, Parents, InfParents, Recompile,
+        {ok, {Pcode, Res, Parents, InfParents, RangeRefs, Recompile,
               CircRef, IsSelfRef}} ->
             % there might have been a preview before - nuke it!
             % mebbies there was incs, nuke 'em (WHY?)
             ok = update_incsD(XRefX, #incs{}),
             write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents,
+                                {Parents, false}, InfParents, RangeRefs,
                                 Recompile, CircRef, IsSelfRef)
     end.
 
@@ -986,7 +1034,7 @@ write_formula2(XRefX, OrigVal, {Type, Val},
                   int      -> OrigVal;
                   _        -> hn_util:text(Val)
               end,
-    ok = set_relationsD(XRefX, [], [], false, false),
+    ok = set_relationsD(XRefX, [], [], [], false, false),
     Attrs2 = add_attributes(Attrs, [{"__default-align", Align},
                                     {"__rawvalue", Val},
                                     {"formula", Formula},
@@ -1001,7 +1049,7 @@ write_formula2(XRefX, OrigVal, {Type, Val},
     end.
 
 write_error_attrs(Attrs, XRefX, Formula, Error) ->
-    ok = set_relationsD(XRefX, [], [], false, false),
+    ok = set_relationsD(XRefX, [], [], [], false, false),
     add_attributes(Attrs, [{"formula", Formula},
                            {"__rawvalue", {errval, Error}},
                            {"__ast", []}]).
@@ -1017,16 +1065,17 @@ set_dyn_relationsD(#xrefX{idx = CellIdx, site = Site}, DynParents,
     Rel2 = set_dyn_parents(Tbl, Site, Rel, DynParents, DynInfParents),
     mnesia:write(Tbl, Rel2, write).
 
--spec set_relationsD(#xrefX{}, [#xrefX{}], [#xrefX{}],
+-spec set_relationsD(#xrefX{}, [#xrefX{}], [#xrefX{}], [#xrefX{}],
                      boolean(), boolean()) -> ok.
 set_relationsD(#xrefX{idx = CellIdx, site = Site}, FiniteParents,
-               InfParents, IsIncl, IsSelfRef) ->
+               InfParents, RangeRefs, IsIncl, IsSelfRef) ->
     Tbl = trans(Site, relation),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R;
               []  -> #relation{cellidx = CellIdx}
           end,
-    Rel2 = set_parents(Tbl, Site, Rel, FiniteParents, InfParents, IsIncl),
+    Rel2 = set_parents(Tbl, Site, Rel, FiniteParents, InfParents,
+                       RangeRefs, IsIncl),
     #relation{attrs = Attrs} = Rel2,
     Attrs2 = case {lists:member(selfreference, Attrs), IsSelfRef} of
                  {true, true}   -> Attrs;
@@ -1064,7 +1113,7 @@ set_dyn_parents(Tbl, Site, Rel, DynParents, DynInfParents) ->
     {InfPIdxs, InfPars} = lists:unzip(lists:map(Fun, DynInfParents)),
     NewParentIdxs = ordsets:from_list(PIdxs),
     LostParents = ordsets:subtract(CurDynParents, NewParentIdxs),
-    [del_childD(P, CellIdx, Tbl) || P <- LostParents],
+    [ok = del_childD(P, CellIdx, Site, Tbl)  || P <- LostParents],
     [ok = add_childD(P, CellIdx, Tbl, false) || P <- NewParentIdxs],
     NewInfParIdxs = ordsets:from_list(InfPIdxs),
     XCurInfPars = [idx_to_xrefXD(Site, X) || X <- CurDynInfPars],
@@ -1077,23 +1126,26 @@ set_dyn_parents(Tbl, Site, Rel, DynParents, DynInfParents) ->
     Rel#relation{dyn_parents = NewParentIdxs, dyn_infparents = NewInfParIdxs}.
 
 -spec set_parents(atom(), list(), #relation{}, [#xrefX{}],
-                  [#xrefX{}], boolean()) -> #relation{}.
-set_parents(Tbl,
-            Site, Rel,
-            Parents,
-            InfParents,
-            IsIncl) ->
-    #relation{cellidx = CellIdx, parents = CurParents,
-              infparents = CurInfPars} = Rel,
-    Fun = fun({local, #xrefX{idx = Idx} = XRefX}) ->
+                  [#xrefX{}], [#xrefX{}], boolean()) -> #relation{}.
+set_parents(Tbl, Site, Rel, Parents, InfParents, RangeRefs, IsIncl) ->
+    #relation{cellidx       = CellIdx,
+              parents       = CurParents,
+              infparents    = CurInfPars,
+              range_parents = CurRangePars} = Rel,
+
+    UnzipFun = fun({local, #xrefX{idx = Idx} = XRefX}) ->
                   {Idx, XRefX}
           end,
-    {PIdxs, _} = lists:unzip(lists:map(Fun, Parents)),
-    {InfPIdxs, InfPars} = lists:unzip(lists:map(Fun, InfParents)),
+
+    %% first process the normal parents
+    {PIdxs, _} = lists:unzip(lists:map(UnzipFun, Parents)),
     NewParentIdxs = ordsets:from_list(PIdxs),
     LostParents = ordsets:subtract(CurParents, NewParentIdxs),
-    [del_childD(P, CellIdx, Tbl) || P <- LostParents],
+    [ok = del_childD(P, CellIdx, Site, Tbl)   || P <- LostParents],
     [ok = add_childD(P, CellIdx, Tbl, IsIncl) || P <- NewParentIdxs],
+
+    %% now do the infinite parents
+    {InfPIdxs, InfPars} = lists:unzip(lists:map(UnzipFun, InfParents)),
     NewInfParIdxs = ordsets:from_list(InfPIdxs),
     XCurInfPars = [idx_to_xrefXD(Site, X) || X <- CurInfPars],
     case InfPars of
@@ -1102,24 +1154,57 @@ set_parents(Tbl,
         _           ->
             ok = handle_infsD(CellIdx, Site, InfPars, XCurInfPars)
     end,
-    Rel#relation{parents = NewParentIdxs, infparents = NewInfParIdxs}.
+
+    %% finally do the range parents
+    ok = set_range_parents(RangeRefs, Tbl, CurRangePars, UnzipFun),
+
+    %% return the relation record
+    Rel#relation{parents    = NewParentIdxs,
+                 infparents = NewInfParIdxs}.
+
+set_range_parents([], _, _, _) ->
+    ok;
+set_range_parents([{Range, RangePIdxs} | T], Tbl, CurRangePars, UnzipFun) ->
+    #xrefX{idx = RangeIdx} = Range,
+    NewRangeParIdxs = ordsets:from_list(RangePIdxs),
+    LostRangeParents = ordsets:subtract(CurRangePars, NewRangeParIdxs),
+    [ok = del_range_childD(P, RangeIdx, Tbl) || P <- LostRangeParents],
+    [ok = add_range_childD(P, RangeIdx, Tbl) || P <- NewRangeParIdxs],
+    %% the range parents aren't on this relation - they are on the
+    %% range object
+    ok = add_range_parentsD(RangeIdx, RangePIdxs, Tbl),
+    set_range_parents(T, Tbl, CurRangePars, UnzipFun).
 
 %% @doc Make a #muin_rti record out of an xrefX record and a flag that specifies
 %% whether to run formula in an array context.
-xrefX_to_rti(#xrefX{idx = Idx, site = S, path = P,
-                    obj = {cell, {C, R}}}, AR, AC)
-  when is_boolean(AC) ->
-    #muin_rti{site = S, path = P,
-              col = C, row = R, idx = Idx,
+xrefX_to_rti(#xrefX{idx = Idx,
+                    site = S,
+                    path = P,
+                    obj  = {cell, {C, R}}}, AR, AC, IsZCalc)
+  when is_boolean(AC)      andalso
+       is_boolean(IsZCalc) ->
+    #muin_rti{site          = S,
+              path          = P,
+              col           = C,
+              row           = R,
+              idx           = Idx,
               array_context = AC,
-              auth_req = AR};
-xrefX_to_rti(#xrefX{idx = Idx, site = S, path = P,
-                    obj = {range, {C, R, _, _}}}, AR, AC)
-  when is_boolean(AC) ->
-    #muin_rti{site = S, path = P,
-              col = C, row = R, idx = Idx,
+              auth_req      = AR,
+              is_zcalc      = IsZCalc};
+xrefX_to_rti(#xrefX{idx = Idx,
+                    site = S,
+                    path = P,
+                    obj = {range, {C, R, _, _}}}, AR, AC, IsZCalc)
+  when is_boolean(AC)      andalso
+       is_boolean(IsZCalc) ->
+    #muin_rti{site          = S,
+              path          = P,
+              col           = C,
+              row           = R,
+              idx           = Idx,
               array_context = AC,
-              auth_req = AR}.
+              auth_req      = AR,
+              is_zcalc      = IsZCalc}.
 
 clean_up_dynamic_select(XRefX) ->
     ok = set_dyn_relationsD(XRefX, [], []).
@@ -1276,8 +1361,8 @@ attach_formD(#xrefX{idx = Idx, site = Site}, Form) ->
     mnesia:write(Tbl, Form#form{key = Idx}, write).
 
 write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res, {Parents, IsIncl},
-                    InfParents, Recompile, CircRef, IsSelfRef) ->
-    ok = set_relationsD(XRefX, Parents, InfParents, IsIncl, IsSelfRef),
+                    InfParents, RangeParents, Recompile, CircRef, IsSelfRef) ->
+    ok = set_relationsD(XRefX, Parents, InfParents, RangeParents, IsIncl, IsSelfRef),
     Align = default_align(Res),
     % if it is a circular reference it is going to be recalculated
     % so stop the recalc NEXT TIME by replacing the current
@@ -1370,13 +1455,27 @@ del_attributes(D, [Key|T]) ->
     D2 = orddict:erase(Key, D),
     del_attributes(D2, T).
 
--spec del_childD(cellidx(), cellidx(), atom()) -> ok.
-del_childD(CellIdx, Child, Tbl) ->
+-spec del_childD(cellidx(), cellidx(), list(), atom()) -> ok.
+del_childD(CellIdx, Child, Site, Tbl) ->
     case mnesia:read(Tbl, CellIdx, write) of
         [R] ->
+            RangeParents = R#relation.range_parents,
             Children = ordsets:del_element(Child, R#relation.children),
-            R2 = R#relation{children = Children},
-            mnesia:write(Tbl, R2, write);
+            %% garbage collect ranges when their children drop to zero
+            %% range relations are defined by having non-null range parents
+            case {RangeParents, Children} of
+                {RPs, []} when erlang:length(RPs) > 0 ->
+                    %% Garbage collect the item and relation table for the range
+                    %% and remove the range children entries from the
+                    %% range parents
+                    Tbl2 = trans(Site, item),
+                    [ok = del_range_childD(X, CellIdx, Tbl) || X <- RPs],
+                    ok = mnesia:delete(Tbl,  CellIdx, write),
+                    ok = mnesia:delete(Tbl2, CellIdx, write);
+                _ ->
+                    R2 = R#relation{children = Children},
+                    ok = mnesia:write(Tbl, R2, write)
+            end;
         _ ->
             ok
     end.
@@ -1401,6 +1500,35 @@ add_childD(CellIdx, Child, Tbl, IsIncl) ->
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
     mnesia:write(Tbl, Rel#relation{children = Children}, write).
+
+-spec add_range_parentsD(cellidx(), [cellidx()], atom()) -> ok.
+add_range_parentsD(RangeIdx, Idxs, Tbl) ->
+    Rel = case mnesia:read(Tbl, RangeIdx, write) of
+              [R] -> R;
+              []  -> #relation{cellidx = RangeIdx}
+          end,
+    RangeParents = ordsets:from_list(Idxs),
+    mnesia:write(Tbl, Rel#relation{range_parents = RangeParents}, write).
+
+-spec del_range_childD(cellidx(), cellidx(), atom()) -> ok.
+del_range_childD(CellIdx, Child, Tbl) ->
+    case mnesia:read(Tbl, CellIdx, write) of
+        [R] ->
+            RChildren = ordsets:del_element(Child, R#relation.range_children),
+            R2 = R#relation{range_children = RChildren},
+            mnesia:write(Tbl, R2, write);
+        _ ->
+            ok
+    end.
+
+-spec add_range_childD(cellidx(), cellidx(), atom()) -> ok.
+add_range_childD(CellIdx, Child, Tbl) ->
+    Rel = case mnesia:read(Tbl, CellIdx, write) of
+              [R] -> R;
+              []  -> #relation{cellidx = CellIdx}
+          end,
+    RangeChildren = ordsets:add_element(Child, Rel#relation.range_children),
+    mnesia:write(Tbl, Rel#relation{range_children = RangeChildren}, write).
 
 handle_infsD(_CellIdx, _Site, Inf, Inf) ->
     ok;
@@ -1450,8 +1578,11 @@ post_process_format(Raw, Attrs) ->
                                 _ -> Val1
                             end,
                     add_attributes(Attrs,
-                                   [{"value", Val2},
-                                    {"overwrite-color", atom_to_list(Color)}]);
+                                   [
+                                    {"__rawvalue",      Raw},
+                                    {"value",           Val2},
+                                    {"overwrite-color", atom_to_list(Color)}
+                                   ]);
                 _Other ->
                     Attrs
             end;
@@ -1553,7 +1684,7 @@ read_attrs(S, LocObjs, Lock) ->
 
 read_attrs_D([], _S, _Tbl, _Lock, Acc) ->
     lists:reverse(Acc);
-read_attrs_D([LO|Tail], S, Tbl, Lock, Acc) ->
+read_attrs_D([LO | Tail], S, Tbl, Lock, Acc) ->
     Acc2 = case mnesia:read(Tbl, LO#local_obj.idx, Lock) of
                [#item{attrs = Attrs}] ->
                    [{lobj_to_xrefX(S, LO), binary_to_term(Attrs)} | Acc];
@@ -1744,7 +1875,9 @@ lobj_to_xrefX(Site, #local_obj{idx = I, path = P, obj = O}) ->
     #xrefX{idx = I, site = Site, path = binary_to_term(P), obj = O}.
 
 -spec store_styleD(#xrefX{}, atom(), #magic_style{}) -> integer().
-store_styleD(XRefX, Tbl, MStyle) ->
+store_styleD(#xrefX{} = XRefX, Tbl, MStyle) ->
+    %% most times no style record is written so we don't
+    %% mind takes a read lock
     case mnesia:read(Tbl, MStyle, read) of
         [#style{idx = I}] ->
             I;
@@ -1894,10 +2027,10 @@ shift_cellsD(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
             % We might need to rewrite the formulas and dynamic selectors of
             % all the child cells so lets collect them
             RefXList = [lobj_to_xrefX(Site, O) || O <- ObjsList],
-            ChildCells = lists:flatten([get_childrenD(X, self)
-                                        || X <- RefXList]),
-            ChildCells2 = hslists:uniq(ChildCells),
-            DedupedChildren = lists:subtract(ChildCells2, Rewritten),
+            Cs = [get_all_children(C) || C <- RefXList],
+            {AllChildren, _} = lists:unzip(Cs),
+            AllChildren2 = hslists:uniq(lists:flatten(AllChildren)),
+            DedupedChildren = lists:subtract(AllChildren2, Rewritten),
 
             % Rewrite formulas that are affected
             Formulas = [F || X <- DedupedChildren,
@@ -1985,6 +2118,26 @@ shift_obj(#local_obj{path = P, obj = {row, {Y1, Y2}}} = LO, _XOff, YOff) ->
     LO#local_obj{obj = O2, revidx = term_to_binary(RevIdx2)};
 shift_obj(LO, _, _) -> LO.
 
+-spec get_range_childrenD(#xrefX{}) -> [cellidx()].
+get_range_childrenD(#xrefX{site = Site, obj = {cell, _}} = XRefX) ->
+    Table = trans(Site, relation),
+    Idxs = case mnesia:read(Table, XRefX#xrefX.idx, read) of
+                            [R] -> R#relation.range_children;
+                            _   -> []
+           end,
+    _XRefXs = [idx_to_xrefXD(Site, X) || X <- Idxs].
+
+-spec get_all_children(#xrefX{}) -> [cellidx()].
+get_all_children(#xrefX{} = XRefX) ->
+    LocalChildren = get_childrenD(XRefX, normal),
+    RangeChildren = get_range_childrenD(XRefX),
+    RangeChildren2 = lists:flatten(RangeChildren),
+    %% now get the children of the range children 'cos we don't care about
+    %% ranges
+    GrandKids = [get_childrenD(X, normal) || X <- RangeChildren2],
+    AllKids = lists:flatten([LocalChildren | GrandKids]),
+    {AllKids, RangeChildren}.
+
 -spec get_childrenD(#xrefX{}, normal | self) -> [cellidx()].
 get_childrenD(#xrefX{site = Site, obj = {cell, _}} = XRefX, Type)
   when Type == normal orelse Type == self ->
@@ -2002,11 +2155,13 @@ get_childrenD(#xrefX{site = Site, obj = {cell, _}} = XRefX, Type)
         {self, false} -> XRefXs;
         {self, true}  -> [XRefX | XRefXs]
     end;
-% WTF? is this clause for...
-get_childrenD(#xrefX{obj = {Type, _}} = Ref, _Type)
-  when (Type ==  row) orelse (Type ==  column) orelse
-       (Type ==  range) orelse (Type ==  page) ->
-    lists:flatten(expand_ref(Ref)).
+get_childrenD(#xrefX{site = Site, obj = {range, _}} = XRefX, _Type) ->
+    Table = trans(Site, relation),
+    Idxs = case mnesia:read(Table, XRefX#xrefX.idx, read) of
+               [R] -> R#relation.children;
+               _   -> []
+           end,
+    _XRefXs = [idx_to_xrefXD(Site, X) || X <- Idxs].
 
 -spec deref_formula(string(), #xrefX{}, atom(), auth_srv:uid()) ->
     {clean | dirty, #refX{}}.
@@ -2081,6 +2236,10 @@ deref1(XChildX, [{cellref, _, #cellref{path = Path, text = Text}} = H | T],
        DeRefX, Disp, Acc) ->
     NewTok = deref2(XChildX, H, Text, Path, DeRefX, Disp),
     deref1(XChildX, T, DeRefX, Disp, [NewTok | Acc]);
+%% all formulae with zsegs need to recalc
+deref1(XChildX, [{zcellref, _, _, CellRef} | T], DeRefX, Disp, Acc) ->
+    #cellref{text = Txt} = CellRef,
+    deref1(XChildX, T, DeRefX, Disp, [{recalc, Txt} | Acc]);
 deref1(XChildX, [H | T], DeRefX, Disp, Acc) ->
     deref1(XChildX, T, DeRefX, Disp, [H | Acc]).
 
@@ -2104,7 +2263,11 @@ deref2(XChildX, H, Text, Path, DeRefX, Disp) ->
     PathCompare = muin_util:walk_path(CPath, Path),
     case PathCompare of
         DPath -> case Path of
-                     "./" -> {deref, "#REF!"};
+                     "./" -> S2 = muin_util:just_ref(Text),
+                             case deref_overlap(S2, Obj1, Disp) of
+                                 {deref, "#REF!"} -> {deref, "#REF!"};
+                                 O                -> O
+                             end;
                      _P   -> S1 = muin_util:just_path(Text),
                              S2 = muin_util:just_ref(Text),
                              case deref_overlap(S2, Obj1, Disp) of
@@ -2475,9 +2638,9 @@ delete_relationD(#xrefX{site = Site} = Cell) ->
                            || X <- R#relation.dyn_infparents],
             OldPs = lists:merge(OldInfPs, OldDynInfPs),
             ok = handle_infsD(Cell#xrefX.idx, Site, [], OldPs),
-            [del_childD(P, Cell#xrefX.idx, Tbl) ||
+            [ok = del_childD(P, Cell#xrefX.idx, Site, Tbl) ||
                 P <- R#relation.parents],
-            [del_childD(P, Cell#xrefX.idx, Tbl) ||
+            [ok = del_childD(P, Cell#xrefX.idx, Site, Tbl) ||
                 P <- R#relation.dyn_parents],
             ok = mnesia:delete(Tbl, Cell#xrefX.idx, write);
         _ -> ok

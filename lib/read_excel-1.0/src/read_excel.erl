@@ -1,10 +1,12 @@
 %%%-------------------------------------------------------------------
 %%% File        : read_excel.erl
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
 %%% Author      : Gordon Guthrie
 %%% Description :
 %%%
 %%% Created     : 25th July 2007 by  <gordonguthrie@backawinner.gg>
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(read_excel).
 
 -behaviour(application).

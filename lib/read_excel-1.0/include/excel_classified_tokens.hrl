@@ -1,4 +1,5 @@
-%%% This file contains the macro definitions of the various
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
+%%% This module is licensed under the Erlang Public License V1.0
 %%% Excel file formats - the excel base tokens
 %%% At the moment only BIFF8's are being encoded
 

@@ -1,4 +1,21 @@
--define(APIEMAIL, "vixoapi.com").
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+-define(APIEMAIL, "hypernumbersapi.com").
 -define(EXPIRY,    259200). % 3 days in seconds = 3*24*60*60
 
 -type now() :: {integer(),integer(),integer()}.
@@ -115,9 +132,11 @@
         {
           cellidx                        :: cellidx(),
           children       = ordsets:new() :: ordsets:ordset(cellidx()),
+          range_children = ordsets:new() :: ordsets:ordset(cellidx()),
           parents        = ordsets:new() :: ordsets:ordset(cellidx()),
           infparents     = ordsets:new() :: ordsets:ordset(cellidx()),
           z_parents      = ordsets:new() :: ordsets:ordset(#refX{}),
+          range_parents  = ordsets:new() :: ordsets:ordset(#refX{}),
           dyn_parents    = ordsets:new() :: ordsets:ordset(cellidx()),
           dyn_infparents = ordsets:new() :: ordsets:ordset(cellidx()),
           attrs          = []
@@ -245,7 +264,8 @@
           id, % {path, transaction, label}
           kind,
           restrictions = none,
-          attrs = []
+          attrs = [],
+          callback
          }).
 
 -record(twilio_account,
@@ -487,16 +507,16 @@
 -record(spec_val,
         {
           val,
-          rawform = null,
+          rawform       = null,
           sp_webcontrol = null,
-          sp_phone = null,
-          preview = null,
-          include = false,
-          sp_incs = null,
-          resize = null,
-          sp_timer = null,
-          sp_site = null,
-          unique = null
+          sp_phone      = null,
+          preview       = null,
+          include       = false,
+          sp_incs       = null,
+          resize        = null,
+          sp_timer      = null,
+          sp_site       = null,
+          unique        = null
          }).
 
 -record(rawform,

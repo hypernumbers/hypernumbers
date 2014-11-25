@@ -1,18 +1,36 @@
-%% %%%-------------------------------------------------------------------
-%% %%% @author    Gordon Guthrie <gordon@hypernumbers.com>
-%% %%% @copyright (C) 2009, Hypernumbers Ltd
-%% %%% @doc       This module implements the horizontal api that connects
-%% %%%            two hypernumbers servers.
-%% %%%
-%% %%%            It manages the <code>notify</code> and
-%% %%%            <code>notify_back</code> messages between servers as
-%% %%%            well as the synchronisation of the page versions
-%% %%%
-%% %%% @TODO      write the synchronisation of the page version :(
-%% %%%
-%% %%% @end
-%% %%% Created :  8 Mar 2009 by Gordon Guthrie
-%% %%%-------------------------------------------------------------------
+%%%-------------------------------------------------------------------
+%%% @author    Gordon Guthrie <gordon@hypernumbers.com>
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd
+%%% @doc       This module implements the horizontal api that connects
+%%%            two hypernumbers servers.
+%%%
+%%%            It manages the <code>notify</code> and
+%%%            <code>notify_back</code> messages between servers as
+%%%            well as the synchronisation of the page versions
+%%%
+%%% @TODO      write the synchronisation of the page version :(
+%%%
+%%% @end
+%%% Created :  8 Mar 2009 by Gordon Guthrie
+%%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(horiz_api).
 
 %% -include("hypernumbers.hrl").

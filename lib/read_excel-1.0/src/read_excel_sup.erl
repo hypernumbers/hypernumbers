@@ -1,10 +1,12 @@
 %%%-------------------------------------------------------------------
 %%% File        : read_excel_sup.erl
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
 %%% Author      : Gordon Guthrie <gordonguthrie@localhost>
-%%% Description : 
+%%% Description :
 %%%
 %%% Created     : 25 Jul 2007 by Gordon Guthrie <gordonguthrie@localhost>
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(read_excel_sup).
 
 -behaviour(supervisor).
@@ -34,9 +36,9 @@ start_link() ->
 %% Func: init(Args) -> {ok,  {SupFlags,  [ChildSpec]}} |
 %%                     ignore                          |
 %%                     {error, Reason}
-%% Description: Whenever a supervisor is started using 
-%% supervisor:start_link/[2,3], this function is called by the new process 
-%% to find out about restart strategy, maximum restart frequency and child 
+%% Description: Whenever a supervisor is started using
+%% supervisor:start_link/[2,3], this function is called by the new process
+%% to find out about restart strategy, maximum restart frequency and child
 %% specifications.
 %%--------------------------------------------------------------------
 init([]) ->

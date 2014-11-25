@@ -76,6 +76,24 @@ top_and_tail(A1, A2, A3, A4)->
           "%%% match specifications from records\n" ++
           "%%% @private" ++
           "\n" ++
+           "%%% @copyright (C) 2011 - 2014, Hypernumbers.com" ++
+          "\n" ++
+          "%%%-------------------------------------------------------------------" ++
+          "%%%" ++ "\n" ++
+          "%%% LICENSE" ++ "\n" ++
+          "%%%" ++ "\n" ++
+          "%%% This program is free software: you can redistribute it and/or modify" ++ "\n" ++
+          "%%% it under the terms of the GNU Affero General Public License as" ++ "\n" ++
+          "%%% published by the Free Software Foundation version 3" ++ "\n" ++
+          "%%%" ++ "\n" ++
+          "%%% This program is distributed in the hope that it will be useful," ++ "\n" ++
+          "%%% but WITHOUT ANY WARRANTY; without even the implied warranty of" ++ "\n" ++
+          "%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the" ++ "\n" ++
+          "%%% GNU Affero General Public License for more details." ++ "\n" ++
+          "%%%" ++ "\n" ++
+          "%%% You should have received a copy of the GNU Affero General Public License" ++ "\n" ++
+          "%%% along with this program.  If not, see <http://www.gnu.org/licenses/>." ++ "\n" ++
+          "%%%-------------------------------------------------------------------" ++ "\n" ++
           "-module(" ++ ?MODULENAME ++ ").\n" ++
           "\n" ++
           "-export([get_index/2,\n" ++

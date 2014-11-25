@@ -1,5 +1,23 @@
-%%% @copyright 2008 Hypernumbers Ltd
+%%% @copyright 2008-2014 Hypernumbers Ltd
 %%% @doc authorize http requests
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(hn_authorize).
 
 -include("hypernumbers.hrl").
@@ -496,11 +514,11 @@ auth_post(#refX{}, _Qry, #env{body = [{Action, _}]}, ?ISAUTH)
     allowed;
 %% some are never
 auth_post(#refX{}, _Qry, #env{body = [{Action, _}]}, ?ISAUTH)
-  when Action == "mark"           orelse
-       Action == "postform"       orelse
-       Action == "postinline"     orelse
-       Action == "postrichinline" orelse
-       Action == "postwebcontrols" ->
+  when Action == "mark"                orelse
+       Action == "postform"            orelse
+       Action == "postinline"          orelse
+       Action == "postrichinline"      orelse
+       Action == "postwebcontrols"     ->
     denied;
 
 %% allow a lot of stuff through

@@ -46,7 +46,7 @@ html,body {
 /******************************************************************************
 	DIALOG STYLES
 ******************************************************************************/
-#insertimagedialog, #insertlinkdialog {
+#insertimagedialog, #insertlinkdialog, #wikiincrementdialog {
     position   : absolute;
     top        : 50%;
     left       : 50%;
@@ -995,6 +995,8 @@ a.toolbar-item {
 #inlineinput { background-position: -205px -104px; }
 #inlinerichtextinput { background-position: -230px -41px; }
 #inlinedropdown { background-position: -228px -103px; }
+#inlinecheckbox { background-position: -183px -42px; }
+#inlineincrementor { background-position: -161px -42px; }
 #hn_userdeffns { background-position: -228px -82px; }
 #ghost { background-position: -205px -41px; }
 

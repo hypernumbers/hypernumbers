@@ -1,3 +1,5 @@
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
+%%% This module is licensed under the Erlang Public License V1.0
 %%% This file contains macro definitions for various record costants
 %%% in Microsoft Excel BIFF8 formats
 

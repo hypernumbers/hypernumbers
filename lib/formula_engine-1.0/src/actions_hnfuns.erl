@@ -1,11 +1,28 @@
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2012, Hypernumbers Ltd
+%%% @copyright (C) 2012-2014, Hypernumbers Ltd
 %%% @doc       A module for running webcontrol actions
 %%%
 %%% @end
 %%% Created : 16 Oct 2012 by gordon@vixo.com
 
--module(hn_actions).
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
+-module(actions_hnfuns).
 
 -export([
          run_actions/4
@@ -158,7 +175,8 @@ run_actions(#refX{} = RefX, _Env, [{Act, {struct, _L}} = Payload], Uid)
                                 500
             end
     end;
-run_actions(#refX{site = S, path = P} = RefX, _Env, [{_, {array, Json}}], Uid) ->
+run_actions(#refX{site = S, path = P} = RefX, _Env,
+            [{"createpages", {array, Json}}], Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
                    N2 = list_to_integer(N),
                    {N2, lists:flatten([json_recs:json_to_rec(X)

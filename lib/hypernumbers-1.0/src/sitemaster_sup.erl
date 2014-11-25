@@ -1,11 +1,29 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2011, Hypernumbers Ltd
+%%% @copyright (C) 2011-2014, Hypernumbers Ltd
 %%% @doc       This supervisor manages the individual sites
 %%%
 %%% @end
 %%% Created :  5 Sep 2011 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(sitemaster_sup).
 
 -behaviour(supervisor).
@@ -43,8 +61,7 @@ add_site(Site) ->
 
 -spec delete_site(string()) -> ok.
 delete_site(Site) ->
-    supervisor:terminate_child(?MODULE, Site),
-    ok = supervisor:delete_child(?MODULE, Site).
+    ok = supervisor:terminate_child(?MODULE, Site).
 
 %%====================================================================
 %% Supervisor callbacks
@@ -59,7 +76,7 @@ delete_site(Site) ->
 %% specifications.
 %%--------------------------------------------------------------------
 init([]) ->
-    io:format("Vixo Startup: the sitemaster_sup is initing...~n"),
+    io:format("Hypernumbers Startup: the sitemaster_sup is initing...~n"),
     Sites = hn_setup:get_sites(),
     ChildSpecs = [gen_child_spec(S) || S <- Sites],
     case application:get_env(hypernumbers, should_start_sites) of
@@ -73,4 +90,4 @@ init([]) ->
 
 gen_child_spec(S) ->
     {S, {site_sup, start_link, [S]},
-     permanent, infinity, supervisor, [site_sup]}.
+     temporary, infinity, supervisor, [site_sup]}.

@@ -5,6 +5,24 @@
 %%% TODO: Double "" as a way to include a quote character in a string.
 %%%       This works in Ruby: rx = /\"((\"\")|(.)|(\n))*\"/
 %%% TODO: Good unit test coverage.
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 Definitions.
 
@@ -246,12 +264,11 @@ Erlang code.
 
 -export([lex/2, debang/1]).
 -include("muin_records.hrl").
+-include("muin_proc_dict.hrl").
 -include("typechecks.hrl").
 
 %% These are read-only.
 -define(SQBRA, $[). %]
--define(mx, get(mx)).
--define(my, get(my)).
 -define(pivot, {?mx, ?my}).
 
 %%% @type coord() = {Row :: pos_integer(), Column :: pos_integer()}
@@ -260,8 +277,8 @@ Erlang code.
 %% @spec lex(Input :: string(), Cell :: coord()) -> tokens()
 %% @doc  Lex a string relative to some cell.
 lex(Input, {Mx, My}) ->
-    put(mx, Mx),
-    put(my, My),
+    muin:pd_store(x, Mx),
+    muin:pd_store(y, My),
     case string(Input) of
         {ok, Toks, _} ->
             case no_strings_above_limit(Toks) of

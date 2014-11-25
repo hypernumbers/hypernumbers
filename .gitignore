@@ -25,6 +25,9 @@ lib/hypernumbers*/priv/core_install/docroot/webandwiki.*.js
 
 lib/twilio/ebin/twilio.app
 
+## generated random cookie
+.erlang.cookie
+
 ## Script used for fetching svn externals
 lib/git-svn-*
 

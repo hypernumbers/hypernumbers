@@ -1,10 +1,28 @@
-
 %%% @doc Tests for the XFL lexer.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
 %%% NB: This file is included into xfl_lexer.xrl
 
 %% @doc Lexing functions for testing.
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 tlex(Input) ->
     ?ifmatch(string(Input),
              {ok, [{_Type, Val}], _},

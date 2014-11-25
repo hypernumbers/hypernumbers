@@ -15,6 +15,25 @@
 %%%      and SUBTOTAL(101, A1:A5) will do the same thing.
 %%% @private
 
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(stdfuns_math).
 
 -include("typechecks.hrl").
@@ -251,7 +270,8 @@ sum(Vs) ->
                      [return_errors, {all, fun is_number/1}],
                      fun sum1/1).
 
-sum1(Nums) -> lists:sum(Nums).
+sum1(Nums) ->
+    lists:sum(Nums).
 
 product(Vals) ->
     muin_collect:col(Vals,

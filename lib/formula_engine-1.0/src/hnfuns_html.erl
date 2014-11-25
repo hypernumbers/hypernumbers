@@ -1,9 +1,26 @@
 %%% @author    Gordon Guthrie <gordon@hypernumbers.com>
-%%% @copyright (C) 2010, Hypernumbers Ltd
+%%% @copyright (C) 2010-2014, Hypernumbers Ltd
 %%% @doc       functions for building websites
 %%%
 %%% @end
 %%% Created : 11 Dec 2010 by Gordon Guthrie <>
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(hnfuns_html).
 
@@ -21,21 +38,9 @@
          'html.menu.'/1,
          'html.submenu'/1,
          'html.zsubmenu'/1,
+         'html.tabs.'/1,
          'link.box.'/1,
          'toggle.views'/1
-        ]).
-
--export([
-         'tim.alert.'/1,
-         'tim.box.'/1,
-         'tim.plainbox.'/1,
-         'tim.ruledbox.'/1,
-         'tim.headline.'/1,
-         'tim.horizontal.line.'/1,
-         'tim.vertical.line.'/1,
-         'tim.menu.'/1,
-         'tim.submenu'/1,
-         'tim.tabs.'/1
         ]).
 
 'html.panel.'([W, H, Text, BgCol1, BgCol2, TextColour]) ->
@@ -332,12 +337,10 @@ z2(T2, Z, St2) ->
     Resize = #resize{width = 1, height = 2},
     #spec_val{val = SubMenu, preview = Preview, resize = Resize}.
 
-'html.submenu'(List) -> 'tim.submenu'(List).
-
 'html.menu.'([W | Rest]) ->
     [W2] = typechecks:throw_std_ints([W]),
     Strings = typechecks:throw_html_box_contents(Rest),
-    Menu = 'tim.menu1'(Strings, "hn_sld_menu sld_menu1", []),
+    Menu = 'html.menu1'(Strings, "hn_sld_menu sld_menu1", []),
     Js   = ["/webcomponents/hn.newwebcomponents.js"],
     Js_R = ["HN.NewWebComponents.reload();"],
     CSS  = ["/webcomponents/newwebcomponents.css"],
@@ -357,9 +360,8 @@ z2(T2, Z, St2) ->
 %%% Propsed new components                                                   %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-'tim.menu.'(List) -> 'html.menu.'(List).
 
-'tim.tabs.'([Width, Height | List]) ->
+'html.tabs.'([Width, Height | List]) ->
     [W] = typechecks:throw_std_ints([Width]),
     [H] = typechecks:throw_std_ints([Height]),
     funs_util:check_size2(W, H, 6),
@@ -391,159 +393,27 @@ split(List) ->
         0 -> unzip(List, [], [])
     end.
 
-'tim.plainbox.'([Width, Height | List]) ->
-    [W] = typechecks:throw_std_ints([Width]),
-    [H] = typechecks:throw_std_ints([Height]),
-    Class = "hn_sld_plainbox",
-    Js   = ["/webcomponents/hn.newwebcomponents.js"],
-    Js_R = ["HN.NewWebComponents.reload();"],
-    CSS  = ["/webcomponents/newwebcomponents.css"],
-    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    'tim.box.1'(Class, W, H, List, Incs).
-
-'tim.ruledbox.'([Width, Height | List]) ->
-    [W] = typechecks:throw_std_ints([Width]),
-    [H] = typechecks:throw_std_ints([Height]),
-    Class = "hn_sld_ruledbox",
-    Js   = ["/webcomponents/hn.newwebcomponents.js"],
-    Js_R = ["HN.NewWebComponents.reload();"],
-    CSS  = ["/webcomponents/newwebcomponents.css"],
-    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    'tim.box.1'(Class, W, H, List, Incs).
-
-'tim.box.'([Width, Height | List]) ->
-    [W] = typechecks:throw_std_ints([Width]),
-    [H] = typechecks:throw_std_ints([Height]),
-    Class = "hn_sld_box",
-    Js   = ["/webcomponents/hn.newwebcomponents.js"],
-    Js_R = ["HN.NewWebComponents.reload();"],
-    CSS  = ["/webcomponents/newwebcomponents.css"],
-    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    'tim.box.1'(Class, W, H, List, Incs).
-
-'tim.alert.'([Width, Height, Style | List]) ->
-    [W] = typechecks:throw_std_ints([Width]),
-    [H] = typechecks:throw_std_ints([Height]),
-    [S] = typechecks:throw_std_ints([Style]),
-    check_alerts(S),
-    Class = case S of
-                0 -> "hn_sld_alert";
-                _ -> "hn_sld_alert hn_sld_level" ++ integer_to_list(Style)
-            end,
-    % always want a header
-    List2 = case length(List) of
-                1 -> [C] = List,
-                     case Style of
-                         0 -> [C, "Notice"];
-                         1 -> [C, "Alert"];
-                         2 -> [C, "Warning"];
-                         3 -> [C, "Strong Warning"]
-                     end;
-                _ -> List
-            end,
-    Js   = ["/webcomponents/hn.newwebcomponents.js"],
-    Js_R = ["HN.NewWebComponents.reload();"],
-    CSS  = ["/webcomponents/newwebcomponents.css"],
-    Incs = #incs{js = Js, js_reload = Js_R, css = CSS},
-    'tim.box.1'(Class, W, H, List2, Incs).
-
-'tim.box.1'(Class, W, H, [Content, Headline, Footer], Incs) ->
-    [H1] = typechecks:throw_html_box_contents([Headline]),
-    [C1] = typechecks:throw_html_box_contents([Content]),
-    [F1] = typechecks:throw_html_box_contents([Footer]),
-    funs_util:check_size2(W, H, 8),
-    CHBox = "hn_box_height_" ++ integer_to_list(H),
-    Class2 = Class ++ " " ++ CHBox,
-    CH = "hn_box_height_" ++ integer_to_list(H - 4),
-    Box = "<div class='"  ++ Class2 ++ "'>"
-        ++ "<h4>" ++ H1 ++ "</h4>"
-        ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
-        ++ "<h6 class='hn_sld_footer'>" ++ F1 ++ "</h6>"
-        ++ "</div>",
-    Resize = #resize{width = W, height = H},
-    #spec_val{val = Box, resize = Resize, sp_incs = Incs};
-
-'tim.box.1'(Class, W, H, [Content, Headline], Incs) ->
-    [H1] = typechecks:throw_html_box_contents([Headline]),
-    [C1] = typechecks:throw_html_box_contents([Content]),
-    funs_util:check_size2(W, H, 6),
-    CHBox = "hn_box_height_" ++ integer_to_list(H),
-    Class2 = Class ++ " " ++ CHBox,
-    CH = "hn_box_height_" ++ integer_to_list(H - 3),
-    Box = "<div class='" ++ Class2 ++ "'>"
-        ++ "<h4>" ++ H1 ++ "</h4>"
-        ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
-        ++ "</div>",
-    Resize = #resize{width = W, height = H},
-    #spec_val{val = Box, resize = Resize, sp_incs = Incs};
-
-'tim.box.1'(Class, W, H, [Content], Incs) ->
-    [C1] = typechecks:throw_html_box_contents([Content]),
-    funs_util:check_size2(W, H, 3),
-    CH = "hn_box_height_" ++ integer_to_list(H),
-    Class2 = Class ++ " " ++ CH,
-    Box = "<div class='" ++ Class2 ++ "'>"
-        ++ "<div class='" ++ CH ++ "'><p>" ++ C1 ++ "</p></div>"
-        ++ "</div>",
-    Resize = #resize{width = W, height = H},
-    #spec_val{val = Box, resize = Resize, sp_incs = Incs}.
-
-'tim.headline.'([W, Text]) ->
-    [W2] = typechecks:throw_std_ints([W]),
-    [T2] = typechecks:throw_std_strs([Text]),
-    Height = 3,
-    funs_util:check_size(W2, Height),
-    Class = "hn_sld_headline" ++ " hn_box_width_" ++ integer_to_list(W2)
-        ++ " hn_box_height_2",
-    HTML = "<h3 class='" ++ Class ++ "'>" ++ T2 ++ "</h3>",
-    Js   = ["/webcomponents/hn.newwebcomponents.js"],
-    Js_R = ["HN.NewWebComponents.reload();"],
-    CSS  = ["/webcomponents/newwebcomponents.css"],
-    Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    Resize = #resize{width = W, height = Height},
-    #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
-
-'tim.horizontal.line.'([W]) ->
-    [W2] = typechecks:throw_std_ints([W]),
-    HTML = "<hr class='hn_sld_hr' />",
-    Js   = ["/webcomponents/hn.newwebcomponents.js"],
-    Js_R = ["HN.NewWebComponents.reload();"],
-    CSS  = ["/webcomponents/newwebcomponents.css"],
-    Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    Resize = #resize{width = W2, height = 1},
-    #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
-
-'tim.vertical.line.'([H]) ->
-    [H2] = typechecks:throw_std_ints([H]),
-    HTML = "<div class='hn_sld_vertline'></div>",
-    Js   = ["/webcomponents/hn.newwebcomponents.js"],
-    Js_R = ["HN.NewWebComponents.reload();"],
-    CSS  = ["/webcomponents/newwebcomponents.css"],
-    Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
-    Resize = #resize{width = 1, height = H2},
-    #spec_val{val = HTML, resize = Resize, sp_incs = Incs}.
-
-'tim.submenu'(List) ->
+'html.submenu'(List) ->
     [Header | Strings] = typechecks:throw_html_box_contents(List),
-    SubMenu = 'tim.submenu1'(Strings, Header, "first_level", []),
+    SubMenu = 'html.submenu1'(Strings, Header, "first_level", []),
     Preview = "Sub Menu " ++ Header,
     Resize = #resize{width = 1, height = 1},
     #spec_val{val = SubMenu, resize = Resize, preview = Preview}.
 
-'tim.menu1'([], Klass, Acc) ->
+'html.menu1'([], Klass, Acc) ->
     "<ul class='" ++ Klass ++ "'>" ++ lists:flatten(lists:reverse(Acc))
         ++ "</ul>";
-'tim.menu1'([H | T], Klass, Acc) ->
+'html.menu1'([H | T], Klass, Acc) ->
     Line = "<li>" ++ H ++ "</li>",
-    'tim.menu1'(T, Klass, [Line | Acc]).
+    'html.menu1'(T, Klass, [Line | Acc]).
 
-'tim.submenu1'([], Header, Klass, Acc) ->
+'html.submenu1'([], Header, Klass, Acc) ->
     Header ++ "<ul class='" ++ Klass ++ "'>"
         ++ lists:flatten(lists:reverse(Acc))
         ++ "</ul>";
-'tim.submenu1'([H | T], Header,Klass, Acc) ->
+'html.submenu1'([H | T], Header,Klass, Acc) ->
     Line = "<li>" ++ H ++ "</li>",
-    'tim.submenu1'(T, Header, Klass, [Line | Acc]).
+    'html.submenu1'(T, Header, Klass, [Line | Acc]).
 
 check_alerts(N) when 0 =< N andalso N < 4 -> ok;
 check_alerts(_N)                         -> ?ERR_VAL.

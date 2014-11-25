@@ -1,5 +1,23 @@
-%%% @copyright 2008 Hypernumbers Ltd
+%%% @copyright 2008-2014 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(hn_mochi).
 
 -include("hypernumbers.hrl").
@@ -85,7 +103,7 @@ handle(MochiReq) ->
                       {type, Type},
                       {what, What},
                       {trace, erlang:get_stacktrace()}],
-            ?E(Format, [Msg]),
+            ?E(Format, Msg),
             Headers = mochiweb_headers:lookup('Content-Type',
                                               MochiReq:get(headers)),
             Env2 = #env{mochi = MochiReq, headers = Headers},
@@ -376,6 +394,10 @@ to_dict([{Ref, KVs} | T], JSON) ->
 
 add_ref(_Ref, [], JSON) ->
     JSON;
+%% this is a range object which we don't want to send to the front
+%% end, so we supress it
+add_ref(Ref, [{range, _} | Tail], JSON) ->
+    add_ref(Ref, Tail, JSON);
 add_ref(Ref, [{"__rawvalue", _} = KV | Tail], JSON) ->
     JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
     add_ref(Ref, Tail, JSON2);

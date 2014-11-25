@@ -1,5 +1,23 @@
-%%% @copyright 2010 Hypernumbers Ltd
+%%% @copyright 2010-2014 Hypernumbers Ltd
 %%% @doc Web Spreadsheet functions
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(hnfuns_web).
 
 -export([
@@ -17,6 +35,7 @@
          img/1,
          'html.'/1,
          'iframe.'/1,
+         'iframe.if.'/1,
          page/1,
          pageurl/1,
          segment/1,
@@ -191,7 +210,7 @@ get_lorem() ->
 'lorem.h1'([N]) when  N >= 22        -> "Fiat Justitia Ruat Caelum".
 
 'crumb.trail'([]) ->
-    trail2(lists:reverse(get(path)), []).
+    trail2(lists:reverse(muin:pd_retrieve(path)), []).
 
 trail2([], Acc) -> lists:flatten(["<a href=\"/\">" ++ ?msite ++
                                   "</a>" | Acc]);
@@ -211,6 +230,18 @@ trail2([H | T] = L, Acc) ->
     PreV = "Raw HTML",
     Resize = #resize{width = Width, height = Height},
     #spec_val{val = HTML2, resize = Resize, preview = PreV}.
+
+'iframe.if.'([W, H, Boolean, URL]) ->
+    [Bool2] = typechecks:std_bools([Boolean]),
+    case Bool2 of
+        true  -> 'iframe.'([W, H, URL]);
+        false -> [Width] = typechecks:throw_std_ints([W]),
+                 [Height] = typechecks:throw_std_ints([H]),
+                 [URL2] = typechecks:throw_std_strs([URL]),
+                 PreV = "Disabled IFrame: " ++ URL2,
+                 Resize = #resize{width = Width, height = Height},
+                 #spec_val{val = "", resize = Resize, preview = PreV}
+    end.
 
 'iframe.'([W, H, URL]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -258,12 +289,12 @@ img_(Src) ->
 
 %% site just returns the site url
 site([]) ->
-    Site = get(site),
+    Site = muin:pd_retrieve(site),
     [_Proto, [$/, $/ | Domain], _Port] = string:tokens(Site, ":"),
     Domain.
 
 siteurl([]) ->
-    Site = get(site),
+    Site = muin:pd_retrieve(site),
     [Proto, Domain, _Port] = string:tokens(Site, ":"),
     Proto ++ ":" ++ Domain.
 
@@ -271,12 +302,12 @@ segment([]) ->
     segment([0]);
 segment([N]) when is_integer(N) ->
     if N >= 0 ->
-            case get(path) of
+            case muin:pd_retrieve(path) of
                 []   -> "";
                 List -> hd(lists:reverse(List))
             end;
        N < 0 ->
-            case get(path) of
+            case muin:pd_retrieve(path) of
                 []   -> "";
                 List -> Len = length(List),
                         if Len =< -N -> "";
@@ -288,13 +319,13 @@ segment([N]) when is_integer(N) ->
 pageurl([]) -> site([]) ++ page([]).
 
 page([]) ->
-    case get(path) of
+    case muin:pd_retrieve(path) of
         [] -> "/";
         L  -> hn_util:list_to_path(L)
     end;
 page([N]) ->
     [N1] = typechecks:std_ints([N]),
-    List = get(path),
+    List = muin:pd_retrieve(path),
     Len = length(List),
     if
         N1 >= Len                -> hn_util:list_to_path(List);
@@ -416,7 +447,7 @@ img_style(_N) ->  ?ERR_VAL.
                _Else ->
                    ?ERR_VAL
            end,
-    put(recompile, true),
+    muin:pd_store(recompile, true),
     Rules = [fetch_ztable],
     Passes = [],
     [{zeds, Ranges, _, _}] = muin_collect:col([ZRef], Rules, Passes),
@@ -470,8 +501,8 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     funs_util:check_size(Width, Height),
-    % DIRTY HACK. This forces muin to setup dependencies, and checks
-%% for circ errors.
+    %% DIRTY HACK. This forces muin to setup dependencies, and checks
+    %% for circ errors.
     Ret = muin:fetch(Ref, "__rawvalue"), % this can be made to work properly now
     case has_circref(Ret) of
         true  -> {errval, '#CIRCREF'};
@@ -507,21 +538,26 @@ table2(W, H, Len, Ref, Sort, Dirc) when ?is_rangeref(Ref) ->
 include([Ref]) ->
     include([Ref, none]);
 include([CellRef, Title]) when ?is_cellref(CellRef) ->
-    #cellref{col = C, row = R, path = Path} = CellRef,
+    #cellref{col = C, row = R, path = Path, text = CellText} = CellRef,
+    [Cell | _] = lists:reverse(string:tokens(CellText, "/")),
+    Range = Cell ++ ":" ++ Cell,
+    Txt = Path ++ Range,
     RelRan = #rangeref{type = finite,
                        path = Path,
-                       tl = {C, R},
-                       br = {C, R}},
+                       tl   = {C, R},
+                       br   = {C, R},
+                       text = Txt},
     include([RelRan, Title]);
 include([RelRan, Title]) when ?is_rangeref(RelRan) ->
     OldPath = RelRan#rangeref.path,
-    OrigPath = get(path),
+    OrigPath = muin:pd_retrieve(path),
     NewPath = muin_util:walk_path(OrigPath, OldPath),
-%% DIRTY HACK. This forces muin to setup dependencies, and checks
-%% for circ errors.
+    %% DIRTY HACK. This forces muin to setup dependencies, and checks
+    %% for circ errors.
     Ret = muin:fetch(RelRan, "__rawvalue"),
     case has_circref(Ret) of
-        true  -> {errval, '#CIRCREF'};
+        true  ->
+            {errval, '#CIRCREF'};
         false ->
             AbsRan = area_util:to_absolute(RelRan,
                                            muin:context_setting(col),
@@ -544,15 +580,15 @@ include([RelRan, Title]) when ?is_rangeref(RelRan) ->
                                  ++ hn_util:obj_to_ref(Obj) ++ "</div>"
                      end,
             case new_db_wu:has_forms(Ref) of
-                false ->  Content = hn_render:content(Ref),
-                          {{Html, Width, Height}, _Addons} = Content,
-                          {W2, H2} = get_preview(Width, Height),
-                          HTML = hn_render:wrap_region(Html, Width, Height),
-                          HTML2 = lists:flatten(HTML),
-                          Preview = Title2,
-                          Resize = #resize{width = W2, height = H2},
-                          #spec_val{val = HTML2, preview = Preview,
-                                    resize = Resize, include = true};
+                false -> Content = hn_render:content(Ref),
+                         {{Html, Width, Height}, _Addons} = Content,
+                         {W2, H2} = get_preview(Width, Height),
+                         HTML = hn_render:wrap_region(Html, Width, Height),
+                         HTML2 = lists:flatten(HTML),
+                         Preview = Title2,
+                         Resize = #resize{width = W2, height = H2},
+                         #spec_val{val = HTML2, preview = Preview,
+                                   resize = Resize, include = true};
                 true  -> ?ERRVAL_CANTINC
             end
     end.

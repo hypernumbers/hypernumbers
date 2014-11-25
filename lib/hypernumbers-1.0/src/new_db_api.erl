@@ -1,19 +1,42 @@
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2011, Hypernumbers Ltd
+%%% @copyright (C) 2011-2014, Hypernumbers Ltd
 %%% @doc       new db work rewrites
 %%%            old hn_db_api.erl poured in and rewritten
 %%% @end
 %%% Created :  5 Apr 2011 by gordon@hypernumbers.com
 
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(new_db_api).
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
+-include("passport.hrl").
 -include("keyvalues.hrl").
 -include("syslib.hrl").
 -include("errvals.hrl").
 
 -export([
+         get_callbackD/1,
+         write_user_to_cacheD/1,
+         uid_to_emailD/1,
+         email_to_uidD/1,
          write_commission_logD/1,
          read_commission_logD/1,
          get_unprocessed_commissionsD/0,
@@ -92,6 +115,12 @@
          write_activity_DEBUG/3
         ]).
 
+%% will force a web site to recalc completes
+-export([
+         recalc_site_EMERGENCYD/1,
+         clear_all_queues_EMERGENCYD/1
+        ]).
+
 % fns for logging
 -export([
          get_logs/1
@@ -122,6 +151,39 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_callbackD(RefX) ->
+    Fun = fun() ->
+                  #xrefX{site = S, idx = Idx} = new_db_wu:refX_to_xrefXD(RefX),
+                  Tbl = new_db_wu:trans(S, form),
+                  [#form{callback = C}] = mnesia:read(Tbl, Idx, read),
+                  C
+          end,
+    mnesia:activity(transaction, Fun).
+
+write_user_to_cacheD(User) ->
+    Fun = fun() ->
+                  ok = mnesia:write(passport_cached, User, write)
+          end,
+    mnesia:activity(transaction, Fun).
+
+uid_to_emailD(UID) ->
+    Fun = fun() ->
+                  mnesia:read(passport_cached, UID, read)
+          end,
+    case mnesia:activity(transaction, Fun) of
+        [U] -> {ok, U#user.email};
+        _   -> {error, not_in_cache}
+    end.
+
+email_to_uidD(Email) ->
+    Fun = fun() ->
+                  mnesia:index_read(passport_cached, Email, #user.email)
+          end,
+    case mnesia:activity(transaction, Fun) of
+        [U] -> {ok, U#user.uid};
+        _   -> {error, not_in_cache}
+    end.
+
 write_commission_logD(Commission) ->
     Table = commission,
     Fun = fun() ->
@@ -149,18 +211,19 @@ run_zevalD(Site, Path, Z) ->
     % {cell, {0, 0}} is 1 up and 1 left of the cell 'A1'
     {ok, Toks} = xfl_lexer:lex(Z2, {0, 0}),
     % need to set up the process dictionary
-    Fun = fun() -> try
-                       muin:external_zeval(Site, Path, Toks)
-                   catch
-                       error:
-                       Err  -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
-                                  [Toks, Site, Path, Err]),
-                               ?ERRVAL_VAL;
-                       exit:
-                       Exit -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
-                                  [Toks, Site, Path, Exit]),
-                               ?ERRVAL_VAL
-                   end
+    Fun = fun() ->
+                  try
+                      muin:external_zeval(Site, Path, Toks)
+                  catch
+                      error:
+                      Err  -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
+                                 [Toks, Site, Path, Err]),
+                              ?ERRVAL_VAL;
+                      exit:
+                      Exit -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
+                                 [Toks, Site, Path, Exit]),
+                              ?ERRVAL_VAL
+                  end
           end,
     {atomic, Ret} = mnesia:transaction(Fun),
     Ret.
@@ -171,16 +234,15 @@ any_adminD(Site) ->
                   case mnesia:read(Tbl, "admin", read) of
                       [#group{members = M}] ->
                           case gb_sets:is_empty(M) of
-                              false -> gb_sets:smallest(M);
+                              false -> {uid, gb_sets:largest(M)};
                               true  -> no_admin
                           end;
                       _ ->
                           no_group
                   end
           end,
-    % use a spoof RefX for write activity
-    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
-    write_activity(RefX, Fun, "quiet").
+    {atomic, Ret} = mnesia:transaction(Fun),
+    Ret.
 
 set_usersD(Site, Users, GroupN) ->
     Tbl = ?wu:trans(Site, group),
@@ -283,7 +345,7 @@ is_memberD(Site, Uid, Groups) ->
 
 is_member1([], _Tbl, _Email, _Uid) -> false;
 is_member1([GroupN | Rest], Tbl, Email, Uid) ->
-    % check if the Group is the Email first
+    %% check if the Group is the Email first
     case GroupN of
         Email ->
             true;
@@ -839,6 +901,34 @@ read_attribute(RefX, Field) when is_record(RefX, refX) ->
           end,
     read_activity(RefX, Fun).
 
+clear_all_queues_EMERGENCYD(Site) ->
+    %% clear all the dirty queues
+    io:format("Clearing all the dirty queues of ~p~n",
+              [Site]),
+    Tbl1 = new_db_wu:trans(Site, dirty_for_zinf),
+    Tbl2 = new_db_wu:trans(Site, dirty_queue_cache),
+    Tbl3 = new_db_wu:trans(Site, dirty_queue),
+    Tbl4 = new_db_wu:trans(Site, dirty_zinf),
+    {atomic, ok} = mnesia:clear_table(Tbl1),
+    {atomic, ok} = mnesia:clear_table(Tbl2),
+    {atomic, ok} = mnesia:clear_table(Tbl3),
+    {atomic, ok} = mnesia:clear_table(Tbl4),
+    ok.
+
+recalc_site_EMERGENCYD(Site) ->
+    Tbl = ?wu:trans(Site, item),
+    Fun = fun() ->
+                  Idxs = mnesia:all_keys(Tbl),
+                  io:format("Marking ~p cells on ~p dirty~n",
+                            [length(Idxs), Site]),
+                  [ok = new_db_wu:mark_these_idxs_dirtyD([X], Site, nil)
+                   || X <- Idxs],
+                  ok
+          end,
+    %% use a spoof RefX for write activity
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    write_activity(RefX, Fun, "quiet").
+
 recalc(#refX{} = RefX) ->
     Fun = fun() ->
                   XRefX = ?wu:refX_to_xrefX_createD(RefX),
@@ -1126,16 +1216,24 @@ handle_dirty_cell(Site, Idx, Ar) ->
                     true ->
                         [];
                     false ->
-                        Cell = ?wu:idx_to_xrefXD(Site, Idx),
-                        Attrs = case ?wu:read_ref(Cell, inside, write) of
-                                    [{_, A}] -> A;
-                                    _        -> orddict:new()
+                        Attrs = case ?wu:read_itemD(Site, Idx) of
+                                    [#item{attrs = A}] -> binary_to_term(A);
+                                    _                  -> orddict:new()
                                 end,
+                        Cell = ?wu:idx_to_xrefXD(Site, Idx),
                         case orddict:find("formula", Attrs) of
                             {ok, F} ->
                                 _ = ?wu:write_attrs(Cell, [{"formula", F}], Ar);
                             _ ->
-                                []
+                                %% handle range caching
+                                case orddict:find(range, Attrs) of
+                                    {ok, _R} ->
+                                        %% delete the range because its children
+                                        %% will then refetch it
+                                        ok = new_db_wu:delete_itemD(Cell);
+                                    _ ->
+                                        ok
+                                end
                         end,
                         ok = handle_dirty_c2(Cell, Attrs, Ar),
                         % cells may have been written that now depend
@@ -1158,13 +1256,22 @@ handle_dirty_c2(Cell, Attrs, Ar) ->
             % recalc will 'fire' on writing
             case I of
                 "inline" ->
-                    % normal inlines don't have vals to recalcrecalc
+                    % normal inlines don't have vals to recalc
                     ok;
                 "inlinerich" ->
-                    % rich inlines don't have vals to recalcrecalc
+                    % rich inlines don't have vals to recalc
+                    ok;
+                "inlinecheckbox" ->
+                    % rich inlines don't have vals to recalc
+                    ok;
+                "inlineincrementor" ->
+                    % rich inlines don't have vals to recalc
                     ok;
                 "none" ->
                     % used to have an input but it's been cleared
+                    ok;
+                {"increment", _} ->
+                    % normal select's don't recalc their vals
                     ok;
                 {"select", _} ->
                     % normal select's don't recalc their vals
@@ -1323,7 +1430,6 @@ move(RefX, Type, Disp, Ar, LogChange)
 move_tr(RefX, Type, Disp, Ar, LogChange) ->
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
-    _R = {insert, atom_to_list(Disp)},
     % when the move type is DELETE the cells that are moved
     % DO NOT include the cells described by the reference
     % but when the move type is INSERT the cells that are
@@ -1338,7 +1444,7 @@ move_tr(RefX, Type, Disp, Ar, LogChange) ->
     ReWr = do_delete(Type, RefX, Disp, Ar),
     ok = ?wu:shift_rows_and_columnsD(RefX, Type, Disp, Ar),
     MoreDirty = ?wu:shift_cellsD(RefX, Type, Disp, ReWr, Ar),
-    ok = ?wu:mark_these_dirtyD(ReWr, Ar),
+    %% TODO Mebbies remove - not sure if next line is needed?
     ok = ?wu:mark_these_dirtyD(MoreDirty, Ar).
 
 do_delete(insert, _RefX, _Disp, _UId) ->

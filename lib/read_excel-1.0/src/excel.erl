@@ -1,15 +1,17 @@
 %%%-------------------------------------------------------------------
 %%% File    excel.erl
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
 %%% @doc    This module parses the specific Excel components of
-%%%         a file. The structure of this process is shown 
+%%%         a file. The structure of this process is shown
 %%%         schematically below:
-%%%         
+%%%
 %%%         <img src="./diagram2.png" />
 %%%
 %%% @end
 %%% Created     :  6 Apr 2007 by Gordon Guthrie <gordonguthrie@gg-laptop>
 %%%-------------------------------------------------------------------
+%%% This module is licensed under the Erlang Public License V1.0
 -module(excel).
 
 -export([read_excel/9,get_file_structure/8]).
@@ -47,7 +49,7 @@
 %% @doc this is the interface for reading and Excel 97-2003 file
 read_excel(Directory, SAT, SSAT, SectorSize, ShortSectorSize,
            _MinStreamSize,{{SubLoc, SubSID}, SubStreams}, FileIn, Tables)->
-    
+
     % Bear in mind that if the location is short stream the 'SID' returned
     % is actually an SSID!
     {Location, SID} = get_workbook_SID(Directory),
@@ -76,21 +78,21 @@ read_excel(Directory, SAT, SSAT, SectorSize, ShortSectorSize,
     % The 'Sheet Substreams' constist of things on a particular Excel tab as
     % described in Section 4.2.5 of excelfileformatV1-40.pdf
     %
-    
+
     % First parse the 'Workbook Globals SubStream'
     WorkBook = {'utf-8',<<"Workbook Globals SubStream">>},
     parse_bin(Bin, WorkBook, no_formula, Tables),
-    
+
     % Now parse all the 'Sheet Substeams'
     [ parse_substream(SubSID, SubLoc, X, Directory, SAT, SSAT, SectorSize,
                       ShortSectorSize, FileIn, Tables) || X <- SubStreams],
-    
+
     % Now that the complete file is read reverse_compile the token stream
     excel_post_process:post_process_tables(Tables).
 
 parse_substream(SubSID, Location, SubStream, Directory, SAT, SSAT, SectorSize,
                 ShortSectorSize, FileIn, Tables) ->
-    
+
     {{[{Type, NameBin}], _, _}, Offset} = SubStream,
 
     Bin = case Location of
@@ -100,31 +102,31 @@ parse_substream(SubSID, Location, SubStream, Directory, SAT, SSAT, SectorSize,
                   get_short_stream(SubSID, Directory, SAT, SSAT,
                                    SectorSize, ShortSectorSize, FileIn)
         end,
-    
+
     % Because we are reading a substream we want to chop off the
     % binary up to the offset
     <<_Discard:Offset/binary, Rest/binary>> = Bin,
-    
+
     % pass in the actual name of the substream
     parse_bin(Rest, {Type, NameBin}, no_formula, Tables).
 
 parse_bin(Bin, {_, NameBin}=SubStreamName, Formula, Tables)->
-    
+
     <<Id:16/little-unsigned-integer, Size:16/little-unsigned-integer,
      Rest/binary>> = Bin,
-    
+
     case Id of
         ?EOF   -> ok;
         _Other ->
             <<Record:Size/binary, Rest2/binary>> = Rest,
             % now get the next identifier
-            % because if the next identifier is a ?CONTINUE 
+            % because if the next identifier is a ?CONTINUE
             % then we want to wire the records up together
             <<NextId:16/little-unsigned-integer, _Rest3/binary>> = Rest2,
-            
-            {Rec, TheRest} = 
+
+            {Rec, TheRest} =
                 case {Id, NextId} of
-                    % SST CONTINUES have some funny stuff 
+                    % SST CONTINUES have some funny stuff
                     % going on with the compression of Unicode.
                     % See Section 5.21 of excelfileformatV1-42.pdf
                     {?SST, ?CONTINUE} ->

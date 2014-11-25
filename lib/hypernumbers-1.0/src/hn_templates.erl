@@ -2,11 +2,28 @@
 %%% File        hn_templates.erl
 %%% @author     Gordon Guthrie <gordon@hypernumbers.com>
 %%% @doc        This module deals with templates
-%%% @copyright  Hypernumbers Ltd
+%%% @copyright  Hypernumbers Ltd 2008-2014
 %%% Created     30 Aug 2008 by Gordon Guthrie
 %%% @TODO       proper documentation and specifications
 %%%             This function has to be totally rewritten for the new
 %%%             database
+%%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%%-------------------------------------------------------------------
 
 -module(hn_templates).
@@ -42,6 +59,14 @@ save_template(#refX{site = S} = RefX, Name, UID)  ->
     TemplatesDir = hn_util:templateroot(S),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     FileName = filename:join(TemplatesDir, Name++".json"),
+    Date = dh_date:format(".Y.m.d.H.i.s") ++ ".json" ,
+    BackupName = filename:join(TemplatesDir ++ "/backups", Name ++ Date),
+    % if this is the first save of the template don't try and take a backup
+    case filelib:is_file(FileName) of
+        true  -> ok = filelib:ensure_dir(BackupName),
+                 {ok, _} = file:copy(FileName, BackupName);
+        false -> ok
+    end,
     Page = Encoder(hn_mochi:page_attrs_for_export(RefX, #env{uid = UID})),
     Data = io_lib:format("~s", [lists:flatten(Page)]),
     ok = filelib:ensure_dir(FileName),

@@ -1,3 +1,28 @@
+%%%-------------------------------------------------------------------
+%%% @author    Gordon Guthrie
+%%% @copyright (C) 2011 - 2014, Hypernumbers.com
+%%% @doc       manages page templates
+%%% @end
+%%% Created :  by gordon@hypernumbers.com
+%%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(hn_setup).
 
 -export([
@@ -54,8 +79,8 @@ copy_site3(From, To, Type) ->
                      {true, dontoverwrite} ->
                          {error, to_site_exists};
                      _ ->
-                         delete_site(To),
-                         site(To, blank, []),
+                         ok = delete_site(To),
+                         ok = site(To, blank, []),
                          ok = sitemaster_sup:delete_site(From),
                          ok = sitemaster_sup:delete_site(To),
                          ok = copy_tables(From, To),

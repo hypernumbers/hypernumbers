@@ -1,11 +1,29 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2012, Hypernumbers Ltd
+%%% @copyright (C) 2012-2014, Hypernumbers Ltd
 %%% @doc       populates the CRM system in HighRise with new site
 %%%            commissioned, and also MailChimp mailing lists
 %%% @end
 %%% Created : 18th March 2013
 %%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(marketing_integration_srv).
 
 -behaviour(gen_server).
@@ -264,14 +282,14 @@ add_to_mailchimp(EMail, Opts) ->
 get_highrise_id(XML, existinguser) ->
     #xmlElement{content = [_C1, C2 | _R]} = element(1, XML),
     #xmlElement{content = List} = C2,
-    get(List, id);
+    get2(List, id);
 get_highrise_id(XML, newuser) ->
     #xmlElement{content = List} = element(1, XML),
-    get(List, id).
+    get2(List, id).
 
-get([], _)                                            -> "";
-get([#xmlElement{name = Id, content = [C]} | _T], Id) -> get_val(C);
-get([_H | T], Id)                                     -> get(T, Id).
+get2([], _)                                            -> "";
+get2([#xmlElement{name = Id, content = [C]} | _T], Id) -> get_val(C);
+get2([_H | T], Id)                                     -> get2(T, Id).
 
 get_val(#xmlText{value = V}) -> V.
 

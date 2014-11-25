@@ -1,10 +1,27 @@
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2012, Hypernumbers Ltd
+%%% @copyright (C) 2012-2014, Hypernumbers Ltd
 %%% @doc       This document does basic sanitation for
 %%%            html coming in from the rich text editor
 %%%
 %%% @end
 %%% Created :  7 Mar 2012 by gordon@hypernumbers.com
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(hn_html_sanitizer).
 
@@ -27,13 +44,13 @@ is_sane(List) ->
 is_s2([], Acc) ->
     is_s3(Acc, []);
 is_s2([$< | _Rest] = L, Acc) ->
-    {Token, Rest2} = get(token, L),
+    {Token, Rest2} = retrieve(token, L),
     is_s2(Rest2, [{token, string:to_lower(Token)} | Acc]);
 is_s2([?DBL | _Rest] = L, Acc) ->
-    {String, Rest2} = get(?DBL, L),
+    {String, Rest2} = retrieve(?DBL, L),
     is_s2(Rest2, [{string, String} | Acc]);
 is_s2([?SNGL | _Rest] = L, Acc)->
-    {String, Rest2} = get(?SNGL, L),
+    {String, Rest2} = retrieve(?SNGL, L),
     is_s2(Rest2, [{string, String} | Acc]);
 is_s2([H | T], Acc) ->
     is_s2(T, [{char, H} | Acc]).
@@ -196,26 +213,26 @@ is_s3([{token, "</a>"} | T], Acc) ->
 is_s3([{token, _Tk} | _T], _Acc) ->
     false.
 
-get(token, Rest) ->
-    get2(Rest, []);
-get(Other, Rest) ->
-    get3(Other, Rest, []).
+retrieve(token, Rest) ->
+    retrieve2(Rest, []);
+retrieve(Other, Rest) ->
+    retrieve3(Other, Rest, []).
 
-get2([$> | Rest], Acc) ->
+retrieve2([$> | Rest], Acc) ->
     {lists:reverse([$> | Acc]), Rest};
-get2([?DBL | Rest], Acc) ->
-    {String, Rest2} = get3(?DBL, Rest, []),
-    get2(Rest2, [String, ?DBL | Acc]);
-get2([?SNGL | Rest], Acc) ->
-    {String, Rest2} = get3(?SNGL, Rest, []),
-    get2(Rest2, [String, ?SNGL |  Acc]);
-get2([H | T], Acc) ->
-    get2(T, [H | Acc]).
+retrieve2([?DBL | Rest], Acc) ->
+    {String, Rest2} = retrieve3(?DBL, Rest, []),
+    retrieve2(Rest2, [String, ?DBL | Acc]);
+retrieve2([?SNGL | Rest], Acc) ->
+    {String, Rest2} = retrieve3(?SNGL, Rest, []),
+    retrieve2(Rest2, [String, ?SNGL |  Acc]);
+retrieve2([H | T], Acc) ->
+    retrieve2(T, [H | Acc]).
 
-get3(Token, [Token | Rest], Acc) ->
+retrieve3(Token, [Token | Rest], Acc) ->
     {lists:reverse([Token | Acc]), Rest};
-get3(Token, [H | T], Acc) ->
-    get3(Token, T, [H| Acc]).
+retrieve3(Token, [H | T], Acc) ->
+    retrieve3(Token, T, [H| Acc]).
 
 esc(Tk) -> re:replace(Tk, "\"", "'", [{return, list}, global]).
 

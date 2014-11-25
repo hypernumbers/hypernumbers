@@ -3,6 +3,24 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
 %%% NB: This file is included into xfl_parser.yrl
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 %% @doc Parsing function for tests.
 
@@ -30,11 +48,11 @@ intersection_test_() ->
         ['^^',
          [':', {ref,{col,-9},{row,-9},"/bla/foo/bar/","A1"}, {ref,{col,-8},{row,0},"./","B10"}],
          [':', {ref,{col,-9},{row,-9},"./","A1"}, {ref,{col,-9},{row,-5},"./","A5"}]]),
-     
+
      ?P("/salesdata/@YEAR ^^ @SALESMAN",
         ['^^',
          [name,"@YEAR","/salesdata/"],
-         [name,"salesman","./"]])        
+         [name,"salesman","./"]])
     ].
 
 %% -define(CURRENT_CELL, {10, 10}).
@@ -54,7 +72,7 @@ intersection_test_() ->
 %%                     {ok, Ast} = xfl_parser:parse(Toks),
 %%                     Ast
 %%             end,
-    
+
 %%     foreach(fun({Str, ExpectedAst}) ->
 %%                     case Parse(Str) of
 %%                         ExpectedAst -> ok;

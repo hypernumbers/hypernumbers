@@ -1,11 +1,29 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie <gordon@hypernumbers.com>
-%%% @copyright (C) 2010 Hypernumbers Ltd
+%%% @copyright (C) 2010-2014 Hypernumbers Ltd
 %%% @doc       handles integration with external websites
 %%%
 %%% @end
 %%% Created :  9th April 2010 by Gordon Guthrie
 %%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(hnfuns_integration).
 
 -include("muin_proc_dict.hrl").
@@ -446,8 +464,8 @@ tw_b1(5, Colour, UserName) -> "<a href='http://www.twitter.com/" ++ UserName ++ 
 tw_b1(_, _, _) -> ?ERRVAL_VAL.
 
 'twitter.profile'([UserName]) ->
-    ID = "hn_twitter_profile_" ++ string:join(get(path), "_")
-        ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
+    ID = "hn_twitter_profile_" ++ string:join(muin:pd_retrieve(path), "_")
+        ++ hn_util:obj_to_ref({cell, {muin:pd_retrieve(mx), muin:pd_retrieve(my)}}),
     U = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     Js = "http://widgets.twimg.com/j/2/widget.js",
     Js_reload = "new TWTR.Widget({"
@@ -478,8 +496,8 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
 %%     'twitter.list'([User, ListId, Title, ListId]);
 %% 'twitter.list'([User, ListId, Title, SubTitle]) ->
 %%     [U2, L2, T2, SubT2] = typechecks:std_strs([User, ListId, Title, SubTitle]),
-%%     ID = "hn_twitter_list_" ++ string:join(get(path), "_")
-%%         ++ hn_util:obj_to_ref({cell, {get(mx), get(my)}}),
+%%     ID = "hn_twitter_list_" ++ string:join(muin:pd_retrieve(path), "_")
+%%         ++ hn_util:obj_to_ref({cell, {muin:pd_retrieve(mx), muin:pd_retrieve(my)}}),
 %%     Js = "http://widgets.twimg.com/j/2/widget.js",
 %%     Js_reload = "new TWTR.Widget({"
 %%         ++ "version: 2, "

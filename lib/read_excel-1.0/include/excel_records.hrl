@@ -1,3 +1,5 @@
+%%% Copyright (C) 2007-2014 Hypernumbers Ltd
+%%% This module is licensed under the Erlang Public License V1.0
 %%% This file contains macro definitions for various record constants
 %%% in Microsoft Excel BIFF8 formats
 
@@ -68,7 +70,7 @@
 
 -define(rc_FONT_FAMILY_STANDARD,0).
 -define(rc_FONT_FAMILY_ROMAN,1).
--define(rc_FONT_FAMILY_SWISS,2).           
+-define(rc_FONT_FAMILY_SWISS,2).
 -define(rc_FONT_FAMILY_MODERN,3).
 -define(rc_FONT_FAMILY_SCRIPT,4).
 -define(rc_FONT_FAMILY_DECORATIVE,5).
@@ -104,7 +106,7 @@
 -define(rc_XF_STYLE,16#01).
 -define(rc_XF_PARENT_INDEX_MASK,16#FFF0).
 
--define(rc_XF_H_ALIGN_MASK,2#111). % use to band out the horizontal alignment 
+-define(rc_XF_H_ALIGN_MASK,2#111). % use to band out the horizontal alignment
 
 -define(rc_XF_H_ALIGN_GENERAL,0).
 -define(rc_XF_H_ALIGN_LEFT,1).
@@ -117,7 +119,7 @@
 
 % -define(rc_XF_TEXT_WRAPPED,8). % not implemented
 
--define(rc_XF_V_ALIGN_MASK,2#1110000). % use to band out the vertical alignment 
+-define(rc_XF_V_ALIGN_MASK,2#1110000). % use to band out the vertical alignment
 
 -define(rc_XF_V_ALIGN_TOP,0).
 -define(rc_XF_V_ALIGN_CENTRED,1).
@@ -161,9 +163,9 @@
 
 %% these define the Flags for the NAME record as described
 %% in Section 5.33 of excelfileformatsV1-42.pdf
-%% 
+%%
 %% NOT USED AT THE MO...
-%% 
+%%
 %-define(rc_NAME_OPT_HIDDEN_MASK,16#1).
 %-define(rc_NAME_OPT_FUNC_MASK,16#2).
 %-define(rc_NAME_OPT_VBASIC_MASK,16#4).

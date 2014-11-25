@@ -1,15 +1,33 @@
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2011, Hypernumbers
+%%% @copyright (C) 2011-2014, Hypernumbers
 %%% @doc       Deubgging functions for the database
 %%%            help you trace URL's Idx's etc, etc
 %%% @end
 %%% Created : 25 Aug 2011 by <gordon@hypernumbers.dev>
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(new_db_DEBUG).
 
 -include("spriki.hrl").
 
 -export([
+         force_whole_server_recalc/0,
          force_dbsrv/1,
          dump_lost_idxs/1,
          tick/0,
@@ -37,6 +55,32 @@
 %%% Debug Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+force_whole_server_recalc() ->
+    Sites = hn_setup:get_sites(),
+    RecalcFun = fun(X) ->
+                        %% clear all the dirty queues
+                        Tbl1 = new_db_wu:trans(X, dirty_for_zinf),
+                        Tbl2 = new_db_wu:trans(X, dirty_queue_cache),
+                        Tbl3 = new_db_wu:trans(X, dirty_queue),
+                        Tbl4 = new_db_wu:trans(X, dirty_zinf),
+                        {atomic, ok} = mnesia:clear_table(Tbl1),
+                        {atomic, ok} = mnesia:clear_table(Tbl2),
+                        {atomic, ok} = mnesia:clear_table(Tbl3),
+                        {atomic, ok} = mnesia:clear_table(Tbl4),
+                        io:format("Forcing full recalc of ~p~n", [X]),
+                        ok = new_db_api:recalc_site_EMERGENCYD(X),
+                        ok = finished_recalcing(X)
+                end,
+    [RecalcFun(X) || X <- Sites].
+
+finished_recalcing(X) ->
+    timer:sleep(1000),
+    case dbsrv:is_busy(X) of
+        false  -> ok;
+        _Other -> timer:sleep(1000),
+                 finished_recalcing(X)
+    end.
+
 clear_dirty_FIX(Site, {_, _, _} = Id) ->
     Fun = fun() ->
                   Tbl = new_db_wu:trans(Site, dirty_queue),
@@ -59,9 +103,10 @@ find_rel(Site, Idx) ->
     Tbl = new_db_wu:trans(Site, relation),
     F1 = fun() ->
                  F2 = fun(R, Acc) ->
-                              #relation{children = C, parents = P,
-                                        infparents = IP, z_parents = ZP} = R,
-                              All = lists:merge([C, P, IP, ZP]),
+                              #relation{children = C, range_children = RC,
+                                        parents = P, infparents = IP,
+                                        z_parents = ZP, range_parents = RP} = R,
+                              All = lists:merge([C, RC, P, IP, ZP, RP]),
                               case lists:member(Idx, All) of
                                   false ->
                                       ok;
@@ -131,7 +176,6 @@ dump_keys(Site, Table, Keys) ->
            end,
     mnesia:activity(transaction, Fun2),
     io:format("~n").
-
 
 tick() ->
     S = "http://hypernumbers.dev:9000",
@@ -268,7 +312,18 @@ idx(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                     _     ->
                         O2a  = io_lib:format("The idx points to ~p (~p) on page ~p",
                                              [Obj, hn_util:obj_to_ref(Obj), P2]),
-                        Cs = lists:sort(new_db_wu:read_ref(XRefX, inside)),
+                        Cs = case XRefX#xrefX.obj of
+                                 {cell, _} ->
+                                     lists:sort(new_db_wu:read_ref(XRefX, inside));
+                                 {range, _} ->
+                                     case new_db_wu:read_itemD(XRefX) of
+                                         [Item] ->
+                                             Attrs = binary_to_term(Item#item.attrs),
+                                             [{XRefX, Attrs}];
+                                         [] ->
+                                             [{XRefX, []}]
+                                     end
+                             end,
                         O3 = pretty_print(XRefX, Cs, "The idx contains:", Mode,
                                           [[O2a] | O2]),
                         lists:reverse(O3)
@@ -332,12 +387,14 @@ print_relations(#xrefX{site = S} = XRefX, Acc) ->
     end.
 
 print_rel2(S, R, Acc) ->
-    O1 = print_rel3(S, R#relation.children,   "children",         Acc),
-    O2 = print_rel3(S, R#relation.parents,    "parents",          O1),
-    O3 = print_rel3(S, R#relation.infparents, "infinite parents", O2),
-    O4 = print_rel3(S, R#relation.z_parents,  "z parents",        O3),
+    O1 = print_rel3(S, R#relation.children,       "children",         Acc),
+    O2 = print_rel3(S, R#relation.range_children, "range children",   O1),
+    O3 = print_rel3(S, R#relation.parents,        "parents",          O2),
+    O4 = print_rel3(S, R#relation.infparents,     "infinite parents", O3),
+    O5 = print_rel3(S, R#relation.z_parents,      "z parents",        O4),
+    O6 = print_rel3(S, R#relation.range_parents,  "range parents",    O5),
     [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is it an include/circ? ~p",
-                   [R#relation.attrs]) | O4].
+                   [R#relation.attrs]) | O6].
 
 print_rel3(_S, [], Type, Acc) -> [io_lib:format("&nbsp;&nbsp;&nbsp;&nbsp;"
                                                 ++ "&nbsp; no " ++ Type, [])
@@ -483,7 +540,9 @@ dump_logs(Site, Idx) ->
           end,
     [Fun(X) || X <- Records].
 
-pad(List) ->
+pad(Atom) when is_atom(Atom) ->
+    pad(atom_to_list(Atom));
+pad(List) when is_list(List) ->
     Len = length(List),
     List ++ pad2(20 - Len, []).
 

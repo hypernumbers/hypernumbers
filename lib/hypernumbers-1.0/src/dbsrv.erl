@@ -1,3 +1,28 @@
+%%%-------------------------------------------------------------------
+%%% @author    Tom McNulty
+%%% @copyright (C) 2008 - 2014, Hypernumbers.com
+%%% @doc       handles the recalculation of cells in the spreadsheet
+%%% @end
+%%% Created :  by tom@hypernumbers.com
+%%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(dbsrv).
 
 -behaviour(supervisor_bridge).
@@ -273,12 +298,14 @@ update_recalc_graph([], _Site, _Graph) ->
 update_recalc_graph([Idx|Rest], Site, Graph) ->
     case digraph:vertex(Graph, Idx) of
         false ->
-            case new_db_wu:read_relationsD(Site, Idx, read) of
+            case new_db_wu:read_relationsD(Site, Idx, write) of
                 [R] ->
                     digraph:add_vertex(Graph, Idx),
                     Children = ordsets:to_list(R#relation.children),
-                    update_recalc_graph(Children, Site, Graph),
-                    [digraph:add_edge(Graph, Idx, C) || C <- Children];
+                    RangeChildren = ordsets:to_list(R#relation.range_children),
+                    AllChildren = lists:merge(Children, RangeChildren),
+                    update_recalc_graph(AllChildren, Site, Graph),
+                    [digraph:add_edge(Graph, Idx, C) || C <- AllChildren];
                 _ ->
                     ok
             end;

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-HNTOP=/home/gordon/hypernumbers
-WEBROOT=/home/gordon/hn_tests/dev-www
-TESTDIR=/home/gordon/hn_tests/test-hypernumbers
+HNTOP=/home/vagrant/hypernumbers
+WEBROOT=/home/vagrant/hn_tests/dev-www
+TESTDIR=/home/vagrant/hn_tests/test-hypernumbers
 LASTRUN=$WEBROOT/last_run
 
 cd $HNTOP

@@ -1,11 +1,28 @@
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2012, Hypernumbers Ltd
+%%% @copyright (C) 2012-2014, Hypernumbers Ltd
 %%% @doc       This modules checks if the database has recalced
 %%%            correctly. Simply put it checks if all children
 %%%            have recalculated more recently than their parents
 %%%
 %%% @end
 %%% Created : 22 Jun 2012 by gordon@vixo.com
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(new_db_verify_calcs).
 

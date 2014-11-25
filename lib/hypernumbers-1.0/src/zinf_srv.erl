@@ -1,11 +1,29 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
-%%% @copyright (C) 2011, Hypernumbers.com
+%%% @copyright (C) 2011 - 2014, Hypernumbers.com
 %%% @doc       The zinf server handles z-order and infinite
 %%%            dependencies
 %%% @end
 %%% Created :  18 Jan 2011 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(zinf_srv).
 
 -behaviour(gen_server).
@@ -332,6 +350,8 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 process_zs(Site, Tree) ->
     %StartTime = get_time(),
+    %% need to set the authorisation to nil to enable z calcs to run
+    %% muin:pd_store(auth_req, nil),
     Ret = new_db_api:process_dirty_zinfs(Site, Tree, fun add/2, fun del/2),
     %EndTime = get_time(),
     %Msg = io_lib:format("~p", [EndTime - StartTime]),
@@ -340,6 +360,8 @@ process_zs(Site, Tree) ->
 
 check_zs(Site, Tree) ->
     %StartTime = get_time(),
+    %% muin:pd_store(auth_req, nil),
+    _Ret = new_db_api:process_dirty_zinfs(Site, Tree, fun add/2, fun del/2),
     ok = new_db_api:process_dirties_for_zinf(Site, Tree, fun check/2),
     %EndTime = get_time(),
     %Msg = io_lib:format("~p", [EndTime - StartTime]),
@@ -630,7 +652,7 @@ match_seg({zseg, S1},   S,   Site,  Htap) ->
         {errval, _Err}          -> error; % dunno where this came from
         {{errval, _Err}, false} -> error;
         {{error, _}, false}     -> error % Old style errs from fns
-                                   % (shouldn't exist!)
+                                         % (shouldn't exist!)
     end.
 
 % used in tests - not sure why...

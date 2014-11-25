@@ -1,6 +1,6 @@
 %%%------------------------------------------------------------------
 %%% @author     Gordon Guthrie
-%%% @copyright (C) 2009, Hypernumbers Ltd
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd
 %%% @doc       code to manage backup and restore etc as well
 %%%            as 'grabbing' sites and applications
 %%%
@@ -8,6 +8,24 @@
 %%% Created : 18 Dec 2009 by Gordon Guthrie gordon@hypernumbers.com
 %%%
 %%%-------------------------------------------------------------------
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(hn_archive).
 
 -include("spriki.hrl").
@@ -385,11 +403,18 @@ dump_etf(Site, SiteDest) ->
     ok.
 
 dump_page(EtfDest, Encoder, Ref, Path) ->
-    io:format("Dumping ~p~n", [Path]),
     FileName = ?join(EtfDest, hn_util:path_to_json_path(Path)),
-    Page = Encoder(hn_mochi:page_attrs_for_export(Ref#refX{path = Path}, #env{})),
-    Data = io_lib:format("~s", [lists:flatten(Page)]),
-    file:write_file(FileName, Data).
+ case hn_groups:any_admin(Ref#refX.site) of
+     {uid, []} ->
+         io:format("Site ~p has no administrator...~n", [Ref#refX.site]),
+         exit("no administrator");
+     {uid, Admin} ->
+         Env = #env{uid = Admin},
+         Ref2 = Ref#refX{path = Path},
+         Page = Encoder(hn_mochi:page_attrs_for_export(Ref2, Env)),
+         Data = io_lib:format("~s", [lists:flatten(Page)]),
+         file:write_file(FileName, Data)
+ end.
 
 dump_groups(Site, SiteDest) ->
     Groups = hn_groups:dump_script(Site),

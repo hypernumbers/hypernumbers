@@ -1,5 +1,22 @@
-%%% @copyright Hypernumbers Ltd
+%%% @copyright Hypernumbers Ltd 2007-2014
 %%% @doc Utilities for hypernumbers application
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 
 -module(hn_util).
 
@@ -520,10 +537,11 @@ delete_gen_html() ->
 jsonify_attrs(Attrs) ->
     [jsonify_val(A) || A <- Attrs].
 
+jsonify_val({"__rawvalue" = K, V}) ->
+    jsonify2(K, V);
 jsonify_val({[$_,$_|_]=K, _}) ->
-    {K, "bleh"};
-jsonify_val({"parents", _}) ->
-    {"parents", "bleh"};
+    exit("why are we passing in this..."),
+    {K, ""};
 jsonify_val({Name, {errval, Error}}) ->
     {Name, atom_to_list(Error)};
 jsonify_val({Name, {datetime, {1,1,1}=Date, Time}}) ->
@@ -534,6 +552,8 @@ jsonify_val({"value", true}) ->
     {"value", "true"};
 jsonify_val({"value", false}) ->
     {"value", "false"};
+jsonify_val({"input", {"increment", Incr}}) ->
+    {"input", {struct, [{"increment", Incr}]}};
 jsonify_val({"input", {"dynamic_select", Url}}) ->
     {"input", {struct, [{"dynamic_select", Url}]}};
 jsonify_val({"input", {"dynamic_select", Url, L}}) ->
@@ -546,17 +566,23 @@ jsonify_val({"preview", {Text, Width, Height}}) ->
 jsonify_val({Name, {namedexpr, _Path, Nm}}) ->
     {Name, Nm};
 jsonify_val({K, V}) ->
+    jsonify2(K, V).
+
+jsonify2(K, V) ->
     try (mochijson:encoder([{input_encoding, utf8}]))(V),
         {K, V}
     catch
         error: _Err ->
-            error_logger:error_msg("#MOCHIJSON! error ~p ~p~n", [K, V]),
+            error_logger:error_msg("#MOCHIJSON! error ~p ~p~n- ~p~n",
+                                   [K, V, erlang:get_stacktrace()]),
             {K, '#MOCHIJSON!'};
         exit: _Err ->
-            error_logger:error_msg("#MOCHIJSON! exit ~p ~p~n", [K, V]),
+            error_logger:error_msg("#MOCHIJSON! error ~p ~p~n- ~p~n",
+                                   [K, V, erlang:get_stacktrace()]),
             {K, '#MOCHIJSON!'};
         throw: _Err ->
-            error_logger:error_msg("#MOCHIJSON! throw ~p ~p~n", [K, V]),
+            error_logger:error_msg("#MOCHIJSON! error ~p ~p~n- ~p~n",
+                                   [K, V, erlang:get_stacktrace()]),
             {K, '#MOCHIJSON!'}
     end.
 
@@ -651,9 +677,9 @@ obj_to_change_msg({page,Path}) ->
 obj_to_change_msg({cell,{X, Y}}) ->
     tconv:to_b26(X) ++ text(Y);
 % file import seems to create old-fashioned rows
-obj_to_change_msg({row, {Y, _Y}}) ->
-    text(Y); % change msgs only get a singleton ref
 obj_to_change_msg({row, {range, {zero, Y, inf, Y}}}) ->
+    text(Y); % change msgs only get a singleton ref
+obj_to_change_msg({row, {Y, _Y}}) ->
     text(Y); % change msgs only get a singleton ref
 obj_to_change_msg({column, {range, {X, zero, X, inf}}}) ->
     tconv:to_b26(X); % change msgs only get a singleton ref

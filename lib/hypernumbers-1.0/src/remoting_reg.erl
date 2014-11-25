@@ -1,5 +1,23 @@
 %%% @author Dale Harvey <dale@hypernumbers.com>
-%%% @copyright Hypernumbers Ltd.
+%%% @copyright Hypernumbers Ltd. 2008-2014
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
+
 -module(remoting_reg).
 
 -behaviour(gen_server).
@@ -114,6 +132,10 @@ notify_refresh(Site, Path) ->
                                    term_to_binary(Msg)}).
 
 %% @doc  Notify server of change to a cell
+%% we need to suppress notification of range changes to the front end
+%% PROLLY should NOT be done here but at source
+notify_change(_Site, _Path, {range, _}, _Attrs) ->
+    ok;
 notify_change(Site, Path, {RefType, _} = R, Attrs) ->
     Fun = fun({"__"++_Hidden, _}) -> false; (_X) -> true end,
     FilteredAttrs = lists:filter(Fun, Attrs),

@@ -4,8 +4,26 @@
 %%% @doc    Generates and compiles Muin's lexer and parser from grammar
 %%%         files under SVNROOT/priv/muin/
 %%% @author Tom McNulty
+%%% @copyright (C) 2009-2014, Hypernumbers Ltd.
+
+%%%-------------------------------------------------------------------
+%%%
+%%% LICENSE
+%%%
+%%% This program is free software: you can redistribute it and/or modify
+%%% it under the terms of the GNU Affero General Public License as
+%%% published by the Free Software Foundation version 3
+%%%
+%%% This program is distributed in the hope that it will be useful,
+%%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%% GNU Affero General Public License for more details.
+%%%
+%%% You should have received a copy of the GNU Affero General Public License
+%%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%-------------------------------------------------------------------
 -define(DESTDIR, "../src/").
--define(FRONTENDS, ["russian", "french", "german", 
+-define(FRONTENDS, ["russian", "french", "german",
                     "italian", "spanish", "portuguese"]).
 
 main(["force"]) -> generate(true);
@@ -13,7 +31,7 @@ main(_) -> generate(false).
 
 generate(ForceCompile) ->
     Gen_lex = fun(X) -> gen_lex(X, ForceCompile) end,
-    Gen_parse = fun(X) -> gen_parse(X, ForceCompile) end, 
+    Gen_parse = fun(X) -> gen_parse(X, ForceCompile) end,
     Gen_frontend = fun(X) -> gen_frontend(X, ForceCompile) end,
 
     ok = Gen_lex(xfl_lexer),
@@ -43,7 +61,7 @@ gen_lex(Name, Force) ->
             ok = file:rename(Lexer, Dest),
             io:format(" *** Generated Lexer ~s ***~n", [Name]),
             ok;
-        false -> 
+        false ->
             ok
     end.
 
