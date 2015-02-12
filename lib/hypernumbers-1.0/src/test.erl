@@ -311,7 +311,7 @@ post_api_TEST(URL, Body, Type) ->
                         api_subdirs ->    {?PUBLICSUBDIRS,    ?PRIVATESUBDIRS};
                         api_appendonly -> {?PUBLICAPPENDONLY, ?PRIVATEAPPENDONLY}
                     end,
-    MD5 = binary_to_list(crypto:md5(Body)),
+    MD5 = binary_to_list(base64:encode(crypto:md5(Body))),
     ContentMD5 = {"content-md5", MD5},
     Accept = {"Accept", "application/json"},
     Headers = [Accept, ContentMD5],

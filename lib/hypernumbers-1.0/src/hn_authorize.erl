@@ -553,6 +553,10 @@ auth_post(#refX{site = Site}, _Qry, #env{body = [{Action, _}],
 auth_post(#refX{}, _Qry, #env{body = [{Action, _}]}, ?ISADMIN)
   when Action == "save_template" ->
     allowed;
+%% but ban it for all other APIs
+auth_post(#refX{}, _Qry, #env{body = [{Action, _}]}, ?ANYAPI)
+  when Action == "save_template" ->
+    denied;
 %% adding users and groups, pff!, any old walk-in can do that!
 auth_post(#refX{}, _Qry, #env{body = [{Action, _}]}, ?ISAUTH)
   when Action == "add_group" orelse
@@ -569,9 +573,14 @@ auth_post(#refX{site = Site, path = Path}, _Qry, Env, not_api) ->
         not_found          -> not_found;
         denied             -> authorize_p2(Site, Path, Env)
     end;
-%% there is no api equivalent
+auth_post(#refX{site = Site, path = Path}, _Qry, Env, ?ISAUTH) ->
+    case ?check_pt_vw(Site, Path, Env#env.uid, ?SHEETVIEW) of
+        {view, ?SHEETVIEW} -> allowed;
+        not_found          -> not_found;
+        denied             -> authorize_p2(Site, Path, Env)
+    end;
 
-%% kill all other postr
+%% kill all other posts
 auth_post(_Ref, _Qry, _Env, not_api) ->
     denied;
 %% stop all not authorised api calls
@@ -846,7 +855,7 @@ check_MD5('GET', _Body, _Mochi) ->
     valid;
 check_MD5('POST', Body, Mochi) ->
     {_, {_, GotMD5}} = mochiweb_headers:lookup('Content-MD5', Mochi:get(headers)),
-    ExpectedMD5 = binary_to_list(crypto:md5(Body)),
+    ExpectedMD5 = binary_to_list(base64:encode(crypto:md5(Body))),
     case GotMD5 of
         ExpectedMD5 -> valid;
         _           -> tampered

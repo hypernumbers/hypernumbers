@@ -16,7 +16,10 @@
 
 -define(tapi(Name, Path, Body, Expected, Status),
         Name(_Config) ->
+               io:format("running test ~p~n", [Name]),
                URL  = ?SITE ++ Path,
+               io:format("URL is ~p~nBody is ~p~nStatus  is ~p~n",
+                         [URL, Body, Status]),
                Got = test:post_api_TEST(URL, Body, Status),
                case Expected of
                    Got    -> {test, ok};
@@ -46,7 +49,62 @@ all2()->
 
 all() ->
     [
-     % mark
+     post_formula1a,
+     post_formula1b,
+     post_formula1c,
+     post_formula1d,
+
+     post_formula2a,
+     post_formula2d,
+     post_formula2c,
+     post_formula2b,
+
+     post_formula3a,
+     post_formula3b,
+     post_formula3c,
+     post_formula3d,
+
+     post_formula4a,
+     post_formula4b,
+     post_formula4c,
+     post_formula4d,
+
+     post_formula5a,
+     post_formula5b,
+     post_formula5c,
+     post_formula5d,
+
+     post_range1a,
+     post_range1b,
+     post_range1c,
+     post_range1d,
+
+     post_range2a,
+     post_range2b,
+     post_range2c,
+     post_range2d,
+
+     post_range2e,
+     post_range2f,
+     post_range2g,
+     post_range2h,
+
+     post_range3a,
+     post_range3b,
+     post_range3c,
+     post_range3d,
+
+     post_range4a,
+     post_range4b,
+     post_range4c,
+     post_range4d,
+
+     post_range5a,
+     post_range5b,
+     post_range5c,
+     post_range5d,
+
+     %% mark
      post_mark1a,
      post_mark2a,
      post_mark3a,
@@ -68,7 +126,7 @@ all() ->
      post_mark3e,
      post_mark4e,
 
-     % jserr
+						% jserr
      post_jserr1a,
      post_jserr2a,
      post_jserr3a,
@@ -90,7 +148,7 @@ all() ->
      post_jserr3e,
      post_jserr4e,
 
-     % loading templates
+						% loading templates
      post_loadtemplate1a,
      post_loadtemplate2a,
      post_loadtemplate3a,
@@ -112,7 +170,7 @@ all() ->
      post_loadtemplate3e,
      post_loadtemplate4e,
 
-     % drag and drop
+						% drag and drop
      post_drag_and_drop1a,
      post_drag_and_drop2a,
      post_drag_and_drop3a,
@@ -134,7 +192,7 @@ all() ->
      post_drag_and_drop3e,
      post_drag_and_drop4e,
 
-     % inserts
+						% inserts
      post_insert1a,
      post_insert2a,
      post_insert3a,
@@ -200,7 +258,7 @@ all() ->
      post_insert3p,
      post_insert4p,
 
-     % deletes
+						% deletes
      post_delete1a,
      post_delete2a,
      post_delete3a,
@@ -222,7 +280,7 @@ all() ->
      post_delete3e,
      post_delete4e,
 
-     % 3 kinds of copy
+						% 3 kinds of copy
      post_copy1a,
      post_copy2a,
      post_copy3a,
@@ -454,7 +512,7 @@ all() ->
      post_copyvalue3t,
      post_copyvalue4t,
 
-     % inline
+						% inline
      post_inline1a,
      post_inline2a,
      post_inline3a,
@@ -476,7 +534,7 @@ all() ->
      post_inline3e,
      post_inline4e,
 
-     % inline
+						% inline
      post_inlineclear1a,
      post_inlineclear2a,
      post_inlineclear3a,
@@ -498,7 +556,7 @@ all() ->
      post_inlineclear3e,
      post_inlineclear4e,
 
-     % forms
+						% forms
      post_form1a,
      post_form2a,
      post_form3a,
@@ -520,7 +578,7 @@ all() ->
      post_form3e,
      post_form4e,
 
-     % webcontrols
+						% webcontrols
      post_webcontrol1a,
      post_webcontrol2a,
      post_webcontrol3a,
@@ -542,7 +600,7 @@ all() ->
      post_webcontrol3e,
      post_webcontrol4e,
 
-     % reverts
+						% reverts
      post_revert1a,
      post_revert2a,
      post_revert3a,
@@ -715,7 +773,64 @@ all() ->
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
-% mark
+-define(FORMULA, "{\"set\":{\"formula\":\"3333\"}}").
+?tapi(post_formula1a, "/some/page/a1", ?FORMULA, 200, api_subdirs).
+?tapi(post_formula1b, "/some/page/a1", ?FORMULA, 401, api).
+?tapi(post_formula1c, "/some/page/a1", ?FORMULA, 200, api_admin).
+?tapi(post_formula1d, "/some/page/a1", ?FORMULA, 401, api_appendonly).
+
+?tapi(post_formula2a, "/some/page/a1:b5", ?FORMULA, 200, api_subdirs).
+?tapi(post_formula2d, "/some/page/a1:b5", ?FORMULA, 401, api).
+?tapi(post_formula2c, "/some/page/a1:b5", ?FORMULA, 200, api_admin).
+?tapi(post_formula2b, "/some/page/a1:b5", ?FORMULA, 401, api_appendonly).
+
+?tapi(post_formula3a, "/some/page/a:b", ?FORMULA, 401, api_subdirs).
+?tapi(post_formula3b, "/some/page/a:b", ?FORMULA, 401, api).
+?tapi(post_formula3c, "/some/page/a:b", ?FORMULA, 401, api_admin).
+?tapi(post_formula3d, "/some/page/a:b", ?FORMULA, 401, api_appendonly).
+
+?tapi(post_formula4a, "/some/page/1:2", ?FORMULA, 401, api_subdirs).
+?tapi(post_formula4b, "/some/page/1:2", ?FORMULA, 401, api).
+?tapi(post_formula4c, "/some/page/1:2", ?FORMULA, 401, api_admin).
+?tapi(post_formula4d, "/some/page/1:2", ?FORMULA, 401, api_appendonly).
+
+?tapi(post_formula5a, "/some/page/", ?FORMULA, 401, api_subdirs).
+?tapi(post_formula5b, "/some/page/", ?FORMULA, 401, api).
+?tapi(post_formula5c, "/some/page/", ?FORMULA, 401, api_admin).
+?tapi(post_formula5d, "/some/page/", ?FORMULA, 401, api_appendonly).
+
+-define(RANGE, "{\"set\":{\"formula\":[[\"A1\", \"B1\"],[\"A2\", \"B2\"],[\"A3\", \"B3\"]]}}").
+?tapi(post_range1a, "/a/different/page/a1", ?RANGE, 401, api_subdirs).
+?tapi(post_range1b, "/a/different/page/a1", ?RANGE, 401, api).
+?tapi(post_range1c, "/a/different/page/a1", ?RANGE, 401, api_admin).
+?tapi(post_range1d, "/a/different/page/a1", ?RANGE, 401, api_appendonly).
+
+?tapi(post_range2a, "/a/different/page/a1:b3", ?RANGE, 200, api_subdirs).
+?tapi(post_range2b, "/a/different/page/a1:b3", ?RANGE, 401, api).
+?tapi(post_range2c, "/a/different/page/a1:b3", ?RANGE, 200, api_admin).
+?tapi(post_range2d, "/a/different/page/a1:b3", ?RANGE, 401, api_appendonly).
+
+?tapi(post_range2e, "/a/different/page/c7:e8", ?RANGE, 401, api_subdirs).
+?tapi(post_range2f, "/a/different/page/c7:e8", ?RANGE, 401, api).
+?tapi(post_range2g, "/a/different/page/c7:e8", ?RANGE, 401, api_admin).
+?tapi(post_range2h, "/a/different/page/c7:e8", ?RANGE, 401, api_appendonly).
+
+?tapi(post_range3a, "/a/different/page/a:b", ?RANGE, 401, api_subdirs).
+?tapi(post_range3b, "/a/different/page/a:b", ?RANGE, 401, api).
+?tapi(post_range3c, "/a/different/page/a:b", ?RANGE, 401, api_admin).
+?tapi(post_range3d, "/a/different/page/a:b", ?RANGE, 401, api_appendonly).
+
+?tapi(post_range4a, "/a/different/page/1:2", ?RANGE, 401, api_subdirs).
+?tapi(post_range4b, "/a/different/page/1:2", ?RANGE, 401, api).
+?tapi(post_range4c, "/a/different/page/1:2", ?RANGE, 401, api_admin).
+?tapi(post_range4d, "/a/different/page/1:2", ?RANGE, 401, api_appendonly).
+
+?tapi(post_range5a, "/a/different/page/", ?RANGE, 401, api_subdirs).
+?tapi(post_range5b, "/a/different/page/", ?RANGE, 401, api).
+?tapi(post_range5c, "/a/different/page/", ?RANGE, 401, api_admin).
+?tapi(post_range5d, "/a/different/page/", ?RANGE, 401, api_appendonly).
+
+						% mark
 ?tapi(post_mark1a, "/some/page/a1", "{\"mark\": \"leper face\"}", 401, api_subdirs).
 ?tapi(post_mark2a, "/some/page/a1", "{\"mark\": \"leper face\"}", 401, api).
 ?tapi(post_mark3a, "/some/page/a1", "{\"mark\": \"leper face\"}", 401, api_admin).
