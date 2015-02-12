@@ -109,7 +109,7 @@ bullets2([H | T], Acc)  -> bullets2(T, ["<li>" ++ H ++ "</li>" | Acc]).
 
 'vertical.line.'([H, N, M, Colour]) ->
     vline1(H, N, M, Colour);
-'vertical.line.'([H, N, M, "#000000"]) ->
+'vertical.line.'([H, N, M]) ->
     vline1(H, N, M, "#000000");
 'vertical.line.'([H, N]) ->
     vline1(H, N, 0, "#000000");

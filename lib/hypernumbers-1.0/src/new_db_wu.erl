@@ -2673,7 +2673,13 @@ offset_fm_w_rng(XCell, [$= |Formula], From, Offset) ->
                                    "formula in offset_fm_w_rng but "++
                                    "you do~n-~p~n", [Formula]),
                          {[], " = " ++ Formula}
-    end.
+    end;
+%% sometimes a cell can be dirty without being a formula
+%% for instance a selected dropdown box will have a value
+%% that is not a formula in it
+%% in this case just pass it back unwritten
+offset_fm_w_rng(_XCell, Formula, _From, _Offset) ->
+    {clean, Formula}.
 
 offset_with_ranges(Toks, XCell, From, Offset) ->
     offset_with_ranges1(Toks, XCell, From, Offset, clean, []).
@@ -2873,12 +2879,23 @@ make_new_range(Prefix, Cell1, Cell2,
 make_new_range(Prefix, Cell1, Cell2,
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
-               #refX{obj = {range, {_XA, YA, _XB, YB}}},
+               #refX{obj = {range, {XA, YA, XB, YB}}},
                {XOffset, 0}) ->
+    X = min(XA, XB),
     Status = if
                  (YA  =< Y1 andalso YB >=  Y2) ->
-                     NC1 = make_cell(X1D, X1, XOffset, Y1D, Y1, 0),
-                     NC2 = make_cell(X2D, X2, XOffset, Y2D, Y2, 0),
+                     NC1 = if
+                               X1 >= X ->
+                                   make_cell(X1D, X1, XOffset, Y1D, Y1, 0);
+                               X1 <  X ->
+                                   Cell1
+                           end,
+                     NC2 = if
+                               X2 >=  X ->
+                                   make_cell(X2D, X2, XOffset, Y2D, Y2, 0);
+                               X2 <  X ->
+                                   Cell2
+                           end,
                      dirty;
                  (YA >  Y1 orelse  YB <  Y2) ->
                      NC1 = Cell1,
@@ -2886,16 +2903,27 @@ make_new_range(Prefix, Cell1, Cell2,
                      clean
              end,
     {Status, Prefix ++ NC1 ++ ":" ++ NC2};
-%% handle ranges (horizontal rewrite)
+%% handle ranges (vertical rewrite)
 make_new_range(Prefix, Cell1, Cell2,
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
-               #refX{obj = {range, {XA, _YA, XB, _YB}}},
+               #refX{obj = {range, {XA, YA, XB, YB}}},
                {0, YOffset}) ->
+    Y = min(YA, YB),
     Status = if
                  (XA  =< X1 andalso XB >=  X2) ->
-                     NC1 = make_cell(X1D, X1, 0, Y1D, Y1, YOffset),
-                     NC2 = make_cell(X2D, X2, 0, Y2D, Y2, YOffset),
+                     NC1 = if
+                               Y1 >= Y ->
+                                   make_cell(X1D, X1, 0, Y1D, Y1, YOffset);
+                               Y1 <  Y ->
+                                   Cell1
+                           end,
+                     NC2 = if
+                               Y2 >= Y ->
+                                   make_cell(X2D, X2, 0, Y2D, Y2, YOffset);
+                               Y2 <  Y ->
+                                   Cell2
+                           end,
                      dirty;
                  (XA >  X1 orelse  XB <  X2) ->
                      NC1 = Cell1,

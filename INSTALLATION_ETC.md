@@ -5,7 +5,10 @@ This document gives instructions on how to do some basic stuff with Hypernumbers
 * installation
 * build
 * start
+* runtime configuration of the Hypernumbers Server
 * hypernumbers on the file system
+* running tests
+* quick (Vagrant) install
 * create a cluster
 * add a new function
 * create a site-type
@@ -19,19 +22,71 @@ Hypernumbers required Erlang R14B04 which is available from:
 
 http://www.erlang.org/download_release/12
 
+Installing on Ubuntu
+--------------------
+
+First get all the erlang dependencies with
+``sudo apt-get build-dep erlang``
+then build Erlang R14B from source
+
 Hypernumbers has 5 dependencies which need to be installed.
 
 On Ubuntu they are:
-* libicu
-* libicu-dev
-* rake
-* ant1.7
-* openjdk-6-jdk
+* ``sudo apt-get install libicu``
+* ``sudo apt-get install libicu-dev``
+* ``sudo apt-get install ant1.7``
+* ``sudo apt-get install openjdk-6-jdk``
+* ``sudo apt-get install rake``
 
 icu is the internalisation library for Unicode from IBM:
 http://site.icu-project.org/
 
-Then git clone the source into a working directory.
+Installing on Redhat/Centos
+---------------------------
+
+Start with Erlang
+``sudo yum install gcc glibc-devel make ncurses-devel openssl-devel autoconf git``
+then build Erlang R14B from source
+
+You need to install icu version 44 manually.
+
+Download ``icu4c-4_4_2-src.tgz`` from http://icu-project.org/download/4.4.html
+* ``tar -xvf icu4c-4_4_2-src.tgz``
+* ``cd icu/source``
+* ``chmod +x runConfigureICU configure install-sh``
+* ``./runConfigureICU Linux``
+* ``make``
+* ``sudo make install``
+
+Because this isn't a yum install the new shared library won't be on the library path, so run this command:
+* ``sudo /sbin/ldconfig /usr/local/lib``
+
+Then install the dependencies:
+* ``sudo yum install ant``
+* ``sudo yum install java-1.7.0-openjdk``
+* ``sudo yum install ruby``
+* ``gem install rake``
+
+On some older version of CentOS ``rake`` won't install and you need to install Ruby by hand:
+* ``sudo yum install gpg``
+* ``gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3``
+* ``\curl -sSL https://get.rvm.io | bash -s stable --ruby``
+* ``rvm install 2.1`` (might require starting a new shell)
+* ``gem install rake``
+
+Install Hypernumbers
+--------------------
+
+Then git clone the source into a working directory:
+* ``git clone https://github.com/hypernumbers/hypernumbers.git``
+
+Setting Up Your Cryptographic Salts
+-----------------------------------
+
+Cryptographic salts are defined in the file:
+``lib/hypernumbers-1.0/src/salts.erl``
+
+You probably want to edit them.
 
 Build
 -----
@@ -66,6 +121,18 @@ The most important ones are the build commands
 
 For details of what copying the js/html assets means please see the section on Hypernumbers In The File System
 
+Runtime Configure Of The Hypernumbers Server
+--------------------------------------------
+
+The configuration is managed by the file:
+* ``$HNROOT/var/sys.config``
+
+If this doesn't exist a new one is created by copying the file:
+* ``$HNROOT/priv/sys.config.default``
+
+The default version included is a ``dev`` one which expects that the development machine has an DNS entry of ``hypernumbers.dev`` in ``/etc/hosts`` like this:
+* ``127.0.0.1   hypernumbers.dev``
+
 Starting Hypernumbers
 ---------------------
 
@@ -89,7 +156,51 @@ The start up checks 3 things:
 * is there a ``.erlang.cookie`` in ``~`` - if not create a random cookie
 * is there a Hypernumbers site created - if not create a blank one on the domain ``hypernumbers.dev`` at the default port
 
-The default ``sys.config`` has a sane set of configurations
+The default ``sys.config`` has a sane set of dev configurations
+
+In particular on a ``dev`` machine:
+* a blank site called ``hypernumbers.dev:9000`` is created (if it doens't exist)
+
+``dev`` mode in production is set up to be as similar as possible to production - the most important difference is:
+* in ``prod`` email requests (invite a user to a page, etc, etc) are actually sent
+* in ``dev`` mode the email message (with the appropriate auto-login links etc) are printed to the Erlang console
+
+For production systems you will need to create a production configuration. Hypernumbers servers can support many domains per server - and can be clustered across domains. These different sites use a single-singon. This works by redirecting the client to one of the domains - the urls of this process are specified in the ``sys.config``
+
+Running The Common Tests
+------------------------
+
+The process is simple:
+* start a hypernubmbers server with ``./hn start``
+* ``cd priv/``
+* ``./local_runner``
+
+The test suite expects that ``/etc/hosts`` will have entries for the following domains:
+* ``127.0.0.1 tests.hypernumbers.dev``
+* ``127.0.0.1 auth.hypernumbers.dev``
+* ``127.0.0.1 sys.hypernumbers.dev``
+* ``127.0.0.1 security.hypernumbers.dev``
+
+Quick (Vagrant) Install
+-----------------------
+
+There is a quick scripted install using Vagrant.
+
+First install vagrant from ``https://www.vagrantup.com/``
+
+Run ``vagrant init`` in a directory to initialise it and then
+
+Copy the following files from the GitHub repository to a directory on your host machine:
+* ``priv/Vagrantfile``
+* ``priv/vagrant-hn-provision.sh``
+
+You should overwrite the ``Vagrantfile`` that was created by ``vagrant init``
+
+And then execute:
+* ``vagrant up``
+
+Installing an X-Server - like XMing available at http://sourceforge.net/projects/xming/ - will enable you to access your hypernumbers site by starting a brower on the guest command line:
+* ``firefox http://hypernumbers.dev:9000 &``
 
 Hypernumbers On The File System
 -------------------------------
@@ -106,11 +217,11 @@ The various dependencies have been copied into this structure, for instance:
 * twilio
 
 The main hypernumbers applications are:
-* formula_engine-1.0 (spreadsheet formulae and execution engine)
-* hypernumbers-1.0 (mostly everything else)
-* read_excel-1.0 (reads Excel '97 file formats)
-* starling (unicode C port - maintained seperately)
-* sysmon-1.0 (not very important)
+* ``formula_engine-1.0`` (spreadsheet formulae and execution engine)
+* ``hypernumbers-1.0`` (mostly everything else)
+* ``read_excel-1.0`` (reads Excel '97 file formats)
+* ``starling`` (unicode C port - maintained seperately)
+* ``sysmon-1.0`` (not very important)
 
 Inside ``$HNROOT/lib/formula_engine-1.0/priv`` are the various ``.xrl`` and ``.yrl`` files that define the spreadsheet language and some ruby libraries that are used to generate them for multi-linguage spreadsheets (the double-meta)
 
