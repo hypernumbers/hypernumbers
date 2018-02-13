@@ -1,5 +1,23 @@
 %% @author Bob Ippolito <bob@mochimedia.com>
 %% @copyright 2008 Mochi Media, Inc.
+%%
+%% Permission is hereby granted, free of charge, to any person obtaining a
+%% copy of this software and associated documentation files (the "Software"),
+%% to deal in the Software without restriction, including without limitation
+%% the rights to use, copy, modify, merge, publish, distribute, sublicense,
+%% and/or sell copies of the Software, and to permit persons to whom the
+%% Software is furnished to do so, subject to the following conditions:
+%%
+%% The above copyright notice and this permission notice shall be included in
+%% all copies or substantial portions of the Software.
+%%
+%% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+%% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+%% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+%% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+%% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+%% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+%% DEALINGS IN THE SOFTWARE.
 
 %% @doc String Formatting for Erlang, inspired by Python 2.6
 %%      (<a href="http://www.python.org/dev/peps/pep-3101/">PEP 3101</a>).
@@ -10,7 +28,6 @@
 -export([tokenize/1, format/3, get_field/3, format_field/3]).
 -export([bformat/2, bformat/3]).
 -export([f/2, f/3]).
--export([test/0]).
 
 -record(conversion, {length, precision, ctype, align, fill_char, sign}).
 
@@ -112,15 +129,6 @@ bformat(Format, Args) ->
 %% @doc Format Args with Format using Module and return a binary().
 bformat(Format, Args, Module) ->
     iolist_to_binary(format(Format, Args, Module)).
-
-%% @spec test() -> ok
-%% @doc Run tests.
-test() ->
-    ok = test_tokenize(),
-    ok = test_format(),
-    ok = test_std(),
-    ok = test_records(),
-    ok.
 
 %% Internal API
 
@@ -375,14 +383,21 @@ parse_std_conversion([$. | Spec], Acc) ->
 parse_std_conversion([Type], Acc) ->
     parse_std_conversion("", Acc#conversion{ctype=ctype(Type)}).
 
-test_tokenize() ->
+
+%%
+%% Tests
+%%
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+
+tokenize_test() ->
     {?MODULE, [{raw, "ABC"}]} = tokenize("ABC"),
     {?MODULE, [{format, {"0", "", ""}}]} = tokenize("{0}"),
     {?MODULE, [{raw, "ABC"}, {format, {"1", "", ""}}, {raw, "DEF"}]} =
         tokenize("ABC{1}DEF"),
     ok.
 
-test_format() ->
+format_test() ->
     <<"  -4">> = bformat("{0:4}", [-4]),
     <<"   4">> = bformat("{0:4}", [4]),
     <<"   4">> = bformat("{0:{0}}", [4]),
@@ -410,12 +425,12 @@ test_format() ->
                                {{2008,5,4}, {4, 2, 2}}),
     ok.
 
-test_std() ->
+std_test() ->
     M = mochifmt_std:new(),
     <<"01">> = bformat("{0}{1}", [0, 1], M),
     ok.
 
-test_records() ->
+records_test() ->
     M = mochifmt_records:new([{conversion, record_info(fields, conversion)}]),
     R = #conversion{length=long, precision=hard, sign=peace},
     long = M:get_value("length", R),
@@ -424,3 +439,5 @@ test_records() ->
     <<"long hard">> = bformat("{length} {precision}", R, M),
     <<"long hard">> = bformat("{0.length} {0.precision}", [R], M),
     ok.
+
+-endif.

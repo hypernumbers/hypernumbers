@@ -1,26 +1,46 @@
 %% @author Bob Ippolito <bob@mochimedia.com>
 %% @copyright 2007 Mochi Media, Inc.
+%%
+%% Permission is hereby granted, free of charge, to any person obtaining a
+%% copy of this software and associated documentation files (the "Software"),
+%% to deal in the Software without restriction, including without limitation
+%% the rights to use, copy, modify, merge, publish, distribute, sublicense,
+%% and/or sell copies of the Software, and to permit persons to whom the
+%% Software is furnished to do so, subject to the following conditions:
+%%
+%% The above copyright notice and this permission notice shall be included in
+%% all copies or substantial portions of the Software.
+%%
+%% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+%% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+%% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+%% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+%% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+%% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+%% DEALINGS IN THE SOFTWARE.
 
 %% @doc MochiWeb HTTP Request abstraction.
 
--module(mochiweb_request, [Socket, Method, RawPath, Version, Headers]).
+-module(mochiweb_request).
 -author('bob@mochimedia.com').
 
 -include_lib("kernel/include/file.hrl").
+-include("internal.hrl").
 
--define(QUIP, "Heave awa lads I'm no deid yet!").
--define(READ_SIZE, 8192).
+-define(QUIP, "Any of you quaids got a smint?").
 
--export([get_header_value/1, get_primary_header_value/1, get/1, dump/0]).
--export([send/1, recv/1, recv/2, recv_body/0, recv_body/1, stream_body/3]).
--export([start_response/1, start_response_length/1, start_raw_response/1]).
--export([respond/1, ok/1]).
--export([not_found/0, not_found/1]).
--export([parse_post/0, parse_qs/0]).
--export([should_close/0, cleanup/0]).
--export([parse_cookie/0, get_cookie_value/1]).
--export([serve_file/2, serve_file/3]).
--export([test/0]).
+-export([new/5, new/6]).
+-export([get_header_value/2, get_primary_header_value/2, get_combined_header_value/2, get/2, dump/1]).
+-export([send/2, recv/2, recv/3, recv_body/1, recv_body/2, stream_body/4, stream_body/5]).
+-export([start_response/2, start_response_length/2, start_raw_response/2]).
+-export([respond/2, ok/2]).
+-export([not_found/1, not_found/2]).
+-export([parse_post/1, parse_qs/1]).
+-export([should_close/1, cleanup/1]).
+-export([parse_cookie/1, get_cookie_value/2]).
+-export([serve_file/3, serve_file/4]).
+-export([accepted_encodings/2]).
+-export([accepts_content_type/2, accepted_content_types/2]).
 
 -define(SAVE_QS, mochiweb_request_qs).
 -define(SAVE_PATH, mochiweb_request_path).
@@ -31,111 +51,161 @@
 -define(SAVE_COOKIE, mochiweb_request_cookie).
 -define(SAVE_FORCE_CLOSE, mochiweb_request_force_close).
 
-%% @type iolist() = [iolist() | binary() | char()].
-%% @type iodata() = binary() | iolist().
 %% @type key() = atom() | string() | binary()
 %% @type value() = atom() | string() | binary() | integer()
 %% @type headers(). A mochiweb_headers structure.
+%% @type request(). A mochiweb_request parameterized module instance.
 %% @type response(). A mochiweb_response parameterized module instance.
 %% @type ioheaders() = headers() | [{key(), value()}].
 
-% 10 second default idle timeout
--define(IDLE_TIMEOUT, 10000).
+% 5 minute default idle timeout
+-define(IDLE_TIMEOUT, 300000).
 
 % Maximum recv_body() length of 1MB
 -define(MAX_RECV_BODY, (1024*1024)).
 
-%% @spec get_header_value(K) -> undefined | Value
+%% @spec new(Socket, Method, RawPath, Version, headers()) -> request()
+%% @doc Create a new request instance.
+new(Socket, Method, RawPath, Version, Headers) ->
+    new(Socket, [], Method, RawPath, Version, Headers).
+
+%% @spec new(Socket, Opts, Method, RawPath, Version, headers()) -> request()
+%% @doc Create a new request instance.
+new(Socket, Opts, Method, RawPath, Version, Headers) ->
+    {?MODULE, [Socket, Opts, Method, RawPath, Version, Headers]}.
+
+%% @spec get_header_value(K, request()) -> undefined | Value
 %% @doc Get the value of a given request header.
-get_header_value(K) ->
+get_header_value(K, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, Headers]}) ->
     mochiweb_headers:get_value(K, Headers).
 
-get_primary_header_value(K) ->
+get_primary_header_value(K, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, Headers]}) ->
     mochiweb_headers:get_primary_value(K, Headers).
 
-%% @type field() = socket | method | raw_path | version | headers | peer | path | body_length | range
+get_combined_header_value(K, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, Headers]}) ->
+    mochiweb_headers:get_combined_value(K, Headers).
 
-%% @spec get(field()) -> term()
-%% @doc Return the internal representation of the given field.
-get(socket) ->
+%% @type field() = socket | scheme | method | raw_path | version | headers | peer | path | body_length | range
+
+%% @spec get(field(), request()) -> term()
+%% @doc Return the internal representation of the given field. If
+%%      <code>socket</code> is requested on a HTTPS connection, then
+%%      an ssl socket will be returned as <code>{ssl, SslSocket}</code>.
+%%      You can use <code>SslSocket</code> with the <code>ssl</code>
+%%      application, eg: <code>ssl:peercert(SslSocket)</code>.
+get(socket, {?MODULE, [Socket, _Opts, _Method, _RawPath, _Version, _Headers]}) ->
     Socket;
-get(method) ->
+get(scheme, {?MODULE, [Socket, _Opts, _Method, _RawPath, _Version, _Headers]}) ->
+    case mochiweb_socket:type(Socket) of
+        plain ->
+            http;
+        ssl ->
+            https
+    end;
+get(method, {?MODULE, [_Socket, _Opts, Method, _RawPath, _Version, _Headers]}) ->
     Method;
-get(raw_path) ->
+get(raw_path, {?MODULE, [_Socket, _Opts, _Method, RawPath, _Version, _Headers]}) ->
     RawPath;
-get(version) ->
+get(version, {?MODULE, [_Socket, _Opts, _Method, _RawPath, Version, _Headers]}) ->
     Version;
-get(headers) ->
+get(headers, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, Headers]}) ->
     Headers;
-get(peer) ->
-    case inet:peername(Socket) of
+get(peer, {?MODULE, [Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    case mochiweb_socket:peername(Socket) of
         {ok, {Addr={10, _, _, _}, _Port}} ->
-            case get_header_value("x-forwarded-for") of
+            case get_header_value("x-forwarded-for", THIS) of
+                undefined ->
+                    inet_parse:ntoa(Addr);
+                Hosts ->
+                    string:strip(lists:last(string:tokens(Hosts, ",")))
+            end;
+        %% Copied this syntax from webmachine contributor Steve Vinoski
+        {ok, {Addr={172, Second, _, _}, _Port}} when (Second > 15) andalso (Second < 32) ->
+            case get_header_value("x-forwarded-for", THIS) of
+                undefined ->
+                    inet_parse:ntoa(Addr);
+                Hosts ->
+                    string:strip(lists:last(string:tokens(Hosts, ",")))
+            end;
+        {ok, {Addr={192, 168, _, _}, _Port}} ->
+            case get_header_value("x-forwarded-for", THIS) of
                 undefined ->
                     inet_parse:ntoa(Addr);
                 Hosts ->
                     string:strip(lists:last(string:tokens(Hosts, ",")))
             end;
         {ok, {{127, 0, 0, 1}, _Port}} ->
-            case get_header_value("x-forwarded-for") of
+            case get_header_value("x-forwarded-for", THIS) of
                 undefined ->
                     "127.0.0.1";
                 Hosts ->
                     string:strip(lists:last(string:tokens(Hosts, ",")))
             end;
         {ok, {Addr, _Port}} ->
-            inet_parse:ntoa(Addr)
+            inet_parse:ntoa(Addr);
+        {error, enotconn} ->
+            exit(normal)
     end;
-get(path) ->
+get(path, {?MODULE, [_Socket, _Opts, _Method, RawPath, _Version, _Headers]}) ->
     case erlang:get(?SAVE_PATH) of
         undefined ->
             {Path0, _, _} = mochiweb_util:urlsplit_path(RawPath),
-            Path = mochiweb_util:unquote(Path0),
+            Path = mochiweb_util:normalize_path(mochiweb_util:unquote(Path0)),
             put(?SAVE_PATH, Path),
             Path;
         Cached ->
             Cached
     end;
-get(body_length) ->
-    erlang:get(?SAVE_BODY_LENGTH);
-get(range) ->
-    case get_header_value(range) of
+get(body_length, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    case erlang:get(?SAVE_BODY_LENGTH) of
+        undefined ->
+            BodyLength = body_length(THIS),
+            put(?SAVE_BODY_LENGTH, {cached, BodyLength}),
+            BodyLength;
+        {cached, Cached} ->
+            Cached
+    end;
+get(range, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    case get_header_value(range, THIS) of
         undefined ->
             undefined;
         RawRange ->
-            parse_range_request(RawRange)
-    end.
+            mochiweb_http:parse_range_request(RawRange)
+    end;
+get(opts, {?MODULE, [_Socket, Opts, _Method, _RawPath, _Version, _Headers]}) ->
+    Opts.
 
-%% @spec dump() -> {mochiweb_request, [{atom(), term()}]}
+%% @spec dump(request()) -> {mochiweb_request, [{atom(), term()}]}
 %% @doc Dump the internal representation to a "human readable" set of terms
 %%      for debugging/inspection purposes.
-dump() ->
+dump({?MODULE, [_Socket, Opts, Method, RawPath, Version, Headers]}) ->
     {?MODULE, [{method, Method},
                {version, Version},
                {raw_path, RawPath},
+               {opts, Opts},
                {headers, mochiweb_headers:to_list(Headers)}]}.
 
-%% @spec send(iodata()) -> ok
+%% @spec send(iodata(), request()) -> ok
 %% @doc Send data over the socket.
-send(Data) ->
-    case gen_tcp:send(Socket, Data) of
+send(Data, {?MODULE, [Socket, _Opts, _Method, _RawPath, _Version, _Headers]}) ->
+    case mochiweb_socket:send(Socket, Data) of
         ok ->
             ok;
         _ ->
             exit(normal)
     end.
 
-%% @spec recv(integer()) -> binary()
+%% @spec recv(integer(), request()) -> binary()
 %% @doc Receive Length bytes from the client as a binary, with the default
 %%      idle timeout.
-recv(Length) ->
-    recv(Length, ?IDLE_TIMEOUT).
+recv(Length, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    recv(Length, ?IDLE_TIMEOUT, THIS).
 
-%% @spec recv(integer(), integer()) -> binary()
+%% @spec recv(integer(), integer(), request()) -> binary()
 %% @doc Receive Length bytes from the client as a binary, with the given
 %%      Timeout in msec.
-recv(Length, Timeout) ->
-    case gen_tcp:recv(Socket, Length, Timeout) of
+recv(Length, Timeout, {?MODULE, [Socket, _Opts, _Method, _RawPath, _Version, _Headers]}) ->
+    case mochiweb_socket:recv(Socket, Length, Timeout) of
         {ok, Data} ->
             put(?SAVE_RECV, true),
             Data;
@@ -143,12 +213,12 @@ recv(Length, Timeout) ->
             exit(normal)
     end.
 
-%% @spec body_length() -> undefined | chunked | unknown_transfer_encoding | integer()
+%% @spec body_length(request()) -> undefined | chunked | unknown_transfer_encoding | integer()
 %% @doc  Infer body length from transfer-encoding and content-length headers.
-body_length() ->
-    case get_header_value("transfer-encoding") of
+body_length({?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    case get_header_value("transfer-encoding", THIS) of
         undefined ->
-            case get_header_value("content-length") of
+            case get_combined_header_value("content-length", THIS) of
                 undefined ->
                     undefined;
                 Length ->
@@ -161,36 +231,41 @@ body_length() ->
     end.
 
 
-%% @spec recv_body() -> binary()
+%% @spec recv_body(request()) -> binary()
 %% @doc Receive the body of the HTTP request (defined by Content-Length).
 %%      Will only receive up to the default max-body length of 1MB.
-recv_body() ->
-    recv_body(?MAX_RECV_BODY).
+recv_body({?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    recv_body(?MAX_RECV_BODY, THIS).
 
-%% @spec recv_body(integer()) -> binary()
+%% @spec recv_body(integer(), request()) -> binary()
 %% @doc Receive the body of the HTTP request (defined by Content-Length).
 %%      Will receive up to MaxBody bytes.
-recv_body(MaxBody) ->
-    % we could use a sane constant for max chunk size
-    Body = stream_body(?MAX_RECV_BODY, fun
-        ({0, _ChunkedFooter}, {_LengthAcc, BinAcc}) ->
-            iolist_to_binary(lists:reverse(BinAcc));
-        ({Length, Bin}, {LengthAcc, BinAcc}) ->
-            NewLength = Length + LengthAcc,
-            if NewLength > MaxBody ->
-                exit({body_too_large, chunked});
-            true ->
-                {NewLength, [Bin | BinAcc]}
-            end
-        end, {0, []}, MaxBody),
-    put(?SAVE_BODY, Body),
-    Body.
+recv_body(MaxBody, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    case erlang:get(?SAVE_BODY) of
+        undefined ->
+            % we could use a sane constant for max chunk size
+            Body = stream_body(?MAX_RECV_BODY, fun
+                ({0, _ChunkedFooter}, {_LengthAcc, BinAcc}) ->
+                    iolist_to_binary(lists:reverse(BinAcc));
+                ({Length, Bin}, {LengthAcc, BinAcc}) ->
+                    NewLength = Length + LengthAcc,
+                    if NewLength > MaxBody ->
+                        exit({body_too_large, chunked});
+                    true ->
+                        {NewLength, [Bin | BinAcc]}
+                    end
+                end, {0, []}, MaxBody, THIS),
+            put(?SAVE_BODY, Body),
+            Body;
+        Cached -> Cached
+    end.
 
-stream_body(MaxChunkSize, ChunkFun, FunState) ->
-    stream_body(MaxChunkSize, ChunkFun, FunState, undefined).
+stream_body(MaxChunkSize, ChunkFun, FunState, {?MODULE,[_Socket,_Opts,_Method,_RawPath,_Version,_Headers]}=THIS) ->
+    stream_body(MaxChunkSize, ChunkFun, FunState, undefined, THIS).
 
-stream_body(MaxChunkSize, ChunkFun, FunState, MaxBodyLength) ->
-    Expect = case get_header_value("expect") of
+stream_body(MaxChunkSize, ChunkFun, FunState, MaxBodyLength,
+            {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    Expect = case get_header_value("expect", THIS) of
                  undefined ->
                      undefined;
                  Value when is_list(Value) ->
@@ -198,11 +273,12 @@ stream_body(MaxChunkSize, ChunkFun, FunState, MaxBodyLength) ->
              end,
     case Expect of
         "100-continue" ->
-            start_raw_response({100, gb_trees:empty()});
+            _ = start_raw_response({100, gb_trees:empty()}, THIS),
+            ok;
         _Else ->
             ok
     end,
-    case body_length() of
+    case body_length(THIS) of
         undefined ->
             undefined;
         {unknown_transfer_encoding, Unknown} ->
@@ -211,7 +287,7 @@ stream_body(MaxChunkSize, ChunkFun, FunState, MaxBodyLength) ->
             % In this case the MaxBody is actually used to
             % determine the maximum allowed size of a single
             % chunk.
-            stream_chunked_body(MaxChunkSize, ChunkFun, FunState);
+            stream_chunked_body(MaxChunkSize, ChunkFun, FunState, THIS);
         0 ->
             <<>>;
         Length when is_integer(Length) ->
@@ -219,62 +295,81 @@ stream_body(MaxChunkSize, ChunkFun, FunState, MaxBodyLength) ->
             MaxBodyLength when is_integer(MaxBodyLength), MaxBodyLength < Length ->
                 exit({body_too_large, content_length});
             _ ->
-                stream_unchunked_body(Length, ChunkFun, FunState)
-            end;
-        Length ->
-            exit({length_not_integer, Length})
+                stream_unchunked_body(MaxChunkSize,Length, ChunkFun, FunState, THIS)
+            end
     end.
 
 
-%% @spec start_response({integer(), ioheaders()}) -> response()
+%% @spec start_response({integer(), ioheaders()}, request()) -> response()
 %% @doc Start the HTTP response by sending the Code HTTP response and
 %%      ResponseHeaders. The server will set header defaults such as Server
 %%      and Date if not present in ResponseHeaders.
-start_response({Code, ResponseHeaders}) ->
-    HResponse = mochiweb_headers:make(ResponseHeaders),
-    HResponse1 = mochiweb_headers:default_from_list(server_headers(),
-                                                    HResponse),
-    start_raw_response({Code, HResponse1}).
+start_response({Code, ResponseHeaders}, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    start_raw_response({Code, ResponseHeaders}, THIS).
 
-%% @spec start_raw_response({integer(), headers()}) -> response()
+%% @spec start_raw_response({integer(), headers()}, request()) -> response()
 %% @doc Start the HTTP response by sending the Code HTTP response and
 %%      ResponseHeaders.
-start_raw_response({Code, ResponseHeaders}) ->
-    F = fun ({K, V}, Acc) ->
-                [make_io(K), <<": ">>, V, <<"\r\n">> | Acc]
-        end,
-    End = lists:foldl(F, [<<"\r\n">>],
-                      mochiweb_headers:to_list(ResponseHeaders)),
-    send([make_version(Version), make_code(Code), <<"\r\n">> | End]),
-    mochiweb:new_response({THIS, Code, ResponseHeaders}).
+start_raw_response({Code, ResponseHeaders}, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    {Header, Response} = format_response_header({Code, ResponseHeaders}, THIS),
+    send(Header, THIS),
+    Response.
 
 
-%% @spec start_response_length({integer(), ioheaders(), integer()}) -> response()
+%% @spec start_response_length({integer(), ioheaders(), integer()}, request()) -> response()
 %% @doc Start the HTTP response by sending the Code HTTP response and
 %%      ResponseHeaders including a Content-Length of Length. The server
 %%      will set header defaults such as Server
 %%      and Date if not present in ResponseHeaders.
-start_response_length({Code, ResponseHeaders, Length}) ->
+start_response_length({Code, ResponseHeaders, Length},
+                      {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
     HResponse = mochiweb_headers:make(ResponseHeaders),
     HResponse1 = mochiweb_headers:enter("Content-Length", Length, HResponse),
-    start_response({Code, HResponse1}).
+    start_response({Code, HResponse1}, THIS).
 
-%% @spec respond({integer(), ioheaders(), iodata() | chunked | {file, IoDevice}}) -> response()
+%% @spec format_response_header({integer(), ioheaders()} | {integer(), ioheaders(), integer()}, request()) -> iolist()
+%% @doc Format the HTTP response header, including the Code HTTP response and
+%%      ResponseHeaders including an optional Content-Length of Length. The server
+%%      will set header defaults such as Server
+%%      and Date if not present in ResponseHeaders.
+format_response_header({Code, ResponseHeaders}, {?MODULE, [_Socket, _Opts, _Method, _RawPath, Version, _Headers]}=THIS) ->
+    HResponse = mochiweb_headers:make(ResponseHeaders),
+    HResponse1 = mochiweb_headers:default_from_list(server_headers(), HResponse),
+    HResponse2 = case should_close(THIS) of
+                     true ->
+                         mochiweb_headers:enter("Connection", "close", HResponse1);
+                     false ->
+                         HResponse1
+                 end,
+    End = [[mochiweb_util:make_io(K), <<": ">>, V, <<"\r\n">>]
+           || {K, V} <- mochiweb_headers:to_list(HResponse2)],
+    Response = mochiweb:new_response({THIS, Code, HResponse2}),
+    {[make_version(Version), make_code(Code), <<"\r\n">> | [End, <<"\r\n">>]], Response};
+format_response_header({Code, ResponseHeaders, Length},
+                       {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    HResponse = mochiweb_headers:make(ResponseHeaders),
+    HResponse1 = mochiweb_headers:enter("Content-Length", Length, HResponse),
+    format_response_header({Code, HResponse1}, THIS).
+
+%% @spec respond({integer(), ioheaders(), iodata() | chunked | {file, IoDevice}}, request()) -> response()
 %% @doc Start the HTTP response with start_response, and send Body to the
 %%      client (if the get(method) /= 'HEAD'). The Content-Length header
 %%      will be set by the Body length, and the server will insert header
 %%      defaults.
-respond({Code, ResponseHeaders, {file, IoDevice}}) ->
-    Length = iodevice_size(IoDevice),
-    Response = start_response_length({Code, ResponseHeaders, Length}),
+respond({Code, ResponseHeaders, {file, IoDevice}},
+        {?MODULE, [_Socket, _Opts, Method, _RawPath, _Version, _Headers]}=THIS) ->
+    Length = mochiweb_io:iodevice_size(IoDevice),
+    Response = start_response_length({Code, ResponseHeaders, Length}, THIS),
     case Method of
         'HEAD' ->
             ok;
         _ ->
-            iodevice_stream(IoDevice)
+            mochiweb_io:iodevice_stream(
+              fun (Body) -> send(Body, THIS) end,
+              IoDevice)
     end,
     Response;
-respond({Code, ResponseHeaders, chunked}) ->
+respond({Code, ResponseHeaders, chunked}, {?MODULE, [_Socket, _Opts, Method, _RawPath, Version, _Headers]}=THIS) ->
     HResponse = mochiweb_headers:make(ResponseHeaders),
     HResponse1 = case Method of
                      'HEAD' ->
@@ -295,40 +390,42 @@ respond({Code, ResponseHeaders, chunked}) ->
                          put(?SAVE_FORCE_CLOSE, true),
                          HResponse
                  end,
-    start_response({Code, HResponse1});
-respond({Code, ResponseHeaders, Body}) ->
-    Response = start_response_length({Code, ResponseHeaders, iolist_size(Body)}),
+    start_response({Code, HResponse1}, THIS);
+respond({Code, ResponseHeaders, Body}, {?MODULE, [_Socket, _Opts, Method, _RawPath, _Version, _Headers]}=THIS) ->
+    {Header, Response} = format_response_header({Code, ResponseHeaders, iolist_size(Body)}, THIS),
     case Method of
-        'HEAD' ->
-            ok;
-        _ ->
-            send(Body)
+        'HEAD' -> send(Header, THIS);
+        _      -> send([Header, Body], THIS)
     end,
     Response.
 
-%% @spec not_found() -> response()
+%% @spec not_found(request()) -> response()
 %% @doc Alias for <code>not_found([])</code>.
-not_found() ->
-    not_found([]).
+not_found({?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    not_found([], THIS).
 
-%% @spec not_found(ExtraHeaders) -> response()
+%% @spec not_found(ExtraHeaders, request()) -> response()
 %% @doc Alias for <code>respond({404, [{"Content-Type", "text/plain"}
 %% | ExtraHeaders], &lt;&lt;"Not found."&gt;&gt;})</code>.
-not_found(ExtraHeaders) ->
+not_found(ExtraHeaders, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
     respond({404, [{"Content-Type", "text/plain"} | ExtraHeaders],
-             <<"Not found.">>}).
+             <<"Not found.">>}, THIS).
 
-%% @spec ok({value(), iodata()} | {value(), ioheaders(), iodata() | {file, IoDevice}}) ->
+%% @spec ok({value(), iodata()} | {value(), ioheaders(), iodata() | {file, IoDevice}}, request()) ->
 %%           response()
 %% @doc respond({200, [{"Content-Type", ContentType} | Headers], Body}).
-ok({ContentType, Body}) ->
-    ok({ContentType, [], Body});
-ok({ContentType, ResponseHeaders, Body}) ->
+ok({ContentType, Body}, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    ok({ContentType, [], Body}, THIS);
+ok({ContentType, ResponseHeaders, Body}, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
     HResponse = mochiweb_headers:make(ResponseHeaders),
     case THIS:get(range) of
-        X when X =:= undefined; X =:= fail ->
-            HResponse1 = mochiweb_headers:enter("Content-Type", ContentType, HResponse),
-            respond({200, HResponse1, Body});
+        X when (X =:= undefined orelse X =:= fail) orelse Body =:= chunked ->
+            %% http://code.google.com/p/mochiweb/issues/detail?id=54
+            %% Range header not supported when chunked, return 200 and provide
+            %% full response.
+            HResponse1 = mochiweb_headers:enter("Content-Type", ContentType,
+                                                HResponse),
+            respond({200, HResponse1, Body}, THIS);
         Ranges ->
             {PartList, Size} = range_parts(Body, Ranges),
             case PartList of
@@ -337,53 +434,58 @@ ok({ContentType, ResponseHeaders, Body}) ->
                                                         ContentType,
                                                         HResponse),
                     %% could be 416, for now we'll just return 200
-                    respond({200, HResponse1, Body});
+                    respond({200, HResponse1, Body}, THIS);
                 PartList ->
                     {RangeHeaders, RangeBody} =
-                        parts_to_body(PartList, ContentType, Size),
+                        mochiweb_multipart:parts_to_body(PartList, ContentType, Size),
                     HResponse1 = mochiweb_headers:enter_from_list(
                                    [{"Accept-Ranges", "bytes"} |
                                     RangeHeaders],
                                    HResponse),
-                    respond({206, HResponse1, RangeBody})
+                    respond({206, HResponse1, RangeBody}, THIS)
             end
     end.
 
-%% @spec should_close() -> bool()
+%% @spec should_close(request()) -> bool()
 %% @doc Return true if the connection must be closed. If false, using
 %%      Keep-Alive should be safe.
-should_close() ->
-    ForceClose = erlang:get(mochiweb_request_force_close) =/= undefined,
-    DidNotRecv = erlang:get(mochiweb_request_recv) =:= undefined,
+should_close({?MODULE, [_Socket, _Opts, _Method, _RawPath, Version, _Headers]}=THIS) ->
+    ForceClose = erlang:get(?SAVE_FORCE_CLOSE) =/= undefined,
+    DidNotRecv = erlang:get(?SAVE_RECV) =:= undefined,
     ForceClose orelse Version < {1, 0}
         %% Connection: close
-        orelse get_header_value("connection") =:= "close"
+        orelse is_close(get_header_value("connection", THIS))
         %% HTTP 1.0 requires Connection: Keep-Alive
         orelse (Version =:= {1, 0}
-                andalso get_header_value("connection") =/= "Keep-Alive")
+                andalso get_header_value("connection", THIS) =/= "Keep-Alive")
         %% unread data left on the socket, can't safely continue
         orelse (DidNotRecv
-                andalso get_header_value("content-length") =/= undefined
-                andalso list_to_integer(get_header_value("content-length")) > 0)
+                andalso get_combined_header_value("content-length", THIS) =/= undefined
+                andalso list_to_integer(get_combined_header_value("content-length", THIS)) > 0)
         orelse (DidNotRecv
-                andalso get_header_value("transfer-encoding") =:= "chunked").
+                andalso get_header_value("transfer-encoding", THIS) =:= "chunked").
 
-%% @spec cleanup() -> ok
+is_close("close") ->
+    true;
+is_close(S=[_C, _L, _O, _S, _E]) ->
+    string:to_lower(S) =:= "close";
+is_close(_) ->
+    false.
+
+%% @spec cleanup(request()) -> ok
 %% @doc Clean up any junk in the process dictionary, required before continuing
 %%      a Keep-Alive request.
-cleanup() ->
-    [erase(K) || K <- [?SAVE_QS,
-                       ?SAVE_PATH,
-                       ?SAVE_RECV,
-                       ?SAVE_BODY,
-                       ?SAVE_POST,
-                       ?SAVE_COOKIE,
-                       ?SAVE_FORCE_CLOSE]],
+cleanup({?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}) ->
+    L = [?SAVE_QS, ?SAVE_PATH, ?SAVE_RECV, ?SAVE_BODY, ?SAVE_BODY_LENGTH,
+         ?SAVE_POST, ?SAVE_COOKIE, ?SAVE_FORCE_CLOSE],
+    lists:foreach(fun(K) ->
+                          erase(K)
+                  end, L),
     ok.
 
-%% @spec parse_qs() -> [{Key::string(), Value::string()}]
+%% @spec parse_qs(request()) -> [{Key::string(), Value::string()}]
 %% @doc Parse the query string of the URL.
-parse_qs() ->
+parse_qs({?MODULE, [_Socket, _Opts, _Method, RawPath, _Version, _Headers]}) ->
     case erlang:get(?SAVE_QS) of
         undefined ->
             {_, QueryString, _} = mochiweb_util:urlsplit_path(RawPath),
@@ -394,17 +496,17 @@ parse_qs() ->
             Cached
     end.
 
-%% @spec get_cookie_value(Key::string) -> string() | undefined
+%% @spec get_cookie_value(Key::string, request()) -> string() | undefined
 %% @doc Get the value of the given cookie.
-get_cookie_value(Key) ->
-    proplists:get_value(Key, parse_cookie()).
+get_cookie_value(Key, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    proplists:get_value(Key, parse_cookie(THIS)).
 
-%% @spec parse_cookie() -> [{Key::string(), Value::string()}]
+%% @spec parse_cookie(request()) -> [{Key::string(), Value::string()}]
 %% @doc Parse the cookie header.
-parse_cookie() ->
+parse_cookie({?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
     case erlang:get(?SAVE_COOKIE) of
         undefined ->
-            Cookies = case get_header_value("cookie") of
+            Cookies = case get_header_value("cookie", THIS) of
                           undefined ->
                               [];
                           Value ->
@@ -416,17 +518,17 @@ parse_cookie() ->
             Cached
     end.
 
-%% @spec parse_post() -> [{Key::string(), Value::string()}]
+%% @spec parse_post(request()) -> [{Key::string(), Value::string()}]
 %% @doc Parse an application/x-www-form-urlencoded form POST. This
 %%      has the side-effect of calling recv_body().
-parse_post() ->
+parse_post({?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
     case erlang:get(?SAVE_POST) of
         undefined ->
-            Parsed = case recv_body() of
+            Parsed = case recv_body(THIS) of
                          undefined ->
                              [];
                          Binary ->
-                             case get_primary_header_value("content-type") of
+                             case get_primary_header_value("content-type",THIS) of
                                  "application/x-www-form-urlencoded" ++ _ ->
                                      mochiweb_util:parse_qs(Binary);
                                  _ ->
@@ -439,44 +541,44 @@ parse_post() ->
             Cached
     end.
 
-%% @spec stream_chunked_body(integer(), fun(), term()) -> term()
+%% @spec stream_chunked_body(integer(), fun(), term(), request()) -> term()
 %% @doc The function is called for each chunk.
 %%      Used internally by read_chunked_body.
-stream_chunked_body(MaxChunkSize, Fun, FunState) ->
-    case read_chunk_length() of
+stream_chunked_body(MaxChunkSize, Fun, FunState,
+                    {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    case read_chunk_length(THIS) of
         0 ->
-            Fun({0, read_chunk(0)}, FunState);
+            Fun({0, read_chunk(0, THIS)}, FunState);
         Length when Length > MaxChunkSize ->
-            NewState = read_sub_chunks(Length, MaxChunkSize, Fun, FunState),
-            stream_chunked_body(MaxChunkSize, Fun, NewState);
+            NewState = read_sub_chunks(Length, MaxChunkSize, Fun, FunState, THIS),
+            stream_chunked_body(MaxChunkSize, Fun, NewState, THIS);
         Length ->
-            NewState = Fun({Length, read_chunk(Length)}, FunState),
-            stream_chunked_body(MaxChunkSize, Fun, NewState)
+            NewState = Fun({Length, read_chunk(Length, THIS)}, FunState),
+            stream_chunked_body(MaxChunkSize, Fun, NewState, THIS)
     end.
 
-stream_unchunked_body(0, Fun, FunState) ->
+stream_unchunked_body(_MaxChunkSize, 0, Fun, FunState, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}) ->
     Fun({0, <<>>}, FunState);
-stream_unchunked_body(Length, Fun, FunState) when Length > 0 ->
-    Bin = recv(0),
-    BinSize = byte_size(Bin),
-    if BinSize > Length ->
-        <<OurBody:Length/binary, Extra/binary>> = Bin,
-        gen_tcp:unrecv(Socket, Extra),
-        NewState = Fun({Length, OurBody}, FunState),
-        stream_unchunked_body(0, Fun, NewState);
-    true ->
-        NewState = Fun({BinSize, Bin}, FunState),
-        stream_unchunked_body(Length - BinSize, Fun, NewState)
-    end.
+stream_unchunked_body(MaxChunkSize, Length, Fun, FunState,
+                      {?MODULE, [_Socket, Opts, _Method, _RawPath, _Version, _Headers]}=THIS) when Length > 0 ->
+    RecBuf = case mochilists:get_value(recbuf, Opts, ?RECBUF_SIZE) of
+        undefined -> %os controlled buffer size
+            MaxChunkSize;
+        Val  ->
+            Val
+    end,
+    PktSize=min(Length,RecBuf),
+    Bin = recv(PktSize, THIS),
+    NewState = Fun({PktSize, Bin}, FunState),
+    stream_unchunked_body(MaxChunkSize, Length - PktSize, Fun, NewState, THIS).
 
-
-%% @spec read_chunk_length() -> integer()
+%% @spec read_chunk_length(request()) -> integer()
 %% @doc Read the length of the next HTTP chunk.
-read_chunk_length() ->
-    inet:setopts(Socket, [{packet, line}]),
-    case gen_tcp:recv(Socket, 0, ?IDLE_TIMEOUT) of
+read_chunk_length({?MODULE, [Socket, _Opts, _Method, _RawPath, _Version, _Headers]}) ->
+    ok = mochiweb_socket:exit_if_closed(mochiweb_socket:setopts(Socket, [{packet, line}])),
+    case mochiweb_socket:recv(Socket, 0, ?IDLE_TIMEOUT) of
         {ok, Header} ->
-            inet:setopts(Socket, [{packet, raw}]),
+            ok = mochiweb_socket:exit_if_closed(mochiweb_socket:setopts(Socket, [{packet, raw}])),
             Splitter = fun (C) ->
                                C =/= $\r andalso C =/= $\n andalso C =/= $
                        end,
@@ -486,13 +588,13 @@ read_chunk_length() ->
             exit(normal)
     end.
 
-%% @spec read_chunk(integer()) -> Chunk::binary() | [Footer::binary()]
+%% @spec read_chunk(integer(), request()) -> Chunk::binary() | [Footer::binary()]
 %% @doc Read in a HTTP chunk of the given length. If Length is 0, then read the
 %%      HTTP footers (as a list of binaries, since they're nominal).
-read_chunk(0) ->
-    inet:setopts(Socket, [{packet, line}]),
+read_chunk(0, {?MODULE, [Socket, _Opts, _Method, _RawPath, _Version, _Headers]}) ->
+    ok = mochiweb_socket:exit_if_closed(mochiweb_socket:setopts(Socket, [{packet, line}])),
     F = fun (F1, Acc) ->
-                case gen_tcp:recv(Socket, 0, ?IDLE_TIMEOUT) of
+                case mochiweb_socket:recv(Socket, 0, ?IDLE_TIMEOUT) of
                     {ok, <<"\r\n">>} ->
                         Acc;
                     {ok, Footer} ->
@@ -502,42 +604,45 @@ read_chunk(0) ->
                 end
         end,
     Footers = F(F, []),
-    inet:setopts(Socket, [{packet, raw}]),
+    ok = mochiweb_socket:exit_if_closed(mochiweb_socket:setopts(Socket, [{packet, raw}])),
+    put(?SAVE_RECV, true),
     Footers;
-read_chunk(Length) ->
-    case gen_tcp:recv(Socket, 2 + Length, ?IDLE_TIMEOUT) of
+read_chunk(Length, {?MODULE, [Socket, _Opts, _Method, _RawPath, _Version, _Headers]}) ->
+    case mochiweb_socket:recv(Socket, 2 + Length, ?IDLE_TIMEOUT) of
         {ok, <<Chunk:Length/binary, "\r\n">>} ->
             Chunk;
         _ ->
             exit(normal)
     end.
 
-read_sub_chunks(Length, MaxChunkSize, Fun, FunState) when Length > MaxChunkSize ->
-    Bin = recv(MaxChunkSize),
+read_sub_chunks(Length, MaxChunkSize, Fun, FunState,
+                {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) when Length > MaxChunkSize ->
+    Bin = recv(MaxChunkSize, THIS),
     NewState = Fun({size(Bin), Bin}, FunState),
-    read_sub_chunks(Length - MaxChunkSize, MaxChunkSize, Fun, NewState);
+    read_sub_chunks(Length - MaxChunkSize, MaxChunkSize, Fun, NewState, THIS);
 
-read_sub_chunks(Length, _MaxChunkSize, Fun, FunState) ->
-    Fun({Length, read_chunk(Length)}, FunState).
+read_sub_chunks(Length, _MaxChunkSize, Fun, FunState,
+                {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    Fun({Length, read_chunk(Length, THIS)}, FunState).
 
-%% @spec serve_file(Path, DocRoot) -> Response
+%% @spec serve_file(Path, DocRoot, request()) -> Response
 %% @doc Serve a file relative to DocRoot.
-serve_file(Path, DocRoot) ->
-    serve_file(Path, DocRoot, []).
+serve_file(Path, DocRoot, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    serve_file(Path, DocRoot, [], THIS).
 
-%% @spec serve_file(Path, DocRoot, ExtraHeaders) -> Response
+%% @spec serve_file(Path, DocRoot, ExtraHeaders, request()) -> Response
 %% @doc Serve a file relative to DocRoot.
-serve_file(Path, DocRoot, ExtraHeaders) ->
+serve_file(Path, DocRoot, ExtraHeaders, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
     case mochiweb_util:safe_relative_path(Path) of
         undefined ->
-            not_found(ExtraHeaders);
+            not_found(ExtraHeaders, THIS);
         RelPath ->
             FullPath = filename:join([DocRoot, RelPath]),
             case filelib:is_dir(FullPath) of
                 true ->
-                    maybe_redirect(RelPath, FullPath, ExtraHeaders);
+                    maybe_redirect(RelPath, FullPath, ExtraHeaders, THIS);
                 false ->
-                    maybe_serve_file(FullPath, ExtraHeaders)
+                    maybe_serve_file(FullPath, ExtraHeaders, THIS)
             end
     end.
 
@@ -547,13 +652,14 @@ serve_file(Path, DocRoot, ExtraHeaders) ->
 directory_index(FullPath) ->
     filename:join([FullPath, "index.html"]).
 
-maybe_redirect([], FullPath, ExtraHeaders) ->
-    maybe_serve_file(directory_index(FullPath), ExtraHeaders);
+maybe_redirect([], FullPath, ExtraHeaders, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    maybe_serve_file(directory_index(FullPath), ExtraHeaders, THIS);
 
-maybe_redirect(RelPath, FullPath, ExtraHeaders) ->
+maybe_redirect(RelPath, FullPath, ExtraHeaders,
+               {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, Headers]}=THIS) ->
     case string:right(RelPath, 1) of
         "/" ->
-            maybe_serve_file(directory_index(FullPath), ExtraHeaders);
+            maybe_serve_file(directory_index(FullPath), ExtraHeaders, THIS);
         _   ->
             Host = mochiweb_headers:get_value("host", Headers),
             Location = "http://" ++ Host  ++ "/" ++ RelPath ++ "/",
@@ -568,16 +674,16 @@ maybe_redirect(RelPath, FullPath, ExtraHeaders) ->
             "<p>The document has moved <a href=\"">>,
             Bottom = <<">here</a>.</p></body></html>\n">>,
             Body = <<Top/binary, LocationBin/binary, Bottom/binary>>,
-            respond({301, MoreHeaders, Body})
+            respond({301, MoreHeaders, Body}, THIS)
     end.
 
-maybe_serve_file(File, ExtraHeaders) ->
+maybe_serve_file(File, ExtraHeaders, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
     case file:read_file_info(File) of
         {ok, FileInfo} ->
             LastModified = httpd_util:rfc1123_date(FileInfo#file_info.mtime),
-            case get_header_value("if-modified-since") of
+            case get_header_value("if-modified-since", THIS) of
                 LastModified ->
-                    respond({304, ExtraHeaders, ""});
+                    respond({304, ExtraHeaders, ""}, THIS);
                 _ ->
                     case file:open(File, [raw, binary]) of
                         {ok, IoDevice} ->
@@ -585,27 +691,20 @@ maybe_serve_file(File, ExtraHeaders) ->
                             Res = ok({ContentType,
                                       [{"last-modified", LastModified}
                                        | ExtraHeaders],
-                                      {file, IoDevice}}),
-                            file:close(IoDevice),
+                                      {file, IoDevice}}, THIS),
+                            ok = file:close(IoDevice),
                             Res;
                         _ ->
-                            not_found(ExtraHeaders)
+                            not_found(ExtraHeaders, THIS)
                     end
             end;
         {error, _} ->
-            not_found(ExtraHeaders)
+            not_found(ExtraHeaders, THIS)
     end.
 
 server_headers() ->
     [{"Server", "MochiWeb/1.0 (" ++ ?QUIP ++ ")"},
-     {"Date", httpd_util:rfc1123_date()}].
-
-make_io(Atom) when is_atom(Atom) ->
-    atom_to_list(Atom);
-make_io(Integer) when is_integer(Integer) ->
-    integer_to_list(Integer);
-make_io(Io) when is_list(Io); is_binary(Io) ->
-    Io.
+     {"Date", mochiweb_clock:rfc1123()}].
 
 make_code(X) when is_integer(X) ->
     [integer_to_list(X), [" " | httpd_util:reason_phrase(X)]];
@@ -617,56 +716,10 @@ make_version({1, 0}) ->
 make_version(_) ->
     <<"HTTP/1.1 ">>.
 
-iodevice_stream(IoDevice) ->
-    case file:read(IoDevice, ?READ_SIZE) of
-        eof ->
-            ok;
-        {ok, Data} ->
-            ok = send(Data),
-            iodevice_stream(IoDevice)
-    end.
-
-
-parts_to_body([{Start, End, Body}], ContentType, Size) ->
-    %% return body for a range reponse with a single body
-    HeaderList = [{"Content-Type", ContentType},
-                  {"Content-Range",
-                   ["bytes ",
-                    make_io(Start), "-", make_io(End),
-                    "/", make_io(Size)]}],
-    {HeaderList, Body};
-parts_to_body(BodyList, ContentType, Size) when is_list(BodyList) ->
-    %% return
-    %% header Content-Type: multipart/byteranges; boundary=441934886133bdee4
-    %% and multipart body
-    Boundary = mochihex:to_hex(crypto:rand_bytes(8)),
-    HeaderList = [{"Content-Type",
-                   ["multipart/byteranges; ",
-                    "boundary=", Boundary]}],
-    MultiPartBody = multipart_body(BodyList, ContentType, Boundary, Size),
-
-    {HeaderList, MultiPartBody}.
-
-multipart_body([], _ContentType, Boundary, _Size) ->
-    ["--", Boundary, "--\r\n"];
-multipart_body([{Start, End, Body} | BodyList], ContentType, Boundary, Size) ->
-    ["--", Boundary, "\r\n",
-     "Content-Type: ", ContentType, "\r\n",
-     "Content-Range: ",
-         "bytes ", make_io(Start), "-", make_io(End),
-             "/", make_io(Size), "\r\n\r\n",
-     Body, "\r\n"
-     | multipart_body(BodyList, ContentType, Boundary, Size)].
-
-iodevice_size(IoDevice) ->
-    {ok, Size} = file:position(IoDevice, eof),
-    {ok, 0} = file:position(IoDevice, bof),
-    Size.
-
 range_parts({file, IoDevice}, Ranges) ->
-    Size = iodevice_size(IoDevice),
+    Size = mochiweb_io:iodevice_size(IoDevice),
     F = fun (Spec, Acc) ->
-                case range_skip_length(Spec, Size) of
+                case mochiweb_http:range_skip_length(Spec, Size) of
                     invalid_range ->
                         Acc;
                     V ->
@@ -676,7 +729,12 @@ range_parts({file, IoDevice}, Ranges) ->
     LocNums = lists:foldr(F, [], Ranges),
     {ok, Data} = file:pread(IoDevice, LocNums),
     Bodies = lists:zipwith(fun ({Skip, Length}, PartialBody) ->
-                                   {Skip, Skip + Length - 1, PartialBody}
+                                   case Length of
+                                       0 ->
+                                           {Skip, Skip, <<>>};
+                                       _ ->
+                                           {Skip, Skip + Length - 1, PartialBody}
+                                   end
                            end,
                            LocNums, Data),
     {Bodies, Size};
@@ -684,7 +742,7 @@ range_parts(Body0, Ranges) ->
     Body = iolist_to_binary(Body0),
     Size = size(Body),
     F = fun(Spec, Acc) ->
-                case range_skip_length(Spec, Size) of
+                case mochiweb_http:range_skip_length(Spec, Size) of
                     invalid_range ->
                         Acc;
                     {Skip, Length} ->
@@ -694,133 +752,168 @@ range_parts(Body0, Ranges) ->
         end,
     {lists:foldr(F, [], Ranges), Size}.
 
-range_skip_length(Spec, Size) ->
-    case Spec of
-        {none, R} when R =< Size, R >= 0 ->
-            {Size - R, R};
-        {none, _OutOfRange} ->
-            {0, Size};
-        {R, none} when R >= 0, R < Size ->
-            {R, Size - R};
-        {_OutOfRange, none} ->
-            invalid_range;
-        {Start, End} when 0 =< Start, Start =< End, End < Size ->
-            {Start, End - Start + 1};
-        {_OutOfRange, _End} ->
-            invalid_range
+%% @spec accepted_encodings([encoding()], request()) -> [encoding()] | bad_accept_encoding_value
+%% @type encoding() = string().
+%%
+%% @doc Returns a list of encodings accepted by a request. Encodings that are
+%%      not supported by the server will not be included in the return list.
+%%      This list is computed from the "Accept-Encoding" header and
+%%      its elements are ordered, descendingly, according to their Q values.
+%%
+%%      Section 14.3 of the RFC 2616 (HTTP 1.1) describes the "Accept-Encoding"
+%%      header and the process of determining which server supported encodings
+%%      can be used for encoding the body for the request's response.
+%%
+%%      Examples
+%%
+%%      1) For a missing "Accept-Encoding" header:
+%%         accepted_encodings(["gzip", "identity"]) -> ["identity"]
+%%
+%%      2) For an "Accept-Encoding" header with value "gzip, deflate":
+%%         accepted_encodings(["gzip", "identity"]) -> ["gzip", "identity"]
+%%
+%%      3) For an "Accept-Encoding" header with value "gzip;q=0.5, deflate":
+%%         accepted_encodings(["gzip", "deflate", "identity"]) ->
+%%            ["deflate", "gzip", "identity"]
+%%
+accepted_encodings(SupportedEncodings, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    AcceptEncodingHeader = case get_header_value("Accept-Encoding", THIS) of
+        undefined ->
+            "";
+        Value ->
+            Value
+    end,
+    case mochiweb_util:parse_qvalues(AcceptEncodingHeader) of
+        invalid_qvalue_string ->
+            bad_accept_encoding_value;
+        QList ->
+            mochiweb_util:pick_accepted_encodings(
+                QList, SupportedEncodings, "identity"
+            )
     end.
 
-parse_range_request(RawRange) when is_list(RawRange) ->
-    try
-        "bytes=" ++ RangeString = RawRange,
-        Ranges = string:tokens(RangeString, ","),
-        lists:map(fun ("-" ++ V)  ->
-                          {none, list_to_integer(V)};
-                      (R) ->
-                          case string:tokens(R, "-") of
-                              [S1, S2] ->
-                                  {list_to_integer(S1), list_to_integer(S2)};
-                              [S] ->
-                                  {list_to_integer(S), none}
-                          end
-                  end,
-                  Ranges)
-    catch
-        _:_ ->
-            fail
+%% @spec accepts_content_type(string() | binary(), request()) -> boolean() | bad_accept_header
+%%
+%% @doc Determines whether a request accepts a given media type by analyzing its
+%%      "Accept" header.
+%%
+%%      Examples
+%%
+%%      1) For a missing "Accept" header:
+%%         accepts_content_type("application/json") -> true
+%%
+%%      2) For an "Accept" header with value "text/plain, application/*":
+%%         accepts_content_type("application/json") -> true
+%%
+%%      3) For an "Accept" header with value "text/plain, */*; q=0.0":
+%%         accepts_content_type("application/json") -> false
+%%
+%%      4) For an "Accept" header with value "text/plain; q=0.5, */*; q=0.1":
+%%         accepts_content_type("application/json") -> true
+%%
+%%      5) For an "Accept" header with value "text/*; q=0.0, */*":
+%%         accepts_content_type("text/plain") -> false
+%%
+accepts_content_type(ContentType1, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    ContentType = re:replace(ContentType1, "\\s", "", [global, {return, list}]),
+    AcceptHeader = accept_header(THIS),
+    case mochiweb_util:parse_qvalues(AcceptHeader) of
+        invalid_qvalue_string ->
+            bad_accept_header;
+        QList ->
+            [MainType, _SubType] = string:tokens(ContentType, "/"),
+            SuperType = MainType ++ "/*",
+            lists:any(
+                fun({"*/*", Q}) when Q > 0.0 ->
+                        true;
+                    ({Type, Q}) when Q > 0.0 ->
+                        Type =:= ContentType orelse Type =:= SuperType;
+                    (_) ->
+                        false
+                end,
+                QList
+            ) andalso
+            (not lists:member({ContentType, 0.0}, QList)) andalso
+            (not lists:member({SuperType, 0.0}, QList))
     end.
 
+%% @spec accepted_content_types([string() | binary()], request()) -> [string()] | bad_accept_header
+%%
+%% @doc Filters which of the given media types this request accepts. This filtering
+%%      is performed by analyzing the "Accept" header. The returned list is sorted
+%%      according to the preferences specified in the "Accept" header (higher Q values
+%%      first). If two or more types have the same preference (Q value), they're order
+%%      in the returned list is the same as they're order in the input list.
+%%
+%%      Examples
+%%
+%%      1) For a missing "Accept" header:
+%%         accepted_content_types(["text/html", "application/json"]) ->
+%%             ["text/html", "application/json"]
+%%
+%%      2) For an "Accept" header with value "text/html, application/*":
+%%         accepted_content_types(["application/json", "text/html"]) ->
+%%             ["application/json", "text/html"]
+%%
+%%      3) For an "Accept" header with value "text/html, */*; q=0.0":
+%%         accepted_content_types(["text/html", "application/json"]) ->
+%%             ["text/html"]
+%%
+%%      4) For an "Accept" header with value "text/html; q=0.5, */*; q=0.1":
+%%         accepts_content_types(["application/json", "text/html"]) ->
+%%             ["text/html", "application/json"]
+%%
+accepted_content_types(Types1, {?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    Types = lists:map(
+        fun(T) -> re:replace(T, "\\s", "", [global, {return, list}]) end,
+        Types1),
+    AcceptHeader = accept_header(THIS),
+    case mochiweb_util:parse_qvalues(AcceptHeader) of
+        invalid_qvalue_string ->
+            bad_accept_header;
+        QList ->
+            TypesQ = lists:foldr(
+                fun(T, Acc) ->
+                    case proplists:get_value(T, QList) of
+                        undefined ->
+                            [MainType, _SubType] = string:tokens(T, "/"),
+                            case proplists:get_value(MainType ++ "/*", QList) of
+                                undefined ->
+                                    case proplists:get_value("*/*", QList) of
+                                        Q when is_float(Q), Q > 0.0 ->
+                                            [{Q, T} | Acc];
+                                        _ ->
+                                            Acc
+                                    end;
+                                Q when Q > 0.0 ->
+                                    [{Q, T} | Acc];
+                                _ ->
+                                    Acc
+                            end;
+                        Q when Q > 0.0 ->
+                            [{Q, T} | Acc];
+                        _ ->
+                            Acc
+                    end
+                end,
+                [], Types),
+            % Note: Stable sort. If 2 types have the same Q value we leave them in the
+            % same order as in the input list.
+            SortFun = fun({Q1, _}, {Q2, _}) -> Q1 >= Q2 end,
+            [Type || {_Q, Type} <- lists:sort(SortFun, TypesQ)]
+    end.
 
-test() ->
-    ok = test_range(),
-    ok.
+accept_header({?MODULE, [_Socket, _Opts, _Method, _RawPath, _Version, _Headers]}=THIS) ->
+    case get_header_value("Accept", THIS) of
+        undefined ->
+            "*/*";
+        Value ->
+            Value
+    end.
 
-test_range() ->
-    %% valid, single ranges
-    io:format("Testing parse_range_request with valid single ranges~n"),
-    io:format("1"),
-    [{20, 30}] = parse_range_request("bytes=20-30"),
-    io:format("2"),
-    [{20, none}] = parse_range_request("bytes=20-"),
-    io:format("3"),
-    [{none, 20}] = parse_range_request("bytes=-20"),
-    io:format(".. ok ~n"),
-
-    %% invalid, single ranges
-    io:format("Testing parse_range_request with invalid ranges~n"),
-    io:format("1"),
-    fail = parse_range_request(""),
-    io:format("2"),
-    fail = parse_range_request("garbage"),
-    io:format("3"),
-    fail = parse_range_request("bytes=-20-30"),
-    io:format(".. ok ~n"),
-
-    %% valid, multiple range
-    io:format("Testing parse_range_request with valid multiple ranges~n"),
-    io:format("1"),
-    [{20, 30}, {50, 100}, {110, 200}] =
-        parse_range_request("bytes=20-30,50-100,110-200"),
-    io:format("2"),
-    [{20, none}, {50, 100}, {none, 200}] =
-        parse_range_request("bytes=20-,50-100,-200"),
-    io:format(".. ok~n"),
-
-    %% no ranges
-    io:format("Testing out parse_range_request with no ranges~n"),
-    io:format("1"),
-    [] = parse_range_request("bytes="),
-    io:format(".. ok~n"),
-
-    Body = <<"012345678901234567890123456789012345678901234567890123456789">>,
-    BodySize = byte_size(Body), %% 60
-    BodySize = 60,
-
-    %% these values assume BodySize =:= 60
-    io:format("Testing out range_skip_length on valid ranges~n"),
-    io:format("1"),
-    {1,9} = range_skip_length({1,9}, BodySize), %% 1-9
-    io:format("2"),
-    {10,10} = range_skip_length({10,19}, BodySize), %% 10-19
-    io:format("3"),
-    {40, 20} = range_skip_length({none, 20}, BodySize), %% -20
-    io:format("4"),
-    {30, 30} = range_skip_length({30, none}, BodySize), %% 30-
-    io:format(".. ok ~n"),
-
-    %% valid edge cases for range_skip_length
-    io:format("Testing out range_skip_length on valid edge case ranges~n"),
-    io:format("1"),
-    {BodySize, 0} = range_skip_length({none, 0}, BodySize),
-    io:format("2"),
-    {0, BodySize} = range_skip_length({none, BodySize}, BodySize),
-    io:format("3"),
-    {0, BodySize} = range_skip_length({0, none}, BodySize),
-    BodySizeLess1 = BodySize - 1,
-    io:format("4"),
-    {BodySizeLess1, 1} = range_skip_length({BodySize - 1, none}, BodySize),
-
-    %% out of range, return whole thing
-    io:format("5"),
-    {0, BodySize} = range_skip_length({none, BodySize + 1}, BodySize),
-    io:format("6"),
-    {0, BodySize} = range_skip_length({none, -1}, BodySize),
-    io:format(".. ok ~n"),
-
-    %% invalid ranges
-    io:format("Testing out range_skip_length on invalid ranges~n"),
-    io:format("1"),
-    invalid_range = range_skip_length({-1, 30}, BodySize),
-    io:format("2"),
-    invalid_range = range_skip_length({0, BodySize + 1}, BodySize),
-    io:format("3"),
-    invalid_range = range_skip_length({-1, BodySize + 1}, BodySize),
-    io:format("4"),
-    invalid_range = range_skip_length({BodySize, 40}, BodySize),
-    io:format("5"),
-    invalid_range = range_skip_length({-1, none}, BodySize),
-    io:format("6"),
-    invalid_range = range_skip_length({BodySize, none}, BodySize),
-    io:format(".. ok ~n"),
-    ok.
-
+%%
+%% Tests
+%%
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.

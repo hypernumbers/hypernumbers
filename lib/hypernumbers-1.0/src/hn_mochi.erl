@@ -73,10 +73,13 @@ start() ->
     end,
     {ok, {Ip, Port}} = application:get_env(hypernumbers, mochi_bind),
     StrIp = inet_parse:ntoa(Ip),
+    Loop = fun (Req) ->
+                   ?MODULE:handle(Req)
+           end,
     Opts = [{port, Port},
             {ip, StrIp},
             {name, ?MODULE},
-            {loop, {hn_mochi, handle}}],
+            {loop, Loop}],
     mochiweb_http:start(Opts).
 
 -spec handle(any()) -> ok.

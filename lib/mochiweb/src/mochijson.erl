@@ -1,5 +1,23 @@
 %% @author Bob Ippolito <bob@mochimedia.com>
 %% @copyright 2006 Mochi Media, Inc.
+%%
+%% Permission is hereby granted, free of charge, to any person obtaining a
+%% copy of this software and associated documentation files (the "Software"),
+%% to deal in the Software without restriction, including without limitation
+%% the rights to use, copy, modify, merge, publish, distribute, sublicense,
+%% and/or sell copies of the Software, and to permit persons to whom the
+%% Software is furnished to do so, subject to the following conditions:
+%%
+%% The above copyright notice and this permission notice shall be included in
+%% all copies or substantial portions of the Software.
+%%
+%% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+%% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+%% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+%% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+%% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+%% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+%% DEALINGS IN THE SOFTWARE.
 
 %% @doc Yet another JSON (RFC 4627) library for Erlang.
 -module(mochijson).
@@ -8,7 +26,6 @@
 -export([decoder/1, decode/1]).
 -export([binary_encoder/1, binary_encode/1]).
 -export([binary_decoder/1, binary_decode/1]).
--export([test/0]).
 
 % This is a macro to placate syntax highlighters..
 -define(Q, $\").
@@ -16,8 +33,6 @@
 -define(INC_COL(S), S#decoder{column=1+S#decoder.column}).
 -define(INC_LINE(S), S#decoder{column=1, line=1+S#decoder.line}).
 
-%% @type iolist() = [char() | binary() | iolist()]
-%% @type iodata() = iolist() | binary()
 %% @type json_string() = atom | string() | binary()
 %% @type json_number() = integer() | float()
 %% @type json_array() = {array, [json_term()]}
@@ -90,10 +105,6 @@ binary_encode(Any) ->
 %%      binaries for strings.
 binary_decode(S) ->
     mochijson2:decode(S).
-
-test() ->
-    test_all(),
-    mochijson2:test().
 
 %% Internal API
 
@@ -407,6 +418,13 @@ tokenize(L=[C | _], S) when C >= $0, C =< $9; C == $- ->
             {{const, list_to_float(Float)}, Rest, S1}
     end.
 
+
+%%
+%% Tests
+%%
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+
 %% testing constructs borrowed from the Yaws JSON implementation.
 
 %% Create an object from a list of Key/Value pairs.
@@ -462,11 +480,10 @@ equiv_list([], []) ->
 equiv_list([V1 | L1], [V2 | L2]) ->
     equiv(V1, V2) andalso equiv_list(L1, L2).
 
-test_all() ->
-    test_issue33(),
+e2j_vec_test() ->
     test_one(e2j_test_vec(utf8), 1).
 
-test_issue33() ->
+issue33_test() ->
     %% http://code.google.com/p/mochiweb/issues/detail?id=33
     Js = {struct, [{"key", [194, 163]}]},
     Encoder = encoder([{input_encoding, utf8}]),
@@ -526,3 +543,5 @@ e2j_test_vec(utf8) ->
     {{array, [-123, "foo", obj_from_list([{"bar", {array, []}}]), null]},
      "[-123,\"foo\",{\"bar\":[]},null]"}
     ].
+
+-endif.
