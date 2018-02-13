@@ -32,12 +32,21 @@
 -export([
          create_user_fn/6
         ]).
+
+-export([
+         setup_test_fn/0,
+         create_test_fn/0
+        ]).
+
 %% TODO
 %% update cellref goes crazy if in cell there is =2. remember to change it
 %% when geting rid of cellref in a AST, just swap it for 2
 %% TODO
 
 create_user_fn(Site, FunName, Page, FunDesc, OutputVal, ParamsArr)	->
+    io:format("Site is ~p~nFunName is ~p~nPage is ~p~nFunDesc is ~p~n"
+              "OutputVal is ~p~nParamsarr is ~p~n",
+              [Site, FunName, Page, FunDesc, OutputVal, ParamsArr]),
     {array, Params} = ParamsArr,
     {LParamNames, LParamDescs, LParamVals} = get_param_data(Params, [], [], []),
     Page_Array = re:split(Page, "/", [{return,list}]),
@@ -373,3 +382,52 @@ check_for_not_in_param_error([H | T]) when is_list(H)	->
     check_for_not_in_param_error([check_for_not_in_param_error(H) | T]);
 check_for_not_in_param_error([_H | T]) ->
     check_for_not_in_param_error(T).
+
+%%
+%% Demo code
+%%
+
+setup_test_fn() ->
+    Site = "http://hypernumbers.dev:9000",
+    FnName = {"My fun", "c2"},
+    Page = "/",
+    FunDesc = {"random fn", "d2"},
+    OutPutVal = "c7",
+    Param1 =  [
+               {"1st param", "a3"}, {"integer", "b3"}, {input, "c3"}
+              ],
+    Param2 =  [
+               {"2nd param", "a4"}, {"integer", "b4"}, {input, "c4"}
+              ],
+    Param3 =  [
+               {"3rd param", "a5"}, {"integer", "b5"}, {input, "c5"}
+              ],
+    ok = write_cell(Site, Page, FnName),
+    ok = write_cell(Site, Page, FunDesc),
+    [[ok = write_cell(Site, Page, X) || X <- Ps]
+     || Ps <- [Param1, Param2, Param3]],
+    ok = write_cell(Site, Page, {"output", "b7"}),
+    ok.
+
+write_cell(Site, Page, {Val, Cell}) when is_list(Val) ->
+    URL = Site ++ Page ++ Cell,
+    RefX = hn_util:url_to_refX(URL),
+    ok = new_db_api:write_attributes([{RefX, [{"formula", Val}]}], 0, 0);
+write_cell(Site, Page, {input, Cell}) ->
+    URL = Site ++ Page ++ Cell,
+    RefX = hn_util:url_to_refX(URL),
+    ok = new_db_api:write_attributes([{RefX, [{"input", "inline"}]}], 0, 0).
+
+create_test_fn() ->
+    Site = "http://hypernumbers.dev:9000",
+    FunName = "c2",
+    Page = "/",
+    FunDesc = "d2",
+    OutputVal = "c7",
+    ParamsArr =
+        [
+         {struct, [{"name", "a3"}, {"description", "b3"}, {"value", "c3"}]},
+         {struct, [{"name", "a4"}, {"description", "b4"}, {"value", "c4"}]},
+         {struct, [{"name", "a5"}, {"description", "b5"}, {"value", "c5"}]}
+        ],
+    create_user_fn(Site, FunName, Page, FunDesc, OutputVal, {array, ParamsArr}).

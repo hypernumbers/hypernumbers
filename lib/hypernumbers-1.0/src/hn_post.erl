@@ -474,6 +474,7 @@ post(#refX{obj = {O, _} = Obj} = Ref, _Qry,
      #env{body = [{"set", {struct, Attr}}], uid = Uid} = Env)
   when O == cell orelse
        O == range ->
+    io:format("in hn_post Ref is ~p~nAttr is ~p~n", [Ref, Attr]),
     case Attr of
         % TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
