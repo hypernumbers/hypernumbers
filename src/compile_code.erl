@@ -320,7 +320,8 @@ make_rel_file(App, Version, Deps) ->
 get_rel_file() ->
     Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, public_key,
             gettext, sgte, read_excel, sysmon, starling, formula_engine,
-            erlsha2, twilio, mochiweb, bert, hypernumbers, load_testing, asn1],
+            erlsha2, twilio, mochiweb, bert, hypernumbers, load_testing, asn1,
+            xmerl, compiler, syntax_tools],
     Rel  = make_rel_file("hypernumbers", "1.0", Apps),
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
     ok   = systools:make_script("hypernumbers",
@@ -328,19 +329,21 @@ get_rel_file() ->
 
 get_no_mnesia_debug_rel_file() ->
     Rel = make_rel_file("NO_MNESIA", "1.0", [kernel, stdlib, inets, ssl,
-                                             crypto, public_key, asn1]),
+                                             crypto, public_key, asn1, sasl]),
     ok  = file:write_file("no_mnesia.rel", fmt("~p.", [Rel])),
     ok  = systools:make_script("no_mnesia", [local]).
 
 get_debug_rel_file() ->
     Rel = make_rel_file("DEBUG", "1.0", [kernel, stdlib, inets, ssl,
-                                             crypto, public_key, mnesia, asn1]),
+                                         crypto, public_key, mnesia, asn1,
+                                         sasl]),
     ok  = file:write_file("debug.rel", fmt("~p.", [Rel])),
     ok  = systools:make_script("debug", [local]).
 
 get_ssl_rel_file() ->
     Rel = make_rel_file("START SSL", "1.0", [kernel, stdlib, inets, ssl,
-                                             crypto, public_key, asn1]),
+                                             crypto, public_key, asn1,
+                                             sasl]),
     ok  = file:write_file("start_ssl.rel", fmt("~p.", [Rel])),
     ok  = systools:make_script("start_ssl", [local]).
 
