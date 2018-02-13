@@ -1,6 +1,6 @@
 #!/usr/bin/env escript
 %% -*- erlang -*-
-%%! -boot ebin/start_ssl -proto_dist inet_tls -ssl_dist_opt server_certfile "priv/keys/servercert.pem" -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" -ssl_dist_opt keyfile "priv/keys/key.pem"
+%%! -boot ebin/start_ssl -proto_dist inet_tls -ssl_dist_optfile /hn/hypernumbers/priv/keys/ssl@hypernumbers.conf
 
 cookie() ->
     CookieFile = ".erlang.cookie",
@@ -359,9 +359,7 @@ make_pa() ->
     string:join(["-pa" | Paths], " ").
 
 ssl() ->
-    "-ssl_dist_opt server_certfile \"priv/keys/servercert.pem\" "
-        "-ssl_dist_opt client_certfile \"priv/keys/clientcert.pem\" "
-        "-ssl_dist_opt keyfile \"priv/keys/key.pem\" "
+    "-ssl_dist_optfile priv/keys/ssl@hypernumbers.conf"
         "-proto_dist inet_tls".
 
 clean(Root) ->
