@@ -28,12 +28,12 @@
                     type :: atom()}).
 
 %% Zone Tables
--record(zone, { label :: string(),
-                min_size :: integer(),
+-record(zone, { label      :: string(),
+                min_size   :: integer(),
                 ideal_size :: integer(),
-                pool :: gb_tree(),
-                generator :: generator(),
-                zone_id :: integer() }).
+                pool       :: gb_tree:tree(),
+                generator  :: generator(),
+                zone_id    :: integer() }).
 
 -record(hns_record, { name, % :: {string(), string()},
                       address,% :: resource_addr(),
@@ -144,7 +144,7 @@
 
 -record(dirty_queue,
         {
-          id = now(),
+          id = erlang:timestamp(),
           dirty = [],
           auth_req
          }).

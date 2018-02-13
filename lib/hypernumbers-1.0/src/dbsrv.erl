@@ -165,7 +165,7 @@ dbsrv_init(Site) ->
     WorkPlan = build_workplan(Site, Dirty, Graph),
     dbsrv(Site, Since, WorkPlan, Graph).
 
--spec dbsrv(string(), term(), [cellidx()], digraph())
+-spec dbsrv(string(), term(), [cellidx()], digraph:graph())
 -> no_return().
 dbsrv(Site, Since, WorkPlan, Graph0) ->
     Graph = cleanup(WorkPlan, Site, Graph0),
@@ -179,7 +179,7 @@ dbsrv(Site, Since, WorkPlan, Graph0) ->
                 end,
     ?MODULE:dbsrv(Site, Since2, WorkPlan3, Graph).
 
--spec cleanup([cellidx()], string(), digraph()) -> digraph().
+-spec cleanup([cellidx()], string(), digraph:graph()) -> digraph:graph().
 cleanup([], Site, Graph) ->
     ok = new_db_api:clear_dirty_cacheD(Site),
     digraph:delete(Graph),
@@ -187,7 +187,7 @@ cleanup([], Site, Graph) ->
 cleanup(_, _, Graph) -> Graph.
 
 %% Checks if new work is waiting to be processed.
--spec check_messages(string(), term(), [cellidx()], digraph())
+-spec check_messages(string(), term(), [cellidx()], digraph:graph())
 -> {term(), [cellidx()]}.
 check_messages(Site, Since, WorkPlan, Graph) ->
     % check the state of memory usage and maybe run a garbage collect
@@ -252,7 +252,7 @@ check_messages(Site, Since, WorkPlan, Graph) ->
             {Since, WorkPlan}
     end.
 
--spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()].
+-spec build_workplan(string(), [cellidx()], digraph:graph()) -> [cellidx()].
 build_workplan(Site, Dirty, Graph) ->
     Trans = fun() ->
                     % if the cell is a new cell then recalc if it is
@@ -280,7 +280,7 @@ build_workplan(Site, Dirty, Graph) ->
 %% (eg =A2 in cell A1 and =A1 in cell A2) only.
 %% Checks for DIRECT circular references where a formula
 %% refers to itself (ie =A1 in cell A1) are done in muin.erl
--spec check_interference(cellidx(), atom(), digraph()) -> [cellidx()].
+-spec check_interference(cellidx(), atom(), digraph:graph()) -> [cellidx()].
 check_interference(Cell, Site, Graph) ->
     case new_db_wu:read_relationsD(Site, Cell, read) of
         [R] ->
@@ -292,7 +292,7 @@ check_interference(Cell, Site, Graph) ->
 
 %% Recursively walk child relation, adding entries into the work
 %% queue.
--spec update_recalc_graph([cellidx()], atom(), digraph()) -> ok.
+-spec update_recalc_graph([cellidx()], atom(), digraph:graph()) -> ok.
 update_recalc_graph([], _Site, _Graph) ->
     ok;
 update_recalc_graph([Idx|Rest], Site, Graph) ->
@@ -320,7 +320,7 @@ update_recalc_graph([Idx|Rest], Site, Graph) ->
 %% graph, and rewrite the formula for any offending cells. A
 %% co-recursive call back to build_workplan is made to complete
 %% construction of the workplan.
--spec eliminate_circ_ref(string(), [cellidx()], digraph()) -> [cellidx()].
+-spec eliminate_circ_ref(string(), [cellidx()], digraph:graph()) -> [cellidx()].
 eliminate_circ_ref(Site, Dirty, Graph) ->
     Cycle = lists:flatten(digraph_utils:cyclic_strong_components(Graph)),
     [digraph:del_vertex(Graph, V) || V <- Cycle],
@@ -328,7 +328,7 @@ eliminate_circ_ref(Site, Dirty, Graph) ->
                                                      lists:member(V, Dirty)],
     build_workplan(Site, Dirty, Graph).
 
--spec execute_plan([cellidx()], string(), digraph()) -> ok.
+-spec execute_plan([cellidx()], string(), digraph:graph()) -> ok.
 execute_plan([], _, _) ->
     ok;
 execute_plan([C | T], Site, Graph) ->
@@ -341,5 +341,5 @@ execute_plan([C | T], Site, Graph) ->
             execute_plan(T, Site, Graph)
     end.
 
--spec new_graph() -> digraph().
+-spec new_graph() -> digraph:graph().
 new_graph() -> digraph:new([private]).

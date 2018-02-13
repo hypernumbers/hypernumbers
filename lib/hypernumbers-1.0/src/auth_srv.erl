@@ -70,7 +70,7 @@
                groups = ordsets:new() :: list() }).
 
 -record(state, {site :: string(),
-                tree :: gb_tree() }).
+                tree :: gb_tree:tree() }).
 
 %%%===================================================================
 %%% API
@@ -471,7 +471,7 @@ can_view(Site, Uid, #view{groups = Groups}) ->
 %% Tree Manipulations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec load_tree(string()) -> gb_tree().
+-spec load_tree(string()) -> gb_tree:tree().
 load_tree(Site) ->
     case new_db_api:read_kv(Site, ?auth_srv) of
         []                          -> gb_trees:empty();
@@ -479,13 +479,13 @@ load_tree(Site) ->
     end.
 
 %% Todo: This really shouldn't be Dets.
--spec save_tree(string(), gb_tree()) -> ok.
+-spec save_tree(string(), gb_tree:tree()) -> ok.
 save_tree(Site, NewTree) ->
     ok = new_db_api:write_kv(Site, ?auth_srv, NewTree).
 
--spec alter_tree(gb_tree(),
+-spec alter_tree(gb_tree:tree(),
                  [string()],
-                 fun((#control{}) -> #control{})) -> gb_tree().
+                 fun((#control{}) -> #control{})) -> gb_tree:tree().
 alter_tree(Tree, [], Fun) ->
     case gb_trees:lookup(control, Tree) of
         none       -> NewCtrls = Fun(#control{}),
@@ -511,13 +511,13 @@ force_terminal([H | T]) ->
          _            -> ok
      end.
 
--spec run_ctl(gb_tree(), [string()], fun((#control{}) -> X)) -> X.
+-spec run_ctl(gb_tree:tree(), [string()], fun((#control{}) -> X)) -> X.
 run_ctl(Tree, Path, Fun) ->
     CtlNorm = seek_ctl_normal(Path, Tree),
     CtlWild = seek_ctl_wild(Path, Tree, none),
     Fun(merge_ctl(CtlNorm, CtlWild)).
 
--spec seek_ctl_normal([string()], gb_tree()) -> none | #control{}.
+-spec seek_ctl_normal([string()], gb_tree:tree()) -> none | #control{}.
 seek_ctl_normal([], Tree) ->
     get_control(Tree);
 seek_ctl_normal([W="[*]" | Rest], Tree) ->
@@ -531,7 +531,7 @@ seek_ctl_normal([H | Rest], Tree) ->
         {value, Tree2} -> seek_ctl_normal(Rest, Tree2)
     end.
 
--spec seek_ctl_wild([string()], gb_tree(), none | #control{})
+-spec seek_ctl_wild([string()], gb_tree:tree(), none | #control{})
                    -> none | #control{}.
 seek_ctl_wild([], _Tree, AccCtl) ->
     AccCtl;
@@ -585,7 +585,7 @@ add_to_views({V, NewView}, Views) ->
 merge_left([], C) -> C;
 merge_left(C, _) -> C.
 
--spec get_control(gb_tree()) -> none | #control{}.
+-spec get_control(gb_tree:tree()) -> none | #control{}.
 get_control(Tree) ->
     case gb_trees:lookup(control, Tree) of
         none       -> none;
@@ -598,7 +598,7 @@ get_control(Tree) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -define(LB(X), list_to_binary(X)).
--spec get_as_json1(gb_tree(), [string()]) -> {struct, any()}.
+-spec get_as_json1(gb_tree:tree(), [string()]) -> {struct, any()}.
 get_as_json1(Tree, Path) ->
     run_ctl(Tree, Path, fun ctl_to_json/1).
 
@@ -617,7 +617,7 @@ view_to_json({V, View, Iter}) ->
     [S | view_to_json(gb_trees:next(Iter))].
 
 
--spec load_script1(list()) -> gb_tree().
+-spec load_script1(list()) -> gb_tree:tree().
 load_script1(Terms) ->
     Tree = gb_trees:empty(),
     exec_script_terms(Terms, Tree).
@@ -635,7 +635,7 @@ exec_script_terms([{set_challenger, C}|Rest], Tree) ->
     Tree2 = set_default(Tree, ?lget(path, C), ?lget(view, C), challenger),
     exec_script_terms(Rest, Tree2).
 
--spec dump_script1(gb_tree()) -> [any()].
+-spec dump_script1(gb_tree:tree()) -> [any()].
 dump_script1(Tree) ->
     Iter = gb_trees:iterator(Tree),
     List = lists:flatten(dump_tree(gb_trees:next(Iter), [])),

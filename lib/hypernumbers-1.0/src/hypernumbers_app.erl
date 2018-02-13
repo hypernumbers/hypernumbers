@@ -219,4 +219,3 @@ upgrade_twilio() ->
     {kvstore, ?twilio, Rec} = R,
     new_db_api:write_kv("http://hypernumbers.dev:9000", ?twilio,
                         Rec#twilio_account{type = full}).
-

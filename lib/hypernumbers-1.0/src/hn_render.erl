@@ -90,7 +90,7 @@ read_data_without_page_or_range(Ref) ->
                      element(1, XRefX#xrefX.obj) =/= range,
                      Val =/= []].
 
--spec layout(#xrefX{}, atom(), cells(), cols(), rows(), gb_tree())
+-spec layout(#xrefX{}, atom(), cells(), cols(), rows(), gb_tree:tree())
 -> {[textdata()], integer(), integer()}.
 layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     PX = 0,
@@ -380,7 +380,7 @@ order_objs({RA, _}, {RB, _}) ->
        true     -> XA =< XB
     end.
 
--spec read_css(undefined | integer(), gb_tree()) -> string().
+-spec read_css(undefined | integer(), gb_tree:tree()) -> string().
 read_css(undefined, _Palette) -> "";
 read_css(Idx, Palette) -> case gb_trees:lookup(Idx, Palette) of
                               none       -> "";

@@ -225,7 +225,11 @@ compile_funcs(List, Inc_list) ->
 compile({File, Opt}) ->
     Append = case lists:member(filename:basename(File), ?NO_WARNINGS) of
                  true  -> [report_errors];
-                 false -> [report_errors, report_warnings]
+                 %% force it to work on Erlang 20 because
+                 %% Hypernumbers uses monotonic now to generate unique
+                 %% IDs
+                 %% false -> [report_errors, report_warnings]
+                 false -> [report_errors]
              end,
     Options = lists:append(Opt,Append),
 
@@ -246,7 +250,8 @@ compile(File, Options) ->
             _Purge = code:purge(FileName),
             _Load = code:load_file(FileName),
             ok;
-        _Error ->
+        Error ->
+            io:format("stoppping in compile because ~p~n", [Error]),
             erlang:halt(0)
     end.
 
@@ -315,7 +320,7 @@ make_rel_file(App, Version, Deps) ->
 get_rel_file() ->
     Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, public_key,
             gettext, sgte, read_excel, sysmon, starling, formula_engine,
-            erlsha2, twilio, mochiweb, bert, hypernumbers, load_testing],
+            erlsha2, twilio, mochiweb, bert, hypernumbers, load_testing, asn1],
     Rel  = make_rel_file("hypernumbers", "1.0", Apps),
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
     ok   = systools:make_script("hypernumbers",
@@ -323,19 +328,19 @@ get_rel_file() ->
 
 get_no_mnesia_debug_rel_file() ->
     Rel = make_rel_file("NO_MNESIA", "1.0", [kernel, stdlib, inets, ssl,
-                                             crypto, public_key]),
+                                             crypto, public_key, asn1]),
     ok  = file:write_file("no_mnesia.rel", fmt("~p.", [Rel])),
     ok  = systools:make_script("no_mnesia", [local]).
 
 get_debug_rel_file() ->
     Rel = make_rel_file("DEBUG", "1.0", [kernel, stdlib, inets, ssl,
-                                             crypto, public_key, mnesia]),
+                                             crypto, public_key, mnesia, asn1]),
     ok  = file:write_file("debug.rel", fmt("~p.", [Rel])),
     ok  = systools:make_script("debug", [local]).
 
 get_ssl_rel_file() ->
     Rel = make_rel_file("START SSL", "1.0", [kernel, stdlib, inets, ssl,
-                                             crypto, public_key]),
+                                             crypto, public_key, asn1]),
     ok  = file:write_file("start_ssl.rel", fmt("~p.", [Rel])),
     ok  = systools:make_script("start_ssl", [local]).
 
@@ -384,7 +389,9 @@ build(Root) ->
     % build the lexer-parsers
     io:format("...building lexer-parser~n"),
     make_lexer_parser(Root),
+    io:format("...minify~n"),
     minify(Root),
+    io:format("...make ms_util~n"),
     make_ms_util(Root),
     file:set_cwd(Root++"/ebin"),
     io:format("...now compile all the actual code~n"),

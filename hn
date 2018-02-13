@@ -1,6 +1,6 @@
 #!/usr/bin/env escript
 %% -*- erlang -*-
-%%! -boot ebin/start_ssl -proto_dist inet_ssl -ssl_dist_opt server_certfile "priv/keys/servercert.pem" -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" -ssl_dist_opt keyfile "priv/keys/key.pem"
+%%! -boot ebin/start_ssl -proto_dist inet_tls -ssl_dist_opt server_certfile "priv/keys/servercert.pem" -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" -ssl_dist_opt keyfile "priv/keys/key.pem"
 
 cookie() ->
     CookieFile = ".erlang.cookie",
@@ -15,8 +15,8 @@ cookie() ->
                     exit(cookie_read_error)
             end;
         false ->
-            Cookie = crypto:rand_uniform(round(math:pow(2,128)),
-                                         round(math:pow(2,129)-1)),
+            Cookie = round(math:pow(2,128) *
+                               (1 + rand:uniform(round(math:pow(2,128))))),
             Cookie2 = "randomcookie_" ++ integer_to_list(Cookie),
             case file:open(CookieFile, [write]) of
                 {ok, Id} ->
@@ -165,7 +165,7 @@ debug(Extra) ->
             ok
     end.
 
-% starts a buddy node with all the code paths etc set up but no hypernumbers
+%% starts a buddy node with all the code paths etc set up but no hypernumbers
 buddy(Extra) ->
     ensure_config(),
     Node = atol(conf_lname("_buddy")),
@@ -248,8 +248,8 @@ remote_do(Cmd, [Node]) when is_list(Node) ->
 remote_do(Cmd, Node) ->
     case net_adm:ping(Node) of
         pong  ->
-             io:format("Send ~s => ~s~n", [Cmd, Node]),
-             ok = rpc:call(Node, hn_updater, do, [Cmd]);
+            io:format("Send ~s => ~s~n", [Cmd, Node]),
+            ok = rpc:call(Node, hn_updater, do, [Cmd]);
         _Else ->
             io:format("Failed to ping ~p~n", [Node]),
             ok
@@ -283,7 +283,6 @@ read_config(Key) ->
 
 config_file() ->
     [root(), "/var/", "sys.config"].
-    %% ok.
 
 %% If node is specified in command, pick that up, if
 %% no, pick up from local.node file, if that doesnt exist
@@ -363,7 +362,7 @@ ssl() ->
     "-ssl_dist_opt server_certfile \"priv/keys/servercert.pem\" "
         "-ssl_dist_opt client_certfile \"priv/keys/clientcert.pem\" "
         "-ssl_dist_opt keyfile \"priv/keys/key.pem\" "
-        "-proto_dist inet_ssl".
+        "-proto_dist inet_tls".
 
 clean(Root) ->
     compile_code:clean(Root).

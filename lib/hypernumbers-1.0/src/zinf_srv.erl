@@ -462,9 +462,9 @@ match_1([_H | T], X, Y, Acc) ->
 %%%===================================================================
 %%% Tree manipulation functions
 %%%===================================================================
--spec alter_tree(gb_tree(),
+-spec alter_tree(gb_tree:tree(),
                  [string()],
-                 fun((#selector{}) -> #selector{})) -> gb_tree().
+                 fun((#selector{}) -> #selector{})) -> gb_tree:tree().
 alter_tree(Tree, List, Fun) ->
     case alter_tree1(Tree, List, Fun) of
         {{deleted, Seg}, NewTree} -> NewTree,

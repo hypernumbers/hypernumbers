@@ -12,7 +12,7 @@
 -define(MODULENAME,"ms_util2").
 
 make() ->
-    {ok,Tree} = epp:parse_file("lib/hypernumbers-1.0/include/spriki.hrl", [], []),
+    {ok, Tree} = epp:parse_file("lib/hypernumbers-1.0/include/spriki.hrl", [], []),
     Src = make_src(Tree),
     ok = file:write_file(?MODULENAME ++ ".erl", list_to_binary(Src)).
 
@@ -33,6 +33,10 @@ exp_rec({Name, Def}) -> exp_fields(Name, Def, 1, [], [], []).
 exp_fields(Nm, [], N, A1, A2, A3) ->
     {mk4(Nm, N - 1), lists:reverse([mk(Nm) | A1]), lists:reverse(A2),
      mk3(Nm, A3)};
+%% if the record field is typed, strip the type info off and chuck it
+%% back on the list
+exp_fields(Nm, [{typed_record_field, RF, _Type} | T], N, A1, A2, A3) ->
+    exp_fields(Nm, [RF | T], N, A1, A2, A3);
 exp_fields(Nm, [{record_field, _, {atom,_, F}, _} | T], N, A1, A2, A3) ->
     exp_fields(Nm, T, N + 1, [mk(Nm, F, N) | A1], [mk2(Nm, F, N) | A2],
                [F | A3]);
@@ -129,4 +133,3 @@ top_and_tail(A1, A2, A3, A4)->
     Tail4 = "get_record_info(Rec) -> exit({error, \"no such record\", Rec}).",
     Top ++ lists:flatten(A1) ++ Tail1 ++ lists:flatten(A2) ++ Tail2 ++
         lists:flatten(A3)  ++ Tail3 ++ lists:flatten(A4) ++ Tail4.
-

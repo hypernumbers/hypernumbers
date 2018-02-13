@@ -497,7 +497,7 @@ log10([V1]) ->
 %%% Random numbers ~~~~~
 
 rand([]) ->
-    Bytes = crypto:rand_bytes(15),
+    Bytes = crypto:strong_rand_bytes(15),
     rand1(Bytes, 0, -1).
 rand1(<<>>, F, _) ->
     F;
@@ -1198,5 +1198,3 @@ intersect_test_() ->
      ?_assertEqual({error, no_intersect},
                    intersect({{1, 1}, {2,2}}, {{3,1}, {4,2}}))
     ].
-
-

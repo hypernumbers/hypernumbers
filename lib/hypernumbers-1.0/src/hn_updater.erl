@@ -137,7 +137,7 @@ premigrate(Dest) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Unload code which is in memory, but no longer on disk.
--spec unload_deleted(dict(), dict()) -> ok.
+-spec unload_deleted(dict:dict(), dict:dict()) -> ok.
 unload_deleted(OnDisk, Loaded) ->
     [begin code:purge(M),
            code:delete(M),
@@ -147,7 +147,7 @@ unload_deleted(OnDisk, Loaded) ->
     ok.
 
 %% Load code which is on disk, but not yet in memory.
--spec load_new(dict(), dict()) -> ok.
+-spec load_new(dict:dict(), dict:dict()) -> ok.
 load_new(OnDisk, Loaded) ->
     [ begin
           code:purge(M), %% just in case
@@ -160,7 +160,7 @@ load_new(OnDisk, Loaded) ->
 
 
 %% Reload the code in memory that has changed on disk.
--spec reload_current(dict()) -> ok.
+-spec reload_current(dict:dict()) -> ok.
 reload_current(Loaded) ->
     Reloaded = [reload_module(Mod) || {Mod,Path} <- dict:to_list(Loaded),
                                       needs_reload(Mod, Path)],
@@ -194,7 +194,7 @@ needs_reload(Mod, Path) ->
         _Else                                  -> false
     end.
 
--spec on_disk(string()) -> dict().
+-spec on_disk(string()) -> dict:dict().
 on_disk(Root) ->
     Files = filelib:wildcard(Root ++ "/*.beam") ++
                filelib:wildcard(Root ++ "/lib/*/ebin/*.beam"),
@@ -203,7 +203,7 @@ on_disk(Root) ->
              		        || F <- Files],
     dict:from_list(List).
 
--spec loaded(string()) -> dict().
+-spec loaded(string()) -> dict:dict().
 loaded(Root) ->
     dict:from_list([ KV || KV={_, Path} <- code:all_loaded(),
                            is_list(Path),

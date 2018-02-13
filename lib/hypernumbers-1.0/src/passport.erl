@@ -289,7 +289,7 @@ delete_uid(UID) when is_list(UID) ->
 -spec create_uid() -> auth_srv:uid().
 
 create_uid() ->
-    Bin = crypto:rand_bytes(16),
+    Bin = crypto:strong_rand_bytes(16),
     mochihex:to_hex(Bin).
 
 -spec load_script(list()) -> ok.
@@ -353,7 +353,7 @@ handle_call({issue_pwd_reset, Email, Site}, _From, State) ->
                                         #user.email),
                 Age = gen_expiry(?DAY_S),
                 % this hash is just checked against
-                Hash = mochihex:to_hex(crypto:rand_bytes(24)),
+                Hash = mochihex:to_hex(crypto:strong_rand_bytes(24)),
                 Reset = #reset{age = Age, hash = Hash, site = Site},
                 #user{data = Dict} = U,
                 NewDict = dict:store(reset, Reset, Dict),

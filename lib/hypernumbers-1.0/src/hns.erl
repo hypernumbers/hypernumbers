@@ -530,8 +530,8 @@ get_mapping(Z=#zone{label=Zone, pool=Pool, min_size=Min}) ->
     {Name, Address, ResourceId, Z#zone{pool = Pool2}}.
 
 -spec allocate_names(integer(), #routing{}, generator(),
-                     string(), integer(), gb_tree())
-                    -> gb_tree().
+                     string(), integer(), gb_tree:tree())
+                    -> gb_tree:tree().
 allocate_names(X, _Routing, _Generator, _ZoneL, _ZoneId, Pool) when X =< 0 ->
     Pool;
 allocate_names(N, Routing, Generator, ZoneL, ZoneId, Pool) ->
@@ -539,8 +539,8 @@ allocate_names(N, Routing, Generator, ZoneL, ZoneId, Pool) ->
     allocate_names(N-1, Routing, Generator, ZoneL, ZoneId, Pool2).
 
 -spec allocate_name(#routing{}, generator(), string(),
-                    integer(), gb_tree())
-                   -> gb_tree().
+                    integer(), gb_tree:tree())
+                   -> gb_tree:tree().
 allocate_name(Routing, Generator, ZoneL, ZoneId, Pool) ->
     Name = Generator(),
     case record_exists({ZoneL, Name}) of

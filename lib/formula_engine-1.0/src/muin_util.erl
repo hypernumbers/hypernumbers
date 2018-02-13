@@ -78,7 +78,7 @@ get_z2([H | T], Acc) ->
     get_z2(T, [NewAcc | Acc]).
 
 create_name() ->
-    Bin = crypto:rand_bytes(8),
+    Bin = crypto:strong_rand_bytes(8),
     mochihex:to_hex(Bin).
 
 apply(Args, Fun) ->
