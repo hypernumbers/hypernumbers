@@ -76,7 +76,7 @@ hmac512(Key, Data) ->
 %% @doc Compute a SHA MAC message authentication code from key and data.
 %%
 hmac(Key, Data) ->
-    crypto:sha_mac(Key, Data).
+    crypto:hmac(sha, Key, Data).
 
 %% @spec hmac(key(), data(), hash(), blocksize()) -> mac()
 %% where

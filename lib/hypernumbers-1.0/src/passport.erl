@@ -368,7 +368,7 @@ handle_call({issue_pwd_reset, Email, Site}, _From, State) ->
     {reply, ok, State};
 
 handle_call({authenticate, Email, Password}, _From, State) ->
-    PassMD5 = crypto:md5_mac(server_key(), Password),
+    PassMD5 = crypto:hmac(md5, server_key(), Password),
     User = #user{email=Email, passMD5 = PassMD5, _='_'},
     F = fun() ->
                 mnesia:match_object(service_passport_user, User, read)
@@ -518,7 +518,7 @@ reset_p2(U, Password, Hash, Reset, Dict) ->
     if
         (Hash =/= H) -> {error, invalid_reset};
         (Age2 < Now) -> {error, expired_reset};
-        true         -> PwdMD5 = crypto:md5_mac(server_key(), Password),
+        true         -> PwdMD5 = crypto:hmac(md5, server_key(), Password),
                         D2 = dict:erase(reset, Dict),
                         U2 = U#user{validated = true, passMD5 = PwdMD5,
                                     data = D2},
@@ -528,7 +528,7 @@ reset_p2(U, Password, Hash, Reset, Dict) ->
     end.
 
 set_p1(UID, Password) ->
-    PassMD5 = crypto:md5_mac(server_key(), Password),
+    PassMD5 = crypto:hmac(md5, server_key(), Password),
     T = fun() ->
                 case mnesia:read(service_passport_user, UID, write) of
                     [U] when not U#user.validated ->
@@ -655,7 +655,7 @@ exec_script_term({add_user, T}) ->
 
 -spec gen_hash([string()]) -> string().
 gen_hash(Input) ->
-    mochihex:to_hex(crypto:md5_mac(server_token_key(), Input)).
+    mochihex:to_hex(crypto:hmac(md5, server_token_key(), Input)).
 
 -spec encrypt_term_hex(iolist(), term()) -> string().
 encrypt_term_hex(Key0, Term) ->
@@ -672,12 +672,12 @@ decrypt_term_hex(Key0, CipherH) ->
 -spec encrypt_bin(iolist(), binary()) -> binary().
 encrypt_bin(Key0, PlainT0) ->
     PlainT = extend(PlainT0),
-    Key = crypto:md5_mac(server_key(), Key0),
+    Key = crypto:hmac(md5, server_key(), Key0),
     crypto:aes_cfb_128_encrypt(Key, ivector(), PlainT).
 
 -spec decrypt_bin(iolist(), binary()) -> binary().
 decrypt_bin(Key0, CipherT) when is_binary(CipherT) ->
-    Key = crypto:md5_mac(server_key(), Key0),
+    Key = crypto:hmac(md5, server_key(), Key0),
     PlainT0 = crypto:aes_cfb_128_decrypt(Key, ivector(), CipherT),
     <<Len:16, PlainT:Len/binary, _/binary>> = PlainT0,
     PlainT.
