@@ -339,7 +339,7 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
 
 parse_rec(?SST, [<<>> | _T], _Name, _Tbl) ->
     {write, lacunae, [{identifier, "SST"},
-                      {source, excel_records.erl},
+                      {source, 'excel_records.erl'},
                       {msg, "skipping string table with no strings..."}]};
 
 parse_rec(?SST, [H | T], _Name, Tbl) ->
@@ -385,12 +385,12 @@ parse_rec(?SUPBOOK, Bin, _Name, Tbl) ->
          ?Add_In_Fns2:16/little-unsigned-integer>> ->
             write_externalref({skipped,add_ins},[],Tbl),
             {write, lacunae,[{identifier,"Add_In_Fns"},
-                             {source,excel_records.erl},
+                             {source,'excel_records.erl'},
                              {msg,"not being processed"}]};
         <<?DDE_OLE:16/little-unsigned-integer,_Rest/binary>> ->
             write_externalref({skipped,dde_ole},[],Tbl),
             {write, lacunae, [{identifier,"DDE and OLE links",Tbl},
-                              {source,excel_records.erl}]};
+                              {source,'excel_records.erl'}]};
         _ ->
             parse_externalrefs(Bin,Tbl),
             ok
@@ -493,7 +493,7 @@ parse_rec(Other, _Bin, _Name, _Tbl) ->
                               "not being processed"}
                 end,
     {write, lacunae, [{identifier, Id},
-                      {source, excel_records.erl},
+                      {source,'excel_records.erl'},
                       {msg, Msg}]}.
 
 not_processed() ->
@@ -875,19 +875,19 @@ parse_externname(Bin, Tbl) ->
             write_externname(Rest,Tbl);
         ?MANUAL_DDE ->
             {write, lacunae, [{identifier,"MANUAL_DDE"},
-                              {source,excel_records.erl},
+                              {source,'excel_records.erl'},
                               {msg,"not being processed"}]};
         ?AUTO_DDE   ->
             {write, lacunae, [{identifier,"AUTO_DDE"},
-                              {source,excel_records.erl},
+                              {source,'excel_records.erl'},
                               {msg,"not being processed"}]};
         ?MANUAL_OLE ->
             {write, lacunae, [{identifier,"MANUAL_OLE"},
-                              {source,excel_records.erl},
+                              {source,'excel_records.erl'},
                               {msg,"not being processed"}]};
         ?AUTO_OLE   ->
             {write, lacunae, [{identifier,"AUTO_OLE"},
-                              {source,excel_records.erl},
+                              {source,'excel_records.erl'},
                               {msg,"not being processed"}]}
     end.
 
